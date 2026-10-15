@@ -45,7 +45,10 @@ export default function QuestionViewer({
   // ── 缩放 ──
   const [zoom, setZoom] = useState(loadZoom)
   const [availW, setAvailW] = useState(0)
-  const [naturalW, setNaturalW] = useState(0)
+  // 原图宽度连同「量的是哪张图」一起记。换图时在渲染期自动失效，
+  // ⚠️ 不要再用 effect 去清零：缓存图从 onLoad 到被动 effect 只有几十微秒，
+  //    effect 会把刚量到的宽度冲回 0，之后图不再触发 load → 缩放永久失效（已复现）。
+  const [measured, setMeasured] = useState<{ src: string | null; w: number }>({ src: null, w: 0 })
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -67,9 +70,6 @@ export default function QuestionViewer({
     return () => ro.disconnect()
   }, [imgSrc])
 
-  // 换图重测原图宽度
-  useEffect(() => setNaturalW(0), [imgSrc])
-
   // Ctrl/⌘ + 滚轮缩放（用原生监听以便 preventDefault 掉浏览器整页缩放）
   useEffect(() => {
     const el = scrollRef.current
@@ -84,6 +84,8 @@ export default function QuestionViewer({
   }, [imgSrc])
 
   // 100% = 适应宽度（与改动前的默认表现一致）；放大后超出部分由外层容器横向滚动
+  // 量到的不是当前这张图 → 视为未测量（换图即刻失效，无需 effect）
+  const naturalW = measured.src === imgSrc ? measured.w : 0
   const fitW = availW > 0 ? Math.max(80, availW - CHROME) : 0
   const imgW = naturalW > 0 && fitW > 0 ? Math.round(Math.min(naturalW, fitW) * zoom) : 0
 
@@ -91,12 +93,12 @@ export default function QuestionViewer({
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto bg-gray-100 p-4">
         {imgSrc ? (
-          <div className="flex min-w-fit justify-center">
+          <div className={`flex justify-center ${imgW > 0 ? 'min-w-fit' : 'min-w-0'}`}>
             <div className="w-fit rounded-lg border border-gray-300 bg-white p-2">
               <img
                 src={imgSrc}
                 alt={`第 ${String(detail?.meta.question_number)} 题${subLabel ? ` ${subLabel} 问` : ''}`}
-                onLoad={(e) => setNaturalW(e.currentTarget.naturalWidth)}
+                onLoad={(e) => setMeasured({ src: imgSrc, w: e.currentTarget.naturalWidth })}
                 style={imgW > 0 ? { width: imgW } : { maxWidth: '100%' }}
                 className="block max-w-none"
               />
