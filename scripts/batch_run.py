@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""batch_run.py — 对某个学科下的全部会话目录批量跑 切割→渲染→校验
+"""batch_run.py — 对某个考试局/学科下的全部会话目录批量跑 切割→渲染→校验
 
 用法:
-    python scripts/batch_run.py [--subject physics] [--only 2026-june-wph11,...]
-                               [--skip-render] [--json out.json]
+    python scripts/batch_run.py [--subject physics] [--board edexcel] [--qual a-level]
+                               [--only 2026-june-wph11,...] [--skip-render] [--json out.json]
+
+考试局 → 切割脚本的对应（默认即可，一般不用显式传 --cut）:
+    edexcel → cut_paper.py      cie → cut_paper_cie.py      aqa → cut_paper_aqa.py
 
 产出：控制台汇总表 + （可选）JSON 明细，供人工复核清单使用。
 """
@@ -25,9 +28,12 @@ VENV = Path(r"C:\Users\Administrator\.workbuddy\binaries\python\envs\default\Lib
 if VENV.exists():
     ENV["PYTHONPATH"] = str(VENV)
 
+CUT_SCRIPT = {"edexcel": "cut_paper.py", "cie": "cut_paper_cie.py", "aqa": "cut_paper_aqa.py"}
+
 
 def run(script, d):
-    # 理化共用同一套脚本（2026-10-14 合并，原先按学科选 scripts/chemistry/ 的分支已撤销）
+    # 理化共用同一套脚本（2026-10-14 合并，原先按学科选 scripts/chemistry/ 的分支已撤销）；
+    # AQA/CIE 各自独立脚本（版式锚点体系不同，见各脚本头注释）。
     sp = ROOT / "scripts" / script
     t0 = time.time()
     p = subprocess.run([PY, str(sp), str(d)], capture_output=True, text=True,
@@ -38,21 +44,29 @@ def run(script, d):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--subject", default="physics")
+    ap.add_argument("--board", default="edexcel")
+    ap.add_argument("--qual", default="a-level")
+    ap.add_argument("--cut", default=None, help="切割脚本名（默认按 --board 自动选）")
     ap.add_argument("--only", default=None)
     ap.add_argument("--skip-render", action="store_true")
     ap.add_argument("--json", default=None)
     args = ap.parse_args()
 
-    base = ROOT / "data" / "edexcel" / "a-level" / args.subject
-    dirs = sorted(p for p in base.iterdir() if p.is_dir())
+    cut_script = args.cut or CUT_SCRIPT.get(args.board)
+    if not cut_script:
+        sys.exit(f"未知 board={args.board}，请用 --cut 显式指定切割脚本")
+    base = ROOT / "data" / args.board / args.qual / args.subject
+    if not base.is_dir():
+        sys.exit(f"目录不存在: {base}")
+    dirs = sorted(p for p in base.iterdir() if p.is_dir() and not p.name.startswith("_"))
     if args.only:
         want = set(args.only.split(","))
         dirs = [p for p in dirs if p.name in want]
 
-    print(f"批量跑 {len(dirs)} 卷（{base}）\n")
+    print(f"批量跑 {len(dirs)} 卷（{base}，切割={cut_script}）\n")
     rows, t_all = [], time.time()
     for i, d in enumerate(dirs, 1):
-        cut_rc, cut_t, cut_out = run("cut_paper.py", d)
+        cut_rc, cut_t, cut_out = run(cut_script, d)
         info = {}
         cj = d / "cut.json"
         if cj.exists():
