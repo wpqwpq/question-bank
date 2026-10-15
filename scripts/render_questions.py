@@ -10,6 +10,7 @@
 
 用法:
     python scripts/render_questions.py <session_dir> [--dpi 200] [--quality 85]
+                                       [--notice-font <中文字体路径>]
 
 规则:
     · 只读 cut.json 的坐标/regions，绝不回写坐标（单向数据流）；
@@ -20,6 +21,9 @@
       （answer_block：册内题号行 → 册内 Total，小问标签/预留空白/横线
       原样保留），图顶加「请在题目后面的专属作答区回答」提示；
       无 answer_block 的旧数据退回按条目拼接（题干切 Total 行）。
+    · 提示文字字体跨平台：按 Windows / macOS / Linux 候选表探测中文字体，
+      再扫常见字体目录兜底；都找不到时不画提示文字（分隔线保留）并打
+      [warn]，不再中断渲染；可用 --notice-font 显式指定。
     · 同一 source.pdf + 同参数 → 输出确定性（可作重渲一致性验收）。
     · 每题顺手产出 assets/qNN.layout.json：最终合成图内的小问作答区
       （大题）或 MCQ 选项框（选择题）位置，归一化坐标 0–1（x/宽、y/高），
@@ -43,17 +47,114 @@ WEBP_MAX_SIDE = 16320
 
 # ── 作答提示与交界分隔（仅 answer_regions 分区式成图使用） ──────────────
 NOTICE_TEXT = "请在题目后面的专属作答区回答"
-NOTICE_FONTS = ["C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyh.ttf",
-                "C:/Windows/Fonts/simhei.ttf", "C:/Windows/Fonts/simsun.ttc"]
+
+# 提示文字中文字体：按平台列出常见候选，命中第一个存在的即用。
+# 跨平台（Windows / macOS / Linux）——原先只列 Windows 路径，非 Windows 机器
+# 会直接 sys.exit 中断渲染；现改为「探测 → 目录扫描 → 找不到就不画提示文字」，
+# 渲染始终跑完（分隔线保留）。
+NOTICE_FONT_CANDIDATES = [
+    # Windows
+    "C:/Windows/Fonts/msyh.ttc",
+    "C:/Windows/Fonts/msyh.ttf",
+    "C:/Windows/Fonts/simhei.ttf",
+    "C:/Windows/Fonts/simsun.ttc",
+    # macOS
+    "/System/Library/Fonts/PingFang.ttc",
+    "/System/Library/Fonts/STHeiti Light.ttc",
+    "/System/Library/Fonts/STHeiti Medium.ttc",
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "/Library/Fonts/Arial Unicode.ttf",
+    "~/Library/Fonts/NotoSansCJKsc-Regular.otf",
+    "~/Library/Fonts/SourceHanSansSC-Regular.otf",
+    # Linux（Debian/Ubuntu / Fedora / Arch 常见路径）
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+    "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+    "/usr/share/fonts/truetype/arphic/uming.ttc",
+    "~/.fonts/NotoSansCJK-Regular.ttc",
+    "~/.local/share/fonts/NotoSansCJK-Regular.ttc",
+]
+
+# 候选表落空时的目录兜底：扫这些目录，按文件名关键字认中文字体
+# （应对发行版把同一字体装在不同路径）。
+NOTICE_FONT_DIRS = ["/System/Library/Fonts", "/Library/Fonts", "~/Library/Fonts",
+                    "/usr/share/fonts", "~/.fonts", "~/.local/share/fonts"]
+NOTICE_FONT_HINTS = ("pingfang", "heiti", "hiragino", "notosanscjk", "notoserifcjk",
+                     "sourcehansans", "sourcehanserif", "wqy", "microhei", "zenhei",
+                     "droidsansfallback", "uming", "ukai", "yuanti",
+                     "msyh", "simhei", "simsun")
+NOTICE_FONT_EXTS = (".ttf", ".ttc", ".otf", ".otc")
+
+_FONT_UNSET = object()
+_notice_font_path = _FONT_UNSET
 
 
-def _notice_font(dpi):
-    """提示文字字体（中文，随 DPI 缩放）；返回 (font, 字高px)。"""
+def _scan_font_candidates():
+    for p in NOTICE_FONT_CANDIDATES:
+        f = Path(p).expanduser()
+        if f.is_file():
+            return f
+    return None
+
+
+def _scan_font_dirs():
+    for d in NOTICE_FONT_DIRS:
+        root = Path(d).expanduser()
+        if not root.is_dir():
+            continue
+        try:
+            entries = root.rglob("*")
+            for f in entries:
+                if not f.is_file() or f.suffix.lower() not in NOTICE_FONT_EXTS:
+                    continue
+                stem = f.name.lower().replace(" ", "").replace("-", "").replace("_", "")
+                if any(h in stem for h in NOTICE_FONT_HINTS):
+                    return f
+        except OSError:
+            continue
+    return None
+
+
+def _resolve_notice_font_path(override=None):
+    """解析中文字体路径（进程内只解析一次，避免逐题重复扫描目录）。
+    顺序：--notice-font 指定 → 平台候选表 → 常见字体目录扫描 → None（无可用字体）。
+    None 也会被缓存——调用方据此跳过提示文字绘制。"""
+    global _notice_font_path
+    if _notice_font_path is not _FONT_UNSET:
+        return _notice_font_path
+    p = None
+    if override:
+        c = Path(override).expanduser()
+        if c.is_file():
+            p = c
+        else:
+            print(f"    [warn] --notice-font 指定的字体不存在：{c}，改用自动探测")
+    if p is None:
+        p = _scan_font_candidates()
+    if p is None:
+        p = _scan_font_dirs()
+    if p is None:
+        print("    [warn] 未找到中文字体：题图将不绘制「作答提示」文字（分隔线保留），"
+              "渲染继续。可用 --notice-font <字体路径> 指定。")
+    _notice_font_path = p
+    return p
+
+
+def _notice_font(dpi, path):
+    """提示文字字体（中文，随 DPI 缩放）；返回 (font, 字高px)。
+    path 为 _resolve_notice_font_path() 的结果；为空或加载失败时返回
+    (None, 0)，调用方据此只画分隔线、跳过提示文字——**不再中断渲染**。"""
+    if not path:
+        return None, 0
     fs = max(int(round(9 * dpi / 72.0)), 13)
-    for p in NOTICE_FONTS:
-        if Path(p).exists():
-            return ImageFont.truetype(p, fs), fs
-    sys.exit(f"找不到中文字体（ tried: {', '.join(NOTICE_FONTS)}），无法绘制作答提示。")
+    try:
+        return ImageFont.truetype(str(path), fs), fs
+    except Exception as e:  # 字体文件损坏 / 格式不受支持
+        print(f"    [warn] 字体加载失败 {path}: {e}，跳过作答提示文字")
+        return None, 0
 
 
 def main():
@@ -61,6 +162,10 @@ def main():
     ap.add_argument("session_dir")
     ap.add_argument("--dpi", type=int, default=None)
     ap.add_argument("--quality", type=int, default=None)
+    ap.add_argument("--notice-font", default=None,
+                    help="作答提示文字所用的中文字体文件路径。缺省按平台自动探测"
+                         "（Windows / macOS / Linux 候选表 + 字体目录扫描）；"
+                         "探测不到则不绘制提示文字、只保留分隔线，渲染不中断。")
     args = ap.parse_args()
 
     sdir = Path(args.session_dir).resolve()
@@ -153,9 +258,9 @@ def main():
         notice_h = sep_h = 0
         font = None
         if has_ans:
-            font, fs_px = _notice_font(q_dpi)
+            font, fs_px = _notice_font(q_dpi, _resolve_notice_font_path(args.notice_font))
             pad = max(int(round(5 * q_dpi / 72.0)), 4)
-            notice_h = fs_px + 2 * pad
+            notice_h = fs_px + 2 * pad if font is not None else 0
             sep_h = max(int(round(18 * q_dpi / 72.0)), 10)
         imgs, areas, block_pieces, offsets = [], [], [], []
         for kind, label, rg in pieces:
@@ -179,10 +284,11 @@ def main():
             H = sum(i.height for i in imgs) + notice_h + sep_h
             canvas = Image.new("RGB", (W, H), "white")
             draw = ImageDraw.Draw(canvas)
-            tb = draw.textbbox((0, 0), NOTICE_TEXT, font=font)
-            draw.text(((W - (tb[2] - tb[0])) // 2 - tb[0],
-                       (notice_h - (tb[3] - tb[1])) // 2 - tb[1]),
-                      NOTICE_TEXT, font=font, fill=(110, 110, 110))
+            if font is not None and notice_h > 0:
+                tb = draw.textbbox((0, 0), NOTICE_TEXT, font=font)
+                draw.text(((W - (tb[2] - tb[0])) // 2 - tb[0],
+                           (notice_h - (tb[3] - tb[1])) // 2 - tb[1]),
+                          NOTICE_TEXT, font=font, fill=(110, 110, 110))
             y = notice_h
             lw = max(int(round(1.2 * q_dpi / 72.0)), 2)
             sep_drawn = False
