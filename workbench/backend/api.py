@@ -36,10 +36,10 @@ def _validate_tags(paper: store.Paper, tags: list[str], where: str) -> None:
         raise HTTPException(422, f"{where}: 至少勾选 1 个知识点标签")
     if len(set(tags)) != len(tags):
         raise HTTPException(422, f"{where}: 标签存在重复")
-    allowed = taxonomy.tag_ids(paper.board, paper.qualification, paper.subject, paper.unit())
+    allowed = taxonomy.tag_ids_for_units(paper.board, paper.qualification, paper.subject, paper.unit())
     illegal = [t for t in tags if t not in allowed]
     if illegal:
-        raise HTTPException(422, f"{where}: 标签不属于本卷单元 {paper.unit()}: {', '.join(illegal)}")
+        raise HTTPException(422, f"{where}: 标签不属于本卷可选单元 {paper.unit()}: {', '.join(illegal)}")
 
 
 @router.get("/taxonomy")
@@ -130,8 +130,8 @@ def get_question(qid: str):
         "image_url": store.question_image_url(paper, pmeta),
         "tags": tags,
         "difficulty": difficulty,
-        "available_tags": taxonomy.tags_for(paper.board, paper.qualification, paper.subject, unit),
-        "available_groups": taxonomy.groups_for(paper.board, paper.qualification, paper.subject, unit),
+        "available_tags": taxonomy.tags_for_units(paper.board, paper.qualification, paper.subject, unit),
+        "available_groups": taxonomy.groups_for_units(paper.board, paper.qualification, paper.subject, unit),
         "split_eligible": split_eligible,
         "top_labels": top_labels,
         "split_active": split_active,
@@ -178,11 +178,19 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         if s.difficulty not in VALID_DIFFICULTIES:
             raise HTTPException(422, f"小问 {s.label}: 难度必须为 very-easy / easy / medium / hard / very-hard 之一")
 
-    # 先渲染（失败无副作用），再写盘
-    try:
-        render_res = render_subsplit.render_split(paper.path, meta["question_number"], top_labels)
-    except Exception as e:  # noqa: BLE001
-        raise HTTPException(500, f"子题渲染失败: {e}")
+    # 渲染子图：AQA/CIE 按小问打标但「不切子图」——子题文件不带 image/layout，
+    # 预览自动回退整题图（前端 imageOverride ?? null）。Edexcel 维持切子图。
+    if paper.board in store.SUB_NO_IMAGE_BOARDS:
+        render_res: dict = {
+            "results": [{"label": l, "image": None, "layout": None} for l in top_labels],
+            "warnings": [],
+        }
+    else:
+        # 先渲染（失败无副作用），再写盘
+        try:
+            render_res = render_subsplit.render_split(paper.path, meta["question_number"], top_labels)
+        except Exception as e:  # noqa: BLE001
+            raise HTTPException(500, f"子题渲染失败: {e}")
 
     try:
         result = store.save_split(

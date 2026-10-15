@@ -284,7 +284,7 @@ export default function App() {
     !!detail &&
     (splitMode ? subsComplete : draftTags.length > 0 && draftDifficulty !== null)
 
-  // split 模式：焦点在最后一问时按钮才是「切分并保存」，否则是「下一问」导航
+  // split 模式：焦点在最后一问时按钮才是「保存」，否则是「下一问」导航
   const onLastSub = !splitMode || focusIdx >= draftSubs.length - 1
 
   const save = useCallback(async () => {
@@ -545,7 +545,7 @@ export default function App() {
                   </label>
                   {!detail.split_eligible && (
                     <p className="mt-1 text-[11px] leading-4 text-gray-400">
-                      本题无 a/b/c 级小问，开关暂不可用
+                      本题无可分小问，开关暂不可用
                     </p>
                   )}
                 </div>
@@ -646,7 +646,7 @@ export default function App() {
                     ? '保存中…'
                     : splitMode
                       ? onLastSub
-                        ? `切分并保存（${draftSubs.filter((s) => subState(s) === 'done').length}/${draftSubs.length} 问完成）`
+                        ? `保存（${draftSubs.filter((s) => subState(s) === 'done').length}/${draftSubs.length} 问完成）`
                         : '下一问'
                       : '确定并保存'}
                 </button>

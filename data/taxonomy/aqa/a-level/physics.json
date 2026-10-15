@@ -1,0 +1,1195 @@
+{
+  "$comment": "知识点标签词表（按考试局/资格/学科一文件）。结构见 docs/06b-标签两级化实施设计-物理新词表.md；id 由 scripts/gen_tags_json.py 从词表 TSV 生成，请勿手改。",
+  "U1": {
+    "groups": [
+      {
+        "id": "u1g-fundamentals",
+        "zh": "基础知识",
+        "en": "fundamentals"
+      },
+      {
+        "id": "u1g-kinematics",
+        "zh": "运动学",
+        "en": "kinematics"
+      },
+      {
+        "id": "u1g-mechanics",
+        "zh": "力学",
+        "en": "mechanics"
+      },
+      {
+        "id": "u1g-work-and-energy",
+        "zh": "做功与能量",
+        "en": "work and energy"
+      },
+      {
+        "id": "u1g-material-science",
+        "zh": "材料学",
+        "en": "material science"
+      },
+      {
+        "id": "u1g-nuclear-physics",
+        "zh": "核物理",
+        "en": "nuclear physics"
+      },
+      {
+        "id": "u1g-modern-physics",
+        "zh": "近代物理学",
+        "en": "modern physics"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u1-quantities-and-units",
+        "zh": "数量级与单位",
+        "en": "quantities and units",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-errors-and-uncertainties",
+        "zh": "误差与不确定性",
+        "en": "errors and uncertainties",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-graphical-analysis",
+        "zh": "绘制处理图像",
+        "en": "graphical analysis",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-identifying-scalars-and-vectors",
+        "zh": "标矢量辨别",
+        "en": "identifying scalars and vectors",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-adding-and-resolving-vectors",
+        "zh": "矢量合成分解",
+        "en": "adding and resolving vectors",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-motion-graphs",
+        "zh": "运动学图像",
+        "en": "motion graphs",
+        "group": "u1g-kinematics"
+      },
+      {
+        "id": "u1-uniform-motion-calculation",
+        "zh": "匀加速运动计算",
+        "en": "uniform motion calculation",
+        "group": "u1g-kinematics"
+      },
+      {
+        "id": "u1-horizontal-projectile-motion",
+        "zh": "平抛运动",
+        "en": "horizontal projectile motion",
+        "group": "u1g-kinematics"
+      },
+      {
+        "id": "u1-oblique-projectile-motion",
+        "zh": "斜抛运动",
+        "en": "oblique projectile motion",
+        "group": "u1g-kinematics"
+      },
+      {
+        "id": "u1-centre-of-mass",
+        "zh": "重心位置",
+        "en": "centre of mass",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-principle-of-moments",
+        "zh": "力矩平衡条件",
+        "en": "principle of moments",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-principle-of-moments-calculation",
+        "zh": "力矩平衡计算",
+        "en": "principle of moments calculation",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-free-body-diagrams",
+        "zh": "受力分析",
+        "en": "free-body diagrams",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-newtons-laws-analysis",
+        "zh": "牛顿定律分析",
+        "en": "newton's laws analysis",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-newtons-laws-calculation",
+        "zh": "牛顿定律计算",
+        "en": "newton's laws calculation",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-conservation-of-momentum-analysis",
+        "zh": "动量守恒分析",
+        "en": "conservation of momentum analysis",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-conservation-of-momentum-calculation",
+        "zh": "动量守恒计算",
+        "en": "conservation of momentum calculation",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-impulse-calculation",
+        "zh": "冲量计算",
+        "en": "impulse calculation",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-types-of-collision",
+        "zh": "碰撞类型判断",
+        "en": "types of collision",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-work-graphs",
+        "zh": "图像计算做功",
+        "en": "work graphs",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-kinetic-energy",
+        "zh": "动能计算",
+        "en": "kinetic energy",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-gravitational-potential-energy",
+        "zh": "重力势能计算",
+        "en": "gravitational potential energy",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-conservation-of-energy",
+        "zh": "能量守恒",
+        "en": "conservation of energy",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-calculating-efficiency",
+        "zh": "效率计算",
+        "en": "calculating efficiency",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-hookes-law",
+        "zh": "胡克定律计算",
+        "en": "hooke's law",
+        "group": "u1g-material-science"
+      },
+      {
+        "id": "u1-elastic-strain-energy",
+        "zh": "弹性势能",
+        "en": "elastic strain energy",
+        "group": "u1g-material-science"
+      },
+      {
+        "id": "u1-stress-strain-and-young-modulus",
+        "zh": "应力应变杨氏模量",
+        "en": "stress strain and young modulus",
+        "group": "u1g-material-science"
+      },
+      {
+        "id": "u1-deformation-behaviour-graph",
+        "zh": "形变特性图像",
+        "en": "deformation behaviour graph",
+        "group": "u1g-material-science"
+      },
+      {
+        "id": "u1-decay-equations",
+        "zh": "衰变方程",
+        "en": "decay equations",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-identifying-radiation",
+        "zh": "辐射类型判断",
+        "en": "identifying radiation",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-calculating-half-life",
+        "zh": "半衰期计算",
+        "en": "calculating half-life",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-radiation-safety",
+        "zh": "辐射安全",
+        "en": "radiation safety",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-scattering-experiment",
+        "zh": "散射实验",
+        "en": "scattering experiment",
+        "group": "u1g-modern-physics"
+      },
+      {
+        "id": "u1-nuclides-and-isotopes",
+        "zh": "核素与同位素",
+        "en": "nuclides and isotopes",
+        "group": "u1g-modern-physics"
+      },
+      {
+        "id": "u1-identifying-particles",
+        "zh": "识别基本粒子",
+        "en": "identifying particles",
+        "group": "u1g-modern-physics"
+      },
+      {
+        "id": "u1-annihilation-and-pair-production",
+        "zh": "湮灭和对生成",
+        "en": "annihilation and pair production",
+        "group": "u1g-modern-physics"
+      },
+      {
+        "id": "u1-neutrino",
+        "zh": "中微子",
+        "en": "neutrino",
+        "group": "u1g-modern-physics"
+      }
+    ]
+  },
+  "U2": {
+    "groups": [
+      {
+        "id": "u2g-basics-of-electricity",
+        "zh": "电学基础",
+        "en": "basics of electricity"
+      },
+      {
+        "id": "u2g-circuit-principles",
+        "zh": "直流电路",
+        "en": "circuit principles"
+      },
+      {
+        "id": "u2g-oscillation",
+        "zh": "振动",
+        "en": "oscillation"
+      },
+      {
+        "id": "u2g-wave-fundamentals",
+        "zh": "波的基础",
+        "en": "wave fundamentals"
+      },
+      {
+        "id": "u2g-wave-superposition",
+        "zh": "波的叠加",
+        "en": "wave superposition"
+      },
+      {
+        "id": "u2g-reflection-and-refraction",
+        "zh": "反射与折射",
+        "en": "reflection and refraction"
+      },
+      {
+        "id": "u2g-quantum-physics",
+        "zh": "量子物理基础",
+        "en": "quantum physics"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u2-current-and-charge",
+        "zh": "电流与电荷",
+        "en": "current and charge",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-ohms-law",
+        "zh": "欧姆定律",
+        "en": "ohm's law",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-current-voltage-characteristics",
+        "zh": "伏安特性",
+        "en": "current-voltage characteristics",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-electrical-power",
+        "zh": "电功率",
+        "en": "electrical power",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-calculating-resistivity",
+        "zh": "电阻率计算",
+        "en": "calculating resistivity",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-temperature-and-resistance",
+        "zh": "温度与电阻关系",
+        "en": "temperature and resistance",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-series-and-parallel-circuits",
+        "zh": "串并联电路",
+        "en": "series and parallel circuits",
+        "group": "u2g-circuit-principles"
+      },
+      {
+        "id": "u2-electromotive-force-and-terminal-potential-difference",
+        "zh": "电动势和路端电压",
+        "en": "electromotive force and terminal potential difference",
+        "group": "u2g-circuit-principles"
+      },
+      {
+        "id": "u2-determining-internal-resistance",
+        "zh": "内阻计算与测量",
+        "en": "determining internal resistance",
+        "group": "u2g-circuit-principles"
+      },
+      {
+        "id": "u2-mass-spring-system",
+        "zh": "弹簧振子系统",
+        "en": "mass-spring system",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-simple-pendulum-system",
+        "zh": "单摆",
+        "en": "simple pendulum system",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-oscillation-energy",
+        "zh": "振动能量",
+        "en": "oscillation energy",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-measuring-oscillation-period",
+        "zh": "振动周期测量",
+        "en": "measuring oscillation period",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-applications-of-damping",
+        "zh": "阻尼应用",
+        "en": "applications of damping",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-conditions-for-resonance",
+        "zh": "共振条件",
+        "en": "conditions for resonance",
+        "group": "u2g-oscillation"
+      },
+      {
+        "id": "u2-types-of-wave",
+        "zh": "波的类型",
+        "en": "types of wave",
+        "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-wave-speed-relation",
+        "zh": "波速关系",
+        "en": "wave speed relation",
+        "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-polarisation",
+        "zh": "偏振现象",
+        "en": "polarisation",
+        "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-phase-and-path-difference",
+        "zh": "相位与波程",
+        "en": "phase and path difference",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-resultant-amplitude",
+        "zh": "振幅叠加",
+        "en": "resultant amplitude",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-formation-of-stationary-waves",
+        "zh": "驻波成因",
+        "en": "formation of stationary waves",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-harmonics-and-wavelength",
+        "zh": "谐波与波长",
+        "en": "harmonics and wavelength",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-properties-of-vibrating-strings",
+        "zh": "弦驻波计算",
+        "en": "properties of vibrating strings",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-single-slit-diffraction",
+        "zh": "单缝衍射",
+        "en": "single-slit diffraction",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-double-slit-interference-calculation",
+        "zh": "双缝干涉计算",
+        "en": "double-slit interference calculation",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-double-slit-interference-analysis",
+        "zh": "双缝干涉分析",
+        "en": "double-slit interference analysis",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-diffraction-gratings",
+        "zh": "衍射光栅",
+        "en": "diffraction gratings",
+        "group": "u2g-wave-superposition"
+      },
+      {
+        "id": "u2-snells-law",
+        "zh": "折射定律",
+        "en": "snell's law",
+        "group": "u2g-reflection-and-refraction"
+      },
+      {
+        "id": "u2-critical-angle-and-total-internal-reflection",
+        "zh": "全反射临界角",
+        "en": "critical angle and total internal reflection",
+        "group": "u2g-reflection-and-refraction"
+      },
+      {
+        "id": "u2-dispersion",
+        "zh": "色散现象",
+        "en": "dispersion",
+        "group": "u2g-reflection-and-refraction"
+      },
+      {
+        "id": "u2-energy-level-transition-principle",
+        "zh": "能级跃迁原理",
+        "en": "energy-level transition principle",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-light-emission",
+        "zh": "发光原理",
+        "en": "light emission",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-energy-level-transition-calculation",
+        "zh": "能级跃迁计算",
+        "en": "energy-level transition calculation",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-photoelectric-effect-principle",
+        "zh": "光电效应原理",
+        "en": "photoelectric effect principle",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-photoelectric-effect-calculation",
+        "zh": "光电效应计算",
+        "en": "photoelectric effect calculation",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-stopping-potential-graphs",
+        "zh": "遏止电压图像",
+        "en": "stopping-potential graphs",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-wave-particle-duality",
+        "zh": "波粒二象性",
+        "en": "wave-particle duality",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-electron-diffraction",
+        "zh": "电子衍射",
+        "en": "electron diffraction",
+        "group": "u2g-quantum-physics"
+      }
+    ]
+  },
+  "U3": {
+    "groups": [
+      {
+        "id": "u3g-circular-motion",
+        "zh": "圆周运动",
+        "en": "circular motion"
+      },
+      {
+        "id": "u3g-simple-harmonic-motion",
+        "zh": "简谐运动",
+        "en": "simple harmonic motion"
+      },
+      {
+        "id": "u3g-gravitational-fields",
+        "zh": "引力场",
+        "en": "gravitational fields"
+      },
+      {
+        "id": "u3g-electric-fields",
+        "zh": "电场",
+        "en": "electric fields"
+      },
+      {
+        "id": "u3g-capacitors",
+        "zh": "电容器",
+        "en": "capacitors"
+      },
+      {
+        "id": "u3g-magnetic-fields",
+        "zh": "磁场",
+        "en": "magnetic fields"
+      },
+      {
+        "id": "u3g-alternating-current",
+        "zh": "交变电流",
+        "en": "alternating current"
+      },
+      {
+        "id": "u3g-mathematical-model-of-radioactive-decay",
+        "zh": "核衰变数学模型",
+        "en": "mathematical model of radioactive decay"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u3-angular-speed-and-displacement",
+        "zh": "角速度与角位移",
+        "en": "angular speed and displacement",
+        "group": "u3g-circular-motion"
+      },
+      {
+        "id": "u3-forces-in-circular-motion",
+        "zh": "受力分析",
+        "en": "forces in circular motion",
+        "group": "u3g-circular-motion"
+      },
+      {
+        "id": "u3-centripetal-force-calculation",
+        "zh": "向心力计算",
+        "en": "centripetal force calculation",
+        "group": "u3g-circular-motion"
+      },
+      {
+        "id": "u3-angular-frequency-and-displacement",
+        "zh": "角频率与位移",
+        "en": "angular frequency and displacement",
+        "group": "u3g-simple-harmonic-motion"
+      },
+      {
+        "id": "u3-restoring-force",
+        "zh": "回复力",
+        "en": "restoring force",
+        "group": "u3g-simple-harmonic-motion"
+      },
+      {
+        "id": "u3-oscillation-phase",
+        "zh": "振动相位",
+        "en": "oscillation phase",
+        "group": "u3g-simple-harmonic-motion"
+      },
+      {
+        "id": "u3-oscillation-period",
+        "zh": "振动周期",
+        "en": "oscillation period",
+        "group": "u3g-simple-harmonic-motion"
+      },
+      {
+        "id": "u3-oscillation-energy",
+        "zh": "振动能量",
+        "en": "oscillation energy",
+        "group": "u3g-simple-harmonic-motion"
+      },
+      {
+        "id": "u3-newtons-law-of-gravitation",
+        "zh": "万有引力定律",
+        "en": "newton's law of gravitation",
+        "group": "u3g-gravitational-fields"
+      },
+      {
+        "id": "u3-superposition-of-gravitational-fields",
+        "zh": "引力场叠加",
+        "en": "superposition of gravitational fields",
+        "group": "u3g-gravitational-fields"
+      },
+      {
+        "id": "u3-gravitational-potential-energy",
+        "zh": "引力势能",
+        "en": "gravitational potential energy",
+        "group": "u3g-gravitational-fields"
+      },
+      {
+        "id": "u3-gravitational-potential",
+        "zh": "引力势",
+        "en": "gravitational potential",
+        "group": "u3g-gravitational-fields"
+      },
+      {
+        "id": "u3-satellite-orbits",
+        "zh": "卫星轨道",
+        "en": "satellite orbits",
+        "group": "u3g-gravitational-fields"
+      },
+      {
+        "id": "u3-uniform-electric-field-strength",
+        "zh": "匀强电场场强",
+        "en": "uniform electric field strength",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-electric-force-and-acceleration",
+        "zh": "电场力与加速",
+        "en": "electric force and acceleration",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-deflection-of-charged-particles",
+        "zh": "带电粒子偏转",
+        "en": "deflection of charged particles",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-electric-field-of-a-point-charge",
+        "zh": "点电荷场强",
+        "en": "electric field of a point charge",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-calculating-electrostatic-force",
+        "zh": "静电力计算",
+        "en": "calculating electrostatic force",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-superposition-of-electric-fields",
+        "zh": "电场叠加",
+        "en": "superposition of electric fields",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-electric-potential",
+        "zh": "电势",
+        "en": "electric potential",
+        "group": "u3g-electric-fields"
+      },
+      {
+        "id": "u3-capacitor-fundamentals",
+        "zh": "电容器基础",
+        "en": "capacitor fundamentals",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-capacitor-structure-and-principles",
+        "zh": "电容结构原理",
+        "en": "capacitor structure and principles",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-energy-stored-in-capacitors",
+        "zh": "电容储能",
+        "en": "energy stored in capacitors",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-rc-circuit-fundamentals",
+        "zh": "RC电路基础",
+        "en": "RC circuit fundamentals",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-time-constant",
+        "zh": "时间常数",
+        "en": "time constant",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-charging-and-discharging-graphs",
+        "zh": "充放电图像",
+        "en": "charging and discharging graphs",
+        "group": "u3g-capacitors"
+      },
+      {
+        "id": "u3-force-on-a-current-carrying-wire",
+        "zh": "通电导线受力",
+        "en": "force on a current-carrying wire",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-circular-motion-of-charged-particles",
+        "zh": "带电粒子运动",
+        "en": "circular motion of charged particles",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-cyclotrons",
+        "zh": "回旋加速器",
+        "en": "cyclotrons",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-velocity-selectors",
+        "zh": "速度选择器",
+        "en": "velocity selectors",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-magnetic-flux-and-flux-linkage",
+        "zh": "磁通量与磁链",
+        "en": "magnetic flux and flux linkage",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-faradays-law",
+        "zh": "电磁感应定律",
+        "en": "faraday's law",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-induced-emf",
+        "zh": "感应电动势",
+        "en": "induced emf",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-lenzs-law",
+        "zh": "楞次定律",
+        "en": "lenz's law",
+        "group": "u3g-magnetic-fields"
+      },
+      {
+        "id": "u3-peak-and-rms-values",
+        "zh": "峰值与有效值",
+        "en": "peak and rms values",
+        "group": "u3g-alternating-current"
+      },
+      {
+        "id": "u3-ac-measurements",
+        "zh": "交流电读数",
+        "en": "AC measurements",
+        "group": "u3g-alternating-current"
+      },
+      {
+        "id": "u3-transformer-principles",
+        "zh": "变压器原理",
+        "en": "transformer principles",
+        "group": "u3g-alternating-current"
+      },
+      {
+        "id": "u3-transformer-efficiency",
+        "zh": "变压器效率",
+        "en": "transformer efficiency",
+        "group": "u3g-alternating-current"
+      },
+      {
+        "id": "u3-activity",
+        "zh": "活度",
+        "en": "activity",
+        "group": "u3g-mathematical-model-of-radioactive-decay"
+      },
+      {
+        "id": "u3-half-life-and-decay-constant",
+        "zh": "半衰期与衰变常数",
+        "en": "half-life and decay constant",
+        "group": "u3g-mathematical-model-of-radioactive-decay"
+      },
+      {
+        "id": "u3-exponential-decay",
+        "zh": "指数衰变模型",
+        "en": "exponential decay",
+        "group": "u3g-mathematical-model-of-radioactive-decay"
+      }
+    ]
+  },
+  "U4": {
+    "groups": [
+      {
+        "id": "u4g-thermodynamics",
+        "zh": "热力学",
+        "en": "thermodynamics"
+      },
+      {
+        "id": "u4g-ideal-gases",
+        "zh": "理想气体",
+        "en": "ideal gases"
+      },
+      {
+        "id": "u4g-nuclear-physics",
+        "zh": "核物理",
+        "en": "nuclear physics"
+      },
+      {
+        "id": "u4g-rotational-motion",
+        "zh": "转动",
+        "en": "rotational motion"
+      },
+      {
+        "id": "u4g-energy-sources",
+        "zh": "能源",
+        "en": "energy sources"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u4-specific-heat-capacity",
+        "zh": "比热容",
+        "en": "specific heat capacity",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-specific-latent-heat",
+        "zh": "比潜热",
+        "en": "specific latent heat",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-thermal-conduction",
+        "zh": "热传导",
+        "en": "thermal conduction",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-rate-of-energy-transfer",
+        "zh": "传热系数与功率",
+        "en": "rate of energy transfer",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-internal-energy-and-energy-transfer",
+        "zh": "内能与能量",
+        "en": "internal energy and energy transfer",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-work-done-by-and-on-a-gas",
+        "zh": "气体做功",
+        "en": "work done by and on a gas",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-isothermal-processes",
+        "zh": "等温过程",
+        "en": "isothermal processes",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-adiabatic-processes",
+        "zh": "绝热过程",
+        "en": "adiabatic processes",
+        "group": "u4g-thermodynamics"
+      },
+      {
+        "id": "u4-ideal-gas-equation",
+        "zh": "状态方程",
+        "en": "ideal gas equation",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-changes-of-state-variables",
+        "zh": "状态变化",
+        "en": "changes of state variables",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-gas-pressure",
+        "zh": "气体压强",
+        "en": "gas pressure",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-root-mean-square-speed",
+        "zh": "方均根速率",
+        "en": "root mean square speed",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-mean-molecular-kinetic-energy",
+        "zh": "平均分子动能",
+        "en": "mean molecular kinetic energy",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-brownian-motion",
+        "zh": "布朗运动",
+        "en": "brownian motion",
+        "group": "u4g-ideal-gases"
+      },
+      {
+        "id": "u4-nuclear-structure",
+        "zh": "原子核结构",
+        "en": "nuclear structure",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-nuclear-density",
+        "zh": "原子核密度",
+        "en": "nuclear density",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-nucleus-radius-measurement",
+        "zh": "核半径测量",
+        "en": "nucleus radius measurement",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-mass-energy-conversion",
+        "zh": "质量转化",
+        "en": "mass-energy conversion",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-mass-defect",
+        "zh": "质量亏损",
+        "en": "mass defect",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-binding-energy",
+        "zh": "结合能",
+        "en": "binding energy",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-binding-energy-per-nucleon",
+        "zh": "比结合能",
+        "en": "binding energy per nucleon",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-energy-release-in-fusion-and-fission",
+        "zh": "核反应能量",
+        "en": "energy release in fusion and fission",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-nuclear-fission",
+        "zh": "核裂变",
+        "en": "nuclear fission",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-nuclear-fusion",
+        "zh": "核聚变",
+        "en": "nuclear fusion",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-nuclear-reactors",
+        "zh": "核电站原理",
+        "en": "nuclear reactors",
+        "group": "u4g-nuclear-physics"
+      },
+      {
+        "id": "u4-moment-of-inertia",
+        "zh": "转动惯量",
+        "en": "moment of inertia",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-torque-and-angular-acceleration",
+        "zh": "转矩与角加速",
+        "en": "torque and angular acceleration",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-rotational-kinetic-energy",
+        "zh": "转动动能",
+        "en": "rotational kinetic energy",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-work-done-by-a-torque",
+        "zh": "转矩做功",
+        "en": "work done by a torque",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-rotational-power",
+        "zh": "转动功率",
+        "en": "rotational power",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-conservation-of-angular-momentum",
+        "zh": "角动量守恒",
+        "en": "conservation of angular momentum",
+        "group": "u4g-rotational-motion"
+      },
+      {
+        "id": "u4-wind-power",
+        "zh": "风能",
+        "en": "wind power",
+        "group": "u4g-energy-sources"
+      },
+      {
+        "id": "u4-solar-power",
+        "zh": "太阳能",
+        "en": "solar power",
+        "group": "u4g-energy-sources"
+      },
+      {
+        "id": "u4-hydroelectric-power",
+        "zh": "水力发电",
+        "en": "hydroelectric power",
+        "group": "u4g-energy-sources"
+      }
+    ]
+  },
+  "U5": {
+    "groups": [
+      {
+        "id": "u5g-design-and-execution",
+        "zh": "设计与操作",
+        "en": "design and execution"
+      },
+      {
+        "id": "u5g-measurement-and-apparatus",
+        "zh": "测量与仪器",
+        "en": "measurement and apparatus"
+      },
+      {
+        "id": "u5g-data-handling",
+        "zh": "数据处理",
+        "en": "data handling"
+      },
+      {
+        "id": "u5g-uncertainty-and-errors",
+        "zh": "不确定度与误差",
+        "en": "uncertainty and errors"
+      },
+      {
+        "id": "u5g-evaluation",
+        "zh": "实验评价",
+        "en": "evaluation"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u5-experimental-design",
+        "zh": "实验方案",
+        "en": "experimental design",
+        "group": "u5g-design-and-execution"
+      },
+      {
+        "id": "u5-control-of-variables",
+        "zh": "变量控制",
+        "en": "control of variables",
+        "group": "u5g-design-and-execution"
+      },
+      {
+        "id": "u5-measurement-method",
+        "zh": "测量方法",
+        "en": "measurement method",
+        "group": "u5g-design-and-execution"
+      },
+      {
+        "id": "u5-assembling-apparatus",
+        "zh": "装置搭建",
+        "en": "assembling apparatus",
+        "group": "u5g-design-and-execution"
+      },
+      {
+        "id": "u5-instrument-selection",
+        "zh": "仪器选择",
+        "en": "instrument selection",
+        "group": "u5g-measurement-and-apparatus"
+      },
+      {
+        "id": "u5-taking-readings",
+        "zh": "仪器读数",
+        "en": "taking readings",
+        "group": "u5g-measurement-and-apparatus"
+      },
+      {
+        "id": "u5-improving-accuracy",
+        "zh": "提高准确度",
+        "en": "improving accuracy",
+        "group": "u5g-measurement-and-apparatus"
+      },
+      {
+        "id": "u5-data-calculation",
+        "zh": "数据计算",
+        "en": "data calculation",
+        "group": "u5g-data-handling"
+      },
+      {
+        "id": "u5-significant-figures",
+        "zh": "有效数字",
+        "en": "significant figures",
+        "group": "u5g-data-handling"
+      },
+      {
+        "id": "u5-plotting-and-best-fit",
+        "zh": "作图与拟合",
+        "en": "plotting and best fit",
+        "group": "u5g-data-handling"
+      },
+      {
+        "id": "u5-gradient-and-intercept",
+        "zh": "斜率与截距",
+        "en": "gradient and intercept",
+        "group": "u5g-data-handling"
+      },
+      {
+        "id": "u5-log-linearisation",
+        "zh": "对数与线性化",
+        "en": "log linearisation",
+        "group": "u5g-data-handling"
+      },
+      {
+        "id": "u5-uncertainty-calculation",
+        "zh": "不确定度计算",
+        "en": "uncertainty calculation",
+        "group": "u5g-uncertainty-and-errors"
+      },
+      {
+        "id": "u5-error-sources",
+        "zh": "误差来源",
+        "en": "error sources",
+        "group": "u5g-uncertainty-and-errors"
+      },
+      {
+        "id": "u5-reducing-errors",
+        "zh": "减小误差",
+        "en": "reducing errors",
+        "group": "u5g-uncertainty-and-errors"
+      },
+      {
+        "id": "u5-evaluating-the-method",
+        "zh": "方法评价",
+        "en": "evaluating the method",
+        "group": "u5g-evaluation"
+      },
+      {
+        "id": "u5-conclusions-and-evidence",
+        "zh": "结论与证据",
+        "en": "conclusions and evidence",
+        "group": "u5g-evaluation"
+      }
+    ]
+  }
+}

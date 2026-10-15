@@ -20,7 +20,12 @@ SCHEMA_PATH = REPO_ROOT / "schema" / "question.schema.json"
 FM_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*\r?\n", re.DOTALL)
 _DONE_DIFFICULTIES = {"very-easy", "easy", "medium", "hard", "very-hard"}
 MAIN_Q_RE = re.compile(r"^q\d+\.md$")       # 主题文件 q04.md
-SUB_Q_RE = re.compile(r"^q\d+-[a-z]+\.md$")  # 子题文件 q04-a.md（split 产物）
+# 子题文件（split 产物）：标签可为字母（Edexcel a/b/c）或数字（AQA/CIE 1..9）
+SUB_Q_RE = re.compile(r"^q\d+-[a-z0-9]+\.md$")
+
+# 按小问打标时「不切子图」的考试局：仍写子题文件（qNN-<label>.md）保留小问级标注，
+# 但不产 qNN-<label>.webp 子图——预览统一回退整题图。见 api._save_split。
+SUB_NO_IMAGE_BOARDS = {"aqa", "cie"}
 
 _schema_validator: Draft202012Validator | None = None
 
@@ -425,9 +430,11 @@ def _atomic_write(qpath: Path, text: str) -> None:
         raise
 
 
-def build_sub_meta(main_meta: dict[str, Any], label: str, image: str, layout: str) -> dict[str, Any]:
+def build_sub_meta(main_meta: dict[str, Any], label: str,
+                   image: str | None, layout: str | None) -> dict[str, Any]:
+    """子题元数据。image/layout 为 None 时（AQA/CIE 不切子图）随后的过滤会省略这两键。"""
     m = {
-        "id": f"{main_meta['id']}{label}",
+        "id": f"{main_meta['id']}-{label}",
         "parent": main_meta["id"],
         "board": main_meta["board"],
         "qualification": main_meta["qualification"],
@@ -435,7 +442,7 @@ def build_sub_meta(main_meta: dict[str, Any], label: str, image: str, layout: st
         "paper_code": main_meta.get("paper_code"),
         "year": main_meta.get("year"),
         "session": main_meta.get("session"),
-        "question_number": f"{main_meta['question_number']}{label}",
+        "question_number": f"{main_meta['question_number']}.{label}",
         "question_type": main_meta.get("question_type"),
         "sub_label": label,
         "image": image,

@@ -20,6 +20,13 @@ from pathlib import Path
 
 TAXONOMY_DIR = Path(__file__).resolve().parents[2] / "data" / "taxonomy"
 
+# 跨单元可选标签：(考试局, 卷单元) → 可选单元集合。
+# AQA Unit 5「Physics in practice」的 Section B 是任意单元知识的情境综合题，
+# 故 U5 卷放开 U1..U5 的标签；其余卷（含 Edexcel 的 U5）一律只可选自身单元。
+_CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
+    ("aqa", "U5"): ["U1", "U2", "U3", "U4", "U5"],
+}
+
 _cache: dict[tuple[str, str, str], dict] = {}
 
 
@@ -57,3 +64,42 @@ def groups_for(board: str, qualification: str, subject: str, unit: str) -> list[
 
 def tag_ids(board: str, qualification: str, subject: str, unit: str) -> set[str]:
     return {t["id"] for t in tags_for(board, qualification, subject, unit)}
+
+
+# ---------------------------------------------------------------------------
+# 跨单元：本卷可选标签可能来自多个单元（见 _CROSS_UNIT_SELECTABLE）
+# ---------------------------------------------------------------------------
+
+def selectable_units(board: str, qualification: str, subject: str, unit: str) -> list[str]:
+    """本卷可选标签的单元列表。默认只有自身单元；命中跨单元规则时按规则展开，
+    并过滤掉词表里不存在的单元（避免展开出空单元）。"""
+    units = _CROSS_UNIT_SELECTABLE.get((board, unit))
+    if not units:
+        return [unit]
+    tax = load_taxonomy(board, qualification, subject)
+    return [u for u in units if _unit_taxonomy(tax, u)["tags"]]
+
+
+def tags_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
+    """本卷可选的全部标签（跨单元时按单元顺序合并；每项仍带 group 键）。"""
+    out: list[dict] = []
+    for u in selectable_units(board, qualification, subject, unit):
+        out.extend(tags_for(board, qualification, subject, u))
+    return out
+
+
+def groups_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
+    """本卷可选的一级组。跨单元时组中文名加「U<x> 」前缀，区分同名组。
+    单单元时原样返回（前端分组头不变）。"""
+    units = selectable_units(board, qualification, subject, unit)
+    if len(units) <= 1:
+        return groups_for(board, qualification, subject, units[0]) if units else []
+    out: list[dict] = []
+    for u in units:
+        for g in groups_for(board, qualification, subject, u):
+            out.append({**g, "zh": f"{u} {g['zh']}"})
+    return out
+
+
+def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -> set[str]:
+    return {t["id"] for t in tags_for_units(board, qualification, subject, unit)}
