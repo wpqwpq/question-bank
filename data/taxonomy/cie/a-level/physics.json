@@ -1,0 +1,679 @@
+{
+  "$comment": "知识点标签词表（按考试局/资格/学科一文件）。结构见 docs/06b-标签两级化实施设计-物理新词表.md；id 由 scripts/gen_tags_json.py 从词表 TSV 生成，请勿手改。",
+  "P1P2": {
+    "groups": [
+      {
+        "id": "p1p2g-basic-knowledge",
+        "zh": "基础知识",
+        "en": "basic knowledge"
+      },
+      {
+        "id": "p1p2g-kinematics",
+        "zh": "运动学",
+        "en": "kinematics"
+      },
+      {
+        "id": "p1p2g-dynamics",
+        "zh": "动力学",
+        "en": "dynamics"
+      },
+      {
+        "id": "p1p2g-energy",
+        "zh": "能量",
+        "en": "energy"
+      },
+      {
+        "id": "p1p2g-material-science",
+        "zh": "材料学",
+        "en": "material science"
+      },
+      {
+        "id": "p1p2g-waves",
+        "zh": "波",
+        "en": "waves"
+      },
+      {
+        "id": "p1p2g-dc-circuit",
+        "zh": "直流电路",
+        "en": "D.C. circuit"
+      },
+      {
+        "id": "p1p2g-particle-physics",
+        "zh": "粒子物理",
+        "en": "particle physics"
+      }
+    ],
+    "tags": [
+      {
+        "id": "p1p2-si-unit",
+        "zh": "SI单位",
+        "en": "SI unit",
+        "group": "p1p2g-basic-knowledge"
+      },
+      {
+        "id": "p1p2-error-analysis-and-calculation",
+        "zh": "误差分析与计算",
+        "en": "error analysis and calculation",
+        "group": "p1p2g-basic-knowledge"
+      },
+      {
+        "id": "p1p2-scalars-and-vectors",
+        "zh": "标量与矢量",
+        "en": "scalars and vectors",
+        "group": "p1p2g-basic-knowledge"
+      },
+      {
+        "id": "p1p2-acceleration",
+        "zh": "加速度",
+        "en": "acceleration",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-uniformly-accelerated-linear-motion",
+        "zh": "匀加速直线运动",
+        "en": "uniformly accelerated linear motion",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-kinematic-graphs",
+        "zh": "运动学图像",
+        "en": "kinematic graphs",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-free-fall",
+        "zh": "自由落体",
+        "en": "free fall",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-free-body-force-diagram",
+        "zh": "受力分析图",
+        "en": "free-body force diagram",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-newtons-laws",
+        "zh": "牛顿定律",
+        "en": "Newton's laws",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-composition-and-resolution-of-forces",
+        "zh": "力的合成与分解",
+        "en": "composition and resolution of forces",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-definition-of-momentum",
+        "zh": "动量的定义",
+        "en": "definition of momentum",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-impulse-and-average-force",
+        "zh": "冲量和平均力",
+        "en": "impulse and average force",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-law-of-conservation-of-momentum",
+        "zh": "动量守恒定律",
+        "en": "law of conservation of momentum",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-moment-and-torque",
+        "zh": "力矩和力偶",
+        "en": "moment and torque",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-equilibrium",
+        "zh": "平衡",
+        "en": "equilibrium",
+        "group": "p1p2g-dynamics"
+      },
+      {
+        "id": "p1p2-work",
+        "zh": "做功",
+        "en": "work",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-law-of-conservation-of-energy",
+        "zh": "能量守恒定律",
+        "en": "law of conservation of energy",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-kinetic-energy",
+        "zh": "动能",
+        "en": "kinetic energy",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-gravitational-potential-energy",
+        "zh": "重力势能",
+        "en": "gravitational potential energy",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-power",
+        "zh": "功率",
+        "en": "power",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-efficiency",
+        "zh": "效率",
+        "en": "efficiency",
+        "group": "p1p2g-energy"
+      },
+      {
+        "id": "p1p2-density-and-pressure",
+        "zh": "密度与压强",
+        "en": "density and pressure",
+        "group": "p1p2g-material-science"
+      },
+      {
+        "id": "p1p2-stress-and-strain",
+        "zh": "应力与应变",
+        "en": "stress and strain",
+        "group": "p1p2g-material-science"
+      },
+      {
+        "id": "p1p2-young-modulus",
+        "zh": "杨氏模量",
+        "en": "Young modulus",
+        "group": "p1p2g-material-science"
+      },
+      {
+        "id": "p1p2-hookes-law",
+        "zh": "胡克定律",
+        "en": "Hooke's law",
+        "group": "p1p2g-material-science"
+      },
+      {
+        "id": "p1p2-elastic-strain-energy",
+        "zh": "弹性应变能",
+        "en": "elastic strain energy",
+        "group": "p1p2g-material-science"
+      },
+      {
+        "id": "p1p2-wave-terminology",
+        "zh": "波中的术语",
+        "en": "wave terminology",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-transverse-and-longitudinal-waves",
+        "zh": "横波与纵波",
+        "en": "transverse and longitudinal waves",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-doppler-effect",
+        "zh": "多普勒效应",
+        "en": "Doppler effect",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-electromagnetic-spectrum",
+        "zh": "电磁波频谱",
+        "en": "electromagnetic spectrum",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-polarisation",
+        "zh": "偏振",
+        "en": "polarisation",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-principle-of-superposition",
+        "zh": "波的叠加原理",
+        "en": "principle of superposition",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-stationary-wave",
+        "zh": "驻波",
+        "en": "stationary wave",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-diffraction",
+        "zh": "衍射",
+        "en": "diffraction",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-interference",
+        "zh": "干涉",
+        "en": "interference",
+        "group": "p1p2g-waves"
+      },
+      {
+        "id": "p1p2-charge-current-and-voltage",
+        "zh": "电荷、电流和电压",
+        "en": "charge, current and voltage",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-drift-velocity-equation",
+        "zh": "漂移速度公式",
+        "en": "drift velocity equation",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-ohms-law",
+        "zh": "欧姆定律",
+        "en": "Ohm's law",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-special-components",
+        "zh": "特殊电路元件",
+        "en": "special components",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-resistivity",
+        "zh": "电阻率",
+        "en": "resistivity",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-series-and-parallel-circuits",
+        "zh": "串联并联",
+        "en": "series and parallel circuits",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-potential-divider-principle",
+        "zh": "分压原理",
+        "en": "potential divider principle",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-kirchhoffs-rules",
+        "zh": "基尔霍夫定律",
+        "en": "Kirchhoff's rules",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-internal-resistance",
+        "zh": "内阻",
+        "en": "internal resistance",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-electrical-power",
+        "zh": "电功率",
+        "en": "electrical power",
+        "group": "p1p2g-dc-circuit"
+      },
+      {
+        "id": "p1p2-standard-model",
+        "zh": "标准模型",
+        "en": "standard model",
+        "group": "p1p2g-particle-physics"
+      },
+      {
+        "id": "p1p2-atomic-structure",
+        "zh": "原子结构",
+        "en": "atomic structure",
+        "group": "p1p2g-particle-physics"
+      },
+      {
+        "id": "p1p2-alpha-decay-and-beta-decay",
+        "zh": "α衰变和β衰变",
+        "en": "alpha decay and beta decay",
+        "group": "p1p2g-particle-physics"
+      }
+    ]
+  },
+  "P4": {
+    "groups": [
+      {
+        "id": "p4g-circular-motion",
+        "zh": "圆周运动",
+        "en": "circular motion"
+      },
+      {
+        "id": "p4g-gravitational-field",
+        "zh": "引力场",
+        "en": "gravitational field"
+      },
+      {
+        "id": "p4g-thermodynamics",
+        "zh": "热力学",
+        "en": "thermodynamics"
+      },
+      {
+        "id": "p4g-oscillation",
+        "zh": "振动",
+        "en": "oscillation"
+      },
+      {
+        "id": "p4g-electric-field",
+        "zh": "电场",
+        "en": "electric field"
+      },
+      {
+        "id": "p4g-capacitor",
+        "zh": "电容",
+        "en": "capacitor"
+      },
+      {
+        "id": "p4g-magnetic-field",
+        "zh": "磁场",
+        "en": "magnetic field"
+      },
+      {
+        "id": "p4g-ac-current",
+        "zh": "交流电",
+        "en": "A.C. current"
+      },
+      {
+        "id": "p4g-quantum-physics",
+        "zh": "量子物理",
+        "en": "quantum physics"
+      },
+      {
+        "id": "p4g-nuclear-physics",
+        "zh": "核物理",
+        "en": "nuclear physics"
+      },
+      {
+        "id": "p4g-medical-physics",
+        "zh": "医学物理",
+        "en": "medical physics"
+      },
+      {
+        "id": "p4g-astronomy",
+        "zh": "天文学",
+        "en": "astronomy"
+      }
+    ],
+    "tags": [
+      {
+        "id": "p4-linear-and-angular-velocity",
+        "zh": "线速度和角速度",
+        "en": "linear and angular velocity",
+        "group": "p4g-circular-motion"
+      },
+      {
+        "id": "p4-centripetal-acceleration",
+        "zh": "向心加速度",
+        "en": "centripetal acceleration",
+        "group": "p4g-circular-motion"
+      },
+      {
+        "id": "p4-analysis-for-circular-motion",
+        "zh": "圆周运动分析",
+        "en": "analysis for circular motion",
+        "group": "p4g-circular-motion"
+      },
+      {
+        "id": "p4-law-of-universal-gravitation",
+        "zh": "万有引力公式",
+        "en": "law of universal gravitation",
+        "group": "p4g-gravitational-field"
+      },
+      {
+        "id": "p4-gravitational-field-strength",
+        "zh": "引力场强度",
+        "en": "gravitational field strength",
+        "group": "p4g-gravitational-field"
+      },
+      {
+        "id": "p4-circular-motion-of-celestial-bodies",
+        "zh": "天体圆周运动",
+        "en": "circular motion of celestial bodies",
+        "group": "p4g-gravitational-field"
+      },
+      {
+        "id": "p4-gravitational-potential",
+        "zh": "引力势",
+        "en": "gravitational potential",
+        "group": "p4g-gravitational-field"
+      },
+      {
+        "id": "p4-internal-energy",
+        "zh": "内能",
+        "en": "internal energy",
+        "group": "p4g-thermodynamics"
+      },
+      {
+        "id": "p4-kinetic-theory",
+        "zh": "分子动理论",
+        "en": "kinetic theory",
+        "group": "p4g-thermodynamics"
+      },
+      {
+        "id": "p4-specific-heat-capacity-and-specific-latent-heat",
+        "zh": "比热容和比潜热",
+        "en": "specific heat capacity and specific latent heat",
+        "group": "p4g-thermodynamics"
+      },
+      {
+        "id": "p4-ideal-gas",
+        "zh": "理想气体",
+        "en": "ideal gas",
+        "group": "p4g-thermodynamics"
+      },
+      {
+        "id": "p4-first-law-of-thermodynamics",
+        "zh": "热力学第一定律",
+        "en": "first law of thermodynamics",
+        "group": "p4g-thermodynamics"
+      },
+      {
+        "id": "p4-definition-simple-harmonic-motion",
+        "zh": "简谐运动的定义",
+        "en": "definition simple harmonic motion",
+        "group": "p4g-oscillation"
+      },
+      {
+        "id": "p4-calculation-of-simple-harmonic-motion",
+        "zh": "简谐运动的计算",
+        "en": "calculation of simple harmonic motion",
+        "group": "p4g-oscillation"
+      },
+      {
+        "id": "p4-resonance-and-damping",
+        "zh": "共振与阻尼",
+        "en": "resonance and damping",
+        "group": "p4g-oscillation"
+      },
+      {
+        "id": "p4-definition-of-electric-field",
+        "zh": "电场定义",
+        "en": "definition of electric field",
+        "group": "p4g-electric-field"
+      },
+      {
+        "id": "p4-electric-field-line",
+        "zh": "电场线",
+        "en": "electric field line",
+        "group": "p4g-electric-field"
+      },
+      {
+        "id": "p4-uniform-electric-field",
+        "zh": "匀强电场",
+        "en": "uniform electric field",
+        "group": "p4g-electric-field"
+      },
+      {
+        "id": "p4-coulombs-law",
+        "zh": "库仑定律",
+        "en": "Coulomb's law",
+        "group": "p4g-electric-field"
+      },
+      {
+        "id": "p4-electric-potential",
+        "zh": "电势",
+        "en": "electric potential",
+        "group": "p4g-electric-field"
+      },
+      {
+        "id": "p4-definition-of-capacitor",
+        "zh": "电容器的定义",
+        "en": "definition of capacitor",
+        "group": "p4g-capacitor"
+      },
+      {
+        "id": "p4-energy-stored-in-capacitor",
+        "zh": "电容的储能",
+        "en": "energy stored in capacitor",
+        "group": "p4g-capacitor"
+      },
+      {
+        "id": "p4-capacitors-in-series-and-parallel",
+        "zh": "电容的串并联",
+        "en": "capacitors in series and parallel",
+        "group": "p4g-capacitor"
+      },
+      {
+        "id": "p4-rc-circuit",
+        "zh": "RC电路",
+        "en": "RC circuit",
+        "group": "p4g-capacitor"
+      },
+      {
+        "id": "p4-definition-of-magnetic-field",
+        "zh": "磁场的定义",
+        "en": "definition of magnetic field",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-charged-particle-in-magnetic-field",
+        "zh": "磁场中的带电粒子",
+        "en": "charged particle in magnetic field",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-current-carrying-wire-in-magnetic-field",
+        "zh": "磁场中的载流导线",
+        "en": "current-carrying wire in magnetic field",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-electromagnetic-induction",
+        "zh": "电磁感应",
+        "en": "electromagnetic induction",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-faradays-law",
+        "zh": "法拉第定律",
+        "en": "Faraday's law",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-lenzs-law",
+        "zh": "楞次定律",
+        "en": "Lenz's law",
+        "group": "p4g-magnetic-field"
+      },
+      {
+        "id": "p4-characteristics-for-alternating-current",
+        "zh": "交流电的特点",
+        "en": "characteristics for alternating current",
+        "group": "p4g-ac-current"
+      },
+      {
+        "id": "p4-rectification-and-smoothing",
+        "zh": "整流和滤波",
+        "en": "rectification and smoothing",
+        "group": "p4g-ac-current"
+      },
+      {
+        "id": "p4-photoelectric-effect",
+        "zh": "光电效应",
+        "en": "photoelectric effect",
+        "group": "p4g-quantum-physics"
+      },
+      {
+        "id": "p4-photon",
+        "zh": "光子",
+        "en": "photon",
+        "group": "p4g-quantum-physics"
+      },
+      {
+        "id": "p4-wave-particle-duality",
+        "zh": "波粒二象性",
+        "en": "wave-particle duality",
+        "group": "p4g-quantum-physics"
+      },
+      {
+        "id": "p4-energy-level",
+        "zh": "能级",
+        "en": "energy level",
+        "group": "p4g-quantum-physics"
+      },
+      {
+        "id": "p4-binding-energy",
+        "zh": "结合能",
+        "en": "binding energy",
+        "group": "p4g-nuclear-physics"
+      },
+      {
+        "id": "p4-mass-energy-conversion",
+        "zh": "质能转化",
+        "en": "mass-energy conversion",
+        "group": "p4g-nuclear-physics"
+      },
+      {
+        "id": "p4-properties-of-nuclear-decay",
+        "zh": "核衰变的特性",
+        "en": "properties of nuclear decay",
+        "group": "p4g-nuclear-physics"
+      },
+      {
+        "id": "p4-calculation-in-nuclear-decay",
+        "zh": "核衰变的计算",
+        "en": "calculation in nuclear decay",
+        "group": "p4g-nuclear-physics"
+      },
+      {
+        "id": "p4-ultrasound-imaging",
+        "zh": "超声波影像",
+        "en": "ultrasound imaging",
+        "group": "p4g-medical-physics"
+      },
+      {
+        "id": "p4-x-ray-imaging",
+        "zh": "X射线造影",
+        "en": "X-ray imaging",
+        "group": "p4g-medical-physics"
+      },
+      {
+        "id": "p4-pet-scanning",
+        "zh": "PET扫描",
+        "en": "PET scanning",
+        "group": "p4g-medical-physics"
+      },
+      {
+        "id": "p4-astronomical-distance-measurement",
+        "zh": "天体测距",
+        "en": "astronomical distance measurement",
+        "group": "p4g-astronomy"
+      },
+      {
+        "id": "p4-black-body-calculations",
+        "zh": "黑体的计算",
+        "en": "black-body calculations",
+        "group": "p4g-astronomy"
+      },
+      {
+        "id": "p4-hubbles-law",
+        "zh": "哈勃定律",
+        "en": "Hubble's law",
+        "group": "p4g-astronomy"
+      }
+    ]
+  }
+}

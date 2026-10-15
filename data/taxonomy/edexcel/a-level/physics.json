@@ -349,7 +349,7 @@
       },
       {
         "id": "u2-standing-wave",
-        "zh": "驻波的生成",
+        "zh": "驻波",
         "en": "standing wave",
         "group": "u2g-application-of-waves"
       },
@@ -435,6 +435,12 @@
         "id": "u2-ohms-law",
         "zh": "欧姆定律",
         "en": "Ohm's law",
+        "group": "u2g-dc-circuit"
+      },
+      {
+        "id": "u2-special-components",
+        "zh": "特殊电路元件",
+        "en": "special components",
         "group": "u2g-dc-circuit"
       },
       {
@@ -849,6 +855,12 @@
       }
     ],
     "tags": [
+      {
+        "id": "u5-internal-energy",
+        "zh": "内能",
+        "en": "internal energy",
+        "group": "u5g-thermodynamics"
+      },
       {
         "id": "u5-kinetic-theory",
         "zh": "分子动理论",

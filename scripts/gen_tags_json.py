@@ -1,8 +1,9 @@
 """从词表 TSV 生成 taxonomy JSON：data/taxonomy/<board>/<qual>/<subject>.json
 
-词表格式（docs/06b-物理词表.tsv，TSV，5 列）：
+词表格式（docs/06b-物理词表.tsv、docs/06b-CIE物理词表.tsv，TSV，5 列）：
     unit  group_zh  group_en  tag_zh  tag_en
-每行都带完整 unit 与组名（展开式，无延续行）。
+每行都带完整 unit 与组名（展开式，无延续行）。unit 取 U<号>（Edexcel 单元）
+或 P<号>（CIE paper：P1P2 = paper 1+2 共用词表，P4 = paper 4；P3/P5 不分类）。
 
 生成规则（06b 设计稿 §3）：
 - 一级组 id：u<单元号>g-<组英文slug>；二级 tag id：u<单元号>-<标签英文slug>（D1 全量重生成）。
@@ -47,7 +48,7 @@ def main() -> None:
     errors: list[str] = []
 
     for no, (unit, gz, ge, tz, te) in enumerate(rows, 2):
-        if not re.fullmatch(r"U\d+", unit):
+        if not re.fullmatch(r"U\d+|P\d+(?:P\d+)?", unit):
             errors.append(f"L{no}: 单元号非法 {unit!r}")
             continue
         if not tz:
