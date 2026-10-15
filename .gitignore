@@ -1,0 +1,44 @@
+# ── 操作系统 ──
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ── 编辑器 / IDE ──
+.vscode/
+.idea/
+*.swp
+*~
+
+# ── WorkBuddy 本地状态全部不入库（工作笔记含个人信息，公开仓库不带）──
+.workbuddy/
+
+# ── 临时 / 导出 / 中间产物 ──
+_tmp/
+_exports/
+*.tmp
+~$*
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ── Node ──
+node_modules/
+
+# ── 试卷 PDF：根目录 PDF 只留本地，不追踪不上传 ──
+/*.pdf
+
+# ── 题目数据主体：不入库、不推送，按需另行打包分发 ──
+# 例外：标签词表（data/taxonomy/）体量小且是结构化配置，随仓库同步（2026-10-15）
+/data/*
+!/data/taxonomy/
+# taxonomy 目录内的重导入/改版备份残留，不公开
+/data/taxonomy/_prev/
+
+# ── docs 全部本地化：方案文档属内部资料，映射表/报告含真题来源与统计，公开仓库不带 ──
+/docs/
+
+# 批量下载的原始真题（性质同 data/，不入库）
+downloads/

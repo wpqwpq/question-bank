@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wpqwpq/question-bank/schema/layout.schema.json",
+  "title": "QuestionLayout",
+  "description": "单题题图内的交互区域布局（assets/qNN.layout.json，由 render_questions.py 产出）。坐标为归一化值 0–1：x/w 相对图宽、y/h 相对图高，图片任意缩放时按比例换算即可。",
+  "type": "object",
+  "required": ["schema_version", "image", "size"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "image": { "type": "string", "description": "对应题图文件名，如 q13.webp" },
+    "coords": { "type": "string", "description": "坐标说明（归一化 0–1）" },
+    "size": {
+      "type": "object",
+      "description": "渲染时的像素尺寸（参考值；布局不依赖它）",
+      "properties": {
+        "w": { "type": "integer" },
+        "h": { "type": "integer" }
+      }
+    },
+    "areas": {
+      "type": "array",
+      "description": "作答区（答题册另附卷的结构化题）；label=null 表示整题一块作答区",
+      "items": {
+        "type": "object",
+        "required": ["label", "boxes"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": ["string", "null"], "description": "小问标签，如 'a'、'c ii'；null=整题" },
+          "boxes": {
+            "type": "array",
+            "description": "该小问的作答框（可有多个：如 5 行虚线 + Frequency 框）",
+            "items": { "$ref": "#/$defs/box" }
+          }
+        }
+      }
+    },
+    "options": {
+      "type": "array",
+      "description": "MCQ 选项点选热区（仅选择题）",
+      "items": {
+        "type": "object",
+        "required": ["label", "box"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "description": "A / B / C / D" },
+          "box": { "$ref": "#/$defs/box" }
+        }
+      }
+    },
+    "src_map": {
+      "type": "object",
+      "description": "图内像素 y ↔ 源 PDF (page, pt_y) 纵向映射，供 render_subsplit 在一级图上裁剪子图",
+      "required": ["dpi", "notice_h", "sep_h", "segs"],
+      "additionalProperties": false,
+      "properties": {
+        "dpi": { "type": "integer", "description": "一级图渲染 DPI" },
+        "notice_h": { "type": "integer", "description": "顶部提示带高度（px，无则 0）" },
+        "sep_h": { "type": "integer", "description": "QP/册内交界分隔带高度（px，无则 0）" },
+        "segs": {
+          "type": "array",
+          "description": "按拼接顺序记录的原始条带（notice/分隔带不含内容，不记录）",
+          "items": {
+            "type": "object",
+            "required": ["kind", "page", "pt", "img"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["qp", "answer", "answer_block"] },
+              "page": { "type": "integer", "description": "源 PDF 页码（0 起）" },
+              "pt": {
+                "type": "array", "items": { "type": "number" },
+                "minItems": 2, "maxItems": 2,
+                "description": "源 PDF 上的纵向范围 [pt_top, pt_bottom]（左上原点，y 向下）"
+              },
+              "img": {
+                "type": "array", "items": { "type": "integer" },
+                "minItems": 2, "maxItems": 2,
+                "description": "图内像素纵向范围 [y0, y1]"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "box": {
+      "type": "object",
+      "description": "归一化矩形：x/y 为左上角，w/h 为宽高，均 0–1",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "w": { "type": "number", "minimum": 0, "maximum": 1 },
+        "h": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}
