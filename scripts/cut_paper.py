@@ -93,7 +93,7 @@ ROMAN_TOKENS = ROMAN_SUB | {"i", "v", "x"}  # 含单字符罗马数字（区分�
 
 SESSION_TOKENS = {"jan", "mar", "may-jun", "june", "oct", "oct-nov"}
 BOARDS = {"edexcel", "aqa", "cie"}
-QUALS = {"a-level", "igcse", "gcse"}
+QUALS = {"a-level", "alevel", "igcse", "gcse"}
 
 SCRIPT_OWNED_KEYS = ("total_marks", "question_type", "section", "image", "layout", "cut_status")
 
