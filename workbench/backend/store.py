@@ -39,12 +39,12 @@ def _validator() -> Draft202012Validator:
 
 
 def unit_from_paper_code(code: str) -> str:
-    """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 -> U1（牛津 AQA 卷号是 PH0N）。
+    """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）。
 
-    取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05 没有这个模式，
-    回退到 PH0N 形式。两者都匹配不到才抛错。
+    取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
+    没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到才抛错。
     """
-    m = re.search(r"1(\d)", code) or re.search(r"PH0?(\d)", code, re.I)
+    m = re.search(r"1(\d)", code) or re.search(r"[PC]H0?(\d)", code, re.I)
     if not m:
         raise ValueError(f"无法从卷号推导单元: {code!r}")
     return f"U{m.group(1)}"

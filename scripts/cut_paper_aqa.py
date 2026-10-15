@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""cut_paper_aqa.py — 牛津 AQA 国际 A-Level 物理卷（PH01–PH05）按题自动切割
+"""cut_paper_aqa.py — 牛津 AQA 国际 A-Level 物理 / 化学卷（PH01–PH05 / CH01–CH05）按题自动切割
 
-⚠️ 专用脚本，服务于 OxfordAQA International AS/A-level Physics（PH01–PH05）；
+⚠️ 专用脚本，服务于 OxfordAQA International AS/A-level（物理 PH01–PH05、化学 CH01–CH05）；
    不动 cut_paper.py（Edexcel）与 cut_paper_cie.py（CIE 9702）。产出与两者
    **完全同构**（cut.json + qNN.md，符合 schema/cut.schema.json），可直接进
    render_questions.py / validate_cut.py / 打标台。
@@ -71,6 +71,7 @@ L_DEF, R_DEF = 39.0, 539.0   # 页框左右竖线 x0（全库 2277/2278 页一�
 T_DEF, B_DEF = HEADER_Y, 766.0   # 页框上下横线 y（53.5 / 765.5，+0.5 容差）
 BADGE_X_MIN, BADGE_X_MAX = 40.0, 80.0   # 题号徽章列（实测 51–54，个别 56/57）
 BADGE_MAX_SIZE = 13.0    # 徽章字号 ≈11，正文 11–12；≥13 一律不是徽章
+BADGE_SPLIT_DX = (12.0, 24.0)   # 两行拆分徽章：两数字同 y、x0 相差约 17pt（2018-01 CH01 Q4 实测 17.2）
 SUBQ_X_MIN, SUBQ_X_MAX = 70.0, 110.0    # 小问号 ". N" 列（实测 81/82/83）
 OPT_X_MIN, OPT_X_MAX = 84.0, 106.0      # 选择题选项行 x0（实测众数 93）
 CAP = 260.0              # 封顶保留：10 行 × 26pt
@@ -106,10 +107,16 @@ TABLE_Y_MIN, TABLE_Y_MAX = 420.0, 770.0
 BOARDS = {"edexcel", "aqa", "cie"}
 QUALS = {"a-level", "alevel", "igcse", "gcse"}
 SESSION_TOKENS = {"jan", "mar", "may-jun", "june", "oct", "oct-nov"}
-AQAPAPERS = {"ph01": 1, "ph02": 2, "ph03": 3, "ph04": 4, "ph05": 5}
+AQAPAPERS = {"ph01": 1, "ph02": 2, "ph03": 3, "ph04": 4, "ph05": 5}   # 物理
+AQACHPAPERS = {"ch01": 1, "ch02": 2, "ch03": 3, "ch04": 4, "ch05": 5}  # 化学
+SUPPORTED_PAPERS = {**AQAPAPERS, **AQACHPAPERS}
 
-# paper_code → 卷面总分（72/72 实测；paper.md 有 total_marks 时以之为准）
+# paper_code → 卷面总分（物理 72/72 及化学 70/80/60 实测；paper.md 有 total_marks 时以之为准）
 PAPER_TOTAL = {k: 80 for k in AQAPAPERS}
+PAPER_TOTAL.update({"ch01": 70, "ch02": 70, "ch03": 80, "ch04": 80, "ch05": 60})
+
+# 学科目录名 → 卷面学科名（写进 qNN.md 的 source 字段）
+SUBJECT_LABEL = {"physics": "Physics", "chemistry": "Chemistry"}
 
 
 # ── 行提取 ──────────────────────────────────────────────────────────────────
@@ -468,6 +475,39 @@ def anchor_scan(doc, pages_lines, pages_content, filler_pages):
                 continue
             sub = int(m.group(3)) if m.group(3) else None
             cands.append((pi, round(b[1], 2), n, sub, ln))
+
+    # ── 拆分徽章：两个数字是**独立文本对象**（同一视觉行，y 相同、x0 差 ~17pt）──
+    # ⚠️ 措辞：不是「视觉两行」——卷面上看就是一行 `0 4`；拆的是**文本层**：
+    # `0` 与 `4` 各是一个独立 line 对象（raw 分别为 '0 ' / '4 '），
+    # 而徽章正则假设两个数字连在同一条 line 的 raw 里（'0 4 ' 带空格）→ 直接漏检。
+    # 老卷（2018 季）特有。后果不是「少一题」而是**本题起点退到下一个重复徽章处**
+    # （AQA 每个小问都重复印徽章），于是上一题的题图吞掉本题的题干与表格
+    # （2018-01 CH01 Q4：Q3 图里长出了 Q4 的题干 + Table 1，Q4 图却从 `0 4 . 1` 起）。
+    # 全库 87 卷仅 1 处。判据：同页、同 y（±0.8）、各为单个数字、x0 差 BADGE_SPLIT_DX、都粗体。
+    for pi, lines in enumerate(pages_content):
+        singles = []
+        for ln in lines:
+            t = ln["raw"].strip()
+            if len(t) != 1 or not t.isdigit() or ln["size"] >= BADGE_MAX_SIZE:
+                continue
+            if not ln["first"][1]:            # 行首 span 非粗体 → 不是徽章数字
+                continue
+            if not (BADGE_X_MIN <= ln["bbox"][0] <= BADGE_X_MAX):
+                continue
+            singles.append(ln)
+        for i, a in enumerate(singles):
+            for c in singles[i + 1:]:
+                ba, bc = a["bbox"], c["bbox"]
+                if abs(ba[1] - bc[1]) > 0.8:
+                    continue
+                if not (BADGE_SPLIT_DX[0] <= bc[0] - ba[0] <= BADGE_SPLIT_DX[1]):
+                    continue
+                n = int(a["raw"].strip()) * 10 + int(c["raw"].strip())
+                if n < 1 or n > 60:
+                    continue
+                merged = {**a, "bbox": [ba[0], ba[1], bc[2], max(ba[3], bc[3])]}
+                cands.append((pi, round(min(ba[1], bc[1]), 2), n, None, merged))
+
     cands.sort(key=lambda c: (c[0], c[1]))
     qstarts = {}
     expected, last = 1, (-1, -1.0)
@@ -616,9 +656,14 @@ def extract_option_hotzones(q, opt_rows, pages_content, B, R):
         q["_options"] = []
         q["option_hotzones"] = []
         return False
-    region_bottom = {}
+    # ⚠️ 上下界都要钳：首选项的带上界取 span/2，会伸到 region 顶之上（2018-06 CH05 Q33
+    # 越界 63.1pt、2026-06 CH05 Q19 越界 102.8pt）→ layout.json 出现负归一化 y，
+    # validate_cut.py 判 FAIL。此前只钳了下界（bot），上界漏钳。
+    region_top, region_bottom = {}, {}
     for rg in q["regions"]:
-        region_bottom[rg["page"]] = max(region_bottom.get(rg["page"], 0), rg["bbox"][3])
+        pi = rg["page"]
+        region_top[pi] = min(region_top.get(pi, 1e9), rg["bbox"][1])
+        region_bottom[pi] = max(region_bottom.get(pi, 0), rg["bbox"][3])
     x_left = min(o["x0"] for o in opt_rows) - 7
     opts = []
     by_page = {}
@@ -630,9 +675,8 @@ def extract_option_hotzones(q, opt_rows, pages_content, B, R):
         for i, o in enumerate(rows):
             half_lo = (o["yc"] - rows[i - 1]["yc"]) / 2 if i > 0 else span / 2
             half_hi = (rows[i + 1]["yc"] - o["yc"]) / 2 if i + 1 < len(rows) else span / 2
-            top = o["yc"] - half_lo
-            bot = o["yc"] + half_hi
-            bot = min(bot, region_bottom.get(pi, B))
+            top = max(o["yc"] - half_lo, region_top.get(pi, 0.0))
+            bot = min(o["yc"] + half_hi, region_bottom.get(pi, B))
             bbox = [r2(x_left), r2(top), r2(R), r2(bot)]
             text_rows = [ln for ln in pages_content[pi]
                          if top - 1 <= ln["bbox"][3] and ln["bbox"][1] <= bot + 1
@@ -648,8 +692,9 @@ def extract_option_hotzones(q, opt_rows, pages_content, B, R):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="牛津 AQA IAL 物理卷按题切割")
-    ap.add_argument("session_dir", help="如 data/aqa/a-level/physics/2026-june-ph01")
+    ap = argparse.ArgumentParser(description="牛津 AQA IAL 物理 / 化学卷按题切割")
+    ap.add_argument("session_dir", help="如 data/aqa/a-level/physics/2026-june-ph01 或 "
+                                       "data/aqa/a-level/chemistry/2026-june-ch01")
     ap.add_argument("--probe", action="store_true", help="只打印锚点诊断，不写盘")
     args = ap.parse_args()
     sdir = Path(args.session_dir).resolve()
@@ -668,8 +713,8 @@ def main():
     if board != "aqa":
         sys.exit(f"cut_paper_aqa.py 只服务 AQA 卷（board={board}）")
     paper_code_l = paper_code.lower()
-    if paper_code_l not in AQAPAPERS:
-        sys.exit(f"不支持的 paper_code: {paper_code}（只支持 ph01–ph05）")
+    if paper_code_l not in SUPPORTED_PAPERS:
+        sys.exit(f"不支持的 paper_code: {paper_code}（物理 ph01–ph05 / 化学 ch01–ch05）")
 
     src = sdir / "source.pdf"
     if not src.exists():
@@ -1036,7 +1081,8 @@ def write_question_md(sdir, n, q, board, qualification, subject, year, session,
             lines.append(f"  - label: {o['label']}")
             lines.append(f"    text: {yaml_scalar(o.get('text', ''))}")
     lines.append("source: " + yaml_scalar(
-        f"Oxford AQA International A-Level Physics {paper_code.upper()}, {year} {session}"))
+        f"Oxford AQA International A-Level {SUBJECT_LABEL.get(subject, subject.title())} "
+        f"{paper_code.upper()}, {year} {session}"))
     lines.append("cut_status: " + q["status"])
     lines.append("language: en")
     lines.append("---")
