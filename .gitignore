@@ -9,8 +9,11 @@ desktop.ini
 *.swp
 *~
 
-# ── WorkBuddy 本地状态全部不入库（工作笔记含个人信息，公开仓库不带）──
-.workbuddy/
+# ── WorkBuddy 本地状态不入库（工作笔记含个人信息，公开仓库不带）──
+# 例外：项目技能（.workbuddy/skills/）是可复用的工作流资产，随仓库同步（2026-10-16）
+.workbuddy/*
+!.workbuddy/skills/
+!.workbuddy/skills/**
 
 # ── 临时 / 导出 / 中间产物 ──
 _tmp/
