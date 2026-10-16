@@ -25,9 +25,12 @@
       再扫常见字体目录兜底；都找不到时不画提示文字（分隔线保留）并打
       [warn]，不再中断渲染；可用 --notice-font 显式指定。
     · 同一 source.pdf + 同参数 → 输出确定性（可作重渲一致性验收）。
-    · 每题顺手产出 assets/qNN.layout.json：最终合成图内的小问作答区
-      （大题）或 MCQ 选项框（选择题）位置，归一化坐标 0–1（x/宽、y/高），
+    · 每题顺手产出 assets/qNN.layout.json：最终合成图内的
+      ① 小问作答区（答题册另附卷的大题，areas）、② MCQ 选项框（options）、
+      ③ 小问标签行位置（subquestions），均归一化坐标 0–1（x/宽、y/高），
       图片任意缩放时设备端一次乘法即可换算。
+      subquestions 供下游按纵向区间判断内容/笔迹落在哪个小问下（小问纵向
+      排列，y 区间即可界定）；只认 kind=qp 段且需匹配 page（小问可跨页）。
 
 像素换算: 像素 = pt × DPI ÷ 72。
 """
@@ -368,6 +371,26 @@ def main():
                     box = nbox((b[0] - bb0[0]) * q_zoom, (b[1] - bb0[1]) * q_zoom,
                                (b[2] - bb0[0]) * q_zoom, (b[3] - bb0[1]) * q_zoom)
                 opt_entries.append({"label": hz["label"], "box": box})
+        # 小问标签行在图内的位置（归一化）。下游据此按纵向区间判断内容/笔迹
+        # 落在哪个小问下——小问纵向排列，故 y 区间即可界定归属。
+        # ⚠️ 小问可跨页，必须同时匹配 page（options 不必，选项总在同一段内）；
+        #    只认 kind=qp：小问标签本就在题卷上，落到册内段说明匹配有误。
+        sq_entries = []
+        for s in q.get("subquestions") or []:
+            b = s["bbox"]
+            box = None
+            for (kind, _lbl, rg), yoff in zip(pieces, offsets):
+                rb = rg["bbox"]
+                if (kind == "qp" and rg["page"] == s["page"]
+                        and rb[1] - 1 <= b[1] and b[3] <= rb[3] + 1):
+                    box = nbox((b[0] - rb[0]) * q_zoom, yoff + (b[1] - rb[1]) * q_zoom,
+                               (b[2] - rb[0]) * q_zoom, yoff + (b[3] - rb[1]) * q_zoom)
+                    break
+            if box is None:
+                print(f"    [warn] Q{q['number']}: 小问 {s['label']}（page {s['page']}）"
+                      f" 未落在任何题卷段内，已跳过")
+                continue
+            sq_entries.append({"label": s["label"], "box": box})
         layout = {
             "schema_version": 1,
             "image": path.name,
@@ -396,12 +419,16 @@ def main():
             layout["areas"] = area_entries
         if opt_entries:
             layout["options"] = opt_entries
+        if sq_entries:
+            layout["subquestions"] = sq_entries
         (assets / f"q{int(q['number']):02d}.layout.json").write_text(
             json.dumps(layout, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         n_layout += 1
         n_desc = f", areas={len(area_entries)}" if area_entries else ""
         if opt_entries:
             n_desc += f", options={len(opt_entries)}"
+        if sq_entries:
+            n_desc += f", subq={len(sq_entries)}"
         print(f"  Q{q['number']:>2s} -> {path.name}  {W}x{H}px  "
               f"{path.stat().st_size / 1024:.0f} KB  ({tag}{n_desc})")
 

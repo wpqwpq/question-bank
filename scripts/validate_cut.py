@@ -20,6 +20,8 @@
     7. front-matter 的 image / layout 路径指向存在的文件；layout.json 通过 schema 校验且归一化坐标合法
     8. MCQ 题有 A–D 四个选项热区（读 cut.json option_hotzones，缺时警告不判失败）
     9. layout.json 与 cut.json 的 MCQ 热区一致（数量与标签）
+   10. layout.json 的 subquestions 与 cut.json 逐一对齐（标签与顺序），
+       否则下游按 y 区间判断小问归属会出错
 退出码: 全部通过 0，任一失败 1。
 """
 
@@ -33,6 +35,9 @@ import jsonschema
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+# schema/ 的位置：主仓库里脚本在 scripts/、schema 在仓库根（→ ../schema）；
+# 单目录分发（脚本与 schema/ 同级）时是 ./schema。两处都探测，避免分发后找不到。
+SCHEMA_DIR = HERE / "schema" if (HERE / "schema" / "cut.schema.json").exists() else ROOT / "schema"
 
 
 def load_front_matter(path):
@@ -69,7 +74,7 @@ def main():
             failures.append(msg)
 
     # 1. Schema 校验
-    schema = json.loads((ROOT / "schema" / "cut.schema.json").read_text(encoding="utf-8"))
+    schema = json.loads((SCHEMA_DIR / "cut.schema.json").read_text(encoding="utf-8"))
     for err in jsonschema.Draft202012Validator(schema).iter_errors(cut):
         failures.append(f"cut.json schema: {'/'.join(map(str, err.absolute_path))}: {err.message}")
 
@@ -170,17 +175,28 @@ def main():
         # layout.json schema + 归一化坐标范围 + MCQ 热区一致性
         if lp.exists():
             lj = json.loads(lp.read_text(encoding="utf-8"))
-            lschema = json.loads((ROOT / "schema" / "layout.schema.json").read_text(encoding="utf-8"))
+            lschema = json.loads((SCHEMA_DIR / "layout.schema.json").read_text(encoding="utf-8"))
             for err in jsonschema.Draft202012Validator(lschema).iter_errors(lj):
                 failures.append(f"Q{n} layout.json schema: {'/'.join(map(str, err.absolute_path))}: {err.message}")
             boxes = [b for a in lj.get("areas", []) for b in a.get("boxes", [])]
             boxes += [o["box"] for o in lj.get("options", []) if "box" in o]
+            boxes += [s["box"] for s in lj.get("subquestions", []) if "box" in s]
             for b in boxes:
                 if not (0 <= b["x"] <= 1 and 0 <= b["y"] <= 1
                         and b["x"] + b["w"] <= 1.001 and b["y"] + b["h"] <= 1.001
                         and b["w"] > 0 and b["h"] > 0):
                     failures.append(f"Q{n}: layout.json 非法归一化坐标 {b}")
                     break
+            # 小问标签行位置必须与 cut.json 的 subquestions 逐一对应（顺序一致）；
+            # 缺一个就意味着下游算不出该小问的内容归属，故按 failure 处理。
+            sq_cut = [s.get("label") for s in (q.get("subquestions") or [])]
+            sq_lay = [s.get("label") for s in lj.get("subquestions", [])]
+            if sq_cut != sq_lay:
+                missing = [x for x in sq_cut if x not in sq_lay]
+                failures.append(
+                    f"Q{n}: layout.json subquestions 与 cut.json 不一致"
+                    f"（cut {len(sq_cut)} / layout {len(sq_lay)}"
+                    + (f"，缺 {missing}" if missing else "") + "）")
             # 9. 与 cut.json option_hotzones 一致
             hz = q.get("option_hotzones") or []
             if q.get("question_type") == "mcq":

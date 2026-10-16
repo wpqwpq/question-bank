@@ -35,6 +35,19 @@
         }
       }
     },
+    "subquestions": {
+      "type": "array",
+      "description": "小问标签行在题图内的位置（归一化），按文档序；供下游按纵向区间判断内容/笔迹落在哪个小问下（小问纵向排列，y 区间即可界定）。仅 Edexcel/CIE/AQA 的 structured 题有",
+      "items": {
+        "type": "object",
+        "required": ["label", "box"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "description": "小问标签，如 'a'、'a i'；AQA/CIE 为数字 '1'..'9'" },
+          "box": { "$ref": "#/$defs/box" }
+        }
+      }
+    },
     "options": {
       "type": "array",
       "description": "MCQ 选项点选热区（仅选择题）",
