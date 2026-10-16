@@ -7,6 +7,10 @@ interface Props {
   unit: string
   selected: string[]
   onToggle: (id: string) => void
+  /** 当前单元已解析的主标签（plans/主标签实施方案 §2） */
+  primaryTag: string | null
+  /** 把某个已选标签设为主标签（≥2 个标签时才出现入口） */
+  onSetPrimary: (id: string) => void
 }
 
 interface Section {
@@ -17,15 +21,40 @@ interface Section {
 const GRID =
   'grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-1.5'
 
+// 外框宽度由 grid 列宽决定 → 在 chip **内部**加右侧热区不会改变换行位置与相对位置
+// （plans/主标签实施方案 §1.1）。代价是标签文字可用宽度少 16px。
 const CHIP_BASE =
-  'truncate rounded-md border px-1.5 py-1 text-xs transition-colors'
+  'flex w-full items-center gap-1 rounded-md border px-1.5 py-1 text-xs transition-colors'
+const CHIP_TEXT = 'min-w-0 flex-1 truncate text-left'
 
 const CHIP_ON = 'border-blue-300 bg-blue-50 text-blue-700'
+const CHIP_PRIMARY = 'border-blue-500 bg-blue-100 text-blue-800 font-medium'
 const CHIP_OFF = 'border-gray-200 bg-white text-gray-600 hover:border-blue-400 hover:text-blue-600'
 
-export default function TagPanel({ tags, groups, unit, selected, onToggle }: Props) {
+/** chip 右侧的主标签热区：空心圆点 = 可设为主；实心 = 已是主（再点无操作） */
+function PrimaryDot({ on }: { on: boolean }) {
+  return (
+    <span
+      className={`h-[7px] w-[7px] shrink-0 rounded-full ${
+        on ? 'bg-blue-600' : 'border border-blue-300'
+      }`}
+    />
+  )
+}
+
+export default function TagPanel({
+  tags,
+  groups,
+  unit,
+  selected,
+  onToggle,
+  primaryTag,
+  onSetPrimary,
+}: Props) {
   const [query, setQuery] = useState('')
   const searching = query.trim().length > 0
+  /** ≥2 个标签才需要人指定主标签；恰好 1 个时它自动即主（§4.1） */
+  const multi = selected.length >= 2
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -73,7 +102,7 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
   const crossAt = cross ? sections.findIndex((s) => s.group?.unit === cross.unit) : -1
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div data-tag-panel="1" className="flex min-h-0 flex-1 flex-col">
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-gray-700">
           知识点标签
@@ -99,10 +128,27 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
                 <button
                   key={id}
                   type="button"
-                  title={`移除 ${zhOf(id)}`}
+                  data-selected-chip={id}
+                  title={
+                    id === primaryTag
+                      ? `${zhOf(id)}（主标签）· 点击移除`
+                      : `移除 ${zhOf(id)}`
+                  }
                   onClick={() => onToggle(id)}
-                  className="inline-flex max-w-full items-center gap-1 rounded border border-blue-300 bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700 hover:bg-blue-100"
+                  className={`inline-flex max-w-full items-center gap-1 rounded border px-1.5 py-0.5 text-xs hover:bg-blue-100 ${
+                    id === primaryTag
+                      ? 'border-blue-400 bg-blue-100 text-blue-800'
+                      : 'border-blue-300 bg-blue-50 text-blue-700'
+                  }`}
                 >
+                  {/* 主标签只读指示：名前 5px 实心圆点（§4.2） */}
+                  {id === primaryTag && (
+                    <span
+                      data-primary-marker="1"
+                      className="h-[5px] w-[5px] shrink-0 rounded-full bg-blue-600"
+                      aria-hidden
+                    />
+                  )}
                   <span className="truncate">{zhOf(id)}</span>
                   <span aria-hidden>×</span>
                 </button>
@@ -143,15 +189,40 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
                     <div className={GRID}>
                       {bucket.map((t) => {
                         const on = selected.includes(t.id)
+                        const isPrimary = on && primaryTag === t.id
                         return (
                           <button
                             key={t.id}
                             type="button"
-                            title={t.zh}
+                            data-chip={t.id}
+                            data-primary={isPrimary ? '1' : undefined}
+                            title={
+                              isPrimary
+                                ? `${t.zh}（主标签）`
+                                : on && multi
+                                  ? `${t.zh} · 点右侧圆点设为主标签`
+                                  : t.zh
+                            }
                             onClick={() => onToggle(t.id)}
-                            className={`${CHIP_BASE} ${on ? CHIP_ON : CHIP_OFF}`}
+                            className={`${CHIP_BASE} ${on ? (isPrimary ? CHIP_PRIMARY : CHIP_ON) : CHIP_OFF}`}
                           >
-                            {t.zh}
+                            <span className={CHIP_TEXT}>{t.zh}</span>
+                            {on && multi && (
+                              <span
+                                data-primary-hotzone={t.id}
+                                role="button"
+                                tabIndex={-1}
+                                aria-label={isPrimary ? `${t.zh} 已是主标签` : `把 ${t.zh} 设为主标签`}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  // ≥2 个标签时必须有一个主标签，不允许「取消」（§4.1）
+                                  if (!isPrimary) onSetPrimary(t.id)
+                                }}
+                                className="flex h-4 w-4 shrink-0 items-center justify-center rounded"
+                              >
+                                <PrimaryDot on={isPrimary} />
+                              </span>
+                            )}
                           </button>
                         )
                       })}
@@ -165,8 +236,18 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
             )}
           </div>
 
-          <p className="mt-1.5 shrink-0 text-[11px] text-gray-400">
-            已选 {selected.length} 个 · 至少选 1 个
+          <p data-primary-hint="1" className="mt-1.5 shrink-0 text-[11px] text-gray-400">
+            已选 {selected.length} 个
+            {selected.length === 0 ? (
+              ' · 至少选 1 个'
+            ) : primaryTag ? (
+              <>
+                {' · 主标签：'}
+                <span className="text-blue-700">{zhOf(primaryTag)}</span>
+              </>
+            ) : (
+              <span className="font-medium text-amber-600"> · 请指定主标签</span>
+            )}
           </p>
         </>
       )}

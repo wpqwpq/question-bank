@@ -83,46 +83,53 @@ export default function Sidebar(p: Props) {
             </span>
           </div>
           <div className="grid grid-cols-5 gap-1.5">
-            {p.questions.map((q, i) => (
-              <button
-                key={q.qid}
-                type="button"
-                title={
-                  p.mode === 'preview'
-                    ? `第 ${q.question_number} 题 · ${
-                        q.difficulty_ready === false
-                          ? '待补难度（不能确认）'
-                          : q.verify_state === 'all'
-                            ? '已确认'
-                            : q.verify_state === 'partial'
-                              ? `部分确认（${q.confirmed_units ?? 0}/${q.total_units ?? 0} 小问）`
-                              : '待确认'
-                      }`
-                    : `第 ${q.question_number} 题 · ${
-                        q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
-                      }${
-                        q.status === 'done'
-                          ? `已打标${q.difficulty ? '' : '（难度未标）'}`
-                          : q.status === 'partial'
-                            ? '只有难度、缺知识点标签'
-                            : '未打标'
-                      }`
-                }
-                className={`h-8 ${
-                  p.mode === 'preview'
-                    ? verifyColor(
-                        (q.verify_state ?? 'none') as VerifyState,
-                        i === p.currentIndex,
-                        q.difficulty_ready === false,
-                      )
-                    : statusColor(q.status as Status, i === p.currentIndex)
-                }`}
-                onClick={() => p.onJump(i)}
-              >
-                {q.question_number}
-                {q.split && <span className="ml-0.5 align-super text-[9px] leading-none">abc</span>}
-              </button>
-            ))}
+            {p.questions.map((q, i) => {
+              // 「待补齐」= 有标签但缺难度或缺主标签（plans/主标签实施方案 §2）→ 灰 + 不能确认
+              const pending =
+                p.mode === 'preview' && (q.difficulty_ready === false || q.primary_ready === false)
+              const why = [
+                q.difficulty_ready === false ? '待补难度' : null,
+                q.primary_ready === false ? '待定主标签' : null,
+              ].filter(Boolean) as string[]
+              return (
+                <button
+                  key={q.qid}
+                  type="button"
+                  title={
+                    p.mode === 'preview'
+                      ? `第 ${q.question_number} 题 · ${
+                          why.length
+                            ? `${why.join('、')}（不能确认）`
+                            : q.verify_state === 'all'
+                              ? '已确认'
+                              : q.verify_state === 'partial'
+                                ? `部分确认（${q.confirmed_units ?? 0}/${q.total_units ?? 0} 小问）`
+                                : '待确认'
+                        }`
+                      : `第 ${q.question_number} 题 · ${
+                          q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
+                        }${
+                          q.status === 'done'
+                            ? `已打标${q.difficulty ? '' : '（难度未标）'}${
+                                q.primary_ready === false ? '（未定主标签）' : ''
+                              }`
+                            : q.status === 'partial'
+                              ? '只有难度、缺知识点标签'
+                              : '未打标'
+                        }`
+                  }
+                  className={`h-8 ${
+                    p.mode === 'preview'
+                      ? verifyColor((q.verify_state ?? 'none') as VerifyState, i === p.currentIndex, pending)
+                      : statusColor(q.status as Status, i === p.currentIndex)
+                  }`}
+                  onClick={() => p.onJump(i)}
+                >
+                  {q.question_number}
+                  {q.split && <span className="ml-0.5 align-super text-[9px] leading-none">abc</span>}
+                </button>
+              )
+            })}
           </div>
           {p.mode !== 'preview' ? (
             <p className="mt-2 text-[11px] leading-4 text-gray-400">
@@ -138,7 +145,7 @@ export default function Sidebar(p: Props) {
               <span className="mr-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-300 align-middle ring-1 ring-green-700" />
               已确认
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-gray-200 align-middle ring-1 ring-gray-400" />
-              待补难度
+              待补（难度／主标签）
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-amber-300 align-middle" />
               部分确认
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-100 align-middle ring-1 ring-green-300" />

@@ -24,11 +24,14 @@ class SubAnnotation(BaseModel):
     label: str
     tags: list[str]
     difficulty: str | None = None  # 可留空（docs/13）
+    # 主标签（plans/主标签实施方案 §2）：多标签必填且必须 ∈ tags；单标签可留空由后端补全
+    primary_tag: str | None = None
 
 
 class AnnotationPayload(BaseModel):
     tags: list[str] | None = None
     difficulty: str | None = None  # 可留空（docs/13）
+    primary_tag: str | None = None  # 同上
     subs: list[SubAnnotation] | None = None  # 非空 = 按小问切分保存
 
 
@@ -88,6 +91,24 @@ def _validate_tags(paper: store.Paper, tags: list[str], where: str) -> None:
     illegal = [t for t in tags if t not in allowed]
     if illegal:
         raise HTTPException(422, f"{where}: 标签不属于本卷可选单元 {paper.unit()}: {', '.join(illegal)}")
+
+
+def _validate_primary(tags: list[str], primary: str | None, where: str) -> str | None:
+    """主标签唯一真源规则（plans/主标签实施方案 §2.1）。返回归一化后的主标签。
+
+    - tags 为空：不写该键（调用方已先拦「至少 1 个标签」，这里只兜底）；
+    - 恰好 1 个：后端自动补成该 id，前端可不传（决策 #1：显式落盘，下游零推导）；
+    - ≥2 个：必须显式提供且必须 ∈ tags，否则 422 拒收（校验在写盘前，不落盘）。
+    """
+    if not tags:
+        return None
+    if len(tags) == 1:
+        return tags[0]
+    if not primary:
+        raise HTTPException(422, f"{where}: 多标签题必须指定主标签")
+    if primary not in tags:
+        raise HTTPException(422, f"{where}: 主标签必须是已选标签之一")
+    return primary
 
 
 @router.get("/taxonomy")
@@ -213,6 +234,8 @@ def get_question(qid: str):
                 "qid": sm.get("id"),
                 "label": sm.get("sub_label"),
                 "tags": sm.get("tags") or [],
+                # 已解析的主标签（读侧双保险回退，§2.1）；多标签未指定主时是 None
+                "primary_tag": store.effective_primary(sm.get("tags") or [], sm.get("primary_tag")),
                 "difficulty": sm.get("difficulty") if sm.get("difficulty") in VALID_DIFFICULTIES else None,
                 "status": store.compute_status(sm),
                 "image_url": store.question_image_url(paper, sm),  # 预览模式切小问图用
@@ -222,11 +245,22 @@ def get_question(qid: str):
     if is_sub:  # 子题直接打开时返回子题自身的标注
         tags = meta.get("tags") or []
         difficulty = meta.get("difficulty") if meta.get("difficulty") in VALID_DIFFICULTIES else None
+        primary_tag = store.effective_primary(tags, meta.get("primary_tag"))
     elif split_active:
-        tags, difficulty = [], None
+        tags, difficulty, primary_tag = [], None, None
     else:
         tags = meta.get("tags") or []
         difficulty = meta.get("difficulty") if meta.get("difficulty") in VALID_DIFFICULTIES else None
+        primary_tag = store.effective_primary(tags, meta.get("primary_tag"))
+
+    # 主标签是否就绪（plans/主标签实施方案 §2 决策 #2）：切分题按小问聚合，与 tags_ready 同口径。
+    # 预览模式据此把确认框置灰（后端 put_confirm 另有硬校验双保险）。
+    if split_active:
+        primary_ok = bool(subs_out) and all(
+            s["tags"] and s["primary_tag"] is not None for s in subs_out
+        )
+    else:
+        primary_ok = store.primary_ready(tags, meta.get("primary_tag"))
 
     # 审核确认状态：顶层给主题聚合（切分题用 subs[].verified 逐问判断）
     units = [s["qid"] for s in subs_out] if split_active else [str(pmeta.get("id"))]
@@ -240,6 +274,8 @@ def get_question(qid: str):
         "body": body,
         "image_url": store.question_image_url(paper, pmeta),
         "tags": tags,
+        "primary_tag": primary_tag,
+        "primary_ready": primary_ok,
         "difficulty": difficulty,
         "available_tags": taxonomy.tags_for_units(paper.board, paper.qualification, paper.subject, unit),
         "available_groups": taxonomy.groups_for_units(paper.board, paper.qualification, paper.subject, unit),
@@ -266,6 +302,16 @@ def put_confirm(qid: str, payload: ConfirmPayload):
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
     _, qpath = found
+
+    # 主标签门禁（plans/主标签实施方案 §2 决策 #2）：多标签却无主标签的单元不许确认。
+    # 与前端把确认框置灰是双保险——脚本/直调 API 绕不过这一层。
+    if payload.confirmed:
+        unit_meta, _ = store.parse_front_matter(qpath.read_text(encoding="utf-8"))
+        unit_tags = unit_meta.get("tags") or []
+        if len(unit_tags) >= 2 and store.effective_primary(
+            unit_tags, unit_meta.get("primary_tag")
+        ) is None:
+            raise HTTPException(422, "本题有多个标签但未指定主标签，请先在打标模式指定主标签")
 
     difficulty_out: str | None = None
     status_out: str | None = None
@@ -321,12 +367,17 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         raise HTTPException(422, f"小问标签不属于本题（本题为 {top_labels}）: {illegal}")
     for s in payload.subs:
         _validate_tags(paper, s.tags, f"小问 {s.label}")
+        _validate_primary(s.tags, s.primary_tag, f"小问 {s.label}")
         if s.difficulty is not None and s.difficulty not in VALID_DIFFICULTIES:
             raise HTTPException(422, f"小问 {s.label}: 难度必须为 very-easy / easy / medium / hard / very-hard 之一")
 
-    # 保存前快照：用于判断各小问的标签/难度是否真的变了（变了才撤销确认）
+    # 保存前快照：用于判断各小问的标签/难度/主标签是否真的变了（变了才撤销确认）
     before = {
-        str(sm.get("sub_label")): (tuple(sm.get("tags") or []), sm.get("difficulty"))
+        str(sm.get("sub_label")): (
+            tuple(sm.get("tags") or []),
+            sm.get("difficulty"),
+            store.effective_primary(sm.get("tags") or [], sm.get("primary_tag")),
+        )
         for sm in paper.sub_metas(qpath)
     }
 
@@ -354,14 +405,16 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         raise HTTPException(500, str(e))
     result["warnings"] = render_res["warnings"]
 
-    # 标签/难度动过的小问 → 取消其「核对完成」；切分本身就是形态变化，
+    # 标签/难度/主标签动过的小问 → 取消其「核对完成」；切分本身就是形态变化，
     # 所以主文件那条整题确认（若有）一律作废。
     unchanged: set[str] = set()
     units: list[str] = [str(meta.get("id"))]
     for sm in result.get("subs") or []:
         uid = str(sm.get("qid"))
         units.append(uid)
-        new = (tuple(sm.get("tags") or []), sm.get("difficulty"))
+        # result["subs"][].primary_tag 已是 resolved 值（store.save_split 回传），
+        # 与 before 侧口径一致，避免单标签场景来回白清确认
+        new = (tuple(sm.get("tags") or []), sm.get("difficulty"), sm.get("primary_tag"))
         if before.get(str(sm.get("label"))) == new:
             unchanged.add(uid)
     result["confirm_cleared"] = _invalidate_confirm(units, unchanged)
@@ -370,17 +423,22 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
 
 def _save_whole(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
     _validate_tags(paper, payload.tags or [], "整题")
+    _validate_primary(payload.tags or [], payload.primary_tag, "整题")
     if payload.difficulty is not None and payload.difficulty not in VALID_DIFFICULTIES:
         raise HTTPException(422, "难度必须为 very-easy / easy / medium / hard / very-hard 之一")
 
     was_split = bool(meta.get("split"))
-    before = (tuple(meta.get("tags") or []), meta.get("difficulty"))
+    before = (
+        tuple(meta.get("tags") or []),
+        meta.get("difficulty"),
+        store.effective_primary(meta.get("tags") or [], meta.get("primary_tag")),
+    )
     # 关闭切分时，原挂在各小问上的确认也要一并作废
     old_sub_qids = [str(m.get("id")) for m in paper.sub_metas(qpath)] if was_split else []
     if was_split:
         store.cleanup_subs(paper, qpath)  # 关闭切分：先清子文件与派生图
     try:
-        result = store.write_annotation(qpath, payload.tags, payload.difficulty)
+        result = store.write_annotation(qpath, payload.tags, payload.difficulty, payload.primary_tag)
     except ValueError as e:
         raise HTTPException(500, str(e))
     if was_split:
@@ -388,9 +446,9 @@ def _save_whole(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         result["split"] = False  # 显式回传，前端列表立即摘掉切分角标
         result["sub_labels"] = []
 
-    # 标签/难度动过 → 原来的「核对完成」勾选自动作废（docs/12 §③）
+    # 标签/难度/主标签动过 → 原来的「核对完成」勾选自动作废（docs/12 §③）
     qid = str(meta.get("id"))
-    after = (tuple(result.get("tags") or []), result.get("difficulty"))
+    after = (tuple(result.get("tags") or []), result.get("difficulty"), result.get("primary_tag"))
     result["confirm_cleared"] = _invalidate_confirm(
         [qid, *old_sub_qids], {qid} if before == after else set()
     )

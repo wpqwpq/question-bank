@@ -91,6 +91,10 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "primary_tag": {
+      "type": "string",
+      "description": "主标签：完整数据契约见 plans/主标签实施方案.md §2。唯一真源规则——tags 为空时不写此键；tags 恰 1 项时后端自动写成该 id（下游零推导）；tags ≥2 时必须显式提供且必须 ∈ tags，否则保存被 422 拒收。读侧双保险回退：primary_tag ∈ tags 时取它，否则 len(tags)==1 时取 tags[0]，否则为 null（下游/预览/AI 报告统一用这条回退，防手改与悬空引用）。"
+    },
     "language": {
       "type": "string",
       "default": "en"

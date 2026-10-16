@@ -26,11 +26,15 @@ export interface QuestionSummary {
   total_marks: number | null
   question_type?: string
   tags: string[]
+  /** 已解析的主标签（plans/主标签实施方案 §2）；切分题在主题层是 null，逐问看子题文件 */
+  primary_tag?: string | null
   difficulty: string | null
   /** 全部单元都有 ≥1 标签（切分题按小问聚合）——预览列表判据，docs/13 */
   tags_ready?: boolean
   /** 全部单元都有难度——缺则预览里显示为「待补难度（灰）」 */
   difficulty_ready?: boolean
+  /** 全部单元都能解析出主标签（≥2 标签却无主 → false）——确认门禁之一 */
+  primary_ready?: boolean
   split?: boolean
   sub_labels?: string[]
   /** 审核确认进度（仅预览模式展示） */
@@ -58,6 +62,8 @@ export interface SubInfo {
   qid: string
   label: string
   tags: string[]
+  /** 已解析的主标签；多标签却无主时为 null（plans/主标签实施方案 §2） */
+  primary_tag?: string | null
   difficulty: string | null
   status: Status
   image_url?: string | null
@@ -69,23 +75,33 @@ export interface SubDraft {
   label: string
   tags: string[]
   difficulty: string | null
+  /** 主标签草稿（整题同款规则；1 个标签时即该标签，≥2 必填） */
+  primaryTag: string | null
 }
 
 export interface SaveBody {
   tags?: string[]
   difficulty?: string | null
-  subs?: { label: string; tags: string[]; difficulty: string | null }[]
+  primary_tag?: string | null
+  subs?: {
+    label: string
+    tags: string[]
+    difficulty: string | null
+    primary_tag?: string | null
+  }[]
 }
 
 export interface SaveResult {
   qid: string
   tags: string[]
+  /** 后端归一后的主标签（单标签也会显式落盘） */
+  primary_tag?: string | null
   difficulty: string | null
   status: Status
   split?: boolean
   sub_labels?: string[]
   warnings?: string[]
-  /** 本次保存因「标签/难度有改动」而被自动撤销的确认单元（docs/12 §③） */
+  /** 本次保存因「标签/难度/主标签有改动」而被自动撤销的确认单元（docs/12 §③） */
   confirm_cleared?: string[]
 }
 
@@ -107,6 +123,10 @@ export interface QuestionDetail {
   body: string
   image_url: string | null
   tags: string[]
+  /** 已解析的主标签（读侧双保险已由后端做过回退） */
+  primary_tag: string | null
+  /** 主标签是否就绪（切分题按小问聚合）：预览模式确认门禁用 */
+  primary_ready?: boolean
   difficulty: string | null
   available_tags: TagDef[]
   available_groups: GroupDef[]
@@ -237,6 +257,28 @@ export const DIFFICULTY_LABELS: ReadonlyArray<readonly [string, string, string]>
   ['very-hard', '极难', 'bg-red-100 text-red-800 border-red-400 hover:bg-red-200'],
 ]
 
+/**
+ * 主标签规则（plans/主标签实施方案 §2.1）——前端唯一判据，与后端 `_validate_primary` 同口径：
+ *   0 个标签 → 不就绪（连标签都没有，谈不上主标签）；
+ *   1 个标签 → 天然就绪（它就是主标签，落盘由后端补全）；
+ *   ≥2 个    → 必须显式指定一个且必须 ∈ tags。
+ */
+export function primaryOk(tags: string[], primary: string | null | undefined): boolean {
+  if (tags.length === 0) return false
+  if (tags.length === 1) return true
+  return !!primary && tags.includes(primary)
+}
+
+/** 读侧回退：解析某单元「实际生效」的主标签（手改/悬空引用时宁可返回 null，不返回假值） */
+export function resolvePrimary(
+  tags: string[],
+  primary: string | null | undefined,
+): string | null {
+  if (tags.length === 0) return null
+  if (primary && tags.includes(primary)) return primary
+  return tags.length === 1 ? tags[0] : null
+}
+
 export function statusColor(s: Status, current: boolean): string {
   const base =
     'inline-flex items-center justify-center rounded-md border text-sm font-medium transition-colors'
@@ -252,17 +294,17 @@ export function statusColor(s: Status, current: boolean): string {
 }
 
 /**
- * 预览模式下题号格配色（docs/11 §1 + docs/13 §3.2）。优先级：
- *   已确认（all） > 待补难度（needsDifficulty）> 部分确认（partial）> 待确认。
- * 「待补难度」= 该题有标签但（至少一个单元）没难度 → 灰，且**不能勾确认框**。
+ * 预览模式下题号格配色（docs/11 §1 + docs/13 §3.2 + plans/主标签实施方案 §2）。优先级：
+ *   已确认（all） > 待补齐（needsPending）> 部分确认（partial）> 待确认。
+ * 「待补齐」= 该题有标签但（至少一个单元）缺难度或缺主标签 → 灰，且**不能勾确认框**。
  * 注意：仍守「浅底 + 深字、不用实心色块」的配色规范。
  */
-export function verifyColor(s: VerifyState, current: boolean, needsDifficulty = false): string {
+export function verifyColor(s: VerifyState, current: boolean, needsPending = false): string {
   const base =
     'inline-flex items-center justify-center rounded-md border text-sm font-medium transition-colors'
   const ring = current ? ' ring-2 ring-blue-500 ring-offset-1' : ''
   if (s === 'all') return `${base} bg-green-300 text-green-950 border-green-700 font-semibold${ring}`
-  if (needsDifficulty) return `${base} bg-gray-100 text-gray-500 border-gray-300${ring}`
+  if (needsPending) return `${base} bg-gray-100 text-gray-500 border-gray-300${ring}`
   if (s === 'partial') return `${base} bg-amber-100 text-amber-800 border-amber-400${ring}`
   return `${base} bg-green-100 text-green-800 border-green-300${ring}`
 }

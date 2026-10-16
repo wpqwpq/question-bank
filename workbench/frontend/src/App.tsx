@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Paper, QuestionDetail, QuestionSummary, Status, SubDraft, VerifyState } from './api'
-import { api, DIFFICULTY_LABELS } from './api'
+import { api, DIFFICULTY_LABELS, primaryOk, resolvePrimary } from './api'
 import Sidebar from './components/Sidebar'
 import TagAdmin from './components/TagAdmin'
 import TagPanel from './components/TagPanel'
@@ -47,6 +47,23 @@ function subState(s: SubDraft): 'done' | 'partial' | 'none' {
   return 'none'
 }
 
+/**
+ * 主标签降级规则（plans/主标签实施方案 §4.1）——只由「勾掉某个标签」触发：
+ *   剩 0 个 → 置空；剩 1 个 → 自动接任；≥2 个且原主被删 → 置空等用户重选。
+ * 从 1 个加到 2 个时原主（即那唯一一个标签）自然留任，不必重新点。
+ */
+function nextPrimary(tags: string[], primary: string | null): string | null {
+  if (tags.length === 0) return null
+  if (tags.length === 1) return tags[0]
+  return primary && tags.includes(primary) ? primary : null
+}
+
+/** 勾选/取消一个标签 + 主标签随之降级（纯函数，供切分题各小问复用） */
+function withToggledTag(s: SubDraft, id: string): SubDraft {
+  const tags = s.tags.includes(id) ? s.tags.filter((t) => t !== id) : [...s.tags, id]
+  return { ...s, tags, primaryTag: nextPrimary(tags, s.primaryTag) }
+}
+
 export default function App() {
   const [papers, setPapers] = useState<Paper[]>([])
   const [board, setBoard] = useState('edexcel')
@@ -58,6 +75,8 @@ export default function App() {
   const [detail, setDetail] = useState<QuestionDetail | null>(null)
   const [draftTags, setDraftTags] = useState<string[]>([])
   const [draftDifficulty, setDraftDifficulty] = useState<string | null>(null)
+  /** 整题模式的主标签草稿（切分题逐问存在 draftSubs[].primaryTag 上） */
+  const [draftPrimary, setDraftPrimary] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<Toast>(null)
   const toastTimer = useRef<number | undefined>(undefined)
@@ -119,12 +138,14 @@ const pendingFocusRef = useRef<number | null>(null)
     [papers, board, qualification, subject],
   )
 
-  // 预览列表（docs/13）：齐备的题 + 「有标签但缺难度」的题（灰色，可在预览里就地补难度）。
-  // 「只有难度没有标签」的题不在列表中（tags_ready=false）。
+  // 预览列表（docs/13 + plans/主标签实施方案 §2）：齐备的题 + 「有标签但缺难度或缺主标签」的题
+  // （灰色，前两者可回到打标模式补齐）。「只有难度没有标签」的题不在列表中（tags_ready=false）。
   const previewQuestions = useMemo(
     () =>
       questions.filter(
-        (q) => q.status === 'done' || (q.tags_ready === true && q.difficulty_ready === false),
+        (q) =>
+          q.status === 'done' ||
+          (q.tags_ready === true && (q.difficulty_ready === false || q.primary_ready === false)),
       ),
     [questions],
   )
@@ -265,7 +286,14 @@ const pendingFocusRef = useRef<number | null>(null)
       setDraftSubs(
         labels.map((l) => {
           const ex = d.subs.find((s) => s.label === l)
-          return { label: l, tags: ex?.tags ?? [], difficulty: ex?.difficulty ?? null }
+          const tags = ex?.tags ?? []
+          return {
+            label: l,
+            tags,
+            difficulty: ex?.difficulty ?? null,
+            // 单标签的单元后端已显式落盘；这里再走一次读侧回退，防手改残留
+            primaryTag: resolvePrimary(tags, ex?.primary_tag),
+          }
         }),
       )
       // 从预览模式切回来时保留原来的小问选中（switchMode 存的）
@@ -274,10 +302,12 @@ const pendingFocusRef = useRef<number | null>(null)
       setFocusIdx(pf != null ? Math.min(pf, Math.max(0, labels.length - 1)) : 0)
       setDraftTags([])
       setDraftDifficulty(null)
+      setDraftPrimary(null)
     } else {
       setDraftSubs([])
       setDraftTags(d.tags)
       setDraftDifficulty(d.difficulty)
+      setDraftPrimary(resolvePrimary(d.tags, d.primary_tag))
     }
   }
 
@@ -287,15 +317,19 @@ const pendingFocusRef = useRef<number | null>(null)
       if (!detail) return
       if (on && detail.split_eligible) {
         setSplitMode(true)
-        setDraftSubs(detail.top_labels.map((l) => ({ label: l, tags: [], difficulty: null })))
+        setDraftSubs(
+          detail.top_labels.map((l) => ({ label: l, tags: [], difficulty: null, primaryTag: null })),
+        )
         setFocusIdx(0)
         setDraftTags([])
         setDraftDifficulty(null)
+        setDraftPrimary(null)
       } else {
         setSplitMode(false)
         setDraftSubs([])
         setDraftTags(detail.tags)
         setDraftDifficulty(detail.difficulty)
+        setDraftPrimary(resolvePrimary(detail.tags, detail.primary_tag))
       }
     },
     [detail],
@@ -318,25 +352,37 @@ const pendingFocusRef = useRef<number | null>(null)
   const focusSub = splitMode ? draftSubs[focusIdx] : undefined
   const currentTags = splitMode ? (focusSub?.tags ?? []) : draftTags
   const currentDifficulty = splitMode ? (focusSub?.difficulty ?? null) : draftDifficulty
+  const currentPrimary = splitMode ? (focusSub?.primaryTag ?? null) : draftPrimary
 
   const toggleTag = useCallback(
     (id: string) => {
       if (splitMode) {
         setDraftSubs((prev) =>
-          prev.map((s, i) =>
-            i === focusIdx
-              ? {
-                  ...s,
-                  tags: s.tags.includes(id) ? s.tags.filter((t) => t !== id) : [...s.tags, id],
-                }
-              : s,
-          ),
+          prev.map((s, i) => (i === focusIdx ? withToggledTag(s, id) : s)),
         )
       } else {
-        setDraftTags((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
+        const tags = draftTags.includes(id)
+          ? draftTags.filter((t) => t !== id)
+          : [...draftTags, id]
+        setDraftTags(tags)
+        setDraftPrimary((p) => nextPrimary(tags, p))
       }
     },
-    [splitMode, focusIdx],
+    [splitMode, focusIdx, draftTags],
+  )
+
+  /** 设主标签：只接受已选中的标签（≥2 个标签时 chip 右侧才出现入口） */
+  const setPrimaryTag = useCallback(
+    (id: string) => {
+      if (splitMode) {
+        setDraftSubs((prev) =>
+          prev.map((s, i) => (i === focusIdx && s.tags.includes(id) ? { ...s, primaryTag: id } : s)),
+        )
+      } else if (draftTags.includes(id)) {
+        setDraftPrimary(id)
+      }
+    },
+    [splitMode, focusIdx, draftTags],
   )
 
   const pickDifficulty = useCallback(
@@ -353,10 +399,27 @@ const pendingFocusRef = useRef<number | null>(null)
   // 切分题：每个小问至少 1 个标签即可保存；难度可留空（docs/13）
   const subsTagged = draftSubs.length > 0 && draftSubs.every((s) => s.tags.length > 0)
   const subDoneCount = draftSubs.filter((s) => subState(s) === 'done').length
-  const canSave = !saving && !!detail && (splitMode ? subsTagged : draftTags.length > 0)
+  // ≥2 个标签必须有主标签（plans/主标签实施方案 §4.1）——整题与切分题各自校验
+  const primaryAllOk = splitMode
+    ? draftSubs.length > 0 && draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
+    : primaryOk(draftTags, draftPrimary)
+  const canSave =
+    !saving &&
+    !!detail &&
+    (splitMode ? subsTagged && primaryAllOk : draftTags.length > 0 && primaryAllOk)
+  /** 「保存，下一问」只放行「焦点小问没问题」的情况，避免落到后端 422 */
+  const focusSubOk =
+    !splitMode || !focusSub || focusSub.tags.length === 0 || primaryOk(focusSub.tags, focusSub.primaryTag)
+  /** 底部提示用：确实存在「≥2 标签却没指定主标签」的单元 */
+  const missingPrimary = splitMode
+    ? draftSubs.some((s) => s.tags.length >= 2 && !primaryOk(s.tags, s.primaryTag))
+    : draftTags.length >= 2 && !primaryOk(draftTags, draftPrimary)
 
   // split 模式：焦点在最后一问时按钮才是「保存」，否则是「下一问」导航
   const onLastSub = !splitMode || focusIdx >= draftSubs.length - 1
+  /** 「保存，下一问」是否可点：焦点小问要么还没打标、要么主标签齐备 */
+  const canAdvance = splitMode && !onLastSub && !saving && focusSubOk
+  const saveEnabled = splitMode && !onLastSub ? canAdvance : canSave
 
   const save = useCallback(async () => {
     if (!detail || saving) return
@@ -371,15 +434,19 @@ const pendingFocusRef = useRef<number | null>(null)
               label: s.label,
               tags: s.tags,
               difficulty: s.difficulty, // 可 null（docs/13）
+              primary_tag: s.primaryTag, // 单标签可传 null，后端补全（§2.1）
             })),
           }
-        : { tags: draftTags, difficulty: draftDifficulty }
+        : { tags: draftTags, difficulty: draftDifficulty, primary_tag: draftPrimary }
       const result = await api.saveAnnotation(detail.qid, body)
       // 「单元是否齐备」也一并更新，否则切到预览模式时新标好的题可能不进列表（docs/13）
       const tagsReady = splitMode ? draftSubs.every((s) => s.tags.length > 0) : draftTags.length > 0
       const diffReady = splitMode
         ? draftSubs.every((s) => s.difficulty !== null)
         : draftDifficulty !== null
+      const priReady = splitMode
+        ? draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
+        : primaryOk(draftTags, draftPrimary)
       setQuestions((prev) =>
         prev.map((q) =>
           q.qid === result.qid
@@ -387,9 +454,11 @@ const pendingFocusRef = useRef<number | null>(null)
                 ...q,
                 status: result.status,
                 tags: result.tags,
+                primary_tag: result.primary_tag ?? null,
                 difficulty: result.difficulty,
                 tags_ready: tagsReady,
                 difficulty_ready: diffReady,
+                primary_ready: priReady,
                 split: result.split ?? q.split ?? false,
                 sub_labels: result.sub_labels ?? q.sub_labels,
                 // 改动使原确认失效 → 左侧题号立刻退回「未确认」
@@ -422,7 +491,7 @@ const pendingFocusRef = useRef<number | null>(null)
     } finally {
       setSaving(false)
     }
-  }, [detail, splitMode, subsTagged, draftSubs, draftDifficulty, draftTags, saving, paperId, questions, currentIndex, showToast])
+  }, [detail, splitMode, subsTagged, primaryAllOk, draftSubs, draftDifficulty, draftPrimary, draftTags, saving, paperId, questions, currentIndex, showToast])
 
   /**
    * 「下一问」时的增量保存：把**已有标签**的小问先落库，避免中途切题/中断丢失。
@@ -431,25 +500,35 @@ const pendingFocusRef = useRef<number | null>(null)
    */
   const savePartial = useCallback(async () => {
     if (!detail) return
-    const filled = draftSubs.filter((s) => s.tags.length > 0)
+    // 只提交「有标签且主标签已定」的小问：多标签却没选主的本小问会 422，
+    // 静默跳过（与没打标的同级），等用户点右侧圆点定好主标签再随下一次落库。
+    const filled = draftSubs.filter((s) => s.tags.length > 0 && primaryOk(s.tags, s.primaryTag))
     if (filled.length === 0) return
     try {
       const res = await api.saveAnnotation(detail.qid, {
-        subs: filled.map((s) => ({ label: s.label, tags: s.tags, difficulty: s.difficulty })),
+        subs: filled.map((s) => ({
+          label: s.label,
+          tags: s.tags,
+          difficulty: s.difficulty,
+          primary_tag: s.primaryTag,
+        })),
       })
       // 只刷新列表状态；detail 的 effect 现在只依赖 qid，不会因此重拉详情、重置草稿
       const tagsReady = draftSubs.every((s) => s.tags.length > 0)
       const diffReady = draftSubs.every((s) => s.difficulty !== null)
+      const priReady = draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
       setQuestions((prev) =>
         prev.map((q) =>
           q.qid === res.qid
             ? {
                 ...q,
                 status: res.status,
+                primary_tag: res.primary_tag ?? null,
                 split: res.split ?? q.split ?? false,
                 sub_labels: res.sub_labels ?? q.sub_labels,
                 tags_ready: tagsReady,
                 difficulty_ready: diffReady,
+                primary_ready: priReady,
                 // 增量保存若改动了某个小问，它的确认也随之失效
                 ...(res.confirm_cleared?.length
                   ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
@@ -575,6 +654,11 @@ const pendingFocusRef = useRef<number | null>(null)
       const unit = split ? d.subs[idx].qid : d.qid
       const savedDiff = split ? d.subs[idx].difficulty : d.difficulty
       if (on && !savedDiff && !previewPick) return // 没难度不能确认（勾选框已禁用，这里兜底）
+      const unitTags = split ? d.subs[idx].tags : d.tags
+      const unitPrimary = split
+        ? resolvePrimary(d.subs[idx].tags, d.subs[idx].primary_tag)
+        : resolvePrimary(d.tags, d.primary_tag)
+      if (on && !primaryOk(unitTags, unitPrimary)) return // 多标签没主标签也不能确认（同上兜底）
 
       setConfirming(true)
       try {
@@ -594,6 +678,9 @@ const pendingFocusRef = useRef<number | null>(null)
         // 「单元是否齐备」——补完难度后题目可能从 partial 变 done（docs/13）
         const tagsReady = split ? nextSubs.every((s) => s.tags.length > 0) : d.tags.length > 0
         const diffReady = split ? nextSubs.every((s) => !!s.difficulty) : !!difficulty
+        const priReady = split
+          ? nextSubs.every((s) => primaryOk(s.tags, s.primary_tag))
+          : primaryOk(d.tags, d.primary_tag)
         const status: Status = tagsReady ? 'done' : diffReady ? 'partial' : 'none'
         const prevStatus = previewQuestions.find((q) => q.qid === d.qid)?.status ?? 'none'
 
@@ -615,6 +702,7 @@ const pendingFocusRef = useRef<number | null>(null)
                   status,
                   tags_ready: tagsReady,
                   difficulty_ready: diffReady,
+                  primary_ready: priReady,
                   difficulty: split ? q.difficulty : (difficulty ?? null),
                   verify_state: state,
                   confirmed_units: done,
@@ -961,6 +1049,8 @@ const pendingFocusRef = useRef<number | null>(null)
                   unit={detail.unit}
                   selected={currentTags}
                   onToggle={toggleTag}
+                  primaryTag={currentPrimary}
+                  onSetPrimary={setPrimaryTag}
                 />
               )}
               <div className="shrink-0 border-t border-gray-100 pt-3">
@@ -990,7 +1080,8 @@ const pendingFocusRef = useRef<number | null>(null)
               <div className="shrink-0 space-y-2">
                 <button
                   type="button"
-                  disabled={splitMode && !onLastSub ? saving : !canSave}
+                  data-save="1"
+                  disabled={!saveEnabled}
                   onClick={() => {
                     if (splitMode && !onLastSub) {
                       void savePartial() // 先把已选标签落库，再推进焦点
@@ -998,7 +1089,7 @@ const pendingFocusRef = useRef<number | null>(null)
                     } else void save()
                   }}
                   className={`w-full rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-100 select-none ${
-                    (splitMode && !onLastSub) || canSave
+                    saveEnabled
                       ? 'bg-blue-600 shadow-sm hover:bg-blue-700 active:scale-[0.97] active:bg-blue-800 active:shadow-none'
                       : 'cursor-not-allowed bg-gray-300'
                   }`}
@@ -1012,7 +1103,13 @@ const pendingFocusRef = useRef<number | null>(null)
                       : '确定并保存'}
                 </button>
                 <p className="text-center text-[11px] text-gray-400">
-                  快捷键：←/→ 翻题 · Enter 保存
+                  {missingPrimary ? (
+                    <span className="font-medium text-amber-600">
+                      有题选了多个标签，请先点标签右侧圆点指定主标签
+                    </span>
+                  ) : (
+                    '快捷键：←/→ 翻题 · Enter 保存'
+                  )}
                 </p>
               </div>
             </aside>

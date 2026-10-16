@@ -87,6 +87,45 @@ def compute_status(meta: dict[str, Any], sub_metas: list[dict[str, Any]] | None 
 
 
 # ---------------------------------------------------------------------------
+# 主标签 primary_tag（plans/主标签实施方案.md §2）
+#   tags 为空 → 不写该键；tags 恰 1 项 → 后端自动补成该 id；tags ≥2 → 必须显式且 ∈ tags。
+#   读侧统一走 effective_primary() 的双保险回退，防手改与悬空引用。
+# ---------------------------------------------------------------------------
+
+def effective_primary(tags: list[str] | None, primary: Any) -> str | None:
+    """读侧解析主标签（唯一的回退规则，所有消费方共用）。
+
+    `primary_tag ∈ tags` 时用它；否则 tags 恰好 1 项时用 tags[0]；其余（0 项、≥2 项且缺失
+    或指向已不在 tags 里的悬空 id）返回 None——下游据此判断「主标签未就绪」，而不是
+    拿到一个假的。
+    """
+    tags = tags or []
+    if not isinstance(tags, list) or not tags:
+        return None
+    if isinstance(primary, str) and primary in tags:
+        return primary
+    if len(tags) == 1:
+        return tags[0]
+    return None
+
+
+def normalize_primary(tags: list[str], primary: str | None) -> str | None:
+    """写侧归一（§2.1）。api 层已对「≥2 项却缺失/越界」返回 422，这里只做兜底：
+    非法值一律落成 None（不写该键），绝不把假主标签写进题库。"""
+    if not tags:
+        return None
+    if len(tags) == 1:
+        return tags[0]
+    return primary if isinstance(primary, str) and primary in tags else None
+
+
+def primary_ready(tags: list[str] | None, primary: Any) -> bool:
+    """本单元的主标签是否就绪：有标签且能解析出主标签（≥2 标签却无主 → False）。"""
+    tags = tags or []
+    return bool(tags) and effective_primary(tags, primary) is not None
+
+
+# ---------------------------------------------------------------------------
 # 索引层：进程内缓存，避免每次请求线性扫全库
 #
 #   find_question() 原实现从 data/ 头开始逐卷逐个读 + YAML 解析全部 qNN.md
@@ -239,15 +278,22 @@ class Paper:
             difficulty = None if is_split else (
                 meta.get("difficulty") if meta.get("difficulty") in _DONE_DIFFICULTIES else None
             )
-            # 「单元是否齐备」——预览列表判据（docs/13）：切分题按小问聚合
+            # 「单元是否齐备」——预览列表判据（docs/13 + plans/主标签实施方案 §2）：切分题按小问聚合
             if is_split:
                 tags_ready = bool(subs) and all((m.get("tags") or []) for m in subs)
                 difficulty_ready = bool(subs) and all(
                     m.get("difficulty") in _DONE_DIFFICULTIES for m in subs
                 )
+                # 切分题主文件不带 tags/主标签，逐问落在子题文件里
+                primary = None
+                primary_ok = bool(subs) and all(
+                    primary_ready(m.get("tags") or [], m.get("primary_tag")) for m in subs
+                )
             else:
                 tags_ready = bool(tags)
                 difficulty_ready = difficulty is not None
+                primary = effective_primary(tags, meta.get("primary_tag"))
+                primary_ok = primary_ready(tags, meta.get("primary_tag"))
             out.append(
                 {
                     "qid": meta["id"],
@@ -256,9 +302,11 @@ class Paper:
                     "total_marks": meta.get("total_marks"),
                     "question_type": meta.get("question_type"),
                     "tags": tags,
+                    "primary_tag": primary,
                     "difficulty": difficulty,
                     "tags_ready": tags_ready,
                     "difficulty_ready": difficulty_ready,
+                    "primary_ready": primary_ok,
                     "split": is_split,
                     "sub_labels": [str(m.get("sub_label")) for m in subs] or (
                         [str(x) for x in meta.get("subquestions")] if is_split else []
@@ -379,6 +427,10 @@ def _strip_annotation_lines(fm_lines: list[str]) -> list[str]:
             continue
         if re.match(r"^difficulty:[ \t]*", line):
             continue
+        if re.match(r"^primary_tag:[ \t]*", line):
+            # 主标签（plans/主标签实施方案 §2）：与 tags 同生共死——剥掉旧行，由
+            # _build_annotation_lines 按新 tags 重写，否则关切分/降级后会残留悬空主标签
+            continue
         if re.match(r"^split:[ \t]*", line):
             continue
         if re.match(r"^subquestions:[ \t]*", line):
@@ -387,10 +439,15 @@ def _strip_annotation_lines(fm_lines: list[str]) -> list[str]:
     return out
 
 
-def _build_annotation_lines(tags: list[str], difficulty: str | None) -> list[str]:
-    """难度可留空（docs/13）：为 None 时整行不写，而不是写 `difficulty: None`。"""
+def _build_annotation_lines(tags: list[str], difficulty: str | None,
+                            primary_tag: str | None = None) -> list[str]:
+    """难度可留空（docs/13）：为 None 时整行不写，而不是写 `difficulty: None`。
+    主标签（plans/主标签实施方案 §2.1）：None 时整键不写（只有 tags 为空才会出现）。
+    行序遵循全库约定：tags: 块 → primary_tag: → difficulty:。"""
     lines = ["tags:"]
     lines += [f"  - {t}" for t in tags]
+    if primary_tag is not None:
+        lines.append(f"primary_tag: {primary_tag}")
     if difficulty is not None:
         lines.append(f"difficulty: {difficulty}")
     return lines
@@ -402,7 +459,8 @@ def _schema_errors(meta: dict[str, Any]) -> set[str]:
     }
 
 
-def write_annotation(qpath: Path, tags: list[str], difficulty: str | None) -> dict[str, Any]:
+def write_annotation(qpath: Path, tags: list[str], difficulty: str | None,
+                     primary_tag: str | None = None) -> dict[str, Any]:
     text = qpath.read_text(encoding="utf-8")
     meta, m = parse_front_matter(text)
     if m is None:
@@ -410,7 +468,7 @@ def write_annotation(qpath: Path, tags: list[str], difficulty: str | None) -> di
 
     fm_lines = m.group(1).splitlines()
     fm_lines = _strip_annotation_lines(fm_lines)
-    fm_lines += _build_annotation_lines(tags, difficulty)
+    fm_lines += _build_annotation_lines(tags, difficulty, normalize_primary(tags, primary_tag))
 
     new_text = "---\n" + "\n".join(fm_lines) + "\n---\n" + text[m.end():]
 
@@ -433,9 +491,11 @@ def write_annotation(qpath: Path, tags: list[str], difficulty: str | None) -> di
         raise
 
     _drop_meta(qpath)
+    new_tags = new_meta.get("tags") or []
     return {
         "qid": new_meta["id"],
-        "tags": new_meta.get("tags") or [],
+        "tags": new_tags,
+        "primary_tag": effective_primary(new_tags, new_meta.get("primary_tag")),
         "difficulty": new_meta.get("difficulty"),
         "status": compute_status(new_meta),
     }
@@ -469,9 +529,11 @@ def write_difficulty(qpath: Path, difficulty: str | None) -> dict[str, Any]:
 
     _atomic_write(qpath, new_text)
     _drop_meta(qpath)
+    new_tags = new_meta.get("tags") or []
     return {
         "qid": new_meta["id"],
-        "tags": new_meta.get("tags") or [],
+        "tags": new_tags,
+        "primary_tag": effective_primary(new_tags, new_meta.get("primary_tag")),
         "difficulty": new_meta.get("difficulty"),
         "status": compute_status(new_meta),
     }
@@ -552,6 +614,11 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             r = img_map[s["label"]]
             sub_meta = build_sub_meta(meta, s["label"], r["image"], r["layout"])
             sub_meta["tags"] = s["tags"]
+            # 主标签（plans/主标签实施方案 §2.1）：与 tags 一起落进子题文件；
+            # None（只可能出现在 tags 为空时）整键不写
+            pri = normalize_primary(s["tags"], s.get("primary_tag"))
+            if pri is not None:
+                sub_meta["primary_tag"] = pri
             if s.get("difficulty") is not None:  # 难度可留空（docs/13）
                 sub_meta["difficulty"] = s["difficulty"]
             # schema 差分校验：子题字段继承自主文件，主文件既有的历史违规不该由子题背责
@@ -599,6 +666,7 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
                 "qid": sm.get("id"),
                 "label": sm.get("sub_label"),
                 "tags": sm.get("tags") or [],
+                "primary_tag": effective_primary(sm.get("tags") or [], sm.get("primary_tag")),
                 "difficulty": sm.get("difficulty"),
                 "status": compute_status(sm),
             })
@@ -609,6 +677,7 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
     return {
         "qid": meta["id"],
         "tags": [],
+        "primary_tag": None,  # 切分题主文件不带 tags/主标签，逐问落在子题文件里
         "difficulty": None,
         "split": True,
         "sub_labels": [i["label"] for i in sub_infos],

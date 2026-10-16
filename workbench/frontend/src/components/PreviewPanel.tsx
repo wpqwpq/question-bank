@@ -1,5 +1,5 @@
 import type { QuestionDetail } from '../api'
-import { DIFFICULTY_LABELS } from '../api'
+import { DIFFICULTY_LABELS, primaryOk, resolvePrimary } from '../api'
 
 const DIFF: Record<string, { label: string; cls: string }> = Object.fromEntries(
   DIFFICULTY_LABELS.map(([v, label, cls]) => [v, { label, cls }]),
@@ -41,6 +41,13 @@ export default function PreviewPanel({
   const savedDifficulty = sub ? sub.difficulty : detail.difficulty
   const difficulty = pick ?? savedDifficulty
   const hasDifficulty = !!difficulty
+  // 主标签（plans/主标签实施方案 §2）：预览模式**只读**展示，修改入口在打标模式
+  const primaryTag = sub
+    ? resolvePrimary(sub.tags, sub.primary_tag)
+    : resolvePrimary(detail.tags, detail.primary_tag)
+  const primaryReady = primaryOk(tags, primaryTag)
+  /** 当前确认单元是否齐备：难度 + 主标签（缺一不可勾确认，与后端 put_confirm 双保险） */
+  const ready = hasDifficulty && primaryReady
   const tagById = new Map(detail.available_tags.map((t) => [t.id, t]))
 
   // 当前确认单元的状态：切分题看当前小问，非切分题看整题
@@ -64,7 +71,8 @@ export default function PreviewPanel({
       className="flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3"
     >
       <div className="shrink-0 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-2 text-xs text-gray-500">
-        标签请在打标模式修改；<span className="text-gray-700">难度可在此直接补选／修改</span>，确认即写回题库
+        标签（含主标签）请在打标模式修改；
+        <span className="text-gray-700">难度可在此直接补选／修改</span>，确认即写回题库
       </div>
 
       {/* 小问平铺按钮（仅切分题）：只显示标签字母，≤6 问也能一行铺开；✓ = 该小问已确认 */}
@@ -148,15 +156,28 @@ export default function PreviewPanel({
           )}
           {tags.map((id) => {
             const t = tagById.get(id)
+            const isPrimary = id === primaryTag
             return (
               <div
                 key={id}
-                title={t ? `${t.zh} · ${t.en}` : id}
-                className="flex w-full items-center gap-2 rounded-md border border-blue-300 bg-blue-50 px-2.5 py-1.5 text-left text-sm text-blue-800"
+                data-tag-row={id}
+                data-primary={isPrimary ? '1' : undefined}
+                title={t ? `${t.zh} · ${t.en}${isPrimary ? '（主标签）' : ''}` : id}
+                className={`flex w-full items-center gap-2 rounded-md border border-l-4 bg-blue-50 px-2.5 py-1.5 text-left text-sm text-blue-800 ${
+                  isPrimary ? 'border-blue-300 border-l-blue-600' : 'border-blue-300'
+                }`}
               >
                 <span className="w-3 shrink-0 text-center">✓</span>
                 <span className="shrink-0">{t?.zh ?? id}</span>
                 <span className="truncate text-blue-600">{t?.en ?? ''}</span>
+                {isPrimary && (
+                  <span
+                    data-primary-badge="1"
+                    className="ml-auto shrink-0 rounded bg-blue-200 px-1.5 py-0.5 text-[10px] font-medium text-blue-900"
+                  >
+                    主
+                  </span>
+                )}
               </div>
             )
           })}
@@ -168,17 +189,18 @@ export default function PreviewPanel({
           没有难度的单元先选难度才能勾（勾选时把难度一起写回题库）。 */}
       <div
         data-confirm-box="1"
+        data-ready={ready ? '1' : '0'}
         className={`shrink-0 rounded-lg border p-2.5 ${
           unitVerified
             ? 'border-green-300 bg-green-50'
-            : hasDifficulty
+            : ready
               ? 'border-gray-200 bg-gray-50'
               : 'border-amber-300 bg-amber-50'
         }`}
       >
         <label
           className={`flex select-none items-start justify-between gap-2 ${
-            hasDifficulty ? 'cursor-pointer' : 'cursor-not-allowed'
+            ready ? 'cursor-pointer' : 'cursor-not-allowed'
           }`}
         >
           <span className="flex items-start gap-2">
@@ -186,7 +208,7 @@ export default function PreviewPanel({
               type="checkbox"
               data-confirm-checkbox="1"
               checked={unitVerified}
-              disabled={confirming || !hasDifficulty}
+              disabled={confirming || !ready}
               onChange={(e) => onConfirm(e.target.checked)}
               className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-green-600 disabled:cursor-not-allowed disabled:opacity-50"
             />
@@ -200,22 +222,26 @@ export default function PreviewPanel({
         </label>
         <p
           className={`mt-1 pl-6 text-[11px] leading-4 ${
-            !hasDifficulty && !unitVerified ? 'text-amber-700' : 'text-gray-400'
+            !ready && !unitVerified ? 'text-amber-700' : 'text-gray-400'
           }`}
         >
           {confirming
             ? '提交中…'
-            : !hasDifficulty
-              ? '先选中难度，才能勾选确认'
-              : unitVerified
-                ? '已确认 · 取消勾选可撤销（不会跳转）'
-                : pick
-                  ? split
-                    ? '确认后写回该小问难度，并自动切到下一个未确认的小问'
-                    : '确认后写回本题难度，并自动跳到下一题'
-                  : split
-                    ? '勾选后自动切到下一个未确认的小问'
-                    : '勾选后自动跳到下一题'}
+            : !hasDifficulty && !primaryReady
+              ? '先选中难度；主标签需回打标模式指定，两项齐了才能勾选确认'
+              : !hasDifficulty
+                ? '先选中难度，才能勾选确认'
+                : !primaryReady
+                ? '本题有多个标签但未指定主标签，请回打标模式指定后再确认'
+                : unitVerified
+                  ? '已确认 · 取消勾选可撤销（不会跳转）'
+                  : pick
+                    ? split
+                      ? '确认后写回该小问难度，并自动切到下一个未确认的小问'
+                      : '确认后写回本题难度，并自动跳到下一题'
+                    : split
+                      ? '勾选后自动切到下一个未确认的小问'
+                      : '勾选后自动跳到下一题'}
         </p>
       </div>
     </aside>
