@@ -116,10 +116,20 @@ export default function App() {
     toastTimer.current = window.setTimeout(() => setToast(null), 3000)
   }, [])
 
+  // 切换考试局/资格/学科 → 当前卷必不属于新维度，立即关闭
+  // （清 paperId，由下方切卷 effect 级联清空题目/详情/预览状态）
+  useEffect(() => {
+    setPaperId('')
+  }, [board, qualification, subject])
+
   // 切卷 → 拉题目列表，回到第 1 题
   useEffect(() => {
     if (!paperId) {
       setQuestions([])
+      setDetail(null)
+      setCurrentIndex(0)
+      setPreviewIndex(0)
+      setPreviewDetail(null)
       return
     }
     setQuestions([])
