@@ -23,8 +23,10 @@ TAXONOMY_DIR = Path(__file__).resolve().parents[2] / "data" / "taxonomy"
 # 跨单元可选标签：(考试局, 卷单元) → 可选单元集合。
 # AQA Unit 5「Physics in practice」的 Section B 是任意单元知识的情境综合题，
 # 故 U5 卷放开 U1..U5 的标签；其余卷（含 Edexcel 的 U5）一律只可选自身单元。
+# 列表顺序 = 右栏显示顺序：U5 自身知识点置顶（Section A 直接对应），
+# U1–U4 依次排在其后（Section B 综合题按需引用）。
 _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
-    ("aqa", "U5"): ["U1", "U2", "U3", "U4", "U5"],
+    ("aqa", "U5"): ["U5", "U1", "U2", "U3", "U4"],
 }
 
 _cache: dict[tuple[str, str, str], dict] = {}
@@ -89,7 +91,8 @@ def tags_for_units(board: str, qualification: str, subject: str, unit: str) -> l
 
 
 def groups_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
-    """本卷可选的一级组。跨单元时组中文名加「U<x> 」前缀，区分同名组。
+    """本卷可选的一级组。跨单元时组中文名加「U<x> 」前缀，区分同名组，并附 unit
+    字段标明组所属单元（前端据此在自身单元与其他单元之间插分隔）。
     单单元时原样返回（前端分组头不变）。"""
     units = selectable_units(board, qualification, subject, unit)
     if len(units) <= 1:
@@ -97,7 +100,7 @@ def groups_for_units(board: str, qualification: str, subject: str, unit: str) ->
     out: list[dict] = []
     for u in units:
         for g in groups_for(board, qualification, subject, u):
-            out.append({**g, "zh": f"{u} {g['zh']}"})
+            out.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
     return out
 
 

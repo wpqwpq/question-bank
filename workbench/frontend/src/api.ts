@@ -37,6 +37,8 @@ export interface GroupDef {
   id: string
   zh: string
   en?: string
+  /** 跨单元卷（如 AQA U5）才有：该组所属单元，用于在自身单元与其他单元之间插分隔 */
+  unit?: string
 }
 
 export interface SubInfo {

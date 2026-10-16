@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import type { GroupDef, TagDef } from '../api'
 
 interface Props {
@@ -59,6 +59,19 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
 
   const zhOf = (id: string) => tags.find((t) => t.id === id)?.zh ?? id
 
+  // 跨单元卷（组带 unit 字段，且后端已把本卷单元排在首位）：
+  // 在第一个「非本卷单元」的组之前插一条分隔，明示下方为其他单元的知识点。
+  const cross = useMemo(() => {
+    if (groups.length < 2) return null
+    const others: string[] = []
+    for (const g of groups) {
+      if (g.unit && g.unit !== unit && !others.includes(g.unit)) others.push(g.unit)
+    }
+    return others.length ? { unit: others[0], label: others.join('、') } : null
+  }, [groups, unit])
+
+  const crossAt = cross ? sections.findIndex((s) => s.group?.unit === cross.unit) : -1
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -98,44 +111,53 @@ export default function TagPanel({ tags, groups, unit, selected, onToggle }: Pro
           )}
 
           <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-0.5">
-            {sections.map(({ group, tags: bucket }) => {
+            {sections.map(({ group, tags: bucket }, i) => {
               const selCount = bucket.filter((t) => selected.includes(t.id)).length
               const active = !searching && selCount > 0
               return (
-                <section key={group?.id ?? '_all'}>
-                  {group && (
-                    <div
-                      className={`mb-1.5 flex items-center gap-1.5 text-xs font-medium ${
-                        active ? 'text-blue-700' : 'text-gray-500'
-                      }`}
-                    >
-                      <span
-                        className={`h-3 w-0.5 rounded-full ${active ? 'bg-blue-600' : 'bg-gray-300'}`}
-                        aria-hidden
-                      />
-                      {group.zh}
-                      {!searching && selCount > 0 && (
-                        <span className="ml-auto text-[10px] font-normal text-blue-700">{selCount}</span>
-                      )}
+                <Fragment key={group?.id ?? '_all'}>
+                  {i === crossAt && cross && (
+                    <div className="flex items-center gap-2 border-t border-dashed border-gray-300 pt-2">
+                      <span className="text-[11px] text-gray-400">
+                        其他单元知识点（{cross.label}）
+                      </span>
                     </div>
                   )}
-                  <div className={GRID}>
-                    {bucket.map((t) => {
-                      const on = selected.includes(t.id)
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          title={t.zh}
-                          onClick={() => onToggle(t.id)}
-                          className={`${CHIP_BASE} ${on ? CHIP_ON : CHIP_OFF}`}
-                        >
-                          {t.zh}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </section>
+                  <section>
+                    {group && (
+                      <div
+                        className={`mb-1.5 flex items-center gap-1.5 text-xs font-medium ${
+                          active ? 'text-blue-700' : 'text-gray-500'
+                        }`}
+                      >
+                        <span
+                          className={`h-3 w-0.5 rounded-full ${active ? 'bg-blue-600' : 'bg-gray-300'}`}
+                          aria-hidden
+                        />
+                        {group.zh}
+                        {!searching && selCount > 0 && (
+                          <span className="ml-auto text-[10px] font-normal text-blue-700">{selCount}</span>
+                        )}
+                      </div>
+                    )}
+                    <div className={GRID}>
+                      {bucket.map((t) => {
+                        const on = selected.includes(t.id)
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            title={t.zh}
+                            onClick={() => onToggle(t.id)}
+                            className={`${CHIP_BASE} ${on ? CHIP_ON : CHIP_OFF}`}
+                          >
+                            {t.zh}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </section>
+                </Fragment>
               )
             })}
             {filtered.length === 0 && (
