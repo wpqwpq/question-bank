@@ -4,7 +4,8 @@
 
 ⚠️ 为什么单独一份而不是改 import_papers.py：后者整套规则是 Edexcel 命名
     （`que`/`试卷` + `<YYYY.M>` 考季目录 + WPH11 卷号 + Pearson 卷面元数据），
-    AQA 是扁平命名 `qp-<YYYYMM>-physics-u<N>.pdf`、考季代码 01/05/06、
+    AQA 是扁平命名 `qp-<YYYYMM>-physics-u<N>.pdf`（另有云盘整理名
+    `aqa-physics-<YYYY>-<jan|june>-u<N>-qp.pdf`，二者都认）、考季代码 01/05/06、
     卷号 PH01–PH05、卷面是 AQA 自己的措辞。两者的「收集规则」没有共享段，
     硬塞进同一份只会让两边互相牵制（与切割层不同，切割层共享的是算法）。
     故意**不动** import_papers.py。
@@ -14,7 +15,8 @@
     python scripts/import_aqa.py --source ... --apply
 
 规则:
-    · 收集 `qp-<YYYYMM>-physics-u<N>.pdf`（`ms-…` 评分标准一律排除）；
+    · 收集 `qp-<YYYYMM>-physics-u<N>.pdf`，以及云盘整理名
+      `aqa-physics-<YYYY>-<jan|june>-u<N>-qp.pdf`（`ms-…` / `-ms.pdf` 评分标准一律排除）；
     · 考季：月份 01 → jan，05/06 → june（AQA 5–6 月季站点用码不一致，统一记 june）；
     · 卷号：u1..u5 → PH01..PH05；
     · 目录：data/aqa/a-level/physics/<year>-<session>-<ph0N>/；
@@ -35,7 +37,13 @@ import pymupdf
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "data" / "aqa" / "a-level" / "physics"
 
+# 源文件名两种命名都认（同一批卷在不同渠道落成不同名，互不冲突）：
+#   ① 站点原名   `qp-<YYYYMM>-physics-u<N>.pdf`（学为贵 gximg / OSS 直链表）
+#   ② 云盘整理名 `aqa-physics-<YYYY>-<jan|june>-u<N>-qp.pdf`（人工归档用，ms 件
+#      同构但后缀 -ms，不被 `-qp\.pdf$` 命中 → 自动排除）
 QP_RE = re.compile(r"^qp-(\d{6})-physics-u(\d)\.pdf$", re.I)
+QP_RE_ALT = re.compile(r"^aqa-physics-(\d{4})-(jan|june)-u(\d)-qp\.pdf$", re.I)
+NAME_MONTH = {"jan": "01", "june": "06"}   # 整理名里的月份词 → 站点月份码
 UNIT_CODE = {1: "ph01", 2: "ph02", 3: "ph03", 4: "ph04", 5: "ph05"}
 MONTH_TOK = {"01": "jan", "05": "june", "06": "june"}
 
@@ -46,12 +54,23 @@ DATE_RE = re.compile(
     r"(\d{1,2})\s+(" + "|".join(MONTHS) + r")\s+(\d{4})")
 
 
+def parse_qp(name: str):
+    """文件名 → (yyyymm, unit) 或 None。两种命名都认（见 QP_RE / QP_RE_ALT）。"""
+    m = QP_RE.match(name)
+    if m:
+        return m.group(1), int(m.group(2))
+    m = QP_RE_ALT.match(name)
+    if m:
+        return f"{m.group(1)}{NAME_MONTH[m.group(2).lower()]}", int(m.group(3))
+    return None
+
+
 def collect(src: Path):
     """收集 qp 卷，返回 [(relpath, Path)]。"""
     found = {}
     for root, _dirs, files in os.walk(src):
         for f in files:
-            if not QP_RE.match(f):
+            if parse_qp(f) is None:
                 continue
             p = Path(root) / f
             found[p.relative_to(src).as_posix()] = p
@@ -88,9 +107,9 @@ def extract_meta(path: Path):
     if not exam_date:
         # 少数卷（2021–2022 疫情季）封面不印考试日期 → 退回文件名里的年月，
         # 只精确到月，不臆造具体日（与 import_papers.py 同一策略）。
-        m = QP_RE.match(path.name)
-        if m:
-            exam_date = f"{m.group(1)[:4]}-{m.group(1)[4:]}"
+        parsed = parse_qp(path.name)
+        if parsed:
+            exam_date = f"{parsed[0][:4]}-{parsed[0][4:]}"
 
     exam_time = ""
     m = re.search(r"Time allowed:\s*([^\n]+)", flat)
@@ -112,8 +131,10 @@ def extract_meta(path: Path):
 
 
 def session_name(rel: str, meta: dict) -> str:
-    m = QP_RE.match(Path(rel).name)
-    yyyymm, unit = m.group(1), int(m.group(2))
+    parsed = parse_qp(Path(rel).name)
+    if not parsed:
+        raise ValueError(f"文件名不符命名规则: {rel}")
+    yyyymm, unit = parsed
     year, mm = yyyymm[:4], yyyymm[4:]
     if mm not in MONTH_TOK:
         raise ValueError(f"未知考季月份代码 {mm}（{rel}）")
