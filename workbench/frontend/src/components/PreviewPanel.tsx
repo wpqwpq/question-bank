@@ -111,6 +111,7 @@ export default function PreviewPanel({
           </span>
           <span className="text-xs font-normal text-gray-400">
             {pick ? '已改选 · 确认后写回' : hasDifficulty ? '单选 · 可改' : '单选 · 缺则需先补'}
+            {' · '}快捷键 1–5
           </span>
         </div>
         <div className="flex gap-1.5">

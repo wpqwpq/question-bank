@@ -75,12 +75,13 @@ def compute_status(meta: dict[str, Any], sub_metas: list[dict[str, Any]] | None 
             return "partial"
         return "none"
     tags = meta.get("tags") or []
-    diff = meta.get("difficulty")
-    has_tags = isinstance(tags, list) and len(tags) > 0
-    has_diff = diff in _DONE_DIFFICULTIES
-    if has_tags and has_diff:
+    # 2026-10-16：难度不再是「完成」的必要条件——AI 预打标只标知识点、难度留空，
+    # 若仍要求难度，整库打完标签也会全部算未完成（卷进度、题号一直不计数）。
+    # 「难度是否齐备」改由 Paper.questions() 的 difficulty_ready 单独跟踪
+    # （预览模式的「待补难度（灰）」用它判），与本函数的完成态互不干扰。
+    if isinstance(tags, list) and len(tags) > 0:
         return "done"
-    if has_tags or has_diff:
+    if meta.get("difficulty") in _DONE_DIFFICULTIES:
         return "partial"
     return "none"
 
@@ -553,8 +554,11 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             sub_meta["tags"] = s["tags"]
             if s.get("difficulty") is not None:  # 难度可留空（docs/13）
                 sub_meta["difficulty"] = s["difficulty"]
-            # 写后 schema 差分校验（子文件为新文件，直接全量校验）
-            errors = _schema_errors(sub_meta)
+            # schema 差分校验：子题字段继承自主文件，主文件既有的历史违规不该由子题背责
+            # （典型：CIE 全库用 qualification: alevel，而 schema enum 只有 a-level；
+            #  主文件靠 write_annotation 的差分校验逃过，子题是「新文件」若走全量校验就会
+            #  一律 500 → CIE 卷根本没法按小问拆分）。子题独有字段（sub_label/parent/…）仍照查。
+            errors = _schema_errors(sub_meta) - _schema_errors(meta)
             if errors:
                 raise ValueError(f"子题 {s['label']} schema 错误: " + "; ".join(sorted(errors)[:3]))
             spath = qpath.parent / f"{qpath.stem}-{s['label']}.md"
@@ -563,11 +567,15 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             _index_put(sub_meta["id"], paper.id, spath.name)
             written.append(spath)
 
-        # 主文件：剥掉 tags/difficulty/split/subquestions，追加 split 标记
+        # 主文件：剥掉 tags/difficulty/split/subquestions，追加 split 标记。
+        # subquestions 记「实际存在的子题文件」而非本次提交的——打标台「保存，下一问」
+        # 是增量保存（可能只提交一部分），若照提交写，前端角标会与 sub_metas 对不上。
+        paper.invalidate()  # 让 sub_files 看到刚写入的子文件
+        all_labels = [str(read_meta(p).get("sub_label") or "") for p in paper.sub_files(qpath)]
+        all_labels = [l for l in all_labels if l] or [s["label"] for s in subs]
         fm_lines = _strip_annotation_lines(m.group(1).splitlines())
-        labels = [s["label"] for s in subs]
         fm_lines.append("split: per_subquestion")
-        fm_lines.append("subquestions: [" + ", ".join(labels) + "]")
+        fm_lines.append("subquestions: [" + ", ".join(all_labels) + "]")
         new_text = "---\n" + "\n".join(fm_lines) + "\n---\n" + text[m.end():]
         new_meta, _ = parse_front_matter(new_text)
         new_errors = _schema_errors(new_meta) - _schema_errors(meta)
@@ -579,6 +587,7 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             if p.exists():
                 p.unlink()
                 _drop_meta(p)
+        paper.invalidate()  # 回滚后子题集合也变了
         raise
     _drop_meta(qpath)
     paper.invalidate()  # 子题文件集合变了
@@ -602,7 +611,7 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
         "tags": [],
         "difficulty": None,
         "split": True,
-        "sub_labels": [s["label"] for s in subs],
+        "sub_labels": [i["label"] for i in sub_infos],
         "subs": sub_infos,
         "status": compute_status(effective, paper.sub_metas(qpath)),
     }

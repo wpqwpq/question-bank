@@ -297,11 +297,11 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
     sub_labels = [s.label for s in payload.subs]
     if len(set(sub_labels)) != len(sub_labels):
         raise HTTPException(422, "小问标签存在重复")
-    if set(sub_labels) != set(top_labels):
-        raise HTTPException(
-            422,
-            f"小问标签必须完整覆盖 {top_labels}，当前提交: {sub_labels}",
-        )
+    # 允许只提交「本题小问的子集」：打标台的「下一问」是增量保存，逐个小问落库。
+    # 但绝不能提交不属于本题的小问——那会把内容写到别的题的文件名上。
+    illegal = [l for l in sub_labels if l not in top_labels]
+    if illegal:
+        raise HTTPException(422, f"小问标签不属于本题（本题为 {top_labels}）: {illegal}")
     for s in payload.subs:
         _validate_tags(paper, s.tags, f"小问 {s.label}")
         if s.difficulty is not None and s.difficulty not in VALID_DIFFICULTIES:

@@ -207,6 +207,12 @@
         "group": "p1p2g-waves"
       },
       {
+        "id": "p1p2-energy-in-waves",
+        "zh": "波的能量",
+        "en": "energy in waves",
+        "group": "p1p2g-waves"
+      },
+      {
         "id": "p1p2-transverse-and-longitudinal-waves",
         "zh": "横波与纵波",
         "en": "transverse and longitudinal waves",
@@ -246,12 +252,6 @@
         "id": "p1p2-diffraction",
         "zh": "衍射",
         "en": "diffraction",
-        "group": "p1p2g-waves"
-      },
-      {
-        "id": "p1p2-interference",
-        "zh": "干涉",
-        "en": "interference",
         "group": "p1p2g-waves"
       },
       {
@@ -331,6 +331,30 @@
         "zh": "α衰变和β衰变",
         "en": "alpha decay and beta decay",
         "group": "p1p2g-particle-physics"
+      },
+      {
+        "id": "p1p2-projectile",
+        "zh": "抛物运动",
+        "en": "projectile",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-measuring-instrument",
+        "zh": "测量仪器",
+        "en": "measuring instrument",
+        "group": "p1p2g-basic-knowledge"
+      },
+      {
+        "id": "p1p2-composition-and-resolution-of-velocities",
+        "zh": "速度的合成与分解",
+        "en": "composition and resolution of velocities",
+        "group": "p1p2g-kinematics"
+      },
+      {
+        "id": "p1p2-interference",
+        "zh": "干涉",
+        "en": "interference",
+        "group": "p1p2g-waves"
       }
     ]
   },
@@ -395,6 +419,11 @@
         "id": "p4g-astronomy",
         "zh": "天文学",
         "en": "astronomy"
+      },
+      {
+        "id": "p4g-previous-syllabus",
+        "zh": "旧考纲",
+        "en": "previous syllabus"
       }
     ],
     "tags": [
@@ -673,6 +702,24 @@
         "zh": "哈勃定律",
         "en": "Hubble's law",
         "group": "p4g-astronomy"
+      },
+      {
+        "id": "p4-atomic-structure",
+        "zh": "原子结构",
+        "en": "atomic structure",
+        "group": "p4g-nuclear-physics"
+      },
+      {
+        "id": "p4-digital-and-analog-signal",
+        "zh": "数字与模拟信号",
+        "en": "digital and analog signal",
+        "group": "p4g-previous-syllabus"
+      },
+      {
+        "id": "p4-operational-amplifier",
+        "zh": "运算放大器",
+        "en": "operational amplifier",
+        "group": "p4g-previous-syllabus"
       }
     ]
   }

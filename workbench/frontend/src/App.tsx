@@ -39,9 +39,11 @@ function loadRightWidth() {
  */
 const normQual = (q: string) => q.replace(/-/g, '').toLowerCase()
 
+// 难度不再是「完成」的必要条件（2026-10-16，与后端 compute_status 一致）：
+// 有知识点标签即完成；只有难度没标签算「缺其一」。难度是否齐备在预览模式单独补。
 function subState(s: SubDraft): 'done' | 'partial' | 'none' {
-  if (s.tags.length > 0 && s.difficulty !== null) return 'done'
-  if (s.tags.length > 0 || s.difficulty !== null) return 'partial'
+  if (s.tags.length > 0) return 'done'
+  if (s.difficulty !== null) return 'partial'
   return 'none'
 }
 
@@ -74,8 +76,10 @@ export default function App() {
   // 预览里就地补/改选的难度（未落库；勾选确认时随请求一起写回，docs/13）
   const [previewPick, setPreviewPick] = useState<string | null>(null)
 
-  // ── 小问切分状态 ──
-  const splitOnRef = useRef(false) // 开关意图（跨题保持）；供题目加载effect读取
+// ── 小问切分状态 ──
+const splitOnRef = useRef(false) // 开关意图（跨题保持）；供题目加载effect读取
+/** 预览→打标 切换时，等 detail 加载完要落到的小问序号（见 switchMode） */
+const pendingFocusRef = useRef<number | null>(null)
   const [splitMode, setSplitMode] = useState(false) // 本题最终生效
   const [draftSubs, setDraftSubs] = useState<SubDraft[]>([])
   const [focusIdx, setFocusIdx] = useState(0)
@@ -167,15 +171,17 @@ export default function App() {
   }, [paperId, showToast])
 
   // 拉当前题详情，重置草稿（切分状态按 开关意图 × 本题资格 推导）
+  // 依赖刻意只取「当前题的 qid」而不是整个 questions 数组：增量保存（savePartial）会更新
+  // questions 里的 status，若依赖数组就会重拉详情、把草稿与焦点重置，打断正在进行的打标。
+  const currentQid = questions[currentIndex]?.qid
   useEffect(() => {
-    const q = questions[currentIndex]
-    if (!q) {
+    if (!currentQid) {
       setDetail(null)
       return
     }
     let cancelled = false
     api
-      .question(q.qid)
+      .question(currentQid)
       .then((d) => {
         if (cancelled) return
         setDetail(d)
@@ -186,7 +192,7 @@ export default function App() {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions, currentIndex, showToast, refreshTick])
+  }, [currentQid, showToast, refreshTick])
 
   // 预览模式：拉当前预览题详情（只读）
   // 依赖刻意只用「当前题的 qid」而不是整个 previewQuestions 数组：
@@ -215,16 +221,31 @@ export default function App() {
     }
   }, [mode, previewQid, showToast])
 
+  // 切换模式时保持「当前题目 + 当前小问」不变。
+  // 两种模式的题号列表不同（预览只含有标签的题），所以用 qid 对齐索引；
+  // 当前题不在预览列表里（尚未打标）时，预览回落到第 1 题。
   const switchMode = useCallback(
     (m: Mode) => {
       if (m === mode) return
-      setMode(m)
       if (m === 'preview') {
-        setPreviewIndex(0)
+        const qid = questions[currentIndex]?.qid
+        const i = previewQuestions.findIndex((q) => q.qid === qid)
+        setPreviewIndex(i >= 0 ? i : 0)
+        setPreviewSubIdx(i >= 0 ? focusIdx : 0)
         setPreviewPick(null)
+      } else {
+        const qid = previewQuestions[previewIndex]?.qid
+        const i = questions.findIndex((q) => q.qid === qid)
+        if (i >= 0 && i !== currentIndex) {
+          pendingFocusRef.current = previewSubIdx // 等 detail 加载完再落焦点
+          setCurrentIndex(i)
+        } else if (i >= 0) {
+          setFocusIdx(previewSubIdx)
+        }
       }
+      setMode(m)
     },
-    [mode],
+    [mode, questions, currentIndex, previewQuestions, previewIndex, focusIdx, previewSubIdx],
   )
 
   function applyDetail(d: QuestionDetail) {
@@ -238,7 +259,10 @@ export default function App() {
           return { label: l, tags: ex?.tags ?? [], difficulty: ex?.difficulty ?? null }
         }),
       )
-      setFocusIdx(0)
+      // 从预览模式切回来时保留原来的小问选中（switchMode 存的）
+      const pf = pendingFocusRef.current
+      pendingFocusRef.current = null
+      setFocusIdx(pf != null ? Math.min(pf, Math.max(0, labels.length - 1)) : 0)
       setDraftTags([])
       setDraftDifficulty(null)
     } else {
@@ -386,6 +410,41 @@ export default function App() {
     }
   }, [detail, splitMode, subsTagged, draftSubs, draftDifficulty, draftTags, saving, paperId, questions, currentIndex, showToast])
 
+  /**
+   * 「下一问」时的增量保存：把**已有标签**的小问先落库，避免中途切题/中断丢失。
+   * 未打标的小问不提交——后端 `_save_split` 已放开为允许「本题小问的子集」。
+   * 刻意不复用 save()：那个会弹 toast 并跳到下一题。
+   */
+  const savePartial = useCallback(async () => {
+    if (!detail) return
+    const filled = draftSubs.filter((s) => s.tags.length > 0)
+    if (filled.length === 0) return
+    try {
+      const res = await api.saveAnnotation(detail.qid, {
+        subs: filled.map((s) => ({ label: s.label, tags: s.tags, difficulty: s.difficulty })),
+      })
+      // 只刷新列表状态；detail 的 effect 现在只依赖 qid，不会因此重拉详情、重置草稿
+      const tagsReady = draftSubs.every((s) => s.tags.length > 0)
+      const diffReady = draftSubs.every((s) => s.difficulty !== null)
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.qid === res.qid
+            ? {
+                ...q,
+                status: res.status,
+                split: res.split ?? q.split ?? false,
+                sub_labels: res.sub_labels ?? q.sub_labels,
+                tags_ready: tagsReady,
+                difficulty_ready: diffReady,
+              }
+            : q,
+        ),
+      )
+    } catch (e) {
+      showToast({ kind: 'err', text: `保存失败：${(e as Error).message}` })
+    }
+  }, [detail, draftSubs, showToast])
+
   // 快捷键：←/→ 翻题（预览模式翻预览列表），1/2/3 难度（split 模式作用于焦点组），Enter 保存
   // （预览模式只读，难度/保存快捷键禁用）
   useEffect(() => {
@@ -397,6 +456,10 @@ export default function App() {
         if (e.key === 'ArrowLeft' && previewIndex > 0) setPreviewIndex(previewIndex - 1)
         else if (e.key === 'ArrowRight' && previewIndex < previewQuestions.length - 1)
           setPreviewIndex(previewIndex + 1)
+        else if (!typing && e.key >= '1' && e.key <= '5') {
+          // 1–5 就地选难度（与打标模式一致）；只暂存，勾「确认」时才写回题库
+          setPreviewPick(DIFFICULTY_LABELS[Number(e.key) - 1][0])
+        }
         return
       }
       if (e.key === 'ArrowLeft') gotoPrev()
@@ -455,8 +518,7 @@ export default function App() {
         // 「单元是否齐备」——补完难度后题目可能从 partial 变 done（docs/13）
         const tagsReady = split ? nextSubs.every((s) => s.tags.length > 0) : d.tags.length > 0
         const diffReady = split ? nextSubs.every((s) => !!s.difficulty) : !!difficulty
-        const status: Status =
-          tagsReady && diffReady ? 'done' : tagsReady || diffReady ? 'partial' : 'none'
+        const status: Status = tagsReady ? 'done' : diffReady ? 'partial' : 'none'
         const prevStatus = previewQuestions.find((q) => q.qid === d.qid)?.status ?? 'none'
 
         // 本地乐观更新：右侧详情 + 左侧题号
@@ -853,8 +915,10 @@ export default function App() {
                   type="button"
                   disabled={splitMode && !onLastSub ? saving : !canSave}
                   onClick={() => {
-                    if (splitMode && !onLastSub) setFocusIdx(focusIdx + 1)
-                    else void save()
+                    if (splitMode && !onLastSub) {
+                      void savePartial() // 先把已选标签落库，再推进焦点
+                      setFocusIdx(focusIdx + 1)
+                    } else void save()
                   }}
                   className={`w-full rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-100 select-none ${
                     (splitMode && !onLastSub) || canSave
@@ -867,7 +931,7 @@ export default function App() {
                     : splitMode
                       ? onLastSub
                         ? `保存（${subDoneCount}/${draftSubs.length} 问已完成）`
-                        : '下一问'
+                        : '保存，下一问'
                       : '确定并保存'}
                 </button>
                 <p className="text-center text-[11px] text-gray-400">

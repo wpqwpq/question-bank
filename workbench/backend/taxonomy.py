@@ -35,6 +35,15 @@ _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
     ("aqa", "U5"): ["U5", "U1", "U2", "U3", "U4"],
 }
 
+# 跨单元的「指定组」开放：(考试局, 卷单元) -> [(外部单元, [组 id, …]), …]。
+# 与 _CROSS_UNIT_SELECTABLE（整单元开放）互补，用于「只开放外面某几个组」的场景：
+# CIE 老课纲 AS 阶段就要求「电场」，现行课纲把它挪到了 Paper 4；故把 P4 的电场组
+# 开放给 P1P2 卷（2026-10-16）。显示顺序：本单元各组在前，外部组排在下方，
+# 前端按 group.unit 在交界处插分隔线。
+_CROSS_UNIT_GROUPS: dict[tuple[str, str], list[tuple[str, list[str]]]] = {
+    ("cie", "P1P2"): [("P4", ["p4g-electric-field"])],
+}
+
 # 缓存：(board, qual, subject) → ((mtime_ns, size), 词表内容)。
 # 2026-10-16 起按文件签名失效（旧实现是进程内永久缓存，改 JSON 必须重启打标台）：
 # 手工改文件、或走标签管理页保存，都能即时生效；保存接口另会显式 invalidate 一次。
@@ -145,25 +154,51 @@ def selectable_units(board: str, qualification: str, subject: str, unit: str) ->
     return [u for u in units if _unit_taxonomy(tax, u)["tags"]]
 
 
+def _full_extra_units(board: str, qualification: str, subject: str, unit: str, tax: dict) -> list[str]:
+    """整单元开放的外部单元（_CROSS_UNIT_SELECTABLE 里除自身外、词表非空的）。"""
+    units = _CROSS_UNIT_SELECTABLE.get((board, unit)) or []
+    return [u for u in units if u != unit and _unit_taxonomy(tax, u)["tags"]]
+
+
+def _scoped_group_specs(board: str, unit: str, tax: dict) -> list[tuple[str, list[str]]]:
+    """组级开放的外部单元：[(单元, [组 id…])]，仅保留词表存在的单元。"""
+    return [
+        (u, gids) for u, gids in _CROSS_UNIT_GROUPS.get((board, unit), [])
+        if _unit_taxonomy(tax, u)["tags"]
+    ]
+
+
 def tags_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
-    """本卷可选的全部标签（跨单元时按单元顺序合并；每项仍带 group 键）。"""
-    out: list[dict] = []
-    for u in selectable_units(board, qualification, subject, unit):
-        out.extend(tags_for(board, qualification, subject, u))
+    """本卷可选的全部标签：本单元全部 + 整单元开放的外部单元 + 组级开放的外部组。
+    每项仍带 group 键；顺序即右栏显示顺序（本单元在前）。"""
+    tax = load_taxonomy(board, qualification, subject)
+    out: list[dict] = list(_unit_taxonomy(tax, unit)["tags"])
+    for u in _full_extra_units(board, qualification, subject, unit, tax):
+        out.extend(_unit_taxonomy(tax, u)["tags"])
+    for u, gids in _scoped_group_specs(board, unit, tax):
+        gset = set(gids)
+        out.extend(t for t in _unit_taxonomy(tax, u)["tags"] if t.get("group") in gset)
     return out
 
 
 def groups_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
-    """本卷可选的一级组。跨单元时组中文名加「U<x> 」前缀，区分同名组，并附 unit
-    字段标明组所属单元（前端据此在自身单元与其他单元之间插分隔）。
+    """本卷可选的一级组。跨单元时组中文名加「<单元> 」前缀区分同名组，并附 unit
+    字段标明组所属单元（前端据此在自身单元与其他单元之间插分隔线）。
     单单元时原样返回（前端分组头不变）。"""
-    units = selectable_units(board, qualification, subject, unit)
-    if len(units) <= 1:
-        return groups_for(board, qualification, subject, units[0]) if units else []
+    tax = load_taxonomy(board, qualification, subject)
+    full = _full_extra_units(board, qualification, subject, unit, tax)
+    scoped = _scoped_group_specs(board, unit, tax)
+    if not full and not scoped:
+        return _unit_taxonomy(tax, unit)["groups"]
     out: list[dict] = []
-    for u in units:
-        for g in groups_for(board, qualification, subject, u):
+    for u in [unit, *full]:
+        for g in _unit_taxonomy(tax, u)["groups"]:
             out.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
+    for u, gids in scoped:
+        gset = set(gids)
+        for g in _unit_taxonomy(tax, u)["groups"]:
+            if g["id"] in gset:
+                out.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
     return out
 
 

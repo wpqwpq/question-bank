@@ -102,9 +102,9 @@ export default function Sidebar(p: Props) {
                         q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
                       }${
                         q.status === 'done'
-                          ? `已打标（${q.difficulty ?? '子题齐全'}）`
+                          ? `已打标${q.difficulty ? '' : '（难度未标）'}`
                           : q.status === 'partial'
-                            ? '标签/难度缺其一'
+                            ? '只有难度、缺知识点标签'
                             : '未打标'
                       }`
                 }
@@ -127,9 +127,9 @@ export default function Sidebar(p: Props) {
           {p.mode !== 'preview' ? (
             <p className="mt-2 text-[11px] leading-4 text-gray-400">
               <span className="mr-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-300 align-middle" />
-              齐全
+              已打标
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-amber-300 align-middle" />
-              缺其一
+              缺标签
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-gray-200 align-middle" />
               未打标
             </p>
