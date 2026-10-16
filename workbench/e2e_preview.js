@@ -8,7 +8,11 @@ const fs = require('fs');
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const PORT = 9337;
 const BASE = 'http://127.0.0.1:8642';
-const PROFILE = path.join(os.tmpdir(), 'edge-e2e-workbench-' + Date.now().toString(36));
+// 固定 profile 目录：跨次复用，跑完**什么都不删**。
+// ⚠️ 不要改回「%TEMP%/edge-e2e-<时间戳> + 收尾递归删」——本机 WorkBuddy 沙箱会把删除
+// 重定向成「移入回收站」（safe-delete），递归删一个几百文件的 Chromium profile，
+// 回收站就多几百条；多跑几次直接把回收站灌爆（2026-10-16 实测：一次清理 2514 条）。
+const PROFILE = path.join(os.tmpdir(), 'qb-edge-e2e-preview');
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -272,7 +276,7 @@ function check(name, ok, detail = '') {
   } finally {
     try { ws && ws.close(); } catch {}
     try { edge.kill('SIGKILL'); } catch {}
-    await sleep(500);
-    try { fs.rmSync(PROFILE, { recursive: true, force: true }); } catch {}
-  }
-})();
+      await sleep(500);
+      // 不删 PROFILE —— 见文件顶部说明（沙箱会把删除记账进回收站）
+    }
+  })();

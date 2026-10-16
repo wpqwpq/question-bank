@@ -12,6 +12,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -78,7 +79,9 @@ def main():
         ("2026-june-wph16a", "q04", "2026-06 U6A · 实验技能卷"),
     ]
     if shot_dir.is_dir():
-        shutil.rmtree(shot_dir)
+        # 别用 shutil.rmtree：本机沙箱会把每个文件的删除记账进回收站（safe-delete），
+        # 这个抽检图目录几十个文件 = 回收站几十条；rd /s /q 只 +2 条。
+        subprocess.run(["cmd", "/c", "rd", "/s", "/q", str(shot_dir)], check=False)
     shot_dir.mkdir(parents=True, exist_ok=True)
     cards = []
     for sess, q, note in samples:
