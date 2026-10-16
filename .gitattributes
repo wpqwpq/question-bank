@@ -8,6 +8,11 @@
 *.yaml  text
 *.svg   text
 
+# ── Windows 批处理必须 CRLF（cmd.exe 在 936 代码页下读 LF 会出错）──
+# 注意：上面的 `* text=auto eol=lf` 会把 .cmd 检出成 LF，故此处必须显式覆盖。
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
 # ── 二进制素材走 Git LFS ──
 *.png   filter=lfs diff=lfs merge=lfs -text
 *.jpg   filter=lfs diff=lfs merge=lfs -text

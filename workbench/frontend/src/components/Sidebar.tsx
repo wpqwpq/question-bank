@@ -1,5 +1,5 @@
-import type { Paper, QuestionSummary, Status } from '../api'
-import { SESSION_LABELS, statusColor } from '../api'
+import type { Paper, QuestionSummary, Status, VerifyState } from '../api'
+import { SESSION_LABELS, statusColor, verifyColor } from '../api'
 
 interface Props {
   papers: Paper[]
@@ -77,7 +77,9 @@ export default function Sidebar(p: Props) {
           <div className="mb-2 flex items-baseline justify-between">
             <Label text={p.mode === 'preview' ? '已打标题目（点击查看）' : '题号（点击跳题）'} />
             <span className="text-xs font-medium text-gray-600">
-              {currentPaper.annotated_count}/{currentPaper.question_count} 已标
+              {p.mode === 'preview'
+                ? `${currentPaper.verified_count ?? 0}/${currentPaper.annotated_count} 已确认`
+                : `${currentPaper.annotated_count}/${currentPaper.question_count} 已标`}
             </span>
           </div>
           <div className="grid grid-cols-5 gap-1.5">
@@ -85,16 +87,36 @@ export default function Sidebar(p: Props) {
               <button
                 key={q.qid}
                 type="button"
-                title={`第 ${q.question_number} 题 · ${
-                  q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
-                }${
-                  q.status === 'done'
-                    ? `已打标（${q.difficulty ?? '子题齐全'}）`
-                    : q.status === 'partial'
-                      ? '标签/难度缺其一'
-                      : '未打标'
+                title={
+                  p.mode === 'preview'
+                    ? `第 ${q.question_number} 题 · ${
+                        q.difficulty_ready === false
+                          ? '待补难度（不能确认）'
+                          : q.verify_state === 'all'
+                            ? '已确认'
+                            : q.verify_state === 'partial'
+                              ? `部分确认（${q.confirmed_units ?? 0}/${q.total_units ?? 0} 小问）`
+                              : '待确认'
+                      }`
+                    : `第 ${q.question_number} 题 · ${
+                        q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
+                      }${
+                        q.status === 'done'
+                          ? `已打标（${q.difficulty ?? '子题齐全'}）`
+                          : q.status === 'partial'
+                            ? '标签/难度缺其一'
+                            : '未打标'
+                      }`
+                }
+                className={`h-8 ${
+                  p.mode === 'preview'
+                    ? verifyColor(
+                        (q.verify_state ?? 'none') as VerifyState,
+                        i === p.currentIndex,
+                        q.difficulty_ready === false,
+                      )
+                    : statusColor(q.status as Status, i === p.currentIndex)
                 }`}
-                className={`h-8 ${statusColor(q.status as Status, i === p.currentIndex)}`}
                 onClick={() => p.onJump(i)}
               >
                 {q.question_number}
@@ -102,7 +124,7 @@ export default function Sidebar(p: Props) {
               </button>
             ))}
           </div>
-          {p.mode !== 'preview' && (
+          {p.mode !== 'preview' ? (
             <p className="mt-2 text-[11px] leading-4 text-gray-400">
               <span className="mr-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-300 align-middle" />
               齐全
@@ -110,6 +132,17 @@ export default function Sidebar(p: Props) {
               缺其一
               <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-gray-200 align-middle" />
               未打标
+            </p>
+          ) : (
+            <p className="mt-2 text-[11px] leading-4 text-gray-400">
+              <span className="mr-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-300 align-middle ring-1 ring-green-700" />
+              已确认
+              <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-gray-200 align-middle ring-1 ring-gray-400" />
+              待补难度
+              <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-amber-300 align-middle" />
+              部分确认
+              <span className="mx-2 inline-flex h-2.5 w-2.5 rounded-sm bg-green-100 align-middle ring-1 ring-green-300" />
+              待确认
             </p>
           )}
         </div>

@@ -1,7 +1,9 @@
 """标签词表加载与按卷过滤。
 
 词表按考试局/资格/学科一文件存放：data/taxonomy/<board>/<qual>/<subject>.json，
-由 scripts/gen_tags_json.py 从词表 TSV 生成（结构见 docs/06b 实施设计稿）：
+**该 JSON 即标签的唯一事实源**（2026-10-16 起不再由词表 TSV 生成；历史上的生成脚本
+scripts/gen_tags_json.py 仅作 slug/id 规则参考，日常改标签直接改 JSON，将来走打标台前端界面）。
+结构见 docs/06b 实施设计稿：
 
     {
       "$comment": "...",
@@ -16,6 +18,10 @@
 from __future__ import annotations
 
 import json
+import os
+import re
+import tempfile
+from datetime import datetime
 from pathlib import Path
 
 TAXONOMY_DIR = Path(__file__).resolve().parents[2] / "data" / "taxonomy"
@@ -29,7 +35,23 @@ _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
     ("aqa", "U5"): ["U5", "U1", "U2", "U3", "U4"],
 }
 
-_cache: dict[tuple[str, str, str], dict] = {}
+# 缓存：(board, qual, subject) → ((mtime_ns, size), 词表内容)。
+# 2026-10-16 起按文件签名失效（旧实现是进程内永久缓存，改 JSON 必须重启打标台）：
+# 手工改文件、或走标签管理页保存，都能即时生效；保存接口另会显式 invalidate 一次。
+_cache: dict[tuple[str, str, str], tuple[tuple[int, int], dict]] = {}
+
+
+def _file_sig(path: Path) -> tuple[int, int]:
+    try:
+        st = path.stat()
+    except OSError:
+        return (0, 0)
+    return (st.st_mtime_ns, st.st_size)
+
+
+def invalidate(board: str, qualification: str, subject: str) -> None:
+    """丢掉某份词表的缓存（保存后调用；正常情况下签名比对已能失效）。"""
+    _cache.pop((board, qualification, subject), None)
 
 
 # 已知的规范资格目录名；用于把 a-level / alevel 这类历史异写法双向互认。
@@ -66,13 +88,24 @@ def _taxonomy_path(board: str, qualification: str, subject: str) -> Path:
     return base / (cands[0] if cands else qualification) / f"{subject}.json"
 
 
+def taxonomy_path(board: str, qualification: str, subject: str) -> Path:
+    """词表文件路径（公开包装，供标签管理页判断文件是否存在）。"""
+    return _taxonomy_path(board, qualification, subject)
+
+
 def load_taxonomy(board: str, qualification: str, subject: str) -> dict:
-    """返回某学科全部单元的词表；无词表文件返回 {}。"""
+    """返回某学科全部单元的词表；无词表文件返回 {}。
+
+    缓存按文件 `mtime_ns + size` 失效（与 store.py 同一套路），手工改 JSON 也即时生效。
+    """
     key = (board, qualification, subject)
-    if key not in _cache:
-        path = _taxonomy_path(board, qualification, subject)
-        _cache[key] = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-    return _cache[key]
+    path = _taxonomy_path(board, qualification, subject)
+    sig = _file_sig(path)
+    hit = _cache.get(key)
+    if hit is None or hit[0] != sig:
+        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        _cache[key] = (sig, data)
+    return _cache[key][1]
 
 
 def _unit_taxonomy(tax: dict, unit: str) -> dict:
@@ -136,3 +169,153 @@ def groups_for_units(board: str, qualification: str, subject: str, unit: str) ->
 
 def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -> set[str]:
     return {t["id"] for t in tags_for_units(board, qualification, subject, unit)}
+
+
+# ---------------------------------------------------------------------------
+# 标签管理页：整份词表的校验与保存（本期只支持「改」+「增」）
+# ---------------------------------------------------------------------------
+
+# 单元键：Edexcel/AQA 用 U1..U9，CIE 用 P1P2 / P4 这类形式。
+_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?)$")
+
+_TAG_KEYS = ("id", "zh", "en", "group")
+_GROUP_KEYS = ("id", "zh", "en")
+
+
+def _norm_tag(tag: dict) -> dict:
+    return {k: (tag.get(k) or "") for k in _TAG_KEYS}
+
+
+def _norm_group(group: dict) -> dict:
+    return {k: (group.get(k) or "") for k in _GROUP_KEYS}
+
+
+def validate_taxonomy(data) -> list[str]:
+    """整份词表校验。返回错误描述列表，空列表 = 通过。
+
+    规则（见 docs/09 §4）：
+      1. 单元键形如 U1 / P1P2，且至少有一个单元；
+      2. 标签 id / zh / en 非空，id 全局唯一，group 指向本单元内存在的组；
+      3. 组 id / zh / en 非空，id 全局唯一，且每个组至少挂 1 个标签（不留空组头）。
+    """
+    if not isinstance(data, dict):
+        return ["词表根节点必须是对象"]
+    units = [k for k in data if not k.startswith("$")]
+    if not units:
+        return ["词表至少要有一个单元"]
+
+    errors: list[str] = []
+    tag_owner: dict[str, str] = {}
+    group_owner: dict[str, str] = {}
+
+    for unit in units:
+        entry = data[unit]
+        if not _UNIT_KEY_RE.match(unit):
+            errors.append(f"单元键不合法：{unit}（应形如 U1 或 P1P2）")
+        if not isinstance(entry, dict):
+            errors.append(f"{unit}：单元内容必须是对象")
+            continue
+        groups, tags = entry.get("groups"), entry.get("tags")
+        if not isinstance(groups, list) or not isinstance(tags, list):
+            errors.append(f"{unit}：groups / tags 必须是数组")
+            continue
+
+        local_groups: set[str] = set()
+        for i, g in enumerate(groups, 1):
+            if not isinstance(g, dict):
+                errors.append(f"{unit} 第 {i} 个分组：必须是对象")
+                continue
+            gid = (g.get("id") or "").strip()
+            if not gid:
+                errors.append(f"{unit} 第 {i} 个分组：id 不能为空")
+                continue
+            if gid in group_owner:
+                errors.append(f"{unit} 分组 {gid}：id 与 {group_owner[gid]} 里的同名分组重复")
+            group_owner[gid] = unit
+            local_groups.add(gid)
+            if not (g.get("zh") or "").strip():
+                errors.append(f"{unit}/{gid}：分组中文名不能为空")
+            if not (g.get("en") or "").strip():
+                errors.append(f"{unit}/{gid}：分组英文名不能为空（用于生成 id）")
+
+        used: dict[str, int] = dict.fromkeys(local_groups, 0)
+        for i, t in enumerate(tags, 1):
+            if not isinstance(t, dict):
+                errors.append(f"{unit} 第 {i} 个标签：必须是对象")
+                continue
+            tid = (t.get("id") or "").strip()
+            where = tid or f"{unit} 第 {i} 个标签"
+            if not tid:
+                errors.append(f"{where}：id 不能为空")
+            elif tid in tag_owner:
+                errors.append(f"{where}：id 与 {tag_owner[tid]} 里的标签重复")
+            else:
+                tag_owner[tid] = unit
+            if not (t.get("zh") or "").strip():
+                errors.append(f"{where}：中文名不能为空")
+            if not (t.get("en") or "").strip():
+                errors.append(f"{where}：英文名不能为空（用于生成 id）")
+            gid = (t.get("group") or "").strip()
+            if not gid:
+                errors.append(f"{where}：必须指定所属分组")
+            elif gid not in local_groups:
+                errors.append(f"{where}：所属分组 {gid} 在本单元里不存在")
+            else:
+                used[gid] += 1
+
+        for gid in local_groups:
+            if used.get(gid, 0) == 0:
+                errors.append(f"{unit}/{gid}：分组下没有任何标签（不留空组头）")
+
+    return errors
+
+
+def save_taxonomy(board: str, qualification: str, subject: str, data) -> dict:
+    """校验 + 备份 + 原子写，整体覆盖词表 JSON。
+
+    前端提交的内容即使不含 `$` 元数据也不打紧——原文件的 `$comment` 等键会保留在最前。
+    写入顺序：先落备份到 `_prev/`（该目录已 gitignore，不入公开仓库），再原子替换正本。
+    """
+    path = _taxonomy_path(board, qualification, subject)
+    if not path.exists():
+        raise FileNotFoundError(f"词表文件不存在：{board}/{qualification}/{subject}")
+
+    errors = validate_taxonomy(data)
+    if errors:
+        raise ValueError("\n".join(errors))
+
+    old = json.loads(path.read_text(encoding="utf-8"))
+    units = [k for k in data if not k.startswith("$")]
+    out: dict = {k: v for k, v in old.items() if k.startswith("$")}
+    for unit in units:
+        entry = data[unit]
+        out[unit] = {
+            "groups": [_norm_group(g) for g in entry.get("groups") or []],
+            "tags": [_norm_tag(t) for t in entry.get("tags") or []],
+        }
+
+    backup_dir = TAXONOMY_DIR / "_prev"
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup = backup_dir / f"{board}-{subject}-{stamp}.json"
+    backup.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    fd, tmp_name = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
+            f.write(json.dumps(out, ensure_ascii=False, indent=2) + "\n")
+        os.replace(tmp_name, path)
+    except BaseException:
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        raise
+
+    invalidate(board, qualification, subject)
+
+    root = TAXONOMY_DIR.parents[1]
+    return {
+        "path": path.relative_to(root).as_posix(),
+        "backup": backup.relative_to(root).as_posix(),
+        "units": len(units),
+        "tags": sum(len(data[u].get("tags") or []) for u in units),
+    }

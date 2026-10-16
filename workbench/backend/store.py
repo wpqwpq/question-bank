@@ -154,7 +154,10 @@ def _scan_papers() -> tuple[list[Paper], tuple[tuple[str, int], ...]]:
         stamp.append(("", DATA_DIR.stat().st_mtime_ns))
     except OSError:
         pass
-    for board in sorted(p for p in DATA_DIR.iterdir() if p.is_dir() and p.name != "taxonomy"):
+    # 排除非考试局目录：taxonomy（标签词表）、_review（审核确认记录，见 docs/11）
+    for board in sorted(
+        p for p in DATA_DIR.iterdir() if p.is_dir() and p.name not in ("taxonomy", "_review")
+    ):
         stamp.append((board.name, board.stat().st_mtime_ns))
         for qualification in sorted(p for p in board.iterdir() if p.is_dir()):
             qkey = f"{board.name}/{qualification.name}"
@@ -229,8 +232,21 @@ class Paper:
         out = []
         for qf in self.qfiles:
             meta = read_meta(qf)
-            subs = self.sub_metas(qf) if meta.get("split") else []
             is_split = bool(meta.get("split"))
+            subs = self.sub_metas(qf) if is_split else []
+            tags = [] if is_split else (meta.get("tags") or [])
+            difficulty = None if is_split else (
+                meta.get("difficulty") if meta.get("difficulty") in _DONE_DIFFICULTIES else None
+            )
+            # 「单元是否齐备」——预览列表判据（docs/13）：切分题按小问聚合
+            if is_split:
+                tags_ready = bool(subs) and all((m.get("tags") or []) for m in subs)
+                difficulty_ready = bool(subs) and all(
+                    m.get("difficulty") in _DONE_DIFFICULTIES for m in subs
+                )
+            else:
+                tags_ready = bool(tags)
+                difficulty_ready = difficulty is not None
             out.append(
                 {
                     "qid": meta["id"],
@@ -238,14 +254,17 @@ class Paper:
                     "status": compute_status(meta, subs),
                     "total_marks": meta.get("total_marks"),
                     "question_type": meta.get("question_type"),
-                    "tags": [] if is_split else (meta.get("tags") or []),
-                    "difficulty": None if is_split else (
-                        meta.get("difficulty") if meta.get("difficulty") in _DONE_DIFFICULTIES else None
-                    ),
+                    "tags": tags,
+                    "difficulty": difficulty,
+                    "tags_ready": tags_ready,
+                    "difficulty_ready": difficulty_ready,
                     "split": is_split,
                     "sub_labels": [str(m.get("sub_label")) for m in subs] or (
                         [str(x) for x in meta.get("subquestions")] if is_split else []
                     ),
+                    # 子题文件真实 id —— 审核确认聚合必须用它，不能由 label 拼
+                    # （Edexcel 旧格式是 `...-q15a`，与 `{qid}-{label}` 不同）
+                    "sub_ids": [str(m.get("id")) for m in subs],
                 }
             )
         return out
@@ -367,10 +386,12 @@ def _strip_annotation_lines(fm_lines: list[str]) -> list[str]:
     return out
 
 
-def _build_annotation_lines(tags: list[str], difficulty: str) -> list[str]:
+def _build_annotation_lines(tags: list[str], difficulty: str | None) -> list[str]:
+    """难度可留空（docs/13）：为 None 时整行不写，而不是写 `difficulty: None`。"""
     lines = ["tags:"]
     lines += [f"  - {t}" for t in tags]
-    lines.append(f"difficulty: {difficulty}")
+    if difficulty is not None:
+        lines.append(f"difficulty: {difficulty}")
     return lines
 
 
@@ -380,7 +401,7 @@ def _schema_errors(meta: dict[str, Any]) -> set[str]:
     }
 
 
-def write_annotation(qpath: Path, tags: list[str], difficulty: str) -> dict[str, Any]:
+def write_annotation(qpath: Path, tags: list[str], difficulty: str | None) -> dict[str, Any]:
     text = qpath.read_text(encoding="utf-8")
     meta, m = parse_front_matter(text)
     if m is None:
@@ -410,6 +431,42 @@ def write_annotation(qpath: Path, tags: list[str], difficulty: str) -> dict[str,
             os.remove(tmp_name)
         raise
 
+    _drop_meta(qpath)
+    return {
+        "qid": new_meta["id"],
+        "tags": new_meta.get("tags") or [],
+        "difficulty": new_meta.get("difficulty"),
+        "status": compute_status(new_meta),
+    }
+
+
+def write_difficulty(qpath: Path, difficulty: str | None) -> dict[str, Any]:
+    """只增删改 front-matter 的 `difficulty:` 一行，**不碰 tags 与其余任何行**。
+
+    预览模式「就地补难度」（docs/13）走这里——把写库口子收到单字段：
+    - `difficulty=None` → 删掉该行；
+    - 其余照旧（原子写 + schema 差分校验）。
+    对整题文件与子题文件（split 产物）同样适用。
+    """
+    text = qpath.read_text(encoding="utf-8")
+    meta, m = parse_front_matter(text)
+    if m is None:
+        raise ValueError(f"{qpath.name}: 缺少 front-matter")
+
+    fm_lines = [
+        line for line in m.group(1).splitlines()
+        if not re.match(r"^difficulty:[ \t]*", line)
+    ]
+    if difficulty is not None:
+        fm_lines.append(f"difficulty: {difficulty}")
+
+    new_text = "---\n" + "\n".join(fm_lines) + "\n---\n" + text[m.end():]
+    new_meta, _ = parse_front_matter(new_text)
+    new_errors = _schema_errors(new_meta) - _schema_errors(meta)
+    if new_errors:
+        raise ValueError("写回引入 schema 错误: " + "; ".join(sorted(new_errors)[:3]))
+
+    _atomic_write(qpath, new_text)
     _drop_meta(qpath)
     return {
         "qid": new_meta["id"],
@@ -465,6 +522,8 @@ def _yaml_dump_meta(meta: dict[str, Any]) -> str:
     for k, v in meta.items():
         if k == "tags":
             continue
+        if v is None:
+            continue  # 难度可留空（docs/13）：None 整键省略，别写成 "k: None"
         if isinstance(v, str) and (":" in v or v.strip() == "" or v != v.strip()):
             lines.append(f"{k}: {json.dumps(v, ensure_ascii=False)}")
         else:
@@ -492,7 +551,8 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             r = img_map[s["label"]]
             sub_meta = build_sub_meta(meta, s["label"], r["image"], r["layout"])
             sub_meta["tags"] = s["tags"]
-            sub_meta["difficulty"] = s["difficulty"]
+            if s.get("difficulty") is not None:  # 难度可留空（docs/13）
+                sub_meta["difficulty"] = s["difficulty"]
             # 写后 schema 差分校验（子文件为新文件，直接全量校验）
             errors = _schema_errors(sub_meta)
             if errors:

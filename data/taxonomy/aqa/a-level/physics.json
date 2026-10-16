@@ -1,5 +1,5 @@
 {
-  "$comment": "知识点标签词表（按考试局/资格/学科一文件）。结构见 docs/06b-标签两级化实施设计-物理新词表.md；id 由 scripts/gen_tags_json.py 从词表 TSV 生成，请勿手改。",
+  "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**：不再由词表 TSV 生成，可直接编辑（后续由打标台前端界面维护）。结构见 docs/06b-标签两级化实施设计-物理新词表.md。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；id 全局唯一，标签的 group 必须存在。",
   "U1": {
     "groups": [
       {
@@ -95,7 +95,7 @@
       },
       {
         "id": "u1-centre-of-mass",
-        "zh": "重心位置",
+        "zh": "质心",
         "en": "centre of mass",
         "group": "u1g-mechanics"
       },

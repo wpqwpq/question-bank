@@ -1,5 +1,9 @@
 """从词表 TSV 生成 taxonomy JSON：data/taxonomy/<board>/<qual>/<subject>.json
 
+⚠️ 已停用（2026-10-16）：标签的唯一事实源改为 taxonomy JSON 本身，不再维护词表 TSV；
+改标签直接改 JSON（将来由打标台前端界面写入）。本脚本降级为**历史迁移工具 + id 规则参考**
+（下方 slug() 即标签/组 id 的生成规则），不要再拿它覆盖现有 JSON。
+
 词表格式（docs/06b-物理词表.tsv、docs/06b-CIE物理词表.tsv，TSV，5 列）：
     unit  group_zh  group_en  tag_zh  tag_en
 每行都带完整 unit 与组名（展开式，无延续行）。unit 取 U<号>（Edexcel 单元）

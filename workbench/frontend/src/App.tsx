@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Paper, QuestionDetail, QuestionSummary, SubDraft } from './api'
+import type { Paper, QuestionDetail, QuestionSummary, Status, SubDraft, VerifyState } from './api'
 import { api, DIFFICULTY_LABELS } from './api'
 import Sidebar from './components/Sidebar'
+import TagAdmin from './components/TagAdmin'
 import TagPanel from './components/TagPanel'
 import QuestionViewer from './components/QuestionViewer'
 import PreviewPanel from './components/PreviewPanel'
@@ -59,11 +60,19 @@ export default function App() {
   const [toast, setToast] = useState<Toast>(null)
   const toastTimer = useRef<number | undefined>(undefined)
 
+  // ── 页面：打标台 / 标签管理（右上入口跳转，整页切换）──
+  const [view, setView] = useState<'workbench' | 'tagadmin'>('workbench')
+  /** 从标签管理页回来时 +1，触发当前题详情重拉（词表可能刚被改过） */
+  const [refreshTick, setRefreshTick] = useState(0)
+
   // ── 模式 ──
   const [mode, setMode] = useState<Mode>('annotate')
   const [previewIndex, setPreviewIndex] = useState(0)
   const [previewDetail, setPreviewDetail] = useState<QuestionDetail | null>(null)
   const [previewSubIdx, setPreviewSubIdx] = useState(0)
+  const [confirming, setConfirming] = useState(false) // 审核确认请求进行中
+  // 预览里就地补/改选的难度（未落库；勾选确认时随请求一起写回，docs/13）
+  const [previewPick, setPreviewPick] = useState<string | null>(null)
 
   // ── 小问切分状态 ──
   const splitOnRef = useRef(false) // 开关意图（跨题保持）；供题目加载effect读取
@@ -106,9 +115,13 @@ export default function App() {
     [papers, board, qualification, subject],
   )
 
-  // 预览列表：只显示已打标完成的题目
+  // 预览列表（docs/13）：齐备的题 + 「有标签但缺难度」的题（灰色，可在预览里就地补难度）。
+  // 「只有难度没有标签」的题不在列表中（tags_ready=false）。
   const previewQuestions = useMemo(
-    () => questions.filter((q) => q.status === 'done'),
+    () =>
+      questions.filter(
+        (q) => q.status === 'done' || (q.tags_ready === true && q.difficulty_ready === false),
+      ),
     [questions],
   )
 
@@ -173,36 +186,43 @@ export default function App() {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions, currentIndex, showToast])
+  }, [questions, currentIndex, showToast, refreshTick])
 
   // 预览模式：拉当前预览题详情（只读）
+  // 依赖刻意只用「当前题的 qid」而不是整个 previewQuestions 数组：
+  // 确认操作会更新 questions 里的 verify_state（数组引用变化），若依赖数组会导致
+  // 每次确认都重新拉详情并把 previewSubIdx 重置回 0，冲掉「自动切下一个未确认小问」。
+  const previewQid = mode === 'preview' ? previewQuestions[previewIndex]?.qid : undefined
   useEffect(() => {
     if (mode !== 'preview') return
-    const q = previewQuestions[previewIndex]
-    if (!q) {
+    if (!previewQid) {
       setPreviewDetail(null)
       return
     }
     let cancelled = false
     api
-      .question(q.qid)
+      .question(previewQid)
       .then((d) => {
         if (!cancelled) {
           setPreviewDetail(d)
           setPreviewSubIdx(0) // 切题回第一问
+          setPreviewPick(null) // 补难度只对当前题有效，切题即丢（docs/13 定：不勾选不落库）
         }
       })
       .catch((e: Error) => showToast({ kind: 'err', text: `加载题目失败：${e.message}` }))
     return () => {
       cancelled = true
     }
-  }, [mode, previewQuestions, previewIndex, showToast])
+  }, [mode, previewQid, showToast])
 
   const switchMode = useCallback(
     (m: Mode) => {
       if (m === mode) return
       setMode(m)
-      if (m === 'preview') setPreviewIndex(0)
+      if (m === 'preview') {
+        setPreviewIndex(0)
+        setPreviewPick(null)
+      }
     },
     [mode],
   )
@@ -297,12 +317,10 @@ export default function App() {
     [splitMode, focusIdx],
   )
 
-  const subsComplete =
-    draftSubs.length > 0 && draftSubs.every((s) => s.tags.length > 0 && s.difficulty !== null)
-  const canSave =
-    !saving &&
-    !!detail &&
-    (splitMode ? subsComplete : draftTags.length > 0 && draftDifficulty !== null)
+  // 切分题：每个小问至少 1 个标签即可保存；难度可留空（docs/13）
+  const subsTagged = draftSubs.length > 0 && draftSubs.every((s) => s.tags.length > 0)
+  const subDoneCount = draftSubs.filter((s) => subState(s) === 'done').length
+  const canSave = !saving && !!detail && (splitMode ? subsTagged : draftTags.length > 0)
 
   // split 模式：焦点在最后一问时按钮才是「保存」，否则是「下一问」导航
   const onLastSub = !splitMode || focusIdx >= draftSubs.length - 1
@@ -310,8 +328,8 @@ export default function App() {
   const save = useCallback(async () => {
     if (!detail || saving) return
     if (splitMode) {
-      if (!subsComplete) return
-    } else if (!draftDifficulty || draftTags.length === 0) return
+      if (!subsTagged) return
+    } else if (draftTags.length === 0) return
     setSaving(true)
     try {
       const body = splitMode
@@ -319,11 +337,16 @@ export default function App() {
             subs: draftSubs.map((s) => ({
               label: s.label,
               tags: s.tags,
-              difficulty: s.difficulty as string,
+              difficulty: s.difficulty, // 可 null（docs/13）
             })),
           }
-        : { tags: draftTags, difficulty: draftDifficulty as string }
+        : { tags: draftTags, difficulty: draftDifficulty }
       const result = await api.saveAnnotation(detail.qid, body)
+      // 「单元是否齐备」也一并更新，否则切到预览模式时新标好的题可能不进列表（docs/13）
+      const tagsReady = splitMode ? draftSubs.every((s) => s.tags.length > 0) : draftTags.length > 0
+      const diffReady = splitMode
+        ? draftSubs.every((s) => s.difficulty !== null)
+        : draftDifficulty !== null
       setQuestions((prev) =>
         prev.map((q) =>
           q.qid === result.qid
@@ -332,6 +355,8 @@ export default function App() {
                 status: result.status,
                 tags: result.tags,
                 difficulty: result.difficulty,
+                tags_ready: tagsReady,
+                difficulty_ready: diffReady,
                 split: result.split ?? q.split ?? false,
                 sub_labels: result.sub_labels ?? q.sub_labels,
               }
@@ -359,12 +384,13 @@ export default function App() {
     } finally {
       setSaving(false)
     }
-  }, [detail, splitMode, subsComplete, draftSubs, draftDifficulty, draftTags, saving, paperId, questions, currentIndex, showToast])
+  }, [detail, splitMode, subsTagged, draftSubs, draftDifficulty, draftTags, saving, paperId, questions, currentIndex, showToast])
 
   // 快捷键：←/→ 翻题（预览模式翻预览列表），1/2/3 难度（split 模式作用于焦点组），Enter 保存
   // （预览模式只读，难度/保存快捷键禁用）
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (view !== 'workbench') return // 标签管理页里不吃打标台快捷键
       const el = e.target as HTMLElement | null
       const typing = el && ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
       if (mode === 'preview') {
@@ -385,7 +411,7 @@ export default function App() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [mode, previewIndex, previewQuestions.length, gotoPrev, gotoNext, pickDifficulty, save, canSave])
+  }, [mode, previewIndex, previewQuestions.length, gotoPrev, gotoNext, pickDifficulty, save, canSave, view])
 
   const currentPaper = papers.find((p) => p.id === paperId)
 
@@ -394,6 +420,155 @@ export default function App() {
     mode === 'preview' && previewDetail?.split_active && previewDetail.subs.length > 0
       ? previewDetail.subs[Math.min(previewSubIdx, previewDetail.subs.length - 1)]
       : null
+
+  // 预览模式：勾选/取消「审核确认」（docs/11 + docs/13）
+  //   非切分题 = 确认整题；切分题 = 确认当前小问。
+  //   若本次在预览里补/改了难度（previewPick），随确认一起写回题库。
+  //   确认成功后：切分题先切到下一个未确认小问，本题全确认后跳下一题；非切分题直接跳下一题。
+  //   取消确认不跳转、也不回退难度。
+  const handlePreviewConfirm = useCallback(
+    async (on: boolean) => {
+      const d = previewDetail
+      if (!d || confirming) return
+      const split = d.split_active && d.subs.length > 0
+      const idx = split ? Math.min(previewSubIdx, d.subs.length - 1) : 0
+      if (split && !d.subs[idx]) return
+      const unit = split ? d.subs[idx].qid : d.qid
+      const savedDiff = split ? d.subs[idx].difficulty : d.difficulty
+      if (on && !savedDiff && !previewPick) return // 没难度不能确认（勾选框已禁用，这里兜底）
+
+      setConfirming(true)
+      try {
+        const res = await api.confirmQuestion(unit, on, on ? previewPick : null)
+
+        const writtenDiff = res.difficulty ?? null
+        const nextSubs = split
+          ? d.subs.map((s) =>
+              s.qid === unit ? { ...s, verified: on, difficulty: writtenDiff ?? s.difficulty } : s,
+            )
+          : d.subs
+        const difficulty = split ? d.difficulty : (writtenDiff ?? d.difficulty)
+        const total = split ? nextSubs.length : 1
+        const done = split ? nextSubs.filter((s) => s.verified).length : on ? 1 : 0
+        const state: VerifyState = total && done === total ? 'all' : done ? 'partial' : 'none'
+
+        // 「单元是否齐备」——补完难度后题目可能从 partial 变 done（docs/13）
+        const tagsReady = split ? nextSubs.every((s) => s.tags.length > 0) : d.tags.length > 0
+        const diffReady = split ? nextSubs.every((s) => !!s.difficulty) : !!difficulty
+        const status: Status =
+          tagsReady && diffReady ? 'done' : tagsReady || diffReady ? 'partial' : 'none'
+        const prevStatus = previewQuestions.find((q) => q.qid === d.qid)?.status ?? 'none'
+
+        // 本地乐观更新：右侧详情 + 左侧题号
+        setPreviewDetail({
+          ...d,
+          subs: nextSubs,
+          difficulty,
+          verified: split ? state === 'all' : on,
+          verify_state: state,
+          confirmed_units: done,
+          total_units: total,
+        })
+        setQuestions((prev) =>
+          prev.map((q) =>
+            q.qid === d.qid
+              ? {
+                  ...q,
+                  status,
+                  tags_ready: tagsReady,
+                  difficulty_ready: diffReady,
+                  difficulty: split ? q.difficulty : (difficulty ?? null),
+                  verify_state: state,
+                  confirmed_units: done,
+                  total_units: total,
+                }
+              : q,
+          ),
+        )
+        // 卷进度：已打标（补完难度可能 +1）与已确认（跨越 all 边界时 ±1）
+        const prevState = d.verify_state ?? 'none'
+        if (prevState !== state || prevStatus !== status) {
+          setPapers((prev) =>
+            prev.map((p) => {
+              if (p.id !== d.paper_id) return p
+              const dAnn =
+                status === 'done' && prevStatus !== 'done'
+                  ? 1
+                  : status !== 'done' && prevStatus === 'done'
+                    ? -1
+                    : 0
+              const dVer = state === 'all' ? 1 : prevState === 'all' ? -1 : 0
+              return {
+                ...p,
+                annotated_count: p.annotated_count + dAnn,
+                verified_count: (p.verified_count ?? 0) + dVer,
+              }
+            }),
+          )
+        }
+        if (writtenDiff) setPreviewPick(null) // 已写回，撤掉「已改选」标记
+
+        if (!on) return // 取消确认：不跳转
+        if (split) {
+          const n = nextSubs.length
+          let next = -1
+          for (let k = 1; k <= n; k++) {
+            const j = (idx + k) % n
+            if (!nextSubs[j].verified) {
+              next = j
+              break
+            }
+          }
+          if (next >= 0) {
+            setPreviewSubIdx(next)
+            setPreviewPick(null)
+          } else if (previewIndex < previewQuestions.length - 1) {
+            setPreviewIndex(previewIndex + 1)
+          } else {
+            showToast({ kind: 'ok', text: '已是本卷最后一题' })
+          }
+        } else if (previewIndex < previewQuestions.length - 1) {
+          setPreviewIndex(previewIndex + 1)
+        } else {
+          showToast({ kind: 'ok', text: '已是本卷最后一题' })
+        }
+      } catch (e) {
+        showToast({ kind: 'err', text: `确认失败：${(e as Error).message}` })
+      } finally {
+        setConfirming(false)
+      }
+    },
+    [
+      previewDetail,
+      confirming,
+      previewSubIdx,
+      previewIndex,
+      previewQuestions,
+      previewPick,
+      showToast,
+    ],
+  )
+
+  // 预览模式：切换小问（补难度只对当前小问有效，切换即丢）
+  const pickPreviewSub = useCallback((i: number) => {
+    setPreviewSubIdx(i)
+    setPreviewPick(null)
+  }, [])
+
+  // 标签管理页：整页切换（打标台状态留在本组件里，回来位置不丢）
+  if (view === 'tagadmin') {
+    return (
+      <TagAdmin
+        initialBoard={board}
+        initialQual={qualification}
+        initialSubject={subject}
+        onExit={() => {
+          setView('workbench')
+          setRefreshTick((t) => t + 1)
+        }}
+      />
+    )
+  }
 
   return (
     <div className="flex h-screen flex-col bg-white text-gray-900">
@@ -436,6 +611,26 @@ export default function App() {
               {toast.text}
             </span>
           )}
+          <button
+            type="button"
+            onClick={() => setView('tagadmin')}
+            title="维护标签词表（改中英文名 / 新增一级组与二级标签）"
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-3.5 w-3.5 text-gray-500"
+            >
+              <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
+              <circle cx="7" cy="7" r="1.2" />
+            </svg>
+            标签管理
+          </button>
           {currentPaper && (
             <span className="text-sm text-gray-500">
               卷进度：已打标{' '}
@@ -503,8 +698,12 @@ export default function App() {
                   <PreviewPanel
                     detail={previewDetail}
                     subIdx={previewSubIdx}
-                    onSubIdx={setPreviewSubIdx}
+                    onSubIdx={pickPreviewSub}
                     width={rightW}
+                    onConfirm={handlePreviewConfirm}
+                    confirming={confirming}
+                    pick={previewPick}
+                    onPickDifficulty={setPreviewPick}
                   />
                 </>
               )}
@@ -537,6 +736,7 @@ export default function App() {
             {/* data-annotate-panel：端到端测试锚点（右侧打标面板，与左侧题列表 aside 区分） */}
             <aside
               data-annotate-panel="1"
+              data-qid={detail?.qid ?? ''}
               style={{ width: rightW }}
               className="flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3"
             >
@@ -577,7 +777,7 @@ export default function App() {
                   <div className="mb-1.5 flex items-baseline justify-between">
                     <span className="text-sm font-medium text-gray-700">小问分组</span>
                     <span className="text-xs font-normal text-gray-400">
-                      {draftSubs.filter((s) => subState(s) === 'done').length}/{draftSubs.length} 完成
+                      {subDoneCount}/{draftSubs.length} 完成
                     </span>
                   </div>
                   <div className="flex gap-1.5">
@@ -629,7 +829,7 @@ export default function App() {
                   <span className="text-sm font-medium text-gray-700">
                     难度{splitMode && focusSub ? `（${focusSub.label} 问）` : ''}
                   </span>
-                  <span className="text-xs font-normal text-gray-400">单选 · 必选（快捷键 1–5）</span>
+                  <span className="text-xs font-normal text-gray-400">单选 · 可留空（快捷键 1–5）</span>
                 </div>
                 <div className="flex gap-1.5">
                   {DIFFICULTY_LABELS.map(([value, label, cls]) => (
@@ -666,7 +866,7 @@ export default function App() {
                     ? '保存中…'
                     : splitMode
                       ? onLastSub
-                        ? `保存（${draftSubs.filter((s) => subState(s) === 'done').length}/${draftSubs.length} 问完成）`
+                        ? `保存（${subDoneCount}/${draftSubs.length} 问已完成）`
                         : '下一问'
                       : '确定并保存'}
                 </button>
