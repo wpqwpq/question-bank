@@ -23,6 +23,11 @@ from pathlib import Path
 DEFAULT_BASE = "http://127.0.0.1:8642"
 
 
+def get(base, path):
+    with urllib.request.urlopen(base + path, timeout=30) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
 def put(base, qid, body):
     data = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(f"{base}/api/questions/{qid}/annotation", data=data,
@@ -60,13 +65,33 @@ def main():
             print(f"✗ q{n}：缺 qid", file=sys.stderr)
             continue
 
+        # ⚠️ 难度一律**保留原值**：AI 只标知识点，不该把别人（或预览模式）已经补好的难度抹掉。
+        #    后端 write_annotation 用 difficulty=None 表示「删除该行」，所以必须回填。
+        try:
+            cur = get(a.base, f"/api/questions/{qid}")
+            cur_diff = cur.get("difficulty")
+            cur_subs = {str(s.get("label")): s.get("difficulty") for s in (cur.get("subs") or [])}
+        except Exception as e:  # noqa: BLE001
+            fail.append({"n": n, "error": f"读取现状失败：{e}"})
+            print(f"✗ q{n}：读取现状失败 {e}", file=sys.stderr)
+            continue
+
         subs = it.get("subs")
         if subs:
-            body = {"subs": [{"label": s["label"], "tags": s["tags"], "difficulty": None}
-                             for s in subs], "difficulty": None}
-            desc = "subs[" + ", ".join(s["label"] for s in subs) + "]"
+            # 个别小问 tags 为空 = 该小问无合适标签 → 留空、不提交（后端允许提交子集）
+            eff = [s for s in subs if s.get("tags")]
+            blank = [s["label"] for s in subs if not s.get("tags")]
+            if not eff:
+                skip.append({"n": n, "reason": "所有小问都没有合适标签"})
+                print(f"[skip] q{n}：所有小问都没有合适标签")
+                continue
+            body = {"subs": [{"label": s["label"], "tags": s["tags"],
+                              "difficulty": cur_subs.get(str(s["label"]))} for s in eff],
+                    "difficulty": None}
+            desc = "subs[" + ", ".join(s["label"] for s in eff) + "]" + (
+                f"（留空 {blank}）" if blank else "")
         else:
-            body = {"tags": it.get("tags") or [], "difficulty": None}
+            body = {"tags": it.get("tags") or [], "difficulty": cur_diff}  # 难度保留原值
             desc = "tags=" + ",".join(body["tags"])
 
         if not a.apply:

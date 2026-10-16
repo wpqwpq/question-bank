@@ -260,6 +260,18 @@
         "zh": "中微子",
         "en": "neutrino",
         "group": "u1g-modern-physics"
+      },
+      {
+        "id": "u1-density",
+        "zh": "密度",
+        "en": "density",
+        "group": "u1g-material-science"
+      },
+      {
+        "id": "u1-measuring-decay",
+        "zh": "测量核衰变",
+        "en": "measuring decay",
+        "group": "u1g-nuclear-physics"
       }
     ]
   },
@@ -519,16 +531,40 @@
         "group": "u2g-quantum-physics"
       },
       {
+        "id": "u2-electronvolt",
+        "zh": "电子伏",
+        "en": "electronvolt",
+        "group": "u2g-quantum-physics"
+      },
+      {
         "id": "u2-wave-particle-duality",
         "zh": "波粒二象性",
         "en": "wave-particle duality",
         "group": "u2g-quantum-physics"
       },
       {
+        "id": "u2-superconductivity",
+        "zh": "超导",
+        "en": "superconductivity",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
         "id": "u2-electron-diffraction",
         "zh": "电子衍射",
         "en": "electron diffraction",
         "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-measuring-internal-resistance",
+        "zh": "内阻的测量",
+        "en": "measuring internal resistance",
+        "group": "u2g-circuit-principles"
+      },
+      {
+        "id": "u2-measuring-refractive-index",
+        "zh": "测量折射率实验",
+        "en": "experiment to measure refractive index",
+        "group": "u2g-reflection-and-refraction"
       }
     ]
   },

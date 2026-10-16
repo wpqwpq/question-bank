@@ -13,6 +13,8 @@ interface Props {
   initialBoard: string
   initialQual: string
   initialSubject: string
+  /** 打开时直接定位到的单元（如打标台当前卷的 U1 / P1P2）；不在该词表里则回落到第一个单元 */
+  initialUnit?: string
   onExit: () => void
 }
 
@@ -144,13 +146,13 @@ function clientValidate(file: TaxFile): string[] {
   return errs
 }
 
-export default function TagAdmin({ initialBoard, initialQual, initialSubject, onExit }: Props) {
+export default function TagAdmin({ initialBoard, initialQual, initialSubject, initialUnit, onExit }: Props) {
   const [tree, setTree] = useState<TaxTree | null>(null)
   const [sel, setSel] = useState<Sel>({ board: initialBoard, qual: initialQual, subject: initialSubject })
   const [file, setFile] = useState<TaxFile | null>(null)
   const [filePath, setFilePath] = useState('')
   const [baseline, setBaseline] = useState('')
-  const [unit, setUnit] = useState('')
+  const [unit, setUnit] = useState(initialUnit ?? '')
   const [folded, setFolded] = useState<Set<string>>(new Set())
   const [query, setQuery] = useState('')
   const [pendingTag, setPendingTag] = useState<PendingTag | null>(null)

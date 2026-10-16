@@ -85,6 +85,8 @@ export interface SaveResult {
   split?: boolean
   sub_labels?: string[]
   warnings?: string[]
+  /** 本次保存因「标签/难度有改动」而被自动撤销的确认单元（docs/12 §③） */
+  confirm_cleared?: string[]
 }
 
 export interface ConfirmResult {

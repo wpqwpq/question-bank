@@ -77,8 +77,9 @@ def main():
                 if s.get("low"):
                     n_low += 1
                 lab = it.get("sub_prefix", "")
-                cells.append(f'<div class="sub"><em>{lab}{s["label"]}</em> '
-                             f'{chips(s["tags"], zh, s.get("low", False))}</div>')
+                inner = (chips(s["tags"], zh, s.get("low", False)) if s.get("tags")
+                         else '<span class="blank">留空 · 无合适标签</span>')
+                cells.append(f'<div class="sub"><em>{lab}{s["label"]}</em> {inner}</div>')
                 whys.append(s.get("why", ""))
             rows.append(f'<tr><td class="num">{n}</td><td class="mk">{marks}</td>'
                         f'<td class="lg">{len(subs)} 小问</td><td>{"".join(cells)}</td>'
@@ -137,6 +138,8 @@ td.why{{color:#4b5563;width:32%;font-size:12.5px}}
 .chip.low{{background:#fffbeb;border-color:#fcd34d;color:#92400e}}
 .chip code{{font:10.5px ui-monospace,Consolas,monospace;color:#64748b}}
 .chip.low code{{color:#b45309}}
+.blank{{display:inline-block;background:#f3f4f6;border:1px dashed #d1d5db;color:#9ca3af;
+ border-radius:6px;padding:1px 8px;font-size:12px}}
 .tip{{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:11px 14px;
  font-size:13px;color:#065f46;margin-top:10px}}
 .tip b{{color:#047857}}

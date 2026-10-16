@@ -43,6 +43,23 @@ class ConfirmPayload(BaseModel):
 # 聚合逻辑留在本层，store 不依赖 review（避免循环依赖）。
 # ---------------------------------------------------------------------------
 
+def _invalidate_confirm(units: list[str], unchanged: set[str]) -> list[str]:
+    """保存标注后，把**内容确有变化**的确认单元的勾选撤掉。
+
+    docs/12 §③：「确认必须能失效」——AI/人工改了标签或难度后，原来的「我已核对」
+    就在说谎。这里只撤销真正变了的单元（`unchanged` 里的是内容未变、跳过），
+    避免重复保存把用户的确认白白清掉。返回被撤掉的单元 id 列表。
+    """
+    cleared: list[str] = []
+    for uid in dict.fromkeys(units):  # 去重且保序
+        if not uid or uid in unchanged:
+            continue
+        if review.is_confirmed(uid):
+            review.set_confirmed(uid, False)
+            cleared.append(uid)
+    return cleared
+
+
 def _units_of(qid: str, split: bool, sub_ids: list[str]) -> list[str]:
     """一个主题题目包含的确认单元 id 列表。
 
@@ -307,6 +324,12 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         if s.difficulty is not None and s.difficulty not in VALID_DIFFICULTIES:
             raise HTTPException(422, f"小问 {s.label}: 难度必须为 very-easy / easy / medium / hard / very-hard 之一")
 
+    # 保存前快照：用于判断各小问的标签/难度是否真的变了（变了才撤销确认）
+    before = {
+        str(sm.get("sub_label")): (tuple(sm.get("tags") or []), sm.get("difficulty"))
+        for sm in paper.sub_metas(qpath)
+    }
+
     # 渲染子图：AQA/CIE 按小问打标但「不切子图」——子题文件不带 image/layout，
     # 预览自动回退整题图（前端 imageOverride ?? null）。Edexcel 维持切子图。
     if paper.board in store.SUB_NO_IMAGE_BOARDS:
@@ -330,6 +353,18 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
     except ValueError as e:
         raise HTTPException(500, str(e))
     result["warnings"] = render_res["warnings"]
+
+    # 标签/难度动过的小问 → 取消其「核对完成」；切分本身就是形态变化，
+    # 所以主文件那条整题确认（若有）一律作废。
+    unchanged: set[str] = set()
+    units: list[str] = [str(meta.get("id"))]
+    for sm in result.get("subs") or []:
+        uid = str(sm.get("qid"))
+        units.append(uid)
+        new = (tuple(sm.get("tags") or []), sm.get("difficulty"))
+        if before.get(str(sm.get("label"))) == new:
+            unchanged.add(uid)
+    result["confirm_cleared"] = _invalidate_confirm(units, unchanged)
     return result
 
 
@@ -339,6 +374,9 @@ def _save_whole(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         raise HTTPException(422, "难度必须为 very-easy / easy / medium / hard / very-hard 之一")
 
     was_split = bool(meta.get("split"))
+    before = (tuple(meta.get("tags") or []), meta.get("difficulty"))
+    # 关闭切分时，原挂在各小问上的确认也要一并作废
+    old_sub_qids = [str(m.get("id")) for m in paper.sub_metas(qpath)] if was_split else []
     if was_split:
         store.cleanup_subs(paper, qpath)  # 关闭切分：先清子文件与派生图
     try:
@@ -349,4 +387,11 @@ def _save_whole(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         result["split_removed"] = True
         result["split"] = False  # 显式回传，前端列表立即摘掉切分角标
         result["sub_labels"] = []
+
+    # 标签/难度动过 → 原来的「核对完成」勾选自动作废（docs/12 §③）
+    qid = str(meta.get("id"))
+    after = (tuple(result.get("tags") or []), result.get("difficulty"))
+    result["confirm_cleared"] = _invalidate_confirm(
+        [qid, *old_sub_qids], {qid} if before == after else set()
+    )
     return result

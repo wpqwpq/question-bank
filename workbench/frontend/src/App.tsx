@@ -252,7 +252,16 @@ const pendingFocusRef = useRef<number | null>(null)
     const mode = d.split_active || (splitOnRef.current && d.split_eligible)
     setSplitMode(mode)
     if (mode) {
-      const labels = d.split_active && d.subs.length > 0 ? d.subs.map((s) => s.label) : d.top_labels
+      // 小问列表一律以 cut.json 的 top_labels 为准（完整）；subs 只用来回填已有标签。
+      // ⚠️ 不能拿 subs 的 label 当列表：增量保存允许「个别小问留空不提交」，
+      //    那样未打标的那个小问会在这里被漏掉，界面上只剩已提交的几个小问
+      //    （过去只有「开关切两下」走 toggleSplit 才能恢复，因为它用的是 top_labels）。
+      const labels =
+        d.top_labels.length > 0
+          ? d.top_labels
+          : d.split_active && d.subs.length > 0
+            ? d.subs.map((s) => s.label)
+            : []
       setDraftSubs(
         labels.map((l) => {
           const ex = d.subs.find((s) => s.label === l)
@@ -383,6 +392,10 @@ const pendingFocusRef = useRef<number | null>(null)
                 difficulty_ready: diffReady,
                 split: result.split ?? q.split ?? false,
                 sub_labels: result.sub_labels ?? q.sub_labels,
+                // 改动使原确认失效 → 左侧题号立刻退回「未确认」
+                ...(result.confirm_cleared?.length
+                  ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
+                  : {}),
               }
             : q,
         ),
@@ -401,7 +414,8 @@ const pendingFocusRef = useRef<number | null>(null)
         }),
       )
       const warn = result.warnings?.length ? `（注意：${result.warnings[0]}）` : ''
-      showToast({ kind: 'ok', text: `第 ${String(detail.meta.question_number)} 题已保存${warn}` })
+      const cleared = result.confirm_cleared?.length ? '（改动已让原确认失效）' : ''
+      showToast({ kind: 'ok', text: `第 ${String(detail.meta.question_number)} 题已保存${cleared}${warn}` })
       if (currentIndex < questions.length - 1) setCurrentIndex(currentIndex + 1)
     } catch (e) {
       showToast({ kind: 'err', text: `保存失败：${(e as Error).message}` })
@@ -436,14 +450,76 @@ const pendingFocusRef = useRef<number | null>(null)
                 sub_labels: res.sub_labels ?? q.sub_labels,
                 tags_ready: tagsReady,
                 difficulty_ready: diffReady,
+                // 增量保存若改动了某个小问，它的确认也随之失效
+                ...(res.confirm_cleared?.length
+                  ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
+                  : {}),
               }
             : q,
         ),
       )
+      if (res.confirm_cleared?.length) {
+        showToast({ kind: 'ok', text: '已保存（改动让原确认失效）' })
+      }
     } catch (e) {
       showToast({ kind: 'err', text: `保存失败：${(e as Error).message}` })
     }
   }, [detail, draftSubs, showToast])
+
+  /**
+   * 预览模式选难度：只暂存（真写库仍在勾「确认」时发生），但**与已存难度不同**时
+   * 立刻把该单元的「核对完成」撤掉——与打标模式保存后的行为保持一致：动了难度，
+   * 原来的「我已核对」就不该再亮着（docs/12 §③）。
+   */
+  const previewPickDifficulty = useCallback(
+    async (value: string) => {
+      setPreviewPick(value)
+      const d = previewDetail
+      if (!d) return
+      const split = d.split_active && d.subs.length > 0
+      const idx = split ? Math.min(previewSubIdx, d.subs.length - 1) : 0
+      const unit = split ? d.subs[idx]?.qid : d.qid
+      const saved = split ? d.subs[idx]?.difficulty : d.difficulty
+      const verified = split ? !!d.subs[idx]?.verified : !!d.verified
+      if (!unit || !verified || saved === value) return // 本来没确认、或难度没变 → 不动
+      try {
+        await api.confirmQuestion(unit, false, null)
+      } catch (e) {
+        showToast({ kind: 'err', text: `撤销确认失败：${(e as Error).message}` })
+        return
+      }
+      const nextSubs = split
+        ? d.subs.map((s) => (s.qid === unit ? { ...s, verified: false } : s))
+        : d.subs
+      const total = split ? nextSubs.length : 1
+      const done = nextSubs.filter((s) => s.verified).length
+      const state: VerifyState = total && done === total ? 'all' : done ? 'partial' : 'none'
+      setPreviewDetail({
+        ...d,
+        subs: nextSubs,
+        verified: split ? state === 'all' : false,
+        verify_state: state,
+        confirmed_units: done,
+        total_units: total,
+      })
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.qid === d.qid ? { ...q, verify_state: state, confirmed_units: done } : q,
+        ),
+      )
+      if (d.verify_state === 'all') {
+        setPapers((prev) =>
+          prev.map((p) =>
+            p.id === d.paper_id
+              ? { ...p, verified_count: Math.max(0, (p.verified_count ?? 0) - 1) }
+              : p,
+          ),
+        )
+      }
+      showToast({ kind: 'ok', text: '难度已改选 · 原确认失效' })
+    },
+    [previewDetail, previewSubIdx, showToast],
+  )
 
   // 快捷键：←/→ 翻题（预览模式翻预览列表），1/2/3 难度（split 模式作用于焦点组），Enter 保存
   // （预览模式只读，难度/保存快捷键禁用）
@@ -458,7 +534,7 @@ const pendingFocusRef = useRef<number | null>(null)
           setPreviewIndex(previewIndex + 1)
         else if (!typing && e.key >= '1' && e.key <= '5') {
           // 1–5 就地选难度（与打标模式一致）；只暂存，勾「确认」时才写回题库
-          setPreviewPick(DIFFICULTY_LABELS[Number(e.key) - 1][0])
+          void previewPickDifficulty(DIFFICULTY_LABELS[Number(e.key) - 1][0])
         }
         return
       }
@@ -474,7 +550,7 @@ const pendingFocusRef = useRef<number | null>(null)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [mode, previewIndex, previewQuestions.length, gotoPrev, gotoNext, pickDifficulty, save, canSave, view])
+  }, [mode, previewIndex, previewQuestions.length, gotoPrev, gotoNext, pickDifficulty, previewPickDifficulty, save, canSave, view])
 
   const currentPaper = papers.find((p) => p.id === paperId)
 
@@ -624,6 +700,7 @@ const pendingFocusRef = useRef<number | null>(null)
         initialBoard={board}
         initialQual={qualification}
         initialSubject={subject}
+        initialUnit={currentPaper?.unit}
         onExit={() => {
           setView('workbench')
           setRefreshTick((t) => t + 1)
@@ -765,7 +842,7 @@ const pendingFocusRef = useRef<number | null>(null)
                     onConfirm={handlePreviewConfirm}
                     confirming={confirming}
                     pick={previewPick}
-                    onPickDifficulty={setPreviewPick}
+                    onPickDifficulty={previewPickDifficulty}
                   />
                 </>
               )}
