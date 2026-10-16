@@ -5,8 +5,9 @@ const ZOOM_MIN = 0.3
 const ZOOM_MAX = 4
 const ZOOM_STEP = 0.1
 const ZOOM_KEY = 'wb.zoom'
-/** 图片可用宽度里要扣掉的固定开销：外层 p-4(32) + 图片框 p-2+边框(18) */
-const CHROME = 50
+/** 图片可用宽度里要扣掉的固定开销：外层 p-4(32) + 图片框 p-2+边框(18)；
+ *  再留 2px 余量吸收舍入误差（贴边时会把容器撑出滚动条、引发抖动） */
+const CHROME = 52
 
 interface Props {
   detail: QuestionDetail | null
@@ -91,7 +92,13 @@ export default function QuestionViewer({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto bg-gray-100 p-4">
+      {/* scrollbar-gutter:stable —— 给垂直滚动条预留固定槽位，它的出现/消失不再改变
+          clientWidth。否则会形成反馈循环：图片宽度 ← 容器宽度（clientWidth）← 有无滚动条
+          ← 图片高度（等比缩放）→ 图片宽度…，题图区会疯狂抖动、看到残影。 */}
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-auto bg-gray-100 p-4 [scrollbar-gutter:stable]"
+      >
         {imgSrc ? (
           <div className={`flex justify-center ${imgW > 0 ? 'min-w-fit' : 'min-w-0'}`}>
             <div className="w-fit rounded-lg border border-gray-300 bg-white p-2">
