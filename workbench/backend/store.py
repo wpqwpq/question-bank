@@ -39,15 +39,20 @@ def _validator() -> Draft202012Validator:
 
 
 def unit_from_paper_code(code: str) -> str:
-    """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）。
+    """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）；
+    CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4（对齐 taxonomy/cie 物理词表的单元键，不走 U1–U6）。
 
-    取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
-    没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到才抛错。
+    Edexcel 取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
+    没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到返回 'unknown'——
+    卷列表不因个别坏卷号崩溃；unknown 单元无词表，保存时会被标签校验拒绝。
     """
+    m = re.match(r"(?i)QP([124])\d", code.strip())
+    if m:
+        return "P4" if m.group(1) == "4" else "P1P2"
     m = re.search(r"1(\d)", code) or re.search(r"[PC]H0?(\d)", code, re.I)
-    if not m:
-        raise ValueError(f"无法从卷号推导单元: {code!r}")
-    return f"U{m.group(1)}"
+    if m:
+        return f"U{m.group(1)}"
+    return "unknown"
 
 
 def parse_front_matter(text: str) -> tuple[dict[str, Any], re.Match[str] | None]:
