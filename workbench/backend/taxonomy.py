@@ -32,8 +32,38 @@ _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
 _cache: dict[tuple[str, str, str], dict] = {}
 
 
+# 已知的规范资格目录名；用于把 a-level / alevel 这类历史异写法双向互认。
+_CANONICAL_QUALS = ("a-level", "as-level", "igcse", "gcse")
+
+
+def _qual_candidates(qualification: str) -> list[str]:
+    """资格目录名的候选路径片段，按优先级：原样 → 去连字符 → 规范写法。
+
+    历史遗留：CIE 的卷数据目录与 front-matter 用 `alevel`，词表目录建的是 `a-level`
+    （Edexcel/AQA 则统一 a-level）。把两者都列入候选，任一写法都能命中同一份词表。
+    """
+    key = qualification.replace("-", "").lower()
+    out: list[str] = []
+    for q in (qualification, key, *_CANONICAL_QUALS):
+        if q and q.replace("-", "").lower() == key and q not in out:
+            out.append(q)
+    return out
+
+
 def _taxonomy_path(board: str, qualification: str, subject: str) -> Path:
-    return TAXONOMY_DIR / board / qualification / f"{subject}.json"
+    """定位词表文件。
+
+    历史遗留：CIE 的卷数据目录与 front-matter 用 `alevel`，而词表目录建的是 `a-level`
+    （Edexcel/AQA 则统一 a-level）。这里按候选依次探测，两种写法都能命中；
+    都找不到时返回首选路径，由调用方按「无词表」处理（返回 {}）。
+    """
+    base = TAXONOMY_DIR / board
+    cands = _qual_candidates(qualification)
+    for q in cands:
+        p = base / q / f"{subject}.json"
+        if p.exists():
+            return p
+    return base / (cands[0] if cands else qualification) / f"{subject}.json"
 
 
 def load_taxonomy(board: str, qualification: str, subject: str) -> dict:

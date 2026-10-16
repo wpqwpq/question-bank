@@ -30,6 +30,14 @@ function loadRightWidth() {
   return clampRight(Number.isFinite(v) && v > 0 ? v : RIGHT_DEFAULT)
 }
 
+/**
+ * 资格名归一化后比较。
+ * 历史遗留：Edexcel/AQA 的数据目录与 front-matter 用 `a-level`，CIE 用 `alevel`，
+ * 而「资格」下拉的选项值统一是 `a-level` —— 直接全等比较会让 CIE 卷全部被过滤掉。
+ * 去连字符后 `a-level` 与 `alevel` 等价，igcse/gcse 不受影响。
+ */
+const normQual = (q: string) => q.replace(/-/g, '').toLowerCase()
+
 function subState(s: SubDraft): 'done' | 'partial' | 'none' {
   if (s.tags.length > 0 && s.difficulty !== null) return 'done'
   if (s.tags.length > 0 || s.difficulty !== null) return 'partial'
@@ -91,7 +99,9 @@ export default function App() {
     () =>
       papers.filter(
         (p) =>
-          p.board === board && p.qualification === qualification && p.subject === subject,
+          p.board === board &&
+          normQual(p.qualification) === normQual(qualification) &&
+          p.subject === subject,
       ),
     [papers, board, qualification, subject],
   )
