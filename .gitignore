@@ -17,6 +17,8 @@ _tmp/
 _exports/
 *.tmp
 ~$*
+# 全库打标导出脚本：本地按需跑，不入库（2026-10-16）
+/scripts/export_annotations.py
 
 # ── Python ──
 __pycache__/
