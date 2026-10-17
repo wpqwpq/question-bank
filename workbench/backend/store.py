@@ -587,7 +587,10 @@ def _yaml_dump_meta(meta: dict[str, Any]) -> str:
             continue
         if v is None:
             continue  # 难度可留空（docs/13）：None 整键省略，别写成 "k: None"
-        if isinstance(v, str) and (":" in v or v.strip() == "" or v != v.strip()):
+        # 纯数字样字符串也要加引号：sub_label "1" / question_number "1.1" 若直排，
+        # YAML 会读成 int/float，与 cut.json 侧类型不一致（打标模式按 label 配对小问会整片失配）。
+        if isinstance(v, str) and (":" in v or v.strip() == "" or v != v.strip()
+                                   or re.fullmatch(r"\d+(?:\.\d+)?", v)):
             lines.append(f"{k}: {json.dumps(v, ensure_ascii=False)}")
         else:
             lines.append(f"{k}: {v}")
@@ -664,7 +667,8 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
         if sm:
             sub_infos.append({
                 "qid": sm.get("id"),
-                "label": sm.get("sub_label"),
+                # 契约统一为 str：YAML 读回的 sub_label 可能是 int，前端按 label 配对小问会失配
+                "label": str(sm.get("sub_label")),
                 "tags": sm.get("tags") or [],
                 "primary_tag": effective_primary(sm.get("tags") or [], sm.get("primary_tag")),
                 "difficulty": sm.get("difficulty"),

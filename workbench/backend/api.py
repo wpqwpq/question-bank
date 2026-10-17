@@ -232,7 +232,10 @@ def get_question(qid: str):
         for sm in paper.sub_metas(parent_path):
             subs_out.append({
                 "qid": sm.get("id"),
-                "label": sm.get("sub_label"),
+                # ⚠️ 必须 str()：子题 front-matter 里 sub_label 写作无引号的 `sub_label: 1`，
+                #    YAML 读回是 int，而 top_labels 来自 cut.json 是 str。前端按 label 配对
+                #    小问（top_labels ↔ subs）时 `1 === '1'` 恒 false → 打标模式回填不出已有标签。
+                "label": str(sm.get("sub_label")),
                 "tags": sm.get("tags") or [],
                 # 已解析的主标签（读侧双保险回退，§2.1）；多标签未指定主时是 None
                 "primary_tag": store.effective_primary(sm.get("tags") or [], sm.get("primary_tag")),

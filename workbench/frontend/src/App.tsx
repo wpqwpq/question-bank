@@ -285,7 +285,10 @@ const pendingFocusRef = useRef<number | null>(null)
             : []
       setDraftSubs(
         labels.map((l) => {
-          const ex = d.subs.find((s) => s.label === l)
+          // ⚠️ 两侧类型不一定一致（top_labels 来自 cut.json 是 str，子题文件的
+          //    sub_label 经 YAML 读回可能是 int），必须按字符串比较，否则标签回填不出来。
+          //    后端 api.get_question 已统一输出 str，这里再兜一层防手改/旧数据。
+          const ex = d.subs.find((s) => String(s.label) === String(l))
           const tags = ex?.tags ?? []
           return {
             label: l,
