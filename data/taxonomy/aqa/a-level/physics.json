@@ -52,6 +52,12 @@
         "group": "u1g-fundamentals"
       },
       {
+        "id": "u1-design-and-analyse-experiment",
+        "zh": "实验设计与改进",
+        "en": "design and improve experiments",
+        "group": "u1g-fundamentals"
+      },
+      {
         "id": "u1-graphical-analysis",
         "zh": "绘制处理图像",
         "en": "graphical analysis",
@@ -64,10 +70,10 @@
         "group": "u1g-fundamentals"
       },
       {
-        "id": "u1-adding-and-resolving-vectors",
-        "zh": "矢量合成分解",
-        "en": "adding and resolving vectors",
-        "group": "u1g-fundamentals"
+        "id": "u1-definition-of-acceleration",
+        "zh": "加速度的定义",
+        "en": "definition of acceleration",
+        "group": "u1g-kinematics"
       },
       {
         "id": "u1-motion-graphs",
@@ -88,15 +94,15 @@
         "group": "u1g-kinematics"
       },
       {
-        "id": "u1-oblique-projectile-motion",
-        "zh": "斜抛运动",
-        "en": "oblique projectile motion",
-        "group": "u1g-kinematics"
-      },
-      {
         "id": "u1-centre-of-mass",
         "zh": "质心",
         "en": "centre of mass",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-definition-of-moment-and-torque",
+        "zh": "力矩和力偶定义",
+        "en": "definition of moment and torque",
         "group": "u1g-mechanics"
       },
       {
@@ -130,21 +136,15 @@
         "group": "u1g-mechanics"
       },
       {
+        "id": "u1-definition-of-momentum",
+        "zh": "动量的定义",
+        "en": "definition of momentum",
+        "group": "u1g-mechanics"
+      },
+      {
         "id": "u1-conservation-of-momentum-analysis",
         "zh": "动量守恒分析",
         "en": "conservation of momentum analysis",
-        "group": "u1g-mechanics"
-      },
-      {
-        "id": "u1-conservation-of-momentum-calculation",
-        "zh": "动量守恒计算",
-        "en": "conservation of momentum calculation",
-        "group": "u1g-mechanics"
-      },
-      {
-        "id": "u1-impulse-calculation",
-        "zh": "冲量计算",
-        "en": "impulse calculation",
         "group": "u1g-mechanics"
       },
       {
@@ -155,8 +155,8 @@
       },
       {
         "id": "u1-work-graphs",
-        "zh": "图像计算做功",
-        "en": "work graphs",
+        "zh": "做功",
+        "en": "work",
         "group": "u1g-work-and-energy"
       },
       {
@@ -226,9 +226,9 @@
         "group": "u1g-nuclear-physics"
       },
       {
-        "id": "u1-radiation-safety",
-        "zh": "辐射安全",
-        "en": "radiation safety",
+        "id": "u1-inverse-square-law",
+        "zh": "平方反比定律",
+        "en": "inverse square law",
         "group": "u1g-nuclear-physics"
       },
       {
@@ -245,14 +245,14 @@
       },
       {
         "id": "u1-identifying-particles",
-        "zh": "识别基本粒子",
-        "en": "identifying particles",
+        "zh": "常见粒子性质",
+        "en": "common particles' properties",
         "group": "u1g-modern-physics"
       },
       {
         "id": "u1-annihilation-and-pair-production",
-        "zh": "湮灭和对生成",
-        "en": "annihilation and pair production",
+        "zh": "质能转化",
+        "en": "mass-energy conversion",
         "group": "u1g-modern-physics"
       },
       {
@@ -268,10 +268,58 @@
         "group": "u1g-material-science"
       },
       {
+        "id": "u1-radiation-safety",
+        "zh": "辐射安全",
+        "en": "radiation safety",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-adding-and-resolving-vectors",
+        "zh": "矢量合成分解",
+        "en": "adding and resolving vectors",
+        "group": "u1g-fundamentals"
+      },
+      {
+        "id": "u1-power",
+        "zh": "功率",
+        "en": "power",
+        "group": "u1g-work-and-energy"
+      },
+      {
+        "id": "u1-oblique-projectile-motion",
+        "zh": "斜抛运动",
+        "en": "oblique projectile motion",
+        "group": "u1g-kinematics"
+      },
+      {
+        "id": "u1-conservation-of-momentum-calculation",
+        "zh": "动量守恒计算",
+        "en": "conservation of momentum calculation",
+        "group": "u1g-mechanics"
+      },
+      {
         "id": "u1-measuring-decay",
         "zh": "测量核衰变",
         "en": "measuring decay",
         "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-production-of-nuclear-decay",
+        "zh": "核衰变的产生",
+        "en": "production of nuclear decay",
+        "group": "u1g-nuclear-physics"
+      },
+      {
+        "id": "u1-impulse-calculation",
+        "zh": "冲量计算",
+        "en": "impulse calculation",
+        "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-terminal-velocity",
+        "zh": "终端速度",
+        "en": "terminal velocity",
+        "group": "u1g-mechanics"
       }
     ]
   },
@@ -555,16 +603,16 @@
         "group": "u2g-quantum-physics"
       },
       {
-        "id": "u2-measuring-internal-resistance",
-        "zh": "内阻的测量",
-        "en": "measuring internal resistance",
-        "group": "u2g-circuit-principles"
-      },
-      {
         "id": "u2-measuring-refractive-index",
         "zh": "测量折射率实验",
         "en": "experiment to measure refractive index",
         "group": "u2g-reflection-and-refraction"
+      },
+      {
+        "id": "u2-oscilloscope",
+        "zh": "示波器",
+        "en": "oscilloscope",
+        "group": "u2g-wave-fundamentals"
       }
     ]
   },
