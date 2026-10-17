@@ -10,8 +10,16 @@
 输出 JSON：
     {paper, board, qual, subject, unit, count, items:[
         {n, qid, type, marks, split_eligible, top_labels, image_url,
-         tags_now, status, available_tags:[{id,zh}], available_groups:[{id,zh,unit}]}
+         tags_now, primary_now, status,
+         available_tags:[{id,zh,en,group}], available_groups:[{id,zh,unit}]}
     ]}
+
+`primary_now` 是现状主标签（读侧已按 effective_primary 回退解析）；打新标签时**不要沿用**它，
+必须按 references/rules.md「主标签怎么选」重新判一次。
+
+`available_tags` 每项带 `en`（英文术语名，语义拿不准时以它为准）与 `group`（所属组 id）；
+候选**不止本单元**——AQA U5 会并进 U1–U4、CIE P1P2 会并进 P4 的电场组，
+归属靠 id 的单元前缀辨认，详见 references/rules.md §一。
 """
 import argparse
 import json
@@ -64,8 +72,10 @@ def main():
             "top_labels": d["top_labels"],
             "image_url": d["image_url"],
             "tags_now": d["tags"],
+            "primary_now": d.get("primary_tag"),
             "status": q.get("status"),
-            "available_tags": [{"id": t["id"], "zh": t["zh"]} for t in d["available_tags"]],
+            "available_tags": [{"id": t["id"], "zh": t["zh"], "en": t.get("en") or "",
+                                "group": t.get("group") or ""} for t in d["available_tags"]],
             "available_groups": [{"id": g["id"], "zh": g["zh"], "unit": g.get("unit")}
                                  for g in d["available_groups"]],
         })

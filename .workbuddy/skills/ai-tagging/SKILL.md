@@ -1,12 +1,13 @@
 ---
 name: ai-tagging
-description: "AI 给题库里的真题打知识点标签（只标二级/叶子标签、不标难度），走打标台的 HTTP API 直写。触发词：AI 打标、打标、跑一遍某卷、给这卷打标、标注知识点、tag this paper。适用项目：D:/Tasks/questionBank（A-Level/IGCSE 题库，Edexcel/AQA/CIE）。用法特征：用户给出卷标识（如 'AQA 2019年1月 PH01'、'CIE 2016-mar-qp12'），逐题看图选标签 → PUT /api/questions/{qid}/annotation → 出 HTML 报告到 docs/。"
+description: "AI 给题库里的真题打知识点标签 + 主标签（只标二级/叶子标签、不标难度），走打标台的 HTTP API 直写。触发词：AI 打标、AI 批改、打标、跑一遍某卷、给这卷打标、标注知识点、tag this paper。适用项目：D:/Tasks/questionBank（A-Level/IGCSE 题库，Edexcel/AQA/CIE）。用法特征：用户给出卷标识（如 'AQA 2019年1月 PH01'、'CIE 2016-mar-qp12'），逐题看图选标签 + 定主标签 → PUT /api/questions/{qid}/annotation → 出 HTML 报告到 docs/。"
 agent_created: true
 ---
 
 # AI 打标 · 题库知识点标注工作流
 
-给题库里的真题逐题标注**知识点标签**（二级/叶子标签）。只标知识点，**难度一律留空**（难度由人在打标台预览模式补）。
+给题库里的真题逐题标注**知识点标签**（二级/叶子标签）**和主标签**（每个标注单元恰好一个）。
+**难度一律留空**（难度由人在打标台预览模式补，AI 不碰）。
 
 ## 何时用
 
@@ -36,26 +37,35 @@ python scripts/fetch_paper.py <卷目录名> --json <临时文件>
 
 **一次读 4–6 张，分多批**。连续大批量读同一类文件会触发客户端的「重复工作 / 疑似卡死」提示。
 
-### 3. 每题做三个判断
+### 3. 每题做四个判断
 
 | 判断 | 依据 | 动作 |
 | --- | --- | --- |
 | **图对得上吗** | 图上肉眼可见的题号 vs front-matter 的 `question_number` | 对不上 → 记 `skip_reason`，不打标 |
 | **要不要拆分** | 后端给的 `split_eligible`（= cut.json 顶层小问 ≥2），**不自己判断** | true → 提交 `subs`；false → 整题 |
-| **选哪些标签** | 只从该题 API 返回的 `available_tags` 里选 | 见 `references/rules.md` |
+| **选哪些标签** | 只从该题 API 返回的 `available_tags` 里选 | 见 `references/rules.md` §二 |
+| **主标签是哪个** | 每个标注单元**恰好一个**：单标签自动即主（留空即可）；≥2 标签必须显式挑一个 | 见 `references/rules.md` §三 |
 
 ### 4. 写决策表
 
-写一个 `decisions.json`（格式见 `references/decisions-format.md`），逐题记：标签、每个小问的标签、判断理由、是否低置信、跳过原因。
+写一个 `decisions.json`（格式见 `references/decisions-format.md`），逐题记：标签、**主标签**、
+每个小问的标签与主标签、判断理由、是否低置信、跳过原因。
 
 ### 5. 写库
 
 ```bash
-python scripts/apply_tags.py decisions.json --apply      # 不加 --apply 先 dry-run
+python scripts/apply_tags.py decisions.json            # 先 dry-run：会打印每题的「标签 ★主=…」
+python scripts/apply_tags.py decisions.json --apply    # 确认无误再写
 ```
 
-脚本经 `PUT /api/questions/{qid}/annotation` 写库：整题传 `{tags, difficulty: null}`，拆分题传 `{subs:[{label,tags,difficulty:null}], difficulty: null}`。
-**绝不能直接改 `qNN.md`**——拆分题保存要后端跑 `render_subsplit` 产子图。
+脚本经 `PUT /api/questions/{qid}/annotation` 写库：
+
+- 整题：`{tags: [...], difficulty: <读回的现状值>, primary_tag: <主标签|null>}`
+- 拆分：`{subs: [{label, tags, difficulty: <现状值>, primary_tag}], difficulty: null}`
+
+三条要点：**① 难度不会被 AI 改动**（脚本先 GET 读回原值再原样提交）；
+**② 多标签缺主标签 → 该题报错、整题不写库**（不会半写），确不可判时才加 `--auto-primary` 应急兜底；
+**③ 绝不能直接改 `qNN.md`**——拆分题保存要后端跑 `render_subsplit` 产子图，直写文件没这个副作用。
 
 ### 6. 出报告
 
@@ -63,7 +73,8 @@ python scripts/apply_tags.py decisions.json --apply      # 不加 --apply 先 dr
 python scripts/make_report.py decisions.json --out <项目根>/docs/NN-AI打标报告-<board>-<卷>.html
 ```
 
-报告落 `docs/`（该目录在 gitignore 内、不入库）。报告必须含：**成功清单 / 低置信 / 无合适标签（留空）/ 疑似错图**，外加本轮发现的**词表缺口**。
+报告落 `docs/`（该目录在 gitignore 内、不入库）。报告必须含：**成功清单（主标签带「主」标记）/ 低置信 /
+无合适标签（留空）/ 疑似错图 / 主标签兜底**，外加本轮发现的**词表缺口**。
 
 ## 硬规则（不可违背）
 
@@ -72,16 +83,19 @@ python scripts/make_report.py decisions.json --out <项目根>/docs/NN-AI打标�
 3. **错图（图上题号 ≠ 元数据题号）→ 不打标 + 报告**。多页题只看首页题号。
 4. **难度一律留空**（`difficulty: null` → 整行不写）。不自动 confirm，确认留用户在预览模式做。
 5. **标签数量 = 该题实际考到的核心知识点个数**，不按分值设下限；分值只作**建议上限（非硬性）**：MCQ ≤2、3–5 分 ≤3、≥6 分 ≤4。详见 `references/rules.md`。
-6. **切分题里个别小问没有合适标签** → **只把那个小问留空**（`tags: []`），其余小问照常提交；报告里显示为「留空 · 无合适标签」。不要为了凑满乱填。
-7. **发现词表缺口 → 报告里明确列出**（哪个知识点、哪几题、建议怎么补），不要自己改词表，等用户决定。
-8. **不主动 git commit**；批量写库前先说清楚范围。
+6. **主标签每标注单元恰好一个**：`tags` 只有 1 个 → `primary_tag` 留空（后端自动补）；
+   `tags` ≥2 → **必须**显式给出且 ∈ `tags`，否则写库被拒。拆分题**逐个小问各判一个**，
+   留空的小问不给主标签。判不出主线就回看题图；`--auto-primary` 仅应急，用了必在报告标黄。
+7. **切分题里个别小问没有合适标签** → **只把那个小问留空**（`tags: []`），其余小问照常提交；报告里显示为「留空 · 无合适标签」。不要为了凑满乱填。
+8. **发现词表缺口 → 报告里明确列出**（哪个知识点、哪几题、建议怎么补），不要自己改词表，等用户决定。
+9. **不主动 git commit**；批量写库前先说清楚范围。
 
 ## 脚本
 
 | 脚本 | 作用 |
 | --- | --- |
 | `scripts/fetch_paper.py` | 拉一卷逐题结构 + 候选标签，输出 JSON |
-| `scripts/apply_tags.py` | 读 `decisions.json`，经 API 写库（默认 dry-run） |
+| `scripts/apply_tags.py` | 读 `decisions.json`，经 API 写库（默认 dry-run）。含主标签校验：多标签缺主 → 该题报错不写；`--auto-primary` 应急兜底 |
 | `scripts/make_report.py` | 由 `decisions.json` 生成 HTML 报告 |
 
 ## 参考
