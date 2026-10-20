@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wpqwpq/question-bank/schema/cut.schema.json",
+  "title": "PaperCut",
+  "description": "一套试卷的按题切割坐标（对应每个 session 目录的 cut.json）。坐标系：PDF 点 pt，页面左上角原点，y 向下；bbox = [x0, y0, x1, y1]。",
+  "type": "object",
+  "required": ["schema_version", "source", "questions"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "source": {
+      "type": "object",
+      "required": ["file", "sha256", "pages"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string", "description": "固定为 source.pdf" },
+        "sha256": { "type": "string", "description": "源文件指纹；不匹配则一切产物失效，脚本必须校验" },
+        "pages": { "type": "integer", "minimum": 1 },
+        "paper_ref": { "type": "string", "description": "考试局内部卷号，如 P79335RA" }
+      }
+    },
+    "page_size": {
+      "type": "object",
+      "description": "pt；仅作参考，跨卷可能不同页不同尺寸",
+      "properties": {
+        "w": { "type": "number" },
+        "h": { "type": "number" }
+      }
+    },
+    "render": {
+      "type": "object",
+      "description": "上次渲染参数的记录（不是坐标的一部分）",
+      "properties": {
+        "dpi": { "type": "integer", "default": 200 },
+        "format": { "type": "string", "enum": ["webp"], "default": "webp" },
+        "quality": { "type": "integer", "default": 85 }
+      }
+    },
+    "needs_ocr": { "type": "boolean", "description": "扫描卷无文本层时为 true，此时 questions 为空" },
+    "answer_booklet": {
+      "type": "object",
+      "description": "答题册另附卷型（QP 与 Answer Booklet 分离，如 WPH12/01A）时存在；pages 为答题册锚点所在页范围（0 起）",
+      "properties": {
+        "pages": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+      }
+    },
+    "questions": { "type": "array", "items": { "$ref": "#/$defs/question" } }
+  },
+  "$defs": {
+    "region": {
+      "type": "object",
+      "required": ["page", "bbox"],
+      "additionalProperties": false,
+      "properties": {
+        "page": { "type": "integer", "description": "0 起的页码" },
+        "bbox": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": { "type": "number" },
+          "description": "[x0, y0, x1, y1]，单位 pt，左上原点，保留 2 位小数"
+        },
+        "shared": {
+          "type": "boolean",
+          "description": "共用题干块 region（MCQ \"Questions N and M refer\" 式）：同一块会复制进多个题的 regions，重叠属预期，校验跳过"
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": ["number", "status", "regions"],
+      "additionalProperties": false,
+      "properties": {
+        "number": { "type": "string", "description": "1、2…；将来可为 13(a)，与 qNN.md 的 question_number 同源" },
+        "status": {
+          "type": "string",
+          "enum": ["auto", "review", "verified", "manual"],
+          "description": "auto=纯机器结果；review=机器不确定待人工；verified=人工确认；manual=人工改过边界"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "机器置信度 0–1，人工确认后保留原值供统计"
+        },
+        "total_marks": { "type": "integer", "description": "从锚点捕获的分值" },
+        "section": { "type": "string", "description": "分节标记，如 A / B；无分节的卷可缺省" },
+        "question_type": { "type": "string", "enum": ["mcq", "structured"] },
+        "option_hotzones": {
+          "type": "array",
+          "description": "MCQ 各选项的点选热区（QP 页面 pt 坐标）；渲染层负责换算为题图归一化坐标写入 layout.json",
+          "items": {
+            "type": "object",
+            "required": ["label", "bbox"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string", "description": "A / B / C / D" },
+              "part": {
+                "type": "string",
+                "description": "所属小问标签（化学 2 分选择题 (a)/(b) 各一套选项时才有；单套选项时缺省）"
+              },
+              "bbox": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": { "type": "number" }
+              }
+            }
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/region" },
+          "description": "有序数组：渲染时按顺序纵向拼接，跨页题即多个 region"
+        },
+        "answer_regions": {
+          "type": "array",
+          "description": "答题册另附卷：该题在答题册中的作答区。label=null 表示整题一块（无小问）；否则与 subquestions.label 对应，layout.json 作答区定位用",
+          "items": {
+            "type": "object",
+            "required": ["regions"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": ["string", "null"], "description": "小问标签，如 'a'、'a i'；null=整题" },
+              "regions": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/region" },
+                "description": "有序 region：去掉册内题头行与分值行后的作答内容（末问连带册内 Total 行）"
+              }
+            }
+          }
+        },
+        "answer_block": {
+          "type": "array",
+          "description": "答题册另附卷：册内题号行顶 → 册内 Total 底的整块连续区域（小问标签/预留空白/横线/分值原样保留），渲染时作为答题册部分整块拼在题干之后",
+          "items": { "$ref": "#/$defs/region" }
+        },
+        "anchors": {
+          "type": "object",
+          "description": "机器定位依据的原始证据，供校对工具回显与再运行对齐",
+          "properties": {
+            "start": { "$ref": "#/$defs/region", "description": "题号行本身" },
+            "end": { "$ref": "#/$defs/region", "description": "(Total for Question N …) 行" },
+            "answer_start": { "$ref": "#/$defs/region", "description": "答题册内该题的题号标题行" },
+            "answer_end": { "$ref": "#/$defs/region", "description": "答题册内该题的 Total 行" }
+          }
+        },
+        "review_notes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "机器或人工留下的待办说明"
+        },
+        "edited_by": { "type": "string", "description": "最后人工修改者" },
+        "edited_at": { "type": "string", "description": "ISO 日期" },
+        "subquestions": {
+          "type": "array",
+          "description": "QP 侧小问标签锚点（粗体 'N (a)(i)…' 行），文档序；label 为空格连接的标签序列。answer_regions 按 label 与之对应",
+          "items": {
+            "type": "object",
+            "required": ["label", "page", "bbox"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string", "description": "如 'a'、'a i'、'c iii'" },
+              "page": { "type": "integer", "description": "0 起的页码" },
+              "bbox": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": { "type": "number" },
+                "description": "标签行本身的 bbox，pt"
+              },
+              "starred": { "type": "boolean", "description": "延伸题（QWC）标记，如 16*(b)" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

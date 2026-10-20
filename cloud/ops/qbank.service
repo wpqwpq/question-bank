@@ -1,0 +1,37 @@
+[Unit]
+Description=Question Bank Workbench (cloud)
+Documentation=file:///opt/qbank/README.md
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/qbank/workbench/backend
+Environment="PYTHONPATH=/opt/qbank/workbench/backend"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/opt/qbank/venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8642 --workers 1
+Restart=always
+RestartSec=3
+
+# ⚠️ workers 必须是 1：store._lock / _meta_cache / review._cache / 登录限流
+#    全是进程内状态。开两个 worker，A 进程改的题 B 进程看不见，
+#    两个进程同时写 state.db 还会互相覆盖。
+
+# 2026-10-18：OpenClaw 与无头浏览器已卸载，上限放宽。MemoryHigh=1G 开始回收，MemoryMax=2G 才重启。
+# 注意：MemoryMax 是硬上限（超了被 cgroup 杀），不是预留额度。别设成整机内存。
+MemoryHigh=1G
+MemoryMax=2G
+
+# 最小权限：只允许写 data/、config/、logs/、var/（var 放 state.db）
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/opt/qbank/data /opt/qbank/config /opt/qbank/logs /opt/qbank/var
+
+StandardOutput=append:/opt/qbank/logs/qbank.log
+StandardError=append:/opt/qbank/logs/qbank.log
+
+[Install]
+WantedBy=multi-user.target

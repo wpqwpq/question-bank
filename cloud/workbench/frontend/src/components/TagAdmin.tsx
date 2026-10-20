@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { TaxFile, TaxGroup, TaxTag, TaxTree, TaxUnit } from '../api'
-import { api, asUnit, slug, unitKeys } from '../api'
+import { api, asUnit, ConflictError, slug, unitKeys } from '../api'
 
 /**
  * 标签管理页：直接维护 data/taxonomy/<board>/<qual>/<subject>.json。
  *
  * 本期只做「改」+「增」（2026-10-16 定）：不做删除、不做改 id。
  * 编辑模型：整页草稿 + 显式保存；词表只存 id，改中英文名不影响任何已打标题目。
+ *
+ * 多人编辑（2026-10-19 起同一学科所有账号都能改）：整份覆盖写，靠 GET 拿到的
+ * `sig` 做乐观锁——保存时回传，中途别人存过就 409，前端提示重载，绝不静默覆盖。
  */
 
 interface Props {
@@ -152,6 +155,10 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
   const [file, setFile] = useState<TaxFile | null>(null)
   const [filePath, setFilePath] = useState('')
   const [baseline, setBaseline] = useState('')
+  /** 磁盘上的词表版本号（乐观锁）。保存成功后更新，冲突时保持旧值并要求重载。 */
+  const [sig, setSig] = useState('')
+  /** 保存被 409 挡下：手里的草稿已过期，必须重载才能继续改 */
+  const [stale, setStale] = useState(false)
   const [unit, setUnit] = useState(initialUnit ?? '')
   const [folded, setFolded] = useState<Set<string>>(new Set())
   const [query, setQuery] = useState('')
@@ -205,6 +212,8 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
         const r = await api.taxonomyFile(s.board, s.qual, s.subject)
         setFile(r.data)
         setFilePath(r.path)
+        setSig(r.sig)
+        setStale(false)
         setBaseline(JSON.stringify(r.data))
         const us = unitKeys(r.data)
         setUnit((prev) => (us.includes(prev) ? prev : (us[0] ?? '')))
@@ -323,6 +332,10 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
   // ── 保存 ──
   const save = useCallback(async (): Promise<boolean> => {
     if (!file || saving) return false
+    if (stale) {
+      showToast('err', '词表已被别人更新，请先重新加载再改')
+      return false
+    }
     if (pendingHasText) {
       showToast('err', '有一行新增还没确认（点行尾的 ✓），先确认或取消再保存')
       return false
@@ -335,12 +348,20 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
     }
     setSaving(true)
     try {
-      const r = await api.saveTaxonomy(sel.board, sel.qual, sel.subject, file)
+      const r = await api.saveTaxonomy(sel.board, sel.qual, sel.subject, file, sig)
+      setSig(r.sig)
       setBaseline(JSON.stringify(file))
       setErrors([])
       showToast('ok', `已保存 ${r.tags} 个标签 · 打标台右栏已刷新`)
       return true
     } catch (e) {
+      if (e instanceof ConflictError) {
+        // 中途别人存过：不覆盖、不自动丢弃草稿，把选择权交给用户
+        setStale(true)
+        setErrors([])
+        showToast('err', '保存被拒绝：这份词表刚被其他账号改过，请重新加载')
+        return false
+      }
       const msg = (e as Error).message
       setErrors(msg.split('\n').filter(Boolean))
       showToast('err', '保存失败')
@@ -348,7 +369,7 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
     } finally {
       setSaving(false)
     }
-  }, [file, saving, sel, showToast, pendingHasText])
+  }, [file, saving, sel, showToast, pendingHasText, sig, stale])
 
   // ── 下拉 ──
   const boards = tree ? Object.keys(tree) : []
@@ -436,10 +457,10 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
           <button
             type="button"
             data-ta-save="1"
-            disabled={!dirty || saving}
+            disabled={!dirty || saving || stale}
             onClick={() => void save()}
             className={`h-8 rounded-lg px-4 text-[13px] font-medium transition-colors ${
-              dirty && !saving ? 'bg-blue-600 text-white hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300 text-white'
+              dirty && !saving && !stale ? 'bg-blue-600 text-white hover:bg-blue-700' : 'cursor-not-allowed bg-gray-300 text-white'
             }`}
           >
             {saving ? '保存中…' : '保存'}
@@ -467,6 +488,27 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
           />
         </div>
       </div>
+
+      {stale && (
+        <div
+          data-ta-stale="1"
+          className="flex shrink-0 items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-[12.5px] text-amber-900"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-3.5 w-3.5 shrink-0">
+            <path d="M12 9v4M12 17h.01" />
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+          </svg>
+          这份词表刚被其他账号保存过，你手里的版本已过期，<b>保存已锁定</b>。重新加载会丢弃当前未保存的修改。
+          <button
+            type="button"
+            data-ta-reload="1"
+            onClick={() => void load(sel)}
+            className="ml-auto rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[12px] font-medium text-amber-900 hover:bg-amber-100"
+          >
+            重新加载
+          </button>
+        </div>
+      )}
 
       {showNotice && (
         <div className="flex shrink-0 items-center gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2 text-[12.5px] text-blue-800">

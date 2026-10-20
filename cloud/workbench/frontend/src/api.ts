@@ -16,6 +16,8 @@ export interface Paper {
   annotated_count: number
   /** 全部小问都已确认的主题题数（docs/11） */
   verified_count?: number
+  /** 本卷被标记为「有误」的题数 */
+  flagged_count?: number
   source?: string
 }
 
@@ -29,8 +31,14 @@ export interface QuestionSummary {
   /** 已解析的主标签（plans/主标签实施方案 §2）；切分题在主题层是 null，逐问看子题文件 */
   primary_tag?: string | null
   difficulty: string | null
-  /** 全部单元都有 ≥1 标签（切分题按小问聚合）——预览列表判据，docs/13 */
+  /** 全部单元都有 ≥1 标签（切分题按小问聚合）——「齐备」判据，也用于确认门禁 */
   tags_ready?: boolean
+  /**
+   * 任意一个单元有 ≥1 标签（切分题按小问看）——**预览列表的可见性判据**。
+   * 2026-10-18 起：小问允许跳过保存，只要有一问打了标，这道题就该出现在预览里
+   * （显示为「待补齐」灰色，可回打标模式补完）。
+   */
+  any_tagged?: boolean
   /** 全部单元都有难度——缺则预览里显示为「待补难度（灰）」 */
   difficulty_ready?: boolean
   /** 全部单元都能解析出主标签（≥2 标签却无主 → false）——确认门禁之一 */
@@ -41,6 +49,8 @@ export interface QuestionSummary {
   verify_state?: VerifyState
   confirmed_units?: number
   total_units?: number
+  /** 是否被标记为「有误」（审核意见，冻结该题的一切修改） */
+  flagged?: boolean
 }
 
 export interface TagDef {
@@ -140,6 +150,11 @@ export interface QuestionDetail {
   verify_state?: VerifyState
   confirmed_units?: number
   total_units?: number
+  /** 是否被标记为「有误」——标了之后后端拒绝一切写入（409） */
+  flagged?: boolean
+  flagged_at?: string | null
+  flagged_by?: string | null
+  flagged_note?: string | null
 }
 
 // ── 标签管理页（词表整文件读写）──
@@ -166,12 +181,15 @@ export interface TaxFileResp {
   subject: string
   path: string
   data: TaxFile
+  /** 乐观锁版本号（保存时作为 base_sig 回传） */
+  sig: string
 }
 export interface TaxSaveResp {
   path: string
   backup: string
   units: number
   tags: number
+  sig: string
 }
 /** 词表目录树：考试局 → 资格 → 学科[]（喂「标签管理」页的三个下拉） */
 export type TaxTree = Record<string, Record<string, string[]>>
@@ -190,16 +208,80 @@ export function slug(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+// ── 认证（云端版特有）────────────────────────────────────────────────
+export type Role = 'admin' | 'lead' | 'tagger' | 'viewer' | 'service'
+
+export interface AuthUser {
+  username: string
+  name: string
+  role: Role
+  /** 学科 token，与 data/<board>/<qual>/<subject>/ 的目录名一致；["*"] = 全部 */
+  subjects: string[]
+  must_change_password: boolean
+}
+
+export interface AuditRecord {
+  ts: string
+  user: string | null
+  name: string | null
+  role: string | null
+  via: string | null
+  action: string
+  target: string
+  ip: string | null
+  detail: Record<string, unknown>
+}
+
+/** 401 / 428 单独成一类，App 据此弹登录页或强制改密页，而不是当普通报错弹 toast */
+export class AuthError extends Error {
+  status: number
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+    this.name = 'AuthError'
+  }
+}
+
+export const isRoleAtLeastLead = (r: Role | undefined) => r === 'admin' || r === 'lead'
+
+/** 能不能改标签词表：tagger 也可以（2026-10-19 放开），但学科范围由后端兜住。
+ *  viewer 只读；service 是 AI 账号，浏览器不会登录它。 */
+export const canEditTaxonomy = (r: Role | undefined) =>
+  r === 'admin' || r === 'lead' || r === 'tagger'
+
+/** 409：词表乐观锁冲突——你编辑期间别人保存过。currentSig 是磁盘上的当前版本号。 */
+export class ConflictError extends Error {
+  currentSig: string
+  constructor(message: string, currentSig: string) {
+    super(message)
+    this.currentSig = currentSig
+    this.name = 'ConflictError'
+  }
+}
+
 async function req<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
+  const res = await fetch(url, {
+    // 会话是 cookie，同源必须带上；跨源时不带（也不会有人跨源用）
+    credentials: 'same-origin',
+    ...init,
+  })
   const ctype = res.headers.get('content-type') ?? ''
   if (!res.ok) {
     let detail = res.statusText
     try {
-      const j = (await res.json()) as { detail?: string }
-      detail = j.detail ?? detail
+      const j = (await res.json()) as { detail?: unknown }
+      if (typeof j.detail === 'string') detail = j.detail
     } catch {
       /* keep statusText */
+    }
+    if (res.status === 401 || res.status === 428) {
+      // 会话过期/未登录 → 通知 App 回到登录页。用全局事件是为了让所有调用点
+      // 自动获得这个行为，不用在每个 catch 里各写一遍。
+      if (res.status === 401) window.dispatchEvent(new Event('qb-unauthorized'))
+      throw new AuthError(res.status, detail)
+    }
+    if (res.status === 409) {
+      throw new ConflictError(detail, res.headers.get('X-QB-Current-Sig') ?? '')
     }
     throw new Error(detail)
   }
@@ -212,8 +294,54 @@ async function req<T>(url: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>
 }
 
+/** JSON 请求的公共头（省得每处都写重复的三行） */
+const JSON_INIT = (method: string, body: unknown): RequestInit => ({
+  method,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body),
+})
+
+/** 全局概览：每卷的三态标记。all 与卷列表那个 ✓ 完全同义。 */
+export type OverviewState = 'all' | 'some' | 'none'
+
+export interface OverviewPaper {
+  id: string
+  board: string
+  qualification: string
+  subject: string
+  paper_code: string | null
+  year: number | null
+  session: string | null
+  unit: string | null
+  state: OverviewState
+  question_count: number
+  verified_count: number
+  flagged_count: number
+}
+
+export interface OverviewResp {
+  papers: OverviewPaper[]
+  summary: { total: number; all: number; some: number; none: number }
+  generated_at: string
+}
+
+export const authApi = {
+  me: () => req<AuthUser>('/api/auth/me'),
+  login: (username: string, password: string) =>
+    req<AuthUser>('/api/login', JSON_INIT('POST', { username, password })),
+  logout: () => req<{ ok: boolean }>('/api/logout', { method: 'POST' }),
+  changePassword: (oldPassword: string, newPassword: string) =>
+    req<{ ok: boolean }>(
+      '/api/auth/password',
+      JSON_INIT('POST', { old_password: oldPassword, new_password: newPassword }),
+    ),
+  audit: (limit = 200) => req<AuditRecord[]>(`/api/auth/audit?limit=${limit}`),
+}
+
 export const api = {
   papers: () => req<Paper[]>('/api/papers'),
+  /** 全局概览（仅 admin）。后端有 60 秒缓存，force 用于「刷新」按钮。 */
+  overview: (force = false) => req<OverviewResp>(`/api/overview${force ? '?force=1' : ''}`),
   questions: (paperId: string) => req<QuestionSummary[]>(`/api/papers/${paperId}/questions`),
   question: (qid: string) => req<QuestionDetail>(`/api/questions/${qid}`),
   saveAnnotation: (qid: string, body: SaveBody) =>
@@ -228,15 +356,25 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ confirmed, difficulty: difficulty ?? null }),
     }),
+  /** 标记 / 取消「此题有误」。标记只写审核意见，不动题库文件。 */
+  setFlag: (qid: string, flagged: boolean, note?: string | null) =>
+    req<{ qid: string; flagged: boolean; at: string | null }>(
+      `/api/questions/${qid}/flag`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flagged, note: note ?? null }),
+      },
+    ),
 
   taxonomyTree: () => req<TaxTree>('/api/taxonomy'),
   taxonomyFile: (board: string, qual: string, subject: string) =>
     req<TaxFileResp>(`/api/taxonomy/${board}/${qual}/${subject}`),
-  saveTaxonomy: (board: string, qual: string, subject: string, data: TaxFile) =>
+  saveTaxonomy: (board: string, qual: string, subject: string, data: TaxFile, baseSig: string) =>
     req<TaxSaveResp>(`/api/taxonomy/${board}/${qual}/${subject}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data }),
+      body: JSON.stringify({ data, base_sig: baseSig }),
     }),
 }
 

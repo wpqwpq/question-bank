@@ -11,6 +11,8 @@ interface Props {
   primaryTag: string | null
   /** 把某个已选标签设为主标签（≥2 个标签时才出现入口） */
   onSetPrimary: (id: string) => void
+  /** 只读账号（viewer）：全部 chip 与主标签热区都禁用，只展示现状 */
+  readOnly?: boolean
 }
 
 interface Section {
@@ -31,6 +33,38 @@ const CHIP_ON = 'border-blue-300 bg-blue-50 text-blue-700'
 const CHIP_PRIMARY = 'border-blue-500 bg-blue-100 text-blue-800 font-medium'
 const CHIP_OFF = 'border-gray-200 bg-white text-gray-600 hover:border-blue-400 hover:text-blue-600'
 
+/** 标签显示语言：中／英。写 localStorage，切一次全局记住（打标模式专用） */
+type Lang = 'zh' | 'en'
+const LANG_KEY = 'qb.tag-lang'
+
+function readLang(): Lang {
+  try {
+    return localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'zh'
+  } catch {
+    return 'zh'
+  }
+}
+
+/** 中英切换方块按钮：「中/En」两段，当前语言那段高亮 */
+function LangToggle({ lang, onToggle }: { lang: Lang; onToggle: () => void }) {
+  const seg = (active: boolean) =>
+    `px-1 py-0.5 leading-none ${active ? 'rounded-sm bg-blue-600 text-white' : 'text-gray-400'}`
+  return (
+    <button
+      type="button"
+      data-lang-toggle="1"
+      data-lang={lang}
+      title={lang === 'zh' ? '当前显示中文 · 点击切到英文' : 'Showing English · click for Chinese'}
+      onClick={onToggle}
+      className="flex h-6 w-[42px] shrink-0 items-center justify-center rounded-md border border-gray-300 bg-white text-[10px] font-medium transition-colors hover:border-blue-400"
+    >
+      <span className={seg(lang === 'zh')}>中</span>
+      <span className="mx-[1px] text-gray-300">/</span>
+      <span className={seg(lang === 'en')}>En</span>
+    </button>
+  )
+}
+
 /** chip 右侧的主标签热区：空心圆点 = 可设为主；实心 = 已是主（再点无操作） */
 function PrimaryDot({ on }: { on: boolean }) {
   return (
@@ -50,16 +84,37 @@ export default function TagPanel({
   onToggle,
   primaryTag,
   onSetPrimary,
+  readOnly = false,
 }: Props) {
   const [query, setQuery] = useState('')
+  const [lang, setLang] = useState<Lang>(readLang)
   const searching = query.trim().length > 0
+  const en = lang === 'en'
   /** ≥2 个标签才需要人指定主标签；恰好 1 个时它自动即主（§4.1） */
   const multi = selected.length >= 2
+
+  const toggleLang = () => {
+    const next: Lang = en ? 'zh' : 'en'
+    setLang(next)
+    try {
+      localStorage.setItem(LANG_KEY, next)
+    } catch {
+      /* 隐私模式下写不进去，不影响本次显示 */
+    }
+  }
+
+  /** 当前语言下的标签名（英文缺失时回退中文） */
+  const nameOf = (t: TagDef) => (en ? t.en || t.zh : t.zh)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return tags
-    return tags.filter((t) => t.zh.toLowerCase().includes(q) || t.id.toLowerCase().includes(q))
+    return tags.filter(
+      (t) =>
+        t.zh.toLowerCase().includes(q) ||
+        (t.en ?? '').toLowerCase().includes(q) ||
+        t.id.toLowerCase().includes(q),
+    )
   }, [tags, query])
 
   const sections = useMemo<Section[]>(() => {
@@ -86,7 +141,18 @@ export default function TagPanel({
     return out
   }, [filtered, groups])
 
-  const zhOf = (id: string) => tags.find((t) => t.id === id)?.zh ?? id
+  const tagOf = (id: string) => tags.find((t) => t.id === id)
+  const labelOf = (id: string) => {
+    const t = tagOf(id)
+    if (!t) return id
+    return nameOf(t)
+  }
+  /** tooltip 用：中英并列，切换语言后仍能对上中文习惯叫法 */
+  const bothOf = (id: string) => {
+    const t = tagOf(id)
+    if (!t) return id
+    return t.en && t.en !== t.zh ? `${t.zh} · ${t.en}` : t.zh
+  }
 
   // 跨单元卷（组带 unit 字段，且后端已把本卷单元排在首位）：
   // 在第一个「非本卷单元」的组之前插一条分隔，明示下方为其他单元的知识点。
@@ -104,18 +170,21 @@ export default function TagPanel({
   return (
     <div data-tag-panel="1" className="flex min-h-0 flex-1 flex-col">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-gray-700">
+        <span className="min-w-0 truncate text-sm font-medium text-gray-700">
           知识点标签
           <span className="ml-1.5 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-700">{unit}</span>
-          <span className="ml-1.5 text-xs font-normal text-gray-400">多选</span>
+          <span className="ml-1.5 text-xs font-normal text-gray-400">{en ? 'multi' : '多选'}</span>
         </span>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜索…"
-          className="w-24 rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
-        />
+        <div className="flex shrink-0 items-center gap-1.5">
+          <LangToggle lang={lang} onToggle={toggleLang} />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={en ? 'Search…' : '搜索…'}
+            className="w-20 rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none"
+          />
+        </div>
       </div>
 
       {tags.length === 0 ? (
@@ -131,11 +200,12 @@ export default function TagPanel({
                   data-selected-chip={id}
                   title={
                     id === primaryTag
-                      ? `${zhOf(id)}（主标签）· 点击移除`
-                      : `移除 ${zhOf(id)}`
+                      ? `${bothOf(id)}（${en ? 'primary' : '主标签'}）· ${en ? 'click to remove' : '点击移除'}`
+                      : `${en ? 'Remove' : '移除'} ${bothOf(id)}`
                   }
                   onClick={() => onToggle(id)}
-                  className={`inline-flex max-w-full items-center gap-1 rounded border px-1.5 py-0.5 text-xs hover:bg-blue-100 ${
+                  disabled={readOnly}
+                  className={`inline-flex max-w-full items-center gap-1 rounded border px-1.5 py-0.5 text-xs hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-70 ${
                     id === primaryTag
                       ? 'border-blue-400 bg-blue-100 text-blue-800'
                       : 'border-blue-300 bg-blue-50 text-blue-700'
@@ -149,8 +219,8 @@ export default function TagPanel({
                       aria-hidden
                     />
                   )}
-                  <span className="truncate">{zhOf(id)}</span>
-                  <span aria-hidden>×</span>
+                  <span className="truncate">{labelOf(id)}</span>
+                  {!readOnly && <span aria-hidden>×</span>}
                 </button>
               ))}
             </div>
@@ -171,16 +241,21 @@ export default function TagPanel({
                   )}
                   <section>
                     {group && (
+                      // 一级分组标题（B+D+加粗）：左侧 6px 蓝色圆角方块定调，底部 1px 通栏细线切段，
+                      // 文字加深+加粗，字号不动。mb-1 + pb-1 让整组只比原来高 2px。
                       <div
-                        className={`mb-1.5 flex items-center gap-1.5 text-xs font-medium ${
-                          active ? 'text-blue-700' : 'text-gray-500'
+                        className={`mb-1 flex items-center gap-1.5 border-b pb-1 text-xs font-semibold ${
+                          active ? 'border-blue-300 text-blue-700' : 'border-gray-200 text-gray-700'
                         }`}
                       >
                         <span
-                          className={`h-3 w-0.5 rounded-full ${active ? 'bg-blue-600' : 'bg-gray-300'}`}
+                          data-group-marker="1"
+                          className={`h-1.5 w-1.5 shrink-0 rounded-[2px] ${
+                            active ? 'bg-blue-600' : 'bg-blue-400'
+                          }`}
                           aria-hidden
                         />
-                        {group.zh}
+                        {en ? group.en || group.zh : group.zh}
                         {!searching && selCount > 0 && (
                           <span className="ml-auto text-[10px] font-normal text-blue-700">{selCount}</span>
                         )}
@@ -190,6 +265,7 @@ export default function TagPanel({
                       {bucket.map((t) => {
                         const on = selected.includes(t.id)
                         const isPrimary = on && primaryTag === t.id
+                        const both = t.en && t.en !== t.zh ? `${t.zh} · ${t.en}` : t.zh
                         return (
                           <button
                             key={t.id}
@@ -198,21 +274,26 @@ export default function TagPanel({
                             data-primary={isPrimary ? '1' : undefined}
                             title={
                               isPrimary
-                                ? `${t.zh}（主标签）`
+                                ? `${both}${en ? ' (primary)' : '（主标签）'}`
                                 : on && multi
-                                  ? `${t.zh} · 点右侧圆点设为主标签`
-                                  : t.zh
+                                  ? `${both} · ${en ? 'click the dot to set as primary' : '点右侧圆点设为主标签'}`
+                                  : both
                             }
                             onClick={() => onToggle(t.id)}
-                            className={`${CHIP_BASE} ${on ? (isPrimary ? CHIP_PRIMARY : CHIP_ON) : CHIP_OFF}`}
+                            disabled={readOnly}
+                            className={`${CHIP_BASE} ${on ? (isPrimary ? CHIP_PRIMARY : CHIP_ON) : CHIP_OFF} disabled:cursor-not-allowed disabled:opacity-70`}
                           >
-                            <span className={CHIP_TEXT}>{t.zh}</span>
-                            {on && multi && (
+                            <span className={CHIP_TEXT}>{nameOf(t)}</span>
+                            {on && multi && !readOnly && (
                               <span
                                 data-primary-hotzone={t.id}
                                 role="button"
                                 tabIndex={-1}
-                                aria-label={isPrimary ? `${t.zh} 已是主标签` : `把 ${t.zh} 设为主标签`}
+                                aria-label={
+                                  isPrimary
+                                    ? `${both} ${en ? 'is already primary' : '已是主标签'}`
+                                    : `${en ? 'Set' : '把'} ${both} ${en ? 'as primary' : '设为主标签'}`
+                                }
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   // ≥2 个标签时必须有一个主标签，不允许「取消」（§4.1）
@@ -237,16 +318,26 @@ export default function TagPanel({
           </div>
 
           <p data-primary-hint="1" className="mt-1.5 shrink-0 text-[11px] text-gray-400">
-            已选 {selected.length} 个
-            {selected.length === 0 ? (
-              ' · 至少选 1 个'
-            ) : primaryTag ? (
-              <>
-                {' · 主标签：'}
-                <span className="text-blue-700">{zhOf(primaryTag)}</span>
-              </>
+            {readOnly ? (
+              <span className="text-gray-500">
+                {en ? 'Read-only account · view only' : '只读账号 · 只能查看，不能改标签'}
+              </span>
             ) : (
-              <span className="font-medium text-amber-600"> · 请指定主标签</span>
+              <>
+                {en ? `Selected ${selected.length}` : `已选 ${selected.length} 个`}
+                {selected.length === 0 ? (
+                  en ? ' · pick at least 1' : ' · 至少选 1 个'
+                ) : primaryTag ? (
+                  <>
+                    {en ? ' · primary: ' : ' · 主标签：'}
+                    <span className="text-blue-700">{labelOf(primaryTag)}</span>
+                  </>
+                ) : (
+                  <span className="font-medium text-amber-600">
+                    {en ? ' · set a primary tag' : ' · 请指定主标签'}
+                  </span>
+                )}
+              </>
             )}
           </p>
         </>

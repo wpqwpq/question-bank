@@ -18,6 +18,8 @@ interface Props {
   /** 本次在预览里补选／改选的难度（尚未落库，docs/13） */
   pick: string | null
   onPickDifficulty: (d: string) => void
+  /** 只读账号（viewer）：难度按钮与确认框全部禁用 */
+  readOnly?: boolean
 }
 
 /**
@@ -33,6 +35,7 @@ export default function PreviewPanel({
   confirming,
   pick,
   onPickDifficulty,
+  readOnly = false,
 }: Props) {
   const split = detail.split_active && detail.subs.length > 0
   const safeIdx = Math.min(subIdx, detail.subs.length - 1)
@@ -67,12 +70,26 @@ export default function PreviewPanel({
     <aside
       data-preview-panel="1"
       data-qid={detail.qid}
+      data-flagged={detail.flagged ? '1' : ''}
       style={{ width }}
-      className="flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3"
+      // 「有误」的题在预览模式同样冻结：确认与补难度都不许动（后端另有 409 兜底）
+      inert={detail.flagged ? true : undefined}
+      className={`flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3 ${
+        detail.flagged ? 'pointer-events-none select-none opacity-50' : ''
+      }`}
     >
       <div className="shrink-0 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-2 text-xs text-gray-500">
-        标签（含主标签）请在打标模式修改；
-        <span className="text-gray-700">难度可在此直接补选／修改</span>，确认即写回题库
+        {readOnly ? (
+          <span className="text-gray-600">
+            只读账号：可以翻题看标注，<span className="text-gray-800">不能补难度、不能确认</span>
+          </span>
+        ) : (
+          <>
+            标签（含主标签）请在打标模式修改；
+            <span className="text-gray-700">难度可在此直接补选／修改</span>，确认即写回题库
+            <span className="mt-1 block text-gray-400">空格 = 勾选／取消核对，1–5 选难度，←/→ 翻题</span>
+          </>
+        )}
       </div>
 
       {/* 小问平铺按钮（仅切分题）：只显示标签字母，≤6 问也能一行铺开；✓ = 该小问已确认 */}
@@ -127,7 +144,7 @@ export default function PreviewPanel({
             <button
               key={value}
               type="button"
-              disabled={confirming}
+              disabled={confirming || readOnly}
               onClick={() => onPickDifficulty(value)}
               className={`flex-1 rounded-md border px-1.5 py-1 text-center text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
                 difficulty === value
@@ -200,7 +217,7 @@ export default function PreviewPanel({
       >
         <label
           className={`flex select-none items-start justify-between gap-2 ${
-            ready ? 'cursor-pointer' : 'cursor-not-allowed'
+            ready && !readOnly ? 'cursor-pointer' : 'cursor-not-allowed'
           }`}
         >
           <span className="flex items-start gap-2">
@@ -208,7 +225,7 @@ export default function PreviewPanel({
               type="checkbox"
               data-confirm-checkbox="1"
               checked={unitVerified}
-              disabled={confirming || !ready}
+              disabled={confirming || !ready || readOnly}
               onChange={(e) => onConfirm(e.target.checked)}
               className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-green-600 disabled:cursor-not-allowed disabled:opacity-50"
             />
@@ -227,21 +244,23 @@ export default function PreviewPanel({
         >
           {confirming
             ? '提交中…'
-            : !hasDifficulty && !primaryReady
+            : readOnly
+              ? '只读账号不能修改难度或确认（后端同样会拒绝）'
+              : !hasDifficulty && !primaryReady
               ? '先选中难度；主标签需回打标模式指定，两项齐了才能勾选确认'
               : !hasDifficulty
                 ? '先选中难度，才能勾选确认'
                 : !primaryReady
                 ? '本题有多个标签但未指定主标签，请回打标模式指定后再确认'
                 : unitVerified
-                  ? '已确认 · 取消勾选可撤销（不会跳转）'
+                  ? '已确认 · 空格键或取消勾选可撤销（不会跳转）'
                   : pick
                     ? split
-                      ? '确认后写回该小问难度，并自动切到下一个未确认的小问'
-                      : '确认后写回本题难度，并自动跳到下一题'
+                      ? '空格或勾选后写回该小问难度，并自动切到下一个未确认的小问'
+                      : '空格或勾选后写回本题难度，并自动跳到下一题'
                     : split
-                      ? '勾选后自动切到下一个未确认的小问'
-                      : '勾选后自动跳到下一题'}
+                      ? '按空格或勾选，自动切到下一个未确认的小问'
+                      : '按空格或勾选，自动跳到下一题'}
         </p>
       </div>
     </aside>

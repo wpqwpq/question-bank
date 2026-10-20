@@ -1,12 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Paper, QuestionDetail, QuestionSummary, Status, SubDraft, VerifyState } from './api'
-import { api, DIFFICULTY_LABELS, primaryOk, resolvePrimary } from './api'
+import type {
+  AuthUser,
+  Paper,
+  QuestionDetail,
+  QuestionSummary,
+  Status,
+  SubDraft,
+  VerifyState,
+} from './api'
+import { api, authApi, canEditTaxonomy, DIFFICULTY_LABELS, primaryOk, resolvePrimary } from './api'
+import type { SaveBody, SaveResult } from './api'
 import Sidebar from './components/Sidebar'
 import TagAdmin from './components/TagAdmin'
+import AuditLog from './components/AuditLog'
+import Overview from './components/Overview'
 import TagPanel from './components/TagPanel'
 import QuestionViewer from './components/QuestionViewer'
 import PreviewPanel from './components/PreviewPanel'
 import ResizeHandle from './components/ResizeHandle'
+import LoginPage, { ChangePasswordPage } from './components/LoginPage'
+
+/**
+ * 「按小问分别打标」三个考试局都支持，语义不同但入口一致：
+ *
+ *   - **AQA / CIE / accounting 学科**：小问之间的数据是传递的，只打标、**不切图**
+ *     （后端 `store.sub_images_enabled`，子题文件不带 image/layout，预览回退整题图）；
+ *   - **Edexcel physics / chemistry**：小问彼此独立，每个小问要连题区一起切出来单独成题
+ *     （「题干 + a」「题干 + b」），所以保存时会真的裁剪子图。
+ *
+ * 云端因此装了 Pillow（裁剪只用它，不需要 pymupdf）。早期一版曾把开关整体隐藏，
+ * 只放行已经切好的题，那是理解错了需求，已修正。
+ */
 
 type Toast = { kind: 'ok' | 'err'; text: string } | null
 type Mode = 'annotate' | 'preview'
@@ -65,24 +89,59 @@ function withToggledTag(s: SubDraft, id: string): SubDraft {
 }
 
 export default function App() {
+  // ── 身份（云端版）──
+  const [me, setMe] = useState<AuthUser | null>(null)
+  /** 首次挂载时还不知道登没登录：先显示一屏空白，避免闪一下登录页再跳回来 */
+  const [booting, setBooting] = useState(true)
+  /** 主动改密（非强制）时的整页切换 */
+  const [changingPw, setChangingPw] = useState(false)
+
+  /**
+   * 只读账号（viewer）：能翻能看，改不了任何东西。
+   * 后端每个写接口都会返回 403 兜底，这里只是别让人白点一遍才发现按钮不能按。
+   * role 为 null（还没登录）时按「可写」处理——此时页面被登录页挡住，不会渲染到这里。
+   */
+  const canWrite = me?.role !== 'viewer'
+
   const [papers, setPapers] = useState<Paper[]>([])
   const [board, setBoard] = useState('edexcel')
   const [qualification, setQualification] = useState('a-level')
   const [subject, setSubject] = useState('physics')
   const [paperId, setPaperId] = useState('')
   const [questions, setQuestions] = useState<QuestionSummary[]>([])
+  /**
+   * 最新一次渲染的题目列表（只在异步回调里读）。
+   * 保存是串行队列，回调闭包里的 questions 可能落后一轮，
+   * 直接用它算「这题原来是不是已打标」会把卷进度重复加减。
+   */
+  const questionsRef = useRef<QuestionSummary[]>([])
+  questionsRef.current = questions
   const [currentIndex, setCurrentIndex] = useState(0)
   const [detail, setDetail] = useState<QuestionDetail | null>(null)
   const [draftTags, setDraftTags] = useState<string[]>([])
   const [draftDifficulty, setDraftDifficulty] = useState<string | null>(null)
   /** 整题模式的主标签草稿（切分题逐问存在 draftSubs[].primaryTag 上） */
   const [draftPrimary, setDraftPrimary] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
+  /**
+   * 在飞的保存请求数（>0 = 按钮显示「保存中…」并禁用）。
+   * 用计数而不是布尔：保存走串行队列，连点时会排着好几个，布尔会在第一个结束时提前解禁。
+   */
+  const [savingCount, setSavingCount] = useState(0)
+  const saving = savingCount > 0
+  /** 保存队列：同一时刻只有一个 PUT 在飞，后到的排队。顺序 = 点击顺序。 */
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve())
+  /**
+   * 「库里的」小问标签快照。用来判断某个小问是不是被用户**勾空**了
+   * （勾空要显式提交 tags: []，不提交等于"别动"）。
+   * ⚠️ 不能直接读 detail.subs：detail 只在切题时重拉，保存后不刷新，
+   *    否则「刚打上标 → 保存 → 又勾空」这条路上会漏判成"从没打过标"而不提交。
+   */
+  const savedSubTagsRef = useRef<Map<string, string[]>>(new Map())
   const [toast, setToast] = useState<Toast>(null)
   const toastTimer = useRef<number | undefined>(undefined)
 
-  // ── 页面：打标台 / 标签管理（右上入口跳转，整页切换）──
-  const [view, setView] = useState<'workbench' | 'tagadmin'>('workbench')
+  // ── 页面：打标台 / 标签管理 / 操作日志（右上入口跳转，整页切换）──
+  const [view, setView] = useState<'workbench' | 'tagadmin' | 'audit' | 'overview'>('workbench')
   /** 从标签管理页回来时 +1，触发当前题详情重拉（词表可能刚被改过） */
   const [refreshTick, setRefreshTick] = useState(0)
 
@@ -138,25 +197,71 @@ const pendingFocusRef = useRef<number | null>(null)
     [papers, board, qualification, subject],
   )
 
-  // 预览列表（docs/13 + plans/主标签实施方案 §2）：齐备的题 + 「有标签但缺难度或缺主标签」的题
-  // （灰色，前两者可回到打标模式补齐）。「只有难度没有标签」的题不在列表中（tags_ready=false）。
+  // 预览列表（docs/13 + plans/主标签实施方案 §2）：
+  //   · 齐备的题（status=done）；
+  //   · **任意一个小问打了标**的题（2026-10-18）——小问允许跳过保存，
+  //     只打了一问也要能在预览里看到，否则「跳过的题」等于被藏起来了。
+  //     这类题在预览里显示为「待补齐」灰色（缺难度/缺主标签），可回打标模式补完。
+  //   · 标了「此题有误」的题**一律不出现**（2026-10-18 培琪要求）：它已退出核对待办，
+  //     哪怕之前打过标、确认过，也先解决「有误」再说。
+  //   · 「只有难度、没有任何知识点标签」的题仍然不进列表（any_tagged=false）。
   const previewQuestions = useMemo(
-    () =>
-      questions.filter(
-        (q) =>
-          q.status === 'done' ||
-          (q.tags_ready === true && (q.difficulty_ready === false || q.primary_ready === false)),
-      ),
+    () => questions.filter((q) => !q.flagged && (q.status === 'done' || q.any_tagged === true)),
     [questions],
   )
 
-  // 初始加载卷列表
+  // ── 身份探测（只跑一次）──
   useEffect(() => {
+    let cancelled = false
+    authApi
+      .me()
+      .then((u) => {
+        if (cancelled) return
+        setMe(u)
+        // 默认学科落到本人学科上：否则化学生物老师一进来看到的是空的物理列表
+        if (!u.subjects.includes('*') && u.subjects.length > 0 && !u.subjects.includes(subject)) {
+          setSubject(u.subjects[0])
+        }
+      })
+      .catch(() => {
+        /* 401 → me 保持 null，下面渲染登录页 */
+      })
+      .finally(() => {
+        if (!cancelled) setBooting(false)
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // 会话过期（任意接口返回 401）→ 统一退回登录页，并清掉上一段会话的数据
+  useEffect(() => {
+    const onUnauth = () => {
+      setMe(null)
+      setPapers([])
+      setPaperId('')
+      setQuestions([])
+      setDetail(null)
+      setPreviewDetail(null)
+    }
+    window.addEventListener('qb-unauthorized', onUnauth)
+    return () => window.removeEventListener('qb-unauthorized', onUnauth)
+  }, [])
+
+  // 初始加载卷列表。
+  // ⚠️ 依赖必须带 must_change_password —— 只写 me?.username 会踩这个坑：
+  //    登录后 me 有值但还停在「强制改密」页，这个 effect 立刻发 /api/papers 拿到 428，
+  //    弹一句「加载卷列表失败：首次登录，请先修改初始密码」；改密成功后用户名没变，
+  //    effect 不重跑 → 打标台里卷列表一直是空的，只能刷页面才好。
+  // 现在两处一起管：强制改密期间根本不发请求；改完 must_change_password 变化会自动重跑。
+  useEffect(() => {
+    if (!me || me.must_change_password) return
     api
       .papers()
       .then(setPapers)
       .catch((e: Error) => setToast({ kind: 'err', text: `加载卷列表失败：${e.message}` }))
-  }, [])
+  }, [me?.username, me?.must_change_password]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const showToast = useCallback((t: Toast) => {
     setToast(t)
@@ -169,6 +274,21 @@ const pendingFocusRef = useRef<number | null>(null)
   useEffect(() => {
     setPaperId('')
   }, [board, qualification, subject])
+
+  // 当前卷的「已核对题数」以 questions 为准。
+  // 确认、取消确认、存盘、预览改难度都会更新 questions[].verify_state，但 papers[].
+  // verified_count 是**接口那一次**的快照。不跟着改，侧栏下拉里的 ✓ 就会停在旧值：
+  // 典型场景是老师在一张已整卷核完的卷上改了某题标签 → 后端已撤销该题确认，
+  // 但本地 verified_count 没变 → 钩还亮着，等于骗人。
+  useEffect(() => {
+    if (!paperId || questions.length === 0) return
+    const n = questions.reduce((acc, q) => acc + (q.verify_state === 'all' ? 1 : 0), 0)
+    setPapers((prev) => {
+      const hit = prev.find((p) => p.id === paperId)
+      if (!hit || (hit.verified_count ?? -1) === n) return prev // 没变就别造新数组
+      return prev.map((p) => (p.id === paperId ? { ...p, verified_count: n } : p))
+    })
+  }, [paperId, questions])
 
   // 切卷 → 拉题目列表，回到第 1 题
   useEffect(() => {
@@ -192,7 +312,7 @@ const pendingFocusRef = useRef<number | null>(null)
   }, [paperId, showToast])
 
   // 拉当前题详情，重置草稿（切分状态按 开关意图 × 本题资格 推导）
-  // 依赖刻意只取「当前题的 qid」而不是整个 questions 数组：增量保存（savePartial）会更新
+  // 依赖刻意只取「当前题的 qid」而不是整个 questions 数组：保存（commit）会更新
   // questions 里的 status，若依赖数组就会重拉详情、把草稿与焦点重置，打断正在进行的打标。
   const currentQid = questions[currentIndex]?.qid
   useEffect(() => {
@@ -299,6 +419,9 @@ const pendingFocusRef = useRef<number | null>(null)
           }
         }),
       )
+      savedSubTagsRef.current = new Map(
+        d.subs.map((s) => [String(s.label), [...(s.tags ?? [])]]),
+      )
       // 从预览模式切回来时保留原来的小问选中（switchMode 存的）
       const pf = pendingFocusRef.current
       pendingFocusRef.current = null
@@ -351,6 +474,62 @@ const pendingFocusRef = useRef<number | null>(null)
     if (currentIndex < questions.length - 1) guardedJump(currentIndex + 1)
   }, [currentIndex, questions.length, guardedJump])
 
+  /**
+   * 「此题有误」开关。
+   *   标记：写审核意见 → 丢弃本题所有草稿（勾选的标签、选的难度都不再保留）→ 跳下一题；
+   *   取消：直接解冻，不动草稿。
+   * 标记只落 data/_review/flagged.json，不碰 qNN.md；后端还会拒绝该题的一切写入（409），
+   * 所以就算有人绕过界面直调接口也改不动。
+   */
+  const toggleFlag = useCallback(async () => {
+    const d = mode === 'preview' ? previewDetail : detail
+    if (!d || !canWrite) return
+    const on = !d.flagged
+    try {
+      await api.setFlag(d.qid, on)
+    } catch (e) {
+      showToast({ kind: 'err', text: `标记失败：${(e as Error).message}` })
+      return
+    }
+    const mark = <T extends { qid: string; flagged?: boolean }>(x: T | null) =>
+      x && x.qid === d.qid ? { ...x, flagged: on } : x
+    setQuestions((prev) => prev.map((q) => (q.qid === d.qid ? { ...q, flagged: on } : q)))
+    setDetail((prev) => mark(prev))
+    setPreviewDetail((prev) => mark(prev))
+
+    // 卷级计数同步：标了「有误」的题退出核对待办（既不算待确认也不算已确认），
+    // 所以 flagged_count +1 的同时，若它原本已确认，verified_count 要 -1。
+    // 反之取消标记时两者回滚。这直接决定「整卷核对完成」的对钩何时亮起。
+    const wasAll = (d.verify_state ?? 'none') === 'all'
+    setPapers((prev) =>
+      prev.map((p) =>
+        p.id === paperId
+          ? {
+              ...p,
+              flagged_count: Math.max(0, (p.flagged_count ?? 0) + (on ? 1 : -1)),
+              verified_count: Math.max(0, (p.verified_count ?? 0) + (wasAll ? (on ? -1 : 1) : 0)),
+            }
+          : p,
+      ),
+    )
+
+    if (on) {
+      // 已勾的标签、已选难度全部抛弃：直接按库里现状重置草稿
+      applyDetail(d)
+      setPreviewPick(null)
+      showToast({ kind: 'ok', text: '已标记为「有误」，本题修改已停用' })
+      if (mode === 'preview') {
+        // 该题会从预览列表里消失：原索引 i 位置上就是下一题，
+        // 只有 i 已经是最后一个时才需要往回退一格（列表长度已减 1）。
+        setPreviewIndex((i) => Math.min(i, Math.max(0, previewQuestions.length - 2)))
+      } else {
+        gotoNext()
+      }
+    } else {
+      showToast({ kind: 'ok', text: '已取消「有误」标记，可以继续修改' })
+    }
+  }, [mode, detail, previewDetail, previewQuestions.length, applyDetail, gotoNext, showToast, paperId, canWrite])
+
   // 焦点组（split 模式下 1/2/3 与标签面板作用于它）
   const focusSub = splitMode ? draftSubs[focusIdx] : undefined
   const currentTags = splitMode ? (focusSub?.tags ?? []) : draftTags
@@ -399,41 +578,66 @@ const pendingFocusRef = useRef<number | null>(null)
     [splitMode, focusIdx],
   )
 
-  // 切分题：每个小问至少 1 个标签即可保存；难度可留空（docs/13）
-  const subsTagged = draftSubs.length > 0 && draftSubs.every((s) => s.tags.length > 0)
+  // 切分题：**允许只标一部分小问**——未打标的小问不提交，后端保留其原有子题文件
+  // （只有「本题从没有过该小问文件」时才补一个空壳，status 停在 partial、
+  //  空壳没标签确认不了 → 整卷 ✓ 不会假亮）。已打标签的小问仍必须满足主标签规则；
+  // 难度一律可留空（docs/13）。
+  const filledSubs = draftSubs.filter((s) => s.tags.length > 0)
+  const subsSaveable =
+    filledSubs.length > 0 && filledSubs.every((s) => primaryOk(s.tags, s.primaryTag))
   const subDoneCount = draftSubs.filter((s) => subState(s) === 'done').length
   // ≥2 个标签必须有主标签（plans/主标签实施方案 §4.1）——整题与切分题各自校验
-  const primaryAllOk = splitMode
-    ? draftSubs.length > 0 && draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
-    : primaryOk(draftTags, draftPrimary)
+  const primaryAllOk = splitMode ? subsSaveable : primaryOk(draftTags, draftPrimary)
   const canSave =
     !saving &&
     !!detail &&
-    (splitMode ? subsTagged && primaryAllOk : draftTags.length > 0 && primaryAllOk)
+    (splitMode ? subsSaveable : draftTags.length > 0 && primaryAllOk)
   /** 「保存，下一问」只放行「焦点小问没问题」的情况，避免落到后端 422 */
   const focusSubOk =
     !splitMode || !focusSub || focusSub.tags.length === 0 || primaryOk(focusSub.tags, focusSub.primaryTag)
-  /** 底部提示用：确实存在「≥2 标签却没指定主标签」的单元 */
+  /** 底部提示用：确实存在「≥2 标签却没指定主标签」的单元（只看已打标的小问） */
   const missingPrimary = splitMode
-    ? draftSubs.some((s) => s.tags.length >= 2 && !primaryOk(s.tags, s.primaryTag))
+    ? filledSubs.some((s) => s.tags.length >= 2 && !primaryOk(s.tags, s.primaryTag))
     : draftTags.length >= 2 && !primaryOk(draftTags, draftPrimary)
 
   // split 模式：焦点在最后一问时按钮才是「保存」，否则是「下一问」导航
   const onLastSub = !splitMode || focusIdx >= draftSubs.length - 1
   /** 「保存，下一问」是否可点：焦点小问要么还没打标、要么主标签齐备 */
   const canAdvance = splitMode && !onLastSub && !saving && focusSubOk
-  const saveEnabled = splitMode && !onLastSub ? canAdvance : canSave
+  const saveEnabled = canWrite && (splitMode && !onLastSub ? canAdvance : canSave)
 
-  const save = useCallback(async () => {
-    if (!detail || saving) return
-    if (splitMode) {
-      if (!subsTagged) return
-    } else if (draftTags.length === 0) return
-    setSaving(true)
-    try {
-      const body = splitMode
+  /**
+   * 本次要提交的小问：**已打标签的** + **被主动勾空的**（显式 `tags: []`）。
+   *
+   * 未打标的小问**不提交**——后端 `_save_split` 只给「提交了但没有子文件」的小问补空壳，
+   * 已有文件的一律原样保留。这样即使请求重放/乱序，也不会把别的小问抹回空壳。
+   * 勾空必须显式提交，否则后端不知道你要删（「没提交」现在等于「别动」）。
+   *
+   * 多标签却没定主的本小问静默跳过（提交会 422），等用户点右侧圆点定好主标签再随下一次落库。
+   */
+  const subsToSubmit = useCallback((): SubDraft[] => {
+    const savedTags = savedSubTagsRef.current
+    return draftSubs.filter((s) =>
+      s.tags.length > 0
+        ? primaryOk(s.tags, s.primaryTag)
+        : (savedTags.get(String(s.label))?.length ?? 0) > 0,
+    )
+  }, [draftSubs])
+
+  /**
+   * 落库——**唯一的写入口**，整题与按小问两种形态都在这里，语义只有一份。
+   *   · **串行**：同一时刻只有一个 PUT 在飞，后到的排队，顺序 = 点击顺序。
+   *     后端按「提交内容」整体落盘，乱序的旧快照会盖掉新快照，串行是正确性的前提。
+   *   · 返回 true/false，由调用方决定要不要前进焦点/跳题——**失败绝不假装成功**。
+   */
+  const commit = useCallback(
+    (subs: SubDraft[] | null): Promise<boolean> => {
+      if (!detail || !canWrite) return Promise.resolve(false)
+      const qid = detail.qid
+      const qn = String(detail.meta.question_number)
+      const body: SaveBody = subs
         ? {
-            subs: draftSubs.map((s) => ({
+            subs: subs.map((s) => ({
               label: s.label,
               tags: s.tags,
               difficulty: s.difficulty, // 可 null（docs/13）
@@ -441,112 +645,140 @@ const pendingFocusRef = useRef<number | null>(null)
             })),
           }
         : { tags: draftTags, difficulty: draftDifficulty, primary_tag: draftPrimary }
-      const result = await api.saveAnnotation(detail.qid, body)
-      // 「单元是否齐备」也一并更新，否则切到预览模式时新标好的题可能不进列表（docs/13）
-      const tagsReady = splitMode ? draftSubs.every((s) => s.tags.length > 0) : draftTags.length > 0
-      const diffReady = splitMode
-        ? draftSubs.every((s) => s.difficulty !== null)
-        : draftDifficulty !== null
-      const priReady = splitMode
-        ? draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
-        : primaryOk(draftTags, draftPrimary)
-      setQuestions((prev) =>
-        prev.map((q) =>
-          q.qid === result.qid
-            ? {
-                ...q,
-                status: result.status,
-                tags: result.tags,
-                primary_tag: result.primary_tag ?? null,
-                difficulty: result.difficulty,
-                tags_ready: tagsReady,
-                difficulty_ready: diffReady,
-                primary_ready: priReady,
-                split: result.split ?? q.split ?? false,
-                sub_labels: result.sub_labels ?? q.sub_labels,
-                // 改动使原确认失效 → 左侧题号立刻退回「未确认」
-                ...(result.confirm_cleared?.length
-                  ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
-                  : {}),
+      // 齐备度按「提交那一刻的草稿」算；draftSubs 始终是全部小问，
+      // 所以口径仍是「全部小问都有标签」，不受本次只提交子集影响。
+      const snap = draftSubs
+      const snapTags = draftTags
+      const snapDiff = draftDifficulty
+      const snapPri = draftPrimary
+      const split = splitMode
+      setSavingCount((n) => n + 1)
+      const run = saveChainRef.current
+        .catch(() => undefined) // 上一次失败不该阻断这一次
+        .then(() => api.saveAnnotation(qid, body))
+        .then(
+          (result) => {
+            setSavingCount((n) => Math.max(0, n - 1))
+            // 「单元是否齐备」与「任意单元有标签」都要一并更新：
+            // 前者管预览里的灰/彩与确认门禁，后者管预览列表的可见性（部分打标也要能看到）
+            const tagsReady = split ? snap.every((s) => s.tags.length > 0) : snapTags.length > 0
+            const anyTagged = split ? snap.some((s) => s.tags.length > 0) : snapTags.length > 0
+            const diffReady = split ? snap.every((s) => s.difficulty !== null) : snapDiff !== null
+            const priReady = split
+              ? snap.every((s) => primaryOk(s.tags, s.primaryTag))
+              : primaryOk(snapTags, snapPri)
+            setQuestions((prev) =>
+              prev.map((q) =>
+                q.qid === result.qid
+                  ? {
+                      ...q,
+                      status: result.status,
+                      tags: result.tags,
+                      primary_tag: result.primary_tag ?? null,
+                      difficulty: result.difficulty,
+                      tags_ready: tagsReady,
+                      difficulty_ready: diffReady,
+                      primary_ready: priReady,
+                      any_tagged: anyTagged,
+                      split: result.split ?? q.split ?? false,
+                      sub_labels: result.sub_labels ?? q.sub_labels,
+                      // 改动使原确认失效 → 左侧题号立刻退回「未确认」
+                      ...(result.confirm_cleared?.length
+                        ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
+                        : {}),
+                    }
+                  : q,
+              ),
+            )
+            // 卷进度跟着「这题到底算不算已打标」走：逐个打标时最后一问落库会让
+            // status 从 partial 变 done，annotated_count 必须同步，
+            // 否则出现「题号变绿了、进度数字没跟上」
+            setPapers((prev) => {
+              const prevQ = questionsRef.current.find((q) => q.qid === result.qid)
+              if ((prevQ?.status === 'done') === (result.status === 'done')) return prev
+              return prev.map((p) =>
+                p.id === paperId
+                  ? {
+                      ...p,
+                      annotated_count: p.annotated_count + (result.status === 'done' ? 1 : -1),
+                    }
+                  : p,
+              )
+            })
+            // 就地刷新「库里的小问标签」快照：detail 不会重拉，
+            // 后续判断「这一问是不是被勾空了」全靠它（见 subsToSubmit）。
+            const resSubs = (result as SaveResult & { subs?: { label: string; tags: string[] }[] })
+              .subs
+            if (resSubs) {
+              savedSubTagsRef.current = new Map(
+                resSubs.map((s) => [String(s.label), [...(s.tags ?? [])]]),
+              )
+            } else if (subs) {
+              for (const s of subs) {
+                savedSubTagsRef.current.set(String(s.label), [...s.tags])
               }
-            : q,
-        ),
+            }
+            const warn = result.warnings?.length ? `（注意：${result.warnings[0]}）` : ''
+            const cleared = result.confirm_cleared?.length ? '（改动已让原确认失效）' : ''
+            const what = subs ? ` ${subs.map((s) => s.label).join(' / ')} 问已保存` : '已保存'
+            showToast({ kind: 'ok', text: `第 ${qn} 题${what}${cleared}${warn}` })
+            return true
+          },
+          (e: Error) => {
+            setSavingCount((n) => Math.max(0, n - 1))
+            showToast({ kind: 'err', text: `保存失败：${e.message}` })
+            return false
+          },
+        )
+      saveChainRef.current = run.then(
+        () => undefined,
+        () => undefined,
       )
-      setPapers((prev) =>
-        prev.map((p) => {
-          if (p.id !== paperId) return p
-          const before = questions[currentIndex]
-          const wasDone = before?.status === 'done'
-          return {
-            ...p,
-            annotated_count:
-              p.annotated_count +
-              (result.status === 'done' && !wasDone ? 1 : result.status !== 'done' && wasDone ? -1 : 0),
-          }
-        }),
-      )
-      const warn = result.warnings?.length ? `（注意：${result.warnings[0]}）` : ''
-      const cleared = result.confirm_cleared?.length ? '（改动已让原确认失效）' : ''
-      showToast({ kind: 'ok', text: `第 ${String(detail.meta.question_number)} 题已保存${cleared}${warn}` })
-      if (currentIndex < questions.length - 1) setCurrentIndex(currentIndex + 1)
-    } catch (e) {
-      showToast({ kind: 'err', text: `保存失败：${(e as Error).message}` })
-    } finally {
-      setSaving(false)
-    }
-  }, [detail, splitMode, subsTagged, primaryAllOk, draftSubs, draftDifficulty, draftPrimary, draftTags, saving, paperId, questions, currentIndex, showToast])
+      return run
+    },
+    [
+      detail, canWrite, draftTags, draftDifficulty, draftPrimary, draftSubs,
+      splitMode, questions, paperId, showToast,
+    ],
+  )
+
+  /** 最后一问的「保存」：落库成功才跳到下一题；失败原地不动。 */
+  const save = useCallback(async () => {
+    if (!detail || saving || !canWrite) return
+    if (splitMode) {
+      if (!subsSaveable) return
+    } else if (draftTags.length === 0) return
+    const ok = await commit(splitMode ? subsToSubmit() : null)
+    if (!ok) return
+    if (currentIndex < questions.length - 1) setCurrentIndex(currentIndex + 1)
+  }, [
+    detail, saving, canWrite, splitMode, subsSaveable, draftTags.length,
+    commit, subsToSubmit, currentIndex, questions.length,
+  ])
 
   /**
-   * 「下一问」时的增量保存：把**已有标签**的小问先落库，避免中途切题/中断丢失。
-   * 未打标的小问不提交——后端 `_save_split` 已放开为允许「本题小问的子集」。
-   * 刻意不复用 save()：那个会弹 toast 并跳到下一题。
+   * 「保存，下一问」：先落库，**成功才把焦点推到下一问**。
+   * 失败就原地不动——宁可挡住，也不让界面显示已存而实际没存（这曾是本 bug 的一半）。
+   * 与 save() 走同一个 commit()，不再有两套保存语义。
    */
-  const savePartial = useCallback(async () => {
-    if (!detail) return
-    // 只提交「有标签且主标签已定」的小问：多标签却没选主的本小问会 422，
-    // 静默跳过（与没打标的同级），等用户点右侧圆点定好主标签再随下一次落库。
-    const filled = draftSubs.filter((s) => s.tags.length > 0 && primaryOk(s.tags, s.primaryTag))
-    if (filled.length === 0) return
-    try {
-      const res = await api.saveAnnotation(detail.qid, {
-        subs: filled.map((s) => ({
-          label: s.label,
-          tags: s.tags,
-          difficulty: s.difficulty,
-          primary_tag: s.primaryTag,
-        })),
-      })
-      // 只刷新列表状态；detail 的 effect 现在只依赖 qid，不会因此重拉详情、重置草稿
-      const tagsReady = draftSubs.every((s) => s.tags.length > 0)
-      const diffReady = draftSubs.every((s) => s.difficulty !== null)
-      const priReady = draftSubs.every((s) => primaryOk(s.tags, s.primaryTag))
-      setQuestions((prev) =>
-        prev.map((q) =>
-          q.qid === res.qid
-            ? {
-                ...q,
-                status: res.status,
-                primary_tag: res.primary_tag ?? null,
-                split: res.split ?? q.split ?? false,
-                sub_labels: res.sub_labels ?? q.sub_labels,
-                tags_ready: tagsReady,
-                difficulty_ready: diffReady,
-                primary_ready: priReady,
-                // 增量保存若改动了某个小问，它的确认也随之失效
-                ...(res.confirm_cleared?.length
-                  ? { verify_state: 'none' as VerifyState, confirmed_units: 0 }
-                  : {}),
-              }
-            : q,
-        ),
-      )
-      if (res.confirm_cleared?.length) {
-        showToast({ kind: 'ok', text: '已保存（改动让原确认失效）' })
-      }
-    } catch (e) {
-      showToast({ kind: 'err', text: `保存失败：${(e as Error).message}` })
+  const saveAndAdvance = useCallback(async () => {
+    if (!detail || !canWrite) return
+    if (!splitMode || onLastSub) return
+    // 这一问啥都没标、也没有要清空的 → 没有可提交的内容，直接翻到下一问
+    // （不发空 subs 的请求，后端会以 422「至少要给一个小问打标签」拒掉）
+    const subs = subsToSubmit()
+    if (subs.length > 0) {
+      const ok = await commit(subs)
+      if (!ok) return // 没存上就不前进：界面不能显示「已到下一问」而实际没落库
     }
-  }, [detail, draftSubs, showToast])
+    setFocusIdx((i) => Math.min(i + 1, draftSubs.length - 1))
+  }, [detail, canWrite, splitMode, onLastSub, commit, subsToSubmit, draftSubs.length])
+
+  /** 底部那颗按钮的唯一行为：中间小问=保存并下一问，最后一问=保存并跳题。 */
+  const primaryAction = useCallback(() => {
+    if (splitMode && !onLastSub) void saveAndAdvance()
+    else void save()
+  }, [splitMode, onLastSub, saveAndAdvance, save])
 
   /**
    * 预览模式选难度：只暂存（真写库仍在勾「确认」时发生），但**与已存难度不同**时
@@ -603,37 +835,6 @@ const pendingFocusRef = useRef<number | null>(null)
     [previewDetail, previewSubIdx, showToast],
   )
 
-  // 快捷键：←/→ 翻题（预览模式翻预览列表），1/2/3 难度（split 模式作用于焦点组），Enter 保存
-  // （预览模式只读，难度/保存快捷键禁用）
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (view !== 'workbench') return // 标签管理页里不吃打标台快捷键
-      const el = e.target as HTMLElement | null
-      const typing = el && ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
-      if (mode === 'preview') {
-        if (e.key === 'ArrowLeft' && previewIndex > 0) setPreviewIndex(previewIndex - 1)
-        else if (e.key === 'ArrowRight' && previewIndex < previewQuestions.length - 1)
-          setPreviewIndex(previewIndex + 1)
-        else if (!typing && e.key >= '1' && e.key <= '5') {
-          // 1–5 就地选难度（与打标模式一致）；只暂存，勾「确认」时才写回题库
-          void previewPickDifficulty(DIFFICULTY_LABELS[Number(e.key) - 1][0])
-        }
-        return
-      }
-      if (e.key === 'ArrowLeft') gotoPrev()
-      else if (e.key === 'ArrowRight') gotoNext()
-      else if (typing) return
-      else if (e.key === 'Enter' && canSave) void save()
-      else if (e.key === '1') pickDifficulty('very-easy')
-      else if (e.key === '2') pickDifficulty('easy')
-      else if (e.key === '3') pickDifficulty('medium')
-      else if (e.key === '4') pickDifficulty('hard')
-      else if (e.key === '5') pickDifficulty('very-hard')
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [mode, previewIndex, previewQuestions.length, gotoPrev, gotoNext, pickDifficulty, previewPickDifficulty, save, canSave, view])
-
   const currentPaper = papers.find((p) => p.id === paperId)
 
   // 预览模式：切分题当前选中问（联动中间题图与右侧标记）
@@ -650,7 +851,7 @@ const pendingFocusRef = useRef<number | null>(null)
   const handlePreviewConfirm = useCallback(
     async (on: boolean) => {
       const d = previewDetail
-      if (!d || confirming) return
+      if (!d || confirming || !canWrite) return
       const split = d.split_active && d.subs.length > 0
       const idx = split ? Math.min(previewSubIdx, d.subs.length - 1) : 0
       if (split && !d.subs[idx]) return
@@ -775,6 +976,7 @@ const pendingFocusRef = useRef<number | null>(null)
       previewQuestions,
       previewPick,
       showToast,
+      canWrite,
     ],
   )
 
@@ -783,6 +985,110 @@ const pendingFocusRef = useRef<number | null>(null)
     setPreviewSubIdx(i)
     setPreviewPick(null)
   }, [])
+
+  // 快捷键：←/→ 翻题（预览模式翻预览列表），1–5 难度（split 模式作用于焦点组），Enter 保存，
+  //         预览模式下空格 = 勾选/取消「我已核对」（等价于点右侧确认框）。
+  // （预览模式难度/保存快捷键禁用；「有误」的题与只读账号只留翻页）
+  // 注意：这段必须排在 handlePreviewConfirm 之后 —— deps 里要用它，提前会撞 TDZ。
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (view !== 'workbench') return // 标签管理页里不吃打标台快捷键
+      const frozen = !canWrite || (mode === 'preview' ? previewDetail : detail)?.flagged === true
+      const el = e.target as HTMLElement | null
+      const typing = el && ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
+
+      if (mode === 'preview') {
+        if (e.key === 'ArrowLeft' && previewIndex > 0) setPreviewIndex(previewIndex - 1)
+        else if (e.key === 'ArrowRight' && previewIndex < previewQuestions.length - 1)
+          setPreviewIndex(previewIndex + 1)
+        else if (!frozen && !typing && (e.key === ' ' || e.code === 'Space')) {
+          // 空格 = 切换当前单元的确认状态。默认行为（滚动页面 / 触发聚焦按钮的 click）必须挡掉，
+          // 否则焦点落在难度按钮或确认框上时会双重触发。
+          // 长按不确认（防连跳题），但也照样 preventDefault —— 否则页面会一路滚下去。
+          if (e.repeat) {
+            e.preventDefault()
+            return
+          }
+          const d = previewDetail
+          if (!d) return
+          e.preventDefault()
+          const split = d.split_active && d.subs.length > 0
+          const idx = split ? Math.min(previewSubIdx, d.subs.length - 1) : 0
+          const cur = split ? !!d.subs[idx]?.verified : !!d.verified
+          void handlePreviewConfirm(!cur)
+        } else if (!frozen && !typing && e.key >= '1' && e.key <= '5') {
+          // 1–5 就地选难度（与打标模式一致）；只暂存，勾「确认」时才写回题库
+          void previewPickDifficulty(DIFFICULTY_LABELS[Number(e.key) - 1][0])
+        }
+        return
+      }
+      if (e.key === 'ArrowLeft') gotoPrev()
+      else if (e.key === 'ArrowRight') gotoNext()
+      else if (frozen) return
+      else if (typing) return
+      else if (e.key === 'Enter' && saveEnabled) primaryAction()
+      else if (e.key === '1') pickDifficulty('very-easy')
+      else if (e.key === '2') pickDifficulty('easy')
+      else if (e.key === '3') pickDifficulty('medium')
+      else if (e.key === '4') pickDifficulty('hard')
+      else if (e.key === '5') pickDifficulty('very-hard')
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [
+    mode,
+    previewIndex,
+    previewQuestions.length,
+    previewSubIdx,
+    gotoPrev,
+    gotoNext,
+    pickDifficulty,
+    previewPickDifficulty,
+    handlePreviewConfirm,
+    primaryAction,
+    saveEnabled,
+    view,
+    detail,
+    previewDetail,
+    canWrite,
+  ])
+
+  // ── 身份闸门：未登录只渲染登录页，首次登录强制改密 ──
+  if (booting) {
+    return (
+      <div className="grid h-screen place-items-center bg-white text-sm text-gray-400">
+        正在加载…
+      </div>
+    )
+  }
+  if (!me) {
+    return <LoginPage onLogin={setMe} />
+  }
+  if (me.must_change_password) {
+    return (
+      <ChangePasswordPage
+        user={me}
+        onDone={(u) => {
+          // 清掉强制改密期间可能残留的报错提示（旧逻辑会在这里留下一条 428 的红字）
+          setToast(null)
+          setMe(u)
+        }}
+      />
+    )
+  }
+  if (changingPw) {
+    return (
+      <ChangePasswordPage
+        user={me}
+        onDone={(u) => {
+          setMe(u)
+          setChangingPw(false)
+          showToast({ kind: 'ok', text: '密码已修改' })
+        }}
+        onCancel={() => setChangingPw(false)}
+      />
+    )
+  }
 
   // 标签管理页：整页切换（打标台状态留在本组件里，回来位置不丢）
   if (view === 'tagadmin') {
@@ -795,6 +1101,28 @@ const pendingFocusRef = useRef<number | null>(null)
         onExit={() => {
           setView('workbench')
           setRefreshTick((t) => t + 1)
+        }}
+      />
+    )
+  }
+
+  // 操作日志页：整页切换（仅管理员入口；后端 /api/auth/audit 另有 admin 校验兜底）
+  if (view === 'audit') {
+    return <AuditLog onExit={() => setView('workbench')} />
+  }
+
+  // 全局概览页：整页切换（仅管理员；后端 /api/overview 另有 admin 校验兜底）。
+  // 点格子里的「打开这卷」→ 三个下拉 + paperId 一起设，否则 Sidebar 按选择过滤会找不到这卷。
+  if (view === 'overview') {
+    return (
+      <Overview
+        onExit={() => setView('workbench')}
+        onOpen={(p) => {
+          setBoard(p.board)
+          setQualification(p.qualification)
+          setSubject(p.subject)
+          setPaperId(p.id)
+          setView('workbench')
         }}
       />
     )
@@ -841,26 +1169,72 @@ const pendingFocusRef = useRef<number | null>(null)
               {toast.text}
             </span>
           )}
-          <button
-            type="button"
-            onClick={() => setView('tagadmin')}
-            title="维护标签词表（改中英文名 / 新增一级组与二级标签）"
-            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-3.5 w-3.5 text-gray-500"
+          {me.role === 'admin' && (
+            <button
+              type="button"
+              onClick={() => setView('overview')}
+              title="全部试卷的完成度地图（按学科分区，一格一卷）"
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
             >
-              <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
-              <circle cx="7" cy="7" r="1.2" />
-            </svg>
-            标签管理
-          </button>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                className="h-3.5 w-3.5 text-gray-500"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              全局概览
+            </button>
+          )}
+          {me.role === 'admin' && (
+            <button
+              type="button"
+              onClick={() => setView('audit')}
+              title="谁在什么时候改了哪道题（近 7 天，管理员可见）"
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3.5 w-3.5 text-gray-500"
+              >
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
+              操作日志
+            </button>
+          )}
+          {canEditTaxonomy(me.role) && (
+            <button
+              type="button"
+              onClick={() => setView('tagadmin')}
+              title="维护标签词表（改中英文名 / 新增一级组与二级标签）"
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3.5 w-3.5 text-gray-500"
+              >
+                <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
+                <circle cx="7" cy="7" r="1.2" />
+              </svg>
+              标签管理
+            </button>
+          )}
           {currentPaper && (
             <span className="text-sm text-gray-500">
               卷进度：已打标{' '}
@@ -869,6 +1243,49 @@ const pendingFocusRef = useRef<number | null>(null)
               </span>
             </span>
           )}
+          {/* 当前身份：点一下能改密 / 退出。学科名也显示出来，避免老师登错学科账号还不知道 */}
+          <div className="flex items-center gap-2 border-l border-gray-200 pl-3">
+            <div className="text-right leading-tight">
+              <div className="text-xs font-medium text-gray-800">{me.name}</div>
+              <div className="text-[10px] text-gray-400">
+                {me.role === 'admin'
+                  ? '管理员'
+                  : me.role === 'lead'
+                    ? '学科负责人'
+                    : me.role === 'viewer'
+                      ? '只读'
+                      : me.subjects.includes('*')
+                        ? '全部学科'
+                        : me.subjects.join(' / ')}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setChangingPw(true)}
+              title="修改密码"
+              className="rounded-md border border-gray-300 px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-50"
+            >
+              改密
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await authApi.logout()
+                } catch {
+                  /* 即使请求失败也把本地状态清掉 */
+                }
+                setMe(null)
+                setPapers([])
+                setPaperId('')
+                setQuestions([])
+                setDetail(null)
+              }}
+              className="rounded-md border border-gray-300 px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-50"
+            >
+              退出
+            </button>
+          </div>
         </div>
       </header>
 
@@ -914,6 +1331,9 @@ const pendingFocusRef = useRef<number | null>(null)
                   hasNext={previewIndex < previewQuestions.length - 1}
                   imageOverride={previewSub?.image_url ?? null}
                   subLabel={previewSub?.label ?? null}
+                  flagged={previewDetail?.flagged === true}
+                  onToggleFlag={toggleFlag}
+                  canFlag={canWrite}
                 />
               </main>
               {previewDetail && (
@@ -934,6 +1354,7 @@ const pendingFocusRef = useRef<number | null>(null)
                     confirming={confirming}
                     pick={previewPick}
                     onPickDifficulty={previewPickDifficulty}
+                    readOnly={!canWrite}
                   />
                 </>
               )}
@@ -952,6 +1373,9 @@ const pendingFocusRef = useRef<number | null>(null)
                 onNext={gotoNext}
                 hasPrev={currentIndex > 0}
                 hasNext={currentIndex < questions.length - 1}
+                flagged={detail?.flagged === true}
+                onToggleFlag={toggleFlag}
+                canFlag={canWrite}
               />
             </main>
 
@@ -967,10 +1391,23 @@ const pendingFocusRef = useRef<number | null>(null)
             <aside
               data-annotate-panel="1"
               data-qid={detail?.qid ?? ''}
+              data-flagged={detail?.flagged ? '1' : ''}
               style={{ width: rightW }}
-              className="flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3"
+              // 「有误」的题整块冻结：inert 让子树不可聚焦/不可点（含输入框、开关、保存按钮），
+              // pointer-events-none 再兜一层（部分浏览器对 inert 的支持有差异）。
+              inert={detail?.flagged ? true : undefined}
+              className={`flex shrink-0 flex-col gap-3 overflow-y-auto border-l border-gray-200 bg-white p-3 ${
+                detail?.flagged ? 'pointer-events-none select-none opacity-50' : ''
+              }`}
             >
-              {/* 小问切分开关 */}
+              {/* 只读账号提示：面板不整体禁用（还要能看、能翻），但每个可写控件都禁了 */}
+              {!canWrite && (
+                <div className="shrink-0 rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-2 text-xs text-gray-600">
+                  只读账号（viewer）：可以翻题、看标注，<span className="text-gray-800">不能修改标签/难度、不能确认、不能标有误</span>。
+                  需要写权限请联系管理员提权。
+                </div>
+              )}
+              {/* 小问切分开关（三个考试局都有；Edexcel 会额外裁子图，AQA/CIE 只打标不切） */}
               {detail && (
                 <div className="shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                   <label
@@ -983,7 +1420,7 @@ const pendingFocusRef = useRef<number | null>(null)
                       <input
                         type="checkbox"
                         checked={splitMode}
-                        disabled={!detail.split_eligible}
+                        disabled={!detail.split_eligible || !canWrite}
                         onChange={(e) => toggleSplit(e.target.checked)}
                         className="peer sr-only"
                       />
@@ -1010,7 +1447,11 @@ const pendingFocusRef = useRef<number | null>(null)
                       {subDoneCount}/{draftSubs.length} 完成
                     </span>
                   </div>
-                  <div className="flex gap-1.5">
+                  {/* auto-fill（不是 auto-fit）：列宽恒定，最后一行不满时按钮保持等大、不被拉伸 */}
+                  <div
+                    className="grid gap-1.5"
+                    style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(2.75rem, 1fr))' }}
+                  >
                     {draftSubs.map((s, i) => {
                       const st = subState(s)
                       const active = i === focusIdx
@@ -1027,7 +1468,7 @@ const pendingFocusRef = useRef<number | null>(null)
                           type="button"
                           title={`${s.label} 问 · ${st === 'done' ? '完成' : st === 'partial' ? '进行中' : '未开始'}`}
                           onClick={() => setFocusIdx(i)}
-                          className={`flex-1 rounded-md border px-1.5 py-1 text-xs font-medium transition-colors ${cls}`}
+                          className={`w-full whitespace-nowrap rounded-md border px-1 py-1 text-xs font-medium transition-colors ${cls}`}
                         >
                           {s.label}
                         </button>
@@ -1054,6 +1495,7 @@ const pendingFocusRef = useRef<number | null>(null)
                   onToggle={toggleTag}
                   primaryTag={currentPrimary}
                   onSetPrimary={setPrimaryTag}
+                  readOnly={!canWrite}
                 />
               )}
               <div className="shrink-0 border-t border-gray-100 pt-3">
@@ -1068,8 +1510,9 @@ const pendingFocusRef = useRef<number | null>(null)
                     <button
                       key={value}
                       type="button"
+                      disabled={!canWrite}
                       onClick={() => pickDifficulty(value)}
-                      className={`flex-1 rounded-md border px-1.5 py-1 text-xs transition-colors ${
+                      className={`flex-1 rounded-md border px-1.5 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
                         currentDifficulty === value
                           ? cls
                           : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
@@ -1085,12 +1528,7 @@ const pendingFocusRef = useRef<number | null>(null)
                   type="button"
                   data-save="1"
                   disabled={!saveEnabled}
-                  onClick={() => {
-                    if (splitMode && !onLastSub) {
-                      void savePartial() // 先把已选标签落库，再推进焦点
-                      setFocusIdx(focusIdx + 1)
-                    } else void save()
-                  }}
+                  onClick={primaryAction}
                   className={`w-full rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-100 select-none ${
                     saveEnabled
                       ? 'bg-blue-600 shadow-sm hover:bg-blue-700 active:scale-[0.97] active:bg-blue-800 active:shadow-none'

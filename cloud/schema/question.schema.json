@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wpqwpq/question-bank/schema/question.schema.json",
+  "title": "Question",
+  "description": "单道题目的元数据（对应每个 qNN.md 的 YAML front-matter）",
+  "type": "object",
+  "required": [
+    "id",
+    "board",
+    "qualification",
+    "subject",
+    "year",
+    "session",
+    "question_number"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "全局唯一 ID：<board>-<qual>-<subject>-<year>-<session>-<paper>-q<NN>",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)+$"
+    },
+    "board": {
+      "type": "string",
+      "enum": ["edexcel", "aqa", "cie"]
+    },
+    "qualification": {
+      "type": "string",
+      "enum": ["a-level", "igcse", "gcse"]
+    },
+    "subject": {
+      "type": "string",
+      "description": "学科代码，小写英文，如 physics",
+      "examples": ["physics", "chemistry", "biology", "mathematics"]
+    },
+    "paper_code": {
+      "type": "string",
+      "description": "试卷 / 单元代码，如 WPH11、9702/41、7408/1"
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1990,
+      "maximum": 2100
+    },
+    "session": {
+      "type": "string",
+      "enum": ["jan", "mar", "may-jun", "june", "oct", "oct-nov"]
+    },
+    "question_number": {
+      "type": "string",
+      "description": "题号，含括号小题时用字符串，如 1(a)、2(b)(ii)"
+    },
+    "total_marks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "question_type": {
+      "type": "string",
+      "enum": ["mcq", "structured", "calculation", "graph", "practical", "extended", "other"]
+    },
+    "topic": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "syllabus_refs": {
+      "type": "array",
+      "description": "对应官方大纲的知识点编号",
+      "items": { "type": "string" }
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["very-easy", "easy", "medium", "hard", "very-hard", "unknown"],
+      "default": "unknown"
+    },
+    "assets": {
+      "type": "array",
+      "description": "配图相对路径",
+      "items": { "type": "string" }
+    },
+    "source": {
+      "type": "string",
+      "description": "原始出处，如 Pearson Edexcel IAL Physics WPH11/01, June 2023"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "mark_scheme": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "primary_tag": {
+      "type": "string",
+      "description": "主标签：完整数据契约见 plans/主标签实施方案.md §2。唯一真源规则——tags 为空时不写此键；tags 恰 1 项时后端自动写成该 id（下游零推导）；tags ≥2 时必须显式提供且必须 ∈ tags，否则保存被 422 拒收。读侧双保险回退：primary_tag ∈ tags 时取它，否则 len(tags)==1 时取 tags[0]，否则为 null（下游/预览/AI 报告统一用这条回退，防手改与悬空引用）。"
+    },
+    "language": {
+      "type": "string",
+      "default": "en"
+    }
+  }
+}

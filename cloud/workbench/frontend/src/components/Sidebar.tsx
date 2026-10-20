@@ -57,18 +57,29 @@ export default function Sidebar(p: Props) {
           <option value="chemistry">Chemistry</option>
           <option value="biology">Biology</option>
           <option value="mathematics">Mathematics</option>
+          <option value="accounting">Accounting</option>
+          <option value="economics">Economics</option>
         </select>
       </div>
       <div>
         <Label text={`试卷（${p.visiblePapers.length} 卷）`} />
         <select className={selectCls} value={p.paperId} onChange={(e) => p.onPaper(e.target.value)}>
           <option value="">— 选择试卷 —</option>
-          {p.visiblePapers.map((paper) => (
-            <option key={paper.id} value={paper.id}>
-              {paper.year} {SESSION_LABELS[paper.session] ?? paper.session} · {paper.paper_code}
-              （{paper.annotated_count}/{paper.question_count}）
-            </option>
-          ))}
+          {p.visiblePapers.map((paper) => {
+            // 整卷「核对完成」的对钩：每题的确认单元（非切分题=整题，切分题=每个小问）
+            // 都已确认才算 1；但**标了「有误」的题退出待办**——既不算待确认，也不算已确认。
+            // 所以分母是「总数 − 有误题数」。这样无论先标有误还是先核对，都不会卡住对钩。
+            // 计数与后端 api.list_papers 的 verified_count / flagged_count 同源，不另算一套。
+            const activeTotal = Math.max(0, paper.question_count - (paper.flagged_count ?? 0))
+            const allVerified = activeTotal > 0 && (paper.verified_count ?? 0) >= activeTotal
+            return (
+              <option key={paper.id} value={paper.id}>
+                {paper.year} {SESSION_LABELS[paper.session] ?? paper.session} · {paper.paper_code}
+                （{paper.annotated_count}/{paper.question_count}）
+                {allVerified ? ' ✓' : ''}
+              </option>
+            )
+          })}
         </select>
       </div>
 
@@ -76,9 +87,11 @@ export default function Sidebar(p: Props) {
         <div className="mt-1">
           <div className="mb-2 flex items-baseline justify-between">
             <Label text={p.mode === 'preview' ? '已打标题目（点击查看）' : '题号（点击跳题）'} />
+            {/* 预览模式的分母用「预览列表长度」：annotated_count 只数「全部小问都打完」的题，
+                而列表里还有「只打了一部分小问」的题（灰色待补齐），用它会跟格子数对不上。 */}
             <span className="text-xs font-medium text-gray-600">
               {p.mode === 'preview'
-                ? `${currentPaper.verified_count ?? 0}/${currentPaper.annotated_count} 已确认`
+                ? `${currentPaper.verified_count ?? 0}/${p.questions.length} 已确认`
                 : `${currentPaper.annotated_count}/${currentPaper.question_count} 已标`}
             </span>
           </div>
@@ -97,7 +110,7 @@ export default function Sidebar(p: Props) {
                   type="button"
                   title={
                     p.mode === 'preview'
-                      ? `第 ${q.question_number} 题 · ${
+                      ? `${q.flagged ? '⚠ 已标记有误 · ' : ''}第 ${q.question_number} 题 · ${
                           why.length
                             ? `${why.join('、')}（不能确认）`
                             : q.verify_state === 'all'
@@ -106,7 +119,7 @@ export default function Sidebar(p: Props) {
                                 ? `部分确认（${q.confirmed_units ?? 0}/${q.total_units ?? 0} 小问）`
                                 : '待确认'
                         }`
-                      : `第 ${q.question_number} 题 · ${
+                      : `${q.flagged ? '⚠ 已标记有误（修改已停用） · ' : ''}第 ${q.question_number} 题 · ${
                           q.split ? `已切分（${(q.sub_labels ?? []).join('/')}）· ` : ''
                         }${
                           q.status === 'done'
@@ -122,11 +135,16 @@ export default function Sidebar(p: Props) {
                     p.mode === 'preview'
                       ? verifyColor((q.verify_state ?? 'none') as VerifyState, i === p.currentIndex, pending)
                       : statusColor(q.status as Status, i === p.currentIndex)
-                  }`}
+                  } ${q.flagged ? 'outline outline-2 outline-offset-1 outline-red-400' : ''}`}
                   onClick={() => p.onJump(i)}
                 >
                   {q.question_number}
                   {q.split && <span className="ml-0.5 align-super text-[9px] leading-none">abc</span>}
+                  {q.flagged && (
+                    <span className="ml-0.5 align-super text-[9px] font-bold leading-none text-red-600">
+                      !
+                    </span>
+                  )}
                 </button>
               )
             })}
