@@ -269,11 +269,24 @@ const pendingFocusRef = useRef<number | null>(null)
     toastTimer.current = window.setTimeout(() => setToast(null), 3000)
   }, [])
 
-  // 切换考试局/资格/学科 → 当前卷必不属于新维度，立即关闭
-  // （清 paperId，由下方切卷 effect 级联清空题目/详情/预览状态）
+  // 当前卷必须属于左栏当前三维，否则关闭（清 paperId，由下方切卷 effect 级联清空题目/详情/预览状态）。
+  // ⚠️ 不能写成「三维一变就无条件 setPaperId('')」：概览页「打开这卷」（下方 onOpen）会在同一批
+  //    setState 里先改三维再设 paperId，React 18 合成一次提交后本 effect 立刻把刚设好的 paperId 清掉
+  //    → 左栏下拉落回「— 选择试卷 —」，题号格子一起消失（2026-10-21 修）。
+  //    改成按「这卷是否属于新维度」判断后，两条路径都自然正确：
+  //      · 概览跳转：三维已被设成该卷的维度 → 属于 → 保留；
+  //      · 手动切维度：旧卷不属于新维度 → 清空（原行为）。
+  // 依赖刻意不含 papers：卷的考试局/资格/学科不会变，加进来只会在保存/核对刷新列表时白跑。
   useEffect(() => {
-    setPaperId('')
-  }, [board, qualification, subject])
+    if (!paperId) return
+    const cur = papers.find((p) => p.id === paperId)
+    const sameDim =
+      cur !== undefined &&
+      cur.board === board &&
+      normQual(cur.qualification) === normQual(qualification) &&
+      cur.subject === subject
+    if (!sameDim) setPaperId('')
+  }, [paperId, board, qualification, subject]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 当前卷的「已核对题数」以 questions 为准。
   // 确认、取消确认、存盘、预览改难度都会更新 questions[].verify_state，但 papers[].
@@ -305,10 +318,21 @@ const pendingFocusRef = useRef<number | null>(null)
     setCurrentIndex(0)
     setPreviewIndex(0)
     setPreviewDetail(null)
+    // 必须能取消：本卷在请求飞行途中被切走（切维度、退出登录）时，
+    // 晚到的响应会把「刚清空的题目」又填回来 —— 左栏写着「— 选择试卷 —」，
+    // 中间区却显示着上一张卷的第 1 题。
+    let cancelled = false
     api
       .questions(paperId)
-      .then(setQuestions)
-      .catch((e: Error) => showToast({ kind: 'err', text: `加载题目失败：${e.message}` }))
+      .then((qs) => {
+        if (!cancelled) setQuestions(qs)
+      })
+      .catch((e: Error) => {
+        if (!cancelled) showToast({ kind: 'err', text: `加载题目失败：${e.message}` })
+      })
+    return () => {
+      cancelled = true
+    }
   }, [paperId, showToast])
 
   // 拉当前题详情，重置草稿（切分状态按 开关意图 × 本题资格 推导）
