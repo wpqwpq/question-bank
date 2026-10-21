@@ -452,3 +452,22 @@ def counts_by_paper() -> dict[str, int]:
         "SELECT paper_id, COUNT(*) FROM questions "
         "WHERE parent_qid IS NULL AND status='done' GROUP BY paper_id"
     ))
+
+
+def progress_rows() -> dict[str, list[tuple[str, str | None, int, int]]]:
+    """全库题目行的轻量投影，按卷分组：{paper_id: [(qid, parent_qid, split, has_tags), ...]}。
+
+    专门给列表页算「核对进度」用。与 `questions()` 的区别只有一点——**只取判定需要的四列**，
+    且 tags 在 SQL 里折成 0/1，不做 JSON 解析。27000 行约 60–70ms，一次查询替代
+    「每卷一次 SELECT」（2000 卷约 290ms）。判定口径完全不变，只是换了个取数方式。
+    """
+    con = connect()
+    out: dict[str, list[tuple[str, str | None, int, int]]] = {}
+    cur = con.execute(
+        "SELECT qid, paper_id, parent_qid, split, "
+        "CASE WHEN tags IS NULL OR tags='' OR tags='[]' THEN 0 ELSE 1 END "
+        "FROM questions ORDER BY paper_id, file_name"
+    )
+    for qid, pid, parent, split, has_tags in cur:
+        out.setdefault(pid, []).append((str(qid), parent, 1 if split else 0, int(has_tags)))
+    return out

@@ -252,20 +252,138 @@ def paper_progress(paper: store.Paper, conf: set[str], flagged: set[str],
     }
 
 
+# ---------------------------------------------------------------------------
+# 列表页的批量取数（2026-10-21）
+#
+# 原实现每卷两次往返：summary() 查 papers 表、paper_progress() → questions() 查 questions 表。
+# 云端 2020 卷 / 27000 题实测 380–485ms、响应体 629KB，每次刷新整车重算。
+# 现在改成两次全表查询（papers + progress_rows）在内存里分组——**数据与判定口径一字未改**，
+# 「已打标几道 / 已核对几道 / 对勾」全部照旧由 make_progress 算出。
+#
+# 缓存键 = (索引代际, 状态库写入代际, 是否管理员, 学科范围)：
+# 保存标注 / 确认 / 标有误 / 撤标记都会推代际，所以不会出现「勾完确认对勾不变」；
+# 不同学科的用户各存一份，不会串号。TTL 比 /overview 短——列表是主路径，宁可多算一次。
+# ---------------------------------------------------------------------------
+_PAPERS_TTL = 15.0
+_papers_lock = threading.Lock()
+_papers_cache: dict = {"key": None, "at": 0.0, "payload": None}
+
+
+def _progress_from_rows(rows, conf: set[str], flagged: set[str],
+                        question_count: int | None) -> dict:
+    """用 index_db.progress_rows() 的行算一卷进度，口径与 paper_progress 逐条对齐。
+
+    行形状 (qid, parent_qid, split, has_tags)。切分题的确认单元 = 各子题文件真实 id，
+    非切分题 = 主题 qid；被标「有误」的题退出分母（docs/11、docs/12）。
+    """
+    subs_by: dict[str, list[tuple[str, int]]] = {}
+    mains: list[tuple[str, int, int]] = []
+    for qid, parent, split, has_tags in rows:
+        if parent:
+            subs_by.setdefault(str(parent), []).append((qid, has_tags))
+        else:
+            mains.append((qid, split, has_tags))
+
+    verified = 0
+    flagged_n = 0
+    tagged_any = False
+    for qid, split, has_tags in mains:
+        if split:
+            subs = subs_by.get(qid, ())
+            units = [s for s, _ in subs]
+            any_tagged = any(t for _, t in subs)
+        else:
+            units = [qid]
+            any_tagged = bool(has_tags)
+        if any_tagged:
+            tagged_any = True
+        # 主题本身被标，或它任意一个小问被标，都算「这题有误」
+        hit = qid in flagged or any(u in flagged for u in units)
+        if hit:
+            flagged_n += 1
+        elif units and all(u in conf for u in units):
+            verified += 1
+
+    total = question_count if question_count is not None else len(mains)
+    active = max(0, total - flagged_n)
+    if active > 0 and verified >= active:
+        st = "all"
+    elif tagged_any or verified:
+        st = "some"
+    else:
+        st = "none"
+    return {
+        "state": st,
+        "verified_count": verified,
+        "flagged_count": flagged_n,
+        "question_count": total,
+        "tagged": tagged_any,
+    }
+
+
+def _summary_from_row(paper: store.Paper, row: dict) -> dict:
+    """卷摘要：直接从批量查到的 papers 行映射，字段与 Paper.summary() 完全一致。"""
+    return {
+        "id": paper.id,
+        "board": row["board"],
+        "qualification": row["qualification"],
+        "subject": row["subject"],
+        "paper_code": row["paper_code"],
+        "year": row["year"],
+        "session": row["session"],
+        "unit": row["unit"],
+        "question_count": row["question_count"],
+        "annotated_count": row["annotated_count"],
+        "source": row["source"],
+    }
+
+
+def _bulk_list_rows() -> tuple[dict[str, dict], dict[str, list]] | None:
+    """一次取全库「卷摘要 + 题目投影」。
+
+    索引缺失或正在全量重建时返回 None，调用方回落逐卷（慢但正确）。
+    """
+    if not index_db.exists() or index_db.is_building():
+        return None
+    try:
+        return ({r["paper_id"]: r for r in index_db.papers()}, index_db.progress_rows())
+    except Exception as e:  # noqa: BLE001  索引坏了只是慢，不能让列表 500
+        print(f"[papers] 批量取数失败，回落逐卷：{e}", flush=True)
+        return None
+
+
 @router.get("/papers")
 def list_papers(request: Request):
     ident = auth.current(request)
+    key = (index_db.generation(), state.rev(), ident.is_admin, tuple(sorted(ident.subjects)))
+    now = time.monotonic()
+    with _papers_lock:
+        c = _papers_cache
+        if c["payload"] is not None and c["key"] == key and (now - c["at"]) < _PAPERS_TTL:
+            return c["payload"]
+
     conf = review.confirmed_ids()
     flagged = flags.flagged_ids()   # 一处取全，别在循环里反复读文件
+    bulk = _bulk_list_rows()
+    by_id, qrows = bulk if bulk is not None else ({}, {})
     out = []
     for p in store.iter_papers():
         if not ident.can(p.subject):  # 学科隔离：目录级过滤，跨科卷根本不出现
             continue
-        s = p.summary()
-        pr = paper_progress(p, conf, flagged, s.get("question_count"))
+        row = by_id.get(p.id)
+        qr = qrows.get(p.id)
+        # 只有「索引里这一卷齐备且未过期」才走快路径，其余一律回落逐卷（会顺带重灌）
+        if row is None or row.get("stale") or qr is None:
+            s = p.summary()
+            pr = paper_progress(p, conf, flagged, s.get("question_count"))
+        else:
+            s = _summary_from_row(p, row)
+            pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
         s["flagged_count"] = pr["flagged_count"]
         s["verified_count"] = pr["verified_count"]
         out.append(s)
+    with _papers_lock:
+        _papers_cache.update({"key": key, "at": time.monotonic(), "payload": out})
     return out
 
 
