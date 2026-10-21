@@ -1,0 +1,1398 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+r"""cut_paper_aqa_bio.py — 牛津 AQA 国际 A-Level **生物**（9610，BL01–BL05）按题自动切割
+
+⚠️ **独立脚本，不与 cut_paper_aqa.py（物理）/ cut_paper_aqa_chem.py（化学）共享代码**。
+   每个考试局 × 每个资格 × 每个学科各一份切割脚本，是本项目定下的规矩。
+   产出与其余脚本**完全同构**（cut.json + qNN.md，符合 schema/cut.schema.json）。
+
+底本 = cut_paper_aqa_chem.py（同为牛津 AQA，同一套版心/徽章骨架），2026-10-21 用
+2020-jan → 2026-june 共 **60 卷 / 1876 页**实测改写。生物与化学的差异：
+
+    · **零选择题、零 Section**。60 卷里 96 处 A–D 行全是图上标注字母（"Name the
+      structures labelled A, B and C"），不是选项。因此本脚本**不做题型判定**：
+      question_type 一律 structured，option_hotzones 一律为空。
+      ⚠️ 不能留化学那套启发式——生物常出现同一列竖排 A/B/C 的图注，会被误判成
+      MCQ 并生成三个假热区（2024-jan U1、2025-june U5 实测会踩到）。
+    · **每题必从新页起**：99% 的徽章 y0 落在 65–103（中位 67），切点极稳。
+      每题跨 2–6 页（中位 4），单题就是一条长竖图。
+    · **作答区就是题目本身**：学生写在卷面横线上（矢量细线或下划线文本），
+      行距恒 25.8pt（p5 25.6 / p95 25.8）→ CAP 取 6 行 = 155pt。
+    · 徽章 `0 1`：x0 51.0–53.8、字号恒 11.0，比化学更窄更稳。
+      **2020-jan BL05 例外**：`0`/`1`/`.`/`1` 是四个独立文本对象（x0 差 17pt），
+      靠 BADGE_SPLIT_DX 兜底。
+    · 小问 `0 1 . 2` 绝大多数**合并进徽章同一行**（化学是独立的 ". N" 行），
+      少部分独立成行（x0 81.7–82.4）→ 两条路径都要捞。
+    · 没有 `Total for Question`；`END OF QUESTIONS` 60/60 有（文本层是双空格，
+      必须用 ENDQ_RE 的 \s+ 宽容匹配）。
+    · **20% 是插入页**（Additional page 171 / 空白题页 120 / DNW 83，共 374/1876 页）
+      → 必须按页文本剔除，否则题图中间夹整页空白。
+    · 版心与化学微差：右上角「Do not write outside the box」方框在 545.2–584.9
+      （**版心外**），不像化学贴到 536.7；但分值标签 `[N marks]` 右端到 538.9，
+      故 R 取 539.5（化学取 536 会把分值括号切掉）。
+
+坐标约定（全仓库统一）: PDF 点 pt，页面左上角原点，y 向下；bbox=[x0,y0,x1,y1]。
+
+用法:
+    python scripts/cut_paper_aqa_bio.py <session_dir>
+    python scripts/cut_paper_aqa_bio.py --probe <session_dir>   # 只打印锚点诊断，不写盘
+
+⚠️ 只服务 `data/aqa/a-level/biology/<year>-<session>-bl0N/`。
+
+重跑保护: source.sha256 不符硬停；status=verified/manual 的题其 regions 不被覆盖。
+
+2026-10-21 首批 4 卷样板（2020-jan BL01/BL05、2024-june BL01、2026-june BL05）验收。
+"""
+
+import argparse
+import hashlib
+import json
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+import pymupdf
+
+# ── 排版常量（2026-10-17 化学 76 卷实测） ────────────────────────────────────
+HEADER_Y = 50.0          # 页眉安全线：页码居中 y≈27.5，页框顶线 y≈53.5
+FOOTER_Y = 768.0         # 页脚安全线：Turn over ► y≈774、*NN* y≈790、IB/… y≈815
+L_DEF, R_DEF = 40.5, 538.0   # R 由 539.5 收到 538.0：539.5 会把右框线整根带进题图；
+# L 由 40.0 收到 40.5：2020-jan 老卷是整页矩形框（左沿 39.9），40.0 只压 0.1pt 会留灰边
+# ⚠️ 化学版心取 40/536 而不是物理版的 39/539：
+#    · 页框竖线在 39.2–39.7 / 538.6–539.0；
+#    · 右上角「Do not write outside the box」方框实测 x0=536.7–538.3（宽 53pt、高 34pt），
+#      取 539 时每条续页题图右上角都会留一道 2–4px 竖细线（截图证实），取 536 一刀切干净；
+#    · 正文/表格最左 47、最右 534.6 → 仍有 1.4pt 余量。
+T_DEF, B_DEF = 53.5, 765.5   # 页框上下横线 y（53.5 / 765.5，+0.5 容差）
+BADGE_X_MIN, BADGE_X_MAX = 40.0, 80.0   # 题号徽章列（化学实测 x0 49–57）
+BADGE_MAX_SIZE = 13.0    # 徽章字号恒 11.0（3585 处全一致）；≥13 一律不是徽章
+BADGE_SPLIT_DX = (12.0, 24.0)   # 拆成两个独立数字对象的徽章：同 y、x0 差 ≈17pt
+SUBQ_X_MIN, SUBQ_X_MAX = 70.0, 115.0    # 小问号 ". N" 列（实测 81.7–82.4；拆徽章卷到 104）
+OPT_X_MIN, OPT_X_MAX = 84.0, 106.0      # 选择题选项行 x0（CH05 Section B 实测 110 左右，仅参考）
+CAP = 155.0              # 封顶保留：≈6 行（生物作答横线行距恒 25.8pt）
+TRIM_MIN_GAP = 20.0
+TRIM_PAD = 8.0           # 生物答案横线是 0.2pt 细线/下划线文本，留 8pt
+MAX_REGION_PAGES = 10    # 吞页防御：实测单题最多 9 页（2025-jan BL04 Q7，15 分 8 小问），取 10
+
+BADGE_RE = re.compile(r"^(\d)\s(\d)(?:\s*\.\s*(\d{1,2}))?$")
+SUBQ_RE = re.compile(r"^\.\s*(\d{1,2})\s*$")
+MARK_RE = re.compile(r"\[\s*(\d{1,2})\s*marks?\s*\]")
+OPT_RE = re.compile(r"^([A-D])(?:\s+\S.*)?$")
+SEC_RE = re.compile(r"^Section\s+([A-Z])\s*$")
+ENDQ_RE = re.compile(r"END\s+OF\s+QUESTIONS", re.I)
+ENDSEC_RE = re.compile(r"END\s+OF\s+SECTION\s*([A-Z]?)", re.I)
+# 导航行：化学卷里出现得比物理密（含同题续页、跨节提示）。
+# ⚠️ 这些行**不算内容**（见 last_content），否则题图末尾会吊着一行
+#    "Question 1 continues on the next page" 和它下面的空白。
+NAV_RE = re.compile(
+    r"(continues on the next page"
+    r"|turn over for the next question"
+    r"|turn over for the next section"
+    r"|turn to page\s+\d+\s+for the next question)", re.I)
+NOQ_RE = re.compile(r"no questions printed on this page", re.I)
+DNW_RE = re.compile(r"DO\s*NOT\s*WRITE\s*ON\s*THIS\s*PAGE", re.I)
+ADDPG_RE = re.compile(r"Additional page, if required", re.I)
+JUNK_RE = re.compile(r"^[\s,.\-*\u0000-\u001f]*$")
+# 「Tick (✓) one box」题：1 分、答案是表格方格，没有 A–D → 仍判 structured。
+TICKBOX_RE = re.compile(r"Tick\s*\(?✓?\)?\s*one\s*box", re.I)
+# QWC 卷（11/60）在「该题首页」的徽章**上方**有一个方框：
+#   "You are reminded that 2 marks will be awarded for the quality of your
+#    written communication in question N."
+# 它属于 question N 的题首说明，不是上一题的尾巴 → 把该题的起点上抬到方框处，
+# 否则上一题的图末尾会吊着「question 6 有 2 分 QWC」这种无关文字，
+# 而且上一题会连带吞掉这一页的页框顶线（2020-jan BL05 Q5 实测）。
+QWC_HEAD_RE = re.compile(r"reminded\s+that\s+\d+\s+marks?\s+will\s+be\s+awarded", re.I)
+QWC_QN_RE = re.compile(r"quality\s+of\s+your\s+written\s+communication\s+in\s+question\s+(\d+)", re.I)
+
+# 整块「非题目内容」区（2026-10-21 王培琪定：这些不要进题图）
+#   · QWC 提醒方框（"You are reminded that 2 marks will be awarded …"）——不属于题目，
+#     挂在上一题图尾或下一题图首都难看，干脆两边都不留；
+#   · END OF QUESTIONS —— 卷末标志，最后一道题的图不带到它。
+# 只剔「文字 + 该方框的边框矩形」，不影响同一页上的作答横线与题干。
+BOILER_ZONES = {}   # {page_index: [(y0, y1), ...]}  由 detect_boiler() 填，page_content_rects 读
+
+
+def detect_boiler(pages_lines, pages_content):
+    """标出 QWC 方框的文字行与纵向区间。
+
+    这句话在 PDF 里是**两行**：
+        "You are reminded that 2 marks will be awarded"
+        "for the quality of your written communication in question 6."
+    用第二行定位，再向上找 40pt 内的首行，取两行并集的上下各扩 8pt 作为方框区
+    （边框矩形实测就贴在这两行外 6–8pt）。命中行打 ln["boiler"]=True。
+    """
+    zones = {}
+    for pi, lines in enumerate(pages_lines):
+        hit = []
+        for ln in lines:
+            if QWC_HEAD_RE.search(ln["raw"]) or QWC_QN_RE.search(ln["raw"]):
+                hit.append(ln)
+        if not hit:
+            continue
+        for ln in hit:
+            ln["boiler"] = True
+        y0 = min(ln["bbox"][1] for ln in hit) - 8.0
+        y1 = max(ln["bbox"][3] for ln in hit) + 8.0
+        zones[pi] = [(y0, y1)]
+        # 方框自身的边框矩形：用文字行左右范围判断归属（不依赖 x 精确值）
+        x0 = min(ln["bbox"][0] for ln in hit) - 200.0
+        x1 = max(ln["bbox"][2] for ln in hit) + 200.0
+        zones[pi] = [(y0, y1, x0, x1)]
+    return zones
+
+
+def in_boiler_zone(pi, y0, y1):
+    for z in BOILER_ZONES.get(pi, ()):
+        zy0, zy1 = z[0], z[1]
+        if min(y1, zy1) - max(y0, zy0) > 2.0:      # 纵向有实质交集
+            return True
+    return False
+
+# 封面右栏「For Examiner's Use」阅卷表：结构化题逐题列一行数字，选择题整段列成
+# 「N–M」区间（分隔符有 en dash / U+2212 减号 / 连字符三种写法）。这张表是
+# **机器可读的题型权威来源**（比按选项行启发式判更稳），本脚本用它给
+# question_type 定调，并用每题的选项行检测来产热区、交叉校验。
+TABLE_CELL_RE = re.compile(r"^(\d{1,2})$")
+TABLE_RANGE_RE = re.compile(r"^(\d{1,2})\s*[-\u2013\u2014\u2212]\s*(\d{1,2})$")
+TABLE_X_MIN, TABLE_X_MAX = 430.0, 545.0
+TABLE_Y_MIN, TABLE_Y_MAX = 420.0, 770.0
+
+BOARDS = {"edexcel", "aqa", "cie"}
+QUALS = {"a-level", "alevel", "igcse", "gcse"}
+SESSION_TOKENS = {"jan", "mar", "may-jun", "june", "oct", "oct-nov"}
+# 本脚本只认化学卷号；物理 PH01–PH05 走 cut_paper_aqa.py
+SUPPORTED_PAPERS = {"bl01": 1, "bl02": 2, "bl03": 3, "bl04": 4, "bl05": 5}
+
+# paper_code → 卷面总分（76/76 实测；paper.md 有 total_marks 时以之为准）
+PAPER_TOTAL = {"bl01": 75, "bl02": 75, "bl03": 75, "bl04": 75, "bl05": 75}
+
+# 写进 qNN.md 的 source 字段
+SUBJECT_LABEL = {"biology": "Biology"}
+
+
+# ── 行提取 ──────────────────────────────────────────────────────────────────
+
+def visible_bbox(ln):
+    """只用**含可见字符**的 span 求并集。
+
+    ⚠️ 必须这样算：AQA 的数学式里 CambriaMath 只含一个空格的 span 带有
+    异常 ascent/descent，其 bbox 会竖直撑到 ±33pt（2026-05 U1 p2 题首行
+    bbox 高 67pt）。若直接用 line["bbox"]，题区起点与「最后一项内容底」
+    都会被带偏，页尾裁剪也跟着错。
+    """
+    xs0, ys0, xs1, ys1 = [], [], [], []
+    for s in ln["spans"]:
+        if not s["text"].strip():
+            continue
+        b = s["bbox"]
+        xs0.append(b[0]); ys0.append(b[1]); xs1.append(b[2]); ys1.append(b[3])
+    if not xs0:
+        b = ln["bbox"]
+        return [b[0], b[1], b[2], b[3]]
+    return [min(xs0), min(ys0), max(xs1), max(ys1)]
+
+
+def build_page_lines(page):
+    """一页的全部横排文本行，按 (y0, x0) 排序。"""
+    lines = []
+    for block in page.get_text("dict")["blocks"]:
+        if block.get("type") != 0:
+            continue
+        for ln in block["lines"]:
+            if tuple(ln.get("dir", (1, 0))) != (1.0, 0.0):
+                continue
+            raw = "".join(s["text"] for s in ln["spans"])
+            if not raw.strip():
+                continue
+            s0 = ln["spans"][0]
+            lines.append({
+                "bbox": visible_bbox(ln),
+                "raw": raw,
+                "bold": any("bold" in s["font"].lower() for s in ln["spans"]),
+                "size": max(s["size"] for s in ln["spans"]),
+                "first": (s0["text"], "bold" in s0["font"].lower(), s0["bbox"][0]),
+            })
+    lines.sort(key=lambda l: (round(l["bbox"][1], 1), round(l["bbox"][0], 1)))
+    return lines
+
+
+# 页眉/页脚行按内容兜底过滤（y 阈值之外的补充）
+FOOTER_LINE_RE = re.compile(r"^(\*[^*]*\*|IB/[A-Z]/?[A-Za-z0-9/_]*|Turn over\s*►?)\s*$")
+
+
+def content_lines(lines, footer_y=None):
+    """版心内容行：滤掉页眉（页码）、页脚（条码/卷号/IB 号/Turn over ►）
+    与点线装饰垃圾。"""
+    fy = FOOTER_Y if footer_y is None else footer_y
+    out = []
+    for ln in lines:
+        b = ln["bbox"]
+        if b[1] < HEADER_Y or b[1] > fy:
+            continue
+        raw = ln["raw"].strip()
+        if not raw or JUNK_RE.fullmatch(raw):
+            continue
+        if FOOTER_LINE_RE.match(raw):
+            continue
+        out.append(ln)
+    return out
+
+
+def page_flags(page):
+    """该页是否为插入页 / 卷尾附加页（不承载题目内容，题区间整页跳过）。"""
+    t = page.get_text()
+    f = set()
+    if NOQ_RE.search(t):
+        f.add("blank")
+    if DNW_RE.search(t):
+        f.add("dnw")
+    if ADDPG_RE.search(t):
+        f.add("addpg")
+    return f
+
+
+def assign_words_to_lines(lines, words):
+    out = []
+    for w in words:
+        cx, cy = (w[0] + w[2]) / 2.0, (w[1] + w[3]) / 2.0
+        hit = None
+        for ln in lines:
+            b = ln["bbox"]
+            if b[0] <= cx <= b[2] and b[1] <= cy <= b[3]:
+                hit = ln
+                break
+        out.append((w, hit))
+    return out
+
+
+# ── 通用小工具（与 cut_paper.py / cut_paper_cie.py 同名同义） ────────────────
+
+def r2(v):
+    return round(float(v), 2)
+
+
+def yaml_scalar(v):
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, int):
+        return str(v)
+    s = str(v)
+    if s == "":
+        return '""'
+    if re.fullmatch(r"[A-Za-z0-9_/.:+-]+", s):
+        return s
+    return json.dumps(s, ensure_ascii=False)
+
+
+def page_footer_tops(pages_lines, y_min=700.0):
+    """每页页脚家具的最高顶沿（{page_index: y0}），供 region 下界夹取。
+
+    计入：`Turn over ►` / `*NN*` / `IB/…` / `Copyright © …` / `DO NOT WRITE…`。
+    ⚠️ 只认 y0 > y_min 的行——卷面上还有印在右上角的 `Turn over`（y0≈65），
+    不能把那种也算页脚。
+    """
+    out = {}
+    for pi, lines in enumerate(pages_lines):
+        for ln in lines:
+            b = ln["bbox"]
+            if b[1] < y_min:
+                continue
+            raw = ln["raw"].strip()
+            if (FOOTER_LINE_RE.match(raw) or raw.startswith("Copyright")
+                    or DNW_RE.search(raw)):
+                out[pi] = min(out.get(pi, 1e9), b[1])
+    return out
+
+
+def build_regions(pages, sy0, ey1, L, T, B, R=R_DEF, footer_tops=None):
+    """按有序页列表拼 region；首页起于 sy0、末页止于 ey1，中间页 T→B。
+
+    pages 已剔除插入页（不连续）——不能再用 range(start, end+1) 生成。
+
+    ⚠️ footer_tops：该页页脚家具（`Turn over ►` / `Copyright © …` / `*NN*` / `IB/…`）
+    的最高顶沿。化学卷的页脚位置不齐（实测 `Turn over ►` 有 770.1 与 762.8 两种，
+    2018 卷还有印在版心内的 `Copyright © 2018 Oxford…`，y0≈751），
+    只靠固定 B=766 会从这些字中间切过去（图底吊半行字）。故每页下界再与
+    `页脚顶沿 - 2` 取小。
+    """
+    regs = []
+    ft = footer_tops or {}
+    for i, pi in enumerate(pages):
+        top = sy0 if i == 0 else T
+        bot = ey1 if i == len(pages) - 1 else B
+        if pi in ft:
+            bot = min(bot, ft[pi] - 2.0)
+        regs.append({"page": pi, "bbox": [r2(L), r2(top), r2(R), r2(bot)]})
+    return regs
+
+
+def is_frame_rect(r):
+    """页框线 / 角点残段（不算题目内容）。
+
+    化学卷两种页框形态都要挡：
+      · 新卷（2020 起）4 条 0.48pt 细线：横线 498.8×0.48、竖线 0.48×711.5，
+        四角另有 0.48×0.48 的退化残段；
+      · 老卷（2018–2019）整页一个 499×712 矩形。
+    ⚠️ 不能写成物理版的 `w > 490 or h > 600` 一刀切——化学卷**表格特别多**，
+       整宽表格实测 486×190，宽度逼近 490；一旦被当页框丢掉，表格下边框不再算
+       内容，页尾裁剪就会从表格中间切下去。故按「细」判：只挡窄条与整页矩形。
+    """
+    w, h = r.width, r.height
+    if w <= 3 and h <= 3:                        # 角点残段
+        return True
+    if w > 450 and h > 600:                      # 整页矩形（2018–2019 老卷）
+        return True
+    # 上下框线：贴近版心上下沿的细横线（务必卡 y——化学作答横线宽达 420pt，
+    # 只按「细横线」判会把每一根作答线都当页框丢掉，题图整个空掉）
+    if h <= 3 and w > 450 and (r.y0 < 57 or r.y1 > 763):
+        return True
+    # 左右框线：贴近版心左右沿的细竖线
+    if w <= 3 and h > 400 and (r.x0 < 42 or r.x1 > 536):
+        return True
+    # 作答框的**顶边线**：横贯整幅版心（39.7→538.6）、贴在这一页开头的细横线。
+    # 必须挡掉：它是页面印刷框，不是题目内容；漏挡会让「下一题从页顶起」的判据
+    # 误判成「本页还有上一题的内容」，于是上一题的图把这一页整页吞进来
+    # （2020-jan BL05 Q5 实测：图尾吊着 QWC 方框 + 整页空白）。
+    # 判据用 x 跨度而不是 y：作答横线只跨 45.4→532.9，够不到框沿。
+    if h <= 3 and w > 450 and r.x0 < 42.5 and r.x1 > 535.5:
+        return True
+    return False
+
+
+def page_content_rects(doc, pi, cache, footer_y=None):
+    """一页内矢量图形与图片块 [(y1, y0, x0, x1, kind), ...]（已剔除页框线与页边家具）。"""
+    fy = FOOTER_Y if footer_y is None else footer_y
+    if pi not in cache:
+        rows = []
+        try:
+            for dr in doc[pi].get_drawings():
+                db = dr["rect"]
+                if db.width <= 0 and db.height <= 0:
+                    continue
+                if db.y1 > fy or db.y0 < HEADER_Y:
+                    continue
+                if is_frame_rect(db):
+                    continue
+                # 页边家具：右上角「Do not write outside the box」的方框实测 x0=538.3
+                # （紧贴版心右沿 539、宽 54pt），与题区横向只有 0.7pt 交集——
+                # 不剔掉的话，题区上沿会从它中间穿过，截图右上角残留一道竖细线。
+                if db.x0 >= R_DEF - 1.0 and db.width < 120:
+                    continue
+                if db.x1 <= L_DEF + 1.0 and db.width < 120:
+                    continue
+                if in_boiler_zone(pi, db.y0, db.y1):
+                    continue
+                rows.append((db.y1, db.y0, db.x0, db.x1, "line"))
+        except Exception:
+            pass
+        for b in doc[pi].get_text("dict")["blocks"]:
+            if b.get("type") == 1 and HEADER_Y <= b["bbox"][1] <= fy:
+                bb = b["bbox"]
+                if in_boiler_zone(pi, bb[1], bb[3]):
+                    continue
+                rows.append((bb[3], bb[1], bb[0], bb[2], "image"))
+        cache[pi] = rows
+    return cache[pi]
+
+
+def option_label_of(ln):
+    """若该行「行首 span」是粗体且以单个 A–D 字母起头 → 返回 'A'–'D'，否则 None。
+
+    ⚠️ 判据是「**行首 span 是粗体 + 首字符 A–D + 其后是空格/结束**」，不是
+    「整行以 A–D 开头」：题干常以 "A projectile is fired…" 开头（同一列、同一起点），
+    按整行正则会把题干行误当选项行，导致选项热区整体错位。实测选项标签 span
+    **一律粗体**，而题干里句首的 'A ' 是非粗体。
+
+    ⚠️ 这里**不判 x0 列位置**：CH05 Section B 的选项是「字母 + 文本同行 +
+    右侧圆圈」、纵向排列（x0≈110），而选项排成表格时列位又不同；
+    列一致性交给 question_type_of 按「同列顺序 ABCD」聚类判。
+    """
+    t, bold, x0 = ln["first"]
+    t = t.strip()
+    if not bold or not t or t[0] not in "ABCD":
+        return None
+    if len(t) > 1 and t[1] not in " .":
+        return None
+    if not (40.0 <= x0 <= R_DEF):
+        return None
+    return t[0]
+
+
+def cover_exam_table(doc):
+    """封面阅卷表 → (选择题题号集合, 诊断信息)；解析不出返回 (None, 原因)。
+
+    结构化题逐题一行、选择题整段一行「N–M」；单列须恰为 1..(区间起点-1) 才采信。
+    """
+    singles, ranges = [], []
+    for block in doc[0].get_text("dict")["blocks"]:
+        if block.get("type") != 0:
+            continue
+        for ln in block["lines"]:
+            b = ln["bbox"]
+            if not (TABLE_X_MIN <= b[0] <= TABLE_X_MAX
+                    and TABLE_Y_MIN <= b[1] <= TABLE_Y_MAX):
+                continue
+            t = "".join(s["text"] for s in ln["spans"]).strip()
+            if TABLE_CELL_RE.match(t):
+                singles.append(int(t))
+            else:
+                m = TABLE_RANGE_RE.match(t)
+                if m:
+                    ranges.append((int(m.group(1)), int(m.group(2))))
+    if not singles:
+        return None, "封面阅卷表未解析到题号行"
+    if not ranges:
+        # U5（Physics in practice）整卷无选择题 → 阅卷表只有单行、没有区间
+        if sorted(singles) == list(range(1, len(singles) + 1)):
+            return set(), ""
+        return None, f"封面阅卷表单列 {singles} 不连续，未采信"
+    a, b = ranges[0]
+    if sorted(singles) != list(range(1, a)):
+        return None, f"封面阅卷表单列 {singles} 与区间 {ranges} 不连续，未采信"
+    return set(range(a, b + 1)), ""
+
+
+def row_top_of(page, y0, pages_content, min_x=105.0, half=12.0, R=R_DEF):
+    """题号徽章所在「行」的顶边。
+
+    ⚠️ 徽章数字的 y0 常比同行的题干低 ~9pt（徽章框小、题干含大字号数学式），
+    直接拿徽章 y0 当题区顶/上一题底，会把下一题题干的上沿切进上一题的图里
+    （页尾会露出半行被切开的字）。取同行候选行（x≥105 的正文列）的最小 y0 才对。
+    """
+    tops = [y0]
+    for ln in pages_content[page]:
+        b = ln["bbox"]
+        if abs(b[1] - y0) <= half and min_x <= b[0] <= R:
+            tops.append(b[1])
+    return min(tops)
+
+
+def region_has_content(pi, y_top, y_bot, pages_content, content_cache, doc,
+                       L=L_DEF, R=R_DEF):
+    """[y_top, y_bot] 内是否还有题目内容（文本行 / 矢量 / 图片）。
+
+    ⚠️ 必须同时卡 x 范围：页框外的「Do not write outside the box」提示就在
+    页顶 y≈52–70（x≈546–586），不卡 x 会让每页都"有内容"，跨页回退判据失效。
+    """
+    for ln in pages_content[pi]:
+        b = ln["bbox"]
+        if b[1] < y_top - 1 or b[1] > y_bot + 1:
+            continue
+        if b[2] < L or b[0] > R:
+            continue
+        return True
+    for y1, y0, x0, x1, _k in page_content_rects(doc, pi, content_cache):
+        if y0 > y_bot + 1 or y1 < y_top - 1:
+            continue
+        if x1 < L or x0 > R:
+            continue
+        return True
+    return False
+
+
+def last_content(region, pages_content, content_cache, doc):
+    """region 内最低一项内容 → (y_bottom, kind, text, is_option)；无内容 (None,None,"",False)。
+
+    kind: "text" 文本行 / "line" 矢量（作答横线、表格、图形）/ "image" 图片。
+
+    ⚠️ 导航行（`Question 3 continues on the next page` / `Turn over for the next
+    question|section`）**跳过、不算内容**。化学卷这类提示密度高，且多贴在版心下沿
+    之上——若算内容，题图末尾就吊着一行"continues…"加它下面的空白；跳过之后
+    末项落到上一行正文/横线，裁剪点自然上移，图更干净（2026-10-17 76 卷实测）。
+    """
+    bb = region["bbox"]
+    last = (None, None, "", False)
+    for ln in pages_content[region["page"]]:
+        lb = ln["bbox"]
+        if lb[3] < bb[1] - 1 or lb[1] > bb[3] + 1:
+            continue
+        if lb[2] < bb[0] or lb[0] > bb[2]:
+            continue
+        if NAV_RE.search(ln["raw"]):
+            continue
+        if last[0] is None or lb[3] > last[0]:
+            last = (lb[3], "text", ln["raw"].strip(), bool(option_label_of(ln)))
+    for y1, _y0, x0, x1, kind in page_content_rects(doc, region["page"], content_cache):
+        if y1 < bb[1] - 1 or y1 > bb[3] + 1:
+            continue
+        if x1 < bb[0] or x0 > bb[2]:
+            continue
+        if last[0] is None or y1 >= last[0]:
+            last = (y1, kind, "", False)
+    return last
+
+
+def page_has_nav(region, pages_content):
+    """该 region 所在页是否带版面导航提示（本页内容已终）。"""
+    for ln in pages_content[region["page"]]:
+        if NAV_RE.search(ln["raw"]):
+            return True
+    return False
+
+
+def nav_top_below(rg, pages_content, y_from):
+    """该页 last_y 之后的第一条导航行顶沿（没有则 None）。
+
+    ⚠️ AQA 生物常把 "Question N continues on the next page" 印在**最后一条作答横线
+    下面**（2022-jan BL03 Q7 实测：横线 741.5、导航行 743.7–759.5）。只按「末项 + 8pt」
+    裁会把导航行拦腰切断（audit_cut_edges 报 text edge=749.7）。
+    """
+    bb = rg["bbox"]
+    best = None
+    for ln in pages_content[rg["page"]]:
+        lb = ln["bbox"]
+        if lb[1] < y_from - 2 or lb[3] > bb[3] + 1:
+            continue
+        if not NAV_RE.search(ln["raw"]):
+            continue
+        if best is None or lb[1] < best:
+            best = lb[1]
+    return best
+
+
+def trim_regions(doc, regions, pages_content, content_cache, log=None, allow_cap=True):
+    """页尾空白裁剪（原地修改），返回 (裁剪段数, 封顶段数)。
+
+    · 中间段（题还续下页）→ 末项 + TRIM_PAD；
+    · 末段：末项是正文散文 且 页面无导航提示 → 封顶保留 min(B, 末项 + CAP=120pt)；
+            否则（图形/横线/表格/选项行、有导航提示）→ 末项 + TRIM_PAD。
+    · allow_cap=False（选择题）→ 一律硬裁：MCQ 无书写区，尾部留白纯属排版残留。
+    ⚠️ 末段**必须**纳入裁剪范围（没有逐题 Total 锚点，每道跨页题的末段
+    都以版心底收尾）——照抄 Edexcel 的 `regions[:-1]` 会让每道跨页题都拖
+    一段版心空白进图。
+    ⚠️ 化学末项多为**作答横线**（kind=line），一律硬裁：动的只是横线**下面**
+    的部分，横线上方的书写区不受影响。若末项是散文（如 "Explain why…" 后面
+    还没印横线），才按 CAP 留 4 行。
+    """
+    n_trim = n_cap = 0
+    for i, rg in enumerate(regions):
+        is_last = i == len(regions) - 1
+        last_y, kind, text, is_opt = last_content(rg, pages_content, content_cache, doc)
+        if last_y is None:
+            continue
+        gap = rg["bbox"][3] - last_y
+        if gap <= TRIM_MIN_GAP:
+            continue
+        prose = (allow_cap and kind == "text" and not is_opt
+                 and not OPT_RE.match(text)
+                 and len(text.split()) >= 4 and not NAV_RE.search(text))
+        if is_last and prose and not page_has_nav(rg, pages_content):
+            new_y1 = min(rg["bbox"][3], last_y + CAP)
+            nt = nav_top_below(rg, pages_content, last_y)
+            if nt is not None:
+                new_y1 = min(new_y1, nt - 2.0)
+            if new_y1 > rg["bbox"][1] + 20:
+                if new_y1 < rg["bbox"][3] - 0.5:
+                    n_cap += 1
+                if log is not None:
+                    log.append(("cap", i, is_last, rg["bbox"][3], last_y, kind,
+                                text[:28], page_has_nav(rg, pages_content)))
+                rg["bbox"] = [rg["bbox"][0], rg["bbox"][1], rg["bbox"][2], r2(new_y1)]
+                n_trim += 1
+        else:
+            new_y1 = last_y + TRIM_PAD
+            nt = nav_top_below(rg, pages_content, last_y)
+            if nt is not None:
+                new_y1 = min(new_y1, nt - 2.0)
+            if new_y1 > rg["bbox"][1] + 20:
+                if log is not None:
+                    log.append(("cut", i, is_last, rg["bbox"][3], last_y, kind,
+                                text[:28], page_has_nav(rg, pages_content)))
+                rg["bbox"] = [rg["bbox"][0], rg["bbox"][1], rg["bbox"][2], r2(new_y1)]
+                n_trim += 1
+    return n_trim, n_cap
+
+
+# ── 主流程 ──────────────────────────────────────────────────────────────────
+
+def anchor_scan(doc, pages_lines, pages_content, filler_pages):
+    """扫三类锚点：题号徽章（序列 1..N）/ Section 标题 / END 硬终点。"""
+    # ── 题号徽章 ──
+    cands = []
+    for pi, lines in enumerate(pages_content):
+        for ln in lines:
+            b = ln["bbox"]
+            if not (BADGE_X_MIN <= b[0] <= BADGE_X_MAX) or ln["size"] >= BADGE_MAX_SIZE:
+                continue
+            m = BADGE_RE.match(ln["raw"].strip())
+            if not m:
+                continue
+            n = int(m.group(1) + m.group(2))
+            if n < 1 or n > 60:
+                continue
+            sub = int(m.group(3)) if m.group(3) else None
+            cands.append((pi, round(b[1], 2), n, sub, ln))
+
+    # ── 拆分徽章：两个数字是**独立文本对象**（同一视觉行，y 相同、x0 差 ~17pt）──
+    # ⚠️ 措辞：不是「视觉两行」——卷面上看就是一行 `0 4`；拆的是**文本层**：
+    # `0` 与 `4` 各是一个独立 line 对象（raw 分别为 '0 ' / '4 '），
+    # 而徽章正则假设两个数字连在同一条 line 的 raw 里（'0 4 ' 带空格）→ 直接漏检。
+    # 老卷（2018 季）特有。后果不是「少一题」而是**本题起点退到下一个重复徽章处**
+    # （AQA 每个小问都重复印徽章），于是上一题的题图吞掉本题的题干与表格
+    # （2018-01 CH01 Q4：Q3 图里长出了 Q4 的题干 + Table 1，Q4 图却从 `0 4 . 1` 起）。
+    # 全库 87 卷仅 1 处。判据：同页、同 y（±0.8）、各为单个数字、x0 差 BADGE_SPLIT_DX、都粗体。
+    for pi, lines in enumerate(pages_content):
+        singles = []
+        for ln in lines:
+            t = ln["raw"].strip()
+            if len(t) != 1 or not t.isdigit() or ln["size"] >= BADGE_MAX_SIZE:
+                continue
+            if not ln["first"][1]:            # 行首 span 非粗体 → 不是徽章数字
+                continue
+            if not (BADGE_X_MIN <= ln["bbox"][0] <= BADGE_X_MAX):
+                continue
+            singles.append(ln)
+        for i, a in enumerate(singles):
+            for c in singles[i + 1:]:
+                ba, bc = a["bbox"], c["bbox"]
+                if abs(ba[1] - bc[1]) > 0.8:
+                    continue
+                if not (BADGE_SPLIT_DX[0] <= bc[0] - ba[0] <= BADGE_SPLIT_DX[1]):
+                    continue
+                n = int(a["raw"].strip()) * 10 + int(c["raw"].strip())
+                if n < 1 or n > 60:
+                    continue
+                merged = {**a, "bbox": [ba[0], ba[1], bc[2], max(ba[3], bc[3])]}
+                cands.append((pi, round(min(ba[1], bc[1]), 2), n, None, merged))
+
+    cands.sort(key=lambda c: (c[0], c[1]))
+    qstarts = {}
+    expected, last = 1, (-1, -1.0)
+    for pi, y, n, sub, ln in cands:
+        if n == expected and (pi, y) > last:
+            qstarts[expected] = {"page": pi, "y0": y, "bbox": list(ln["bbox"]),
+                                 "line": ln, "first_sub": sub}
+            last = (pi, y)
+            expected += 1
+    n_questions = expected - 1
+    # ── Section 标题 ──
+    sections = []
+    for pi, lines in enumerate(pages_content):
+        for ln in lines:
+            m = SEC_RE.match(ln["raw"].strip())
+            if m:
+                sections.append({"letter": m.group(1), "page": pi,
+                                 "y0": round(ln["bbox"][1], 2)})
+    sections.sort(key=lambda s: (s["page"], s["y0"]))
+
+    # ── END 硬终点 ──
+    ends = []
+    for pi, lines in enumerate(pages_content):
+        for ln in lines:
+            raw = ln["raw"].strip()
+            b = ln["bbox"]
+            if ENDQ_RE.search(raw):
+                ends.append({"kind": "ENDQ", "letter": "", "page": pi,
+                             "y0": round(b[1], 2), "y1": round(b[3], 2)})
+            elif ENDSEC_RE.search(raw):
+                ends.append({"kind": "ENDSEC", "letter": ENDSEC_RE.search(raw).group(1),
+                             "page": pi, "y0": round(b[1], 2), "y1": round(b[3], 2)})
+    ends.sort(key=lambda e: (e["page"], e["y0"]))
+
+    # ── 小问号 ". N"（独立行形态） ──
+    subs = []
+    for pi, lines in enumerate(pages_content):
+        for ln in lines:
+            b = ln["bbox"]
+            if not (SUBQ_X_MIN <= b[0] <= SUBQ_X_MAX):
+                continue
+            m = SUBQ_RE.match(ln["raw"].strip())
+            if m:
+                subs.append({"page": pi, "y0": round(b[1], 2), "n": int(m.group(1)),
+                             "bbox": list(b)})
+
+    # ── 小问号（**拆开形态**）：'.' 与数字是两个独立对象，同一视觉行 ──
+    # 2020-jan BL05 全卷如此：徽章 `0`/`1`、小问 `.`（x0≈90）`1`（x0≈104）各自独立。
+    # 化学/物理没有这个形态（小问号恒为一条 ". N" 文本），生物老卷才有 → 必须单独捞，
+    # 否则 cut.json 的 subquestions 全空（打标台就没有小问锚点可用）。
+    # ⚠️ 必须用 pages_lines（未过滤）扫 '.'：content_lines 的 JUNK_RE 会把只有一个
+    #    '.' 的行整行丢掉（`^[\s,.\-*\x00-\x1f]*$`），用 pages_content 永远扫不到。
+    for pi, lines in enumerate(pages_lines):
+        dots = [ln for ln in lines
+                if ln["raw"].strip() == "."
+                and 80.0 <= ln["bbox"][0] <= 100.0
+                and HEADER_Y < ln["bbox"][1] < FOOTER_Y
+                and ln["size"] < BADGE_MAX_SIZE]
+        for d in dots:
+            dy = d["bbox"][1]
+            for ln in lines:
+                t = ln["raw"].strip()
+                if not (len(t) == 1 and t.isdigit()):
+                    continue
+                b = ln["bbox"]
+                if abs(b[1] - dy) > 1.0:
+                    continue
+                if not (95.0 <= b[0] <= 125.0):
+                    continue
+                subs.append({"page": pi, "y0": round(dy, 2), "n": int(t),
+                             "bbox": [d["bbox"][0], d["bbox"][1], b[2],
+                                      max(d["bbox"][3], b[3])]})
+    # 去重（同页同 y 同号）
+    seen_sub, uniq_subs = set(), []
+    for s_ in sorted(subs, key=lambda x: (x["page"], x["y0"], x["n"])):
+        key = (s_["page"], round(s_["y0"], 1), s_["n"])
+        if key in seen_sub:
+            continue
+        seen_sub.add(key)
+        uniq_subs.append(s_)
+    subs = uniq_subs
+    subs.sort(key=lambda s: (s["page"], s["y0"]))
+
+    # QWC 方框不归属任何题：由 detect_boiler() 从内容里整块剔除（见 main）。
+    return qstarts, n_questions, sections, ends, subs, cands
+
+
+def question_type_of(regions, pages_content, cover_mcq=None, n=None):
+    """按题判题型（不能按 Section 判：U3/U4/U5 的选择题与结构化题同节混排）。
+
+    优先用**封面阅卷表**（选择题整段列成区间）定调；表不可用时退回启发式：
+    选项标签行有两种形态——``A tension and tensile stress``（字母+文本同行）
+    与裸字母 ``B``（选项含上下堆叠的分数式时，字母自成一行、文本在其上下方）。
+    启发式判据：选项列内 ≥3 个不同字母，且按 y 升序恰为 A→B→C→D 的前缀
+    （挡住正文里的表格列标题）。
+
+    ⚠️ 必须按 region 的 y 区间过滤：选择题常两题共处一页（Q14/Q15），不做
+    归属会把上一题的 A–D 当成下一题的选项，热区整体跑到题区之外。
+
+    选项行聚类规则：候选行（行首粗体 A–D）中取「标签按 A→B→C→D 升序、且
+    行首 x0 同列（差 ≤10pt）」的最长前缀，≥3 个即判 MCQ。不卡绝对列位置——
+    常规版式选项列 x0≈92.5，表格版式（A/B/C/D 各占一表格行）x0≈122。
+
+    返回 (题型, 选项行列表)。选项行**总是**检测（热区要用），与题型无关。
+    """
+    cands = []
+    for rg in regions:
+        bb = rg["bbox"]
+        for ln in pages_content[rg["page"]]:
+            b = ln["bbox"]
+            if not (bb[1] - 1 <= b[1] <= bb[3] + 1):
+                continue
+            lab = option_label_of(ln)
+            if lab:
+                cands.append({"label": lab, "page": rg["page"],
+                              "y0": round(b[1], 2), "y1": round(b[3], 2),
+                              "yc": (b[1] + b[3]) / 2.0,
+                              "x0": ln["first"][2], "x1": b[2]})
+    cands.sort(key=lambda o: (o["page"], o["yc"]))
+    best = []
+    for start in range(len(cands)):
+        seq, xs = [], []
+        for o in cands[start:]:
+            if not seq:
+                if o["label"] == "A":
+                    seq.append(o)
+                    xs.append(o["x0"])
+                continue
+            if o["label"] == "ABCD"[len(seq)] and abs(o["x0"] - xs[0]) <= 10.0:
+                seq.append(o)
+                xs.append(o["x0"])
+                if len(seq) == 4:
+                    break
+        if len(seq) > len(best):
+            best = seq
+        if len(best) == 4:
+            break
+    ordered = best
+    heuristic_mcq = len(ordered) >= 3
+    if cover_mcq is not None and n is not None:
+        return ("mcq" if n in cover_mcq else "structured"), (ordered if heuristic_mcq else [])
+    return ("mcq" if heuristic_mcq else "structured"), (ordered if heuristic_mcq else [])
+
+
+def fallback_option_rows(regions, content_cache, doc):
+    """选项整块是**图形**（文本层里没有 A–D 标签）时的兜底：取题区内最大的图像块，
+    按高度四等分当 A–D 条带。
+
+    AQA 有少数选择题把四个选项画在一张图里（化学的结构式选项尤其如此），
+    这时文本层没有任何选项标签可归。四等分是这类版式的自然切法（四行等距排布），
+    但仍属启发式 → 调用方会留一条 review 说明。
+    """
+    best = None
+    for rg in regions:
+        bb = rg["bbox"]
+        for y1, y0, x0, x1, kind in page_content_rects(doc, rg["page"], content_cache):
+            if kind != "image":
+                continue
+            if y0 < bb[1] - 1 or y1 > bb[3] + 1:
+                continue
+            if (y1 - y0) < 100 or (x1 - x0) < 100:
+                continue
+            if best is None or (y1 - y0) > best[1]:
+                best = (rg["page"], y1 - y0, y0, y1, x0, x1)
+    if best is None:
+        return []
+    pi, h, y0, y1, x0, x1 = best
+    rows = []
+    for i, lab in enumerate("ABCD"):
+        a, b = y0 + h * i / 4.0, y0 + h * (i + 1) / 4.0
+        rows.append({"label": lab, "page": pi, "y0": round(a, 2), "y1": round(b, 2),
+                     "yc": (a + b) / 2.0, "x0": max(85.0, x0), "x1": x1})
+    return rows
+
+
+def extract_option_hotzones(q, opt_rows, pages_content, B, R):
+    """选择题选项热区：以选项标签行的 y 中心为基准，取相邻标签的中点作带边界。
+
+    ⚠️ 不能简单用「标签行 → 下一标签行」当带：选项含上下堆叠的分数式时，
+    字母居中于两行文字之间，文本会溢到字母行之外，按中点分带才能把
+    该选项的正文包住。
+    """
+    if not opt_rows:
+        q["_options"] = []
+        q["option_hotzones"] = []
+        return False
+    # ⚠️ 上下界都要钳：首选项的带上界取 span/2，会伸到 region 顶之上（2018-06 CH05 Q33
+    # 越界 63.1pt、2026-06 CH05 Q19 越界 102.8pt）→ layout.json 出现负归一化 y，
+    # validate_cut.py 判 FAIL。此前只钳了下界（bot），上界漏钳。
+    region_top, region_bottom = {}, {}
+    for rg in q["regions"]:
+        pi = rg["page"]
+        region_top[pi] = min(region_top.get(pi, 1e9), rg["bbox"][1])
+        region_bottom[pi] = max(region_bottom.get(pi, 0), rg["bbox"][3])
+    x_left = min(o["x0"] for o in opt_rows) - 7
+    opts = []
+    by_page = {}
+    for o in opt_rows:
+        by_page.setdefault(o["page"], []).append(o)
+    for pi, rows in by_page.items():
+        rows.sort(key=lambda o: o["yc"])
+        span = rows[1]["yc"] - rows[0]["yc"] if len(rows) > 1 else 34.0
+        for i, o in enumerate(rows):
+            half_lo = (o["yc"] - rows[i - 1]["yc"]) / 2 if i > 0 else span / 2
+            half_hi = (rows[i + 1]["yc"] - o["yc"]) / 2 if i + 1 < len(rows) else span / 2
+            top = max(o["yc"] - half_lo, region_top.get(pi, 0.0))
+            bot = min(o["yc"] + half_hi, region_bottom.get(pi, B))
+            bbox = [r2(x_left), r2(top), r2(R), r2(bot)]
+            text_rows = [ln for ln in pages_content[pi]
+                         if top - 1 <= ln["bbox"][3] and ln["bbox"][1] <= bot + 1
+                         and ln["bbox"][0] >= x_left - 1 and ln["bbox"][2] <= R + 2]
+            text_rows.sort(key=lambda l: (round(l["bbox"][1], 1), l["bbox"][0]))
+            text = " ".join(re.sub(r"\s+", " ", ln["raw"]).strip() for ln in text_rows).strip()
+            opts.append({"label": o["label"], "text": text, "bbox": bbox,
+                         "page": pi, "yc": o["yc"]})
+    opts.sort(key=lambda o: (o["page"], o["yc"]))
+    q["_options"] = opts
+    q["option_hotzones"] = [{"label": o["label"], "bbox": o["bbox"]} for o in opts]
+    return {o["label"] for o in opts} >= {"A", "B", "C", "D"}
+
+
+def main():
+    ap = argparse.ArgumentParser(description="牛津 AQA IAL 生物卷（9610, BL01–BL05）按题切割")
+    ap.add_argument("session_dir", help="如 data/aqa/a-level/biology/2024-june-bl01")
+    ap.add_argument("--probe", action="store_true", help="只打印锚点诊断，不写盘")
+    args = ap.parse_args()
+    sdir = Path(args.session_dir).resolve()
+    if not sdir.is_dir():
+        sys.exit(f"目录不存在: {sdir}")
+
+    try:
+        board = sdir.parents[2].name
+        qualification = sdir.parents[1].name
+        subject = sdir.parents[0].name
+        year_s, session, paper_code = sdir.name.split("-", 2)
+        year = int(year_s)
+        assert board in BOARDS and qualification in QUALS and session in SESSION_TOKENS
+    except Exception:
+        sys.exit(f"session 目录路径不符合 data/<board>/<qual>/<subject>/<year>-<session>-<paper>/ 约定: {sdir}")
+    if board != "aqa":
+        sys.exit(f"cut_paper_aqa_bio.py 只服务 AQA 卷（board={board}）")
+    if subject != "biology":
+        sys.exit(f"cut_paper_aqa_bio.py 只服务生物卷（subject={subject}）；"
+                 f"物理用 scripts/cut_paper_aqa.py、化学用 cut_paper_aqa_chem.py")
+    paper_code_l = paper_code.lower()
+    if paper_code_l not in SUPPORTED_PAPERS:
+        sys.exit(f"不支持的 paper_code: {paper_code}（生物 bl01–bl05）")
+
+    src = sdir / "source.pdf"
+    if not src.exists():
+        sys.exit(f"缺少 source.pdf: {src}")
+    sha = hashlib.sha256(src.read_bytes()).hexdigest()
+
+    paper_total_marks = None
+    paper_md = sdir / "paper.md"
+    if paper_md.exists():
+        m = re.search(r"^total_marks:\s*(\d+)", paper_md.read_text(encoding="utf-8"), re.M)
+        if m:
+            paper_total_marks = int(m.group(1))
+
+    doc = pymupdf.open(src)
+    n_pages = doc.page_count
+
+    pages_lines = [build_page_lines(p) for p in doc]
+    filler_pages = set()
+    for pi, page in enumerate(doc):
+        if page_flags(page):
+            filler_pages.add(pi)
+    pages_content = [content_lines(lines) for lines in pages_lines]
+    # 整块「非题目内容」：QWC 提醒方框（文字 + 边框矩形）。必须在 anchor_scan 之前
+    # 登记，page_content_rects() 之后建缓存时靠它挡掉方框的边框线。
+    global BOILER_ZONES
+    BOILER_ZONES = detect_boiler(pages_lines, pages_content)
+    if BOILER_ZONES:
+        print(f"    剔除 QWC 提醒方框：{len(BOILER_ZONES)} 处（页 {sorted(k + 1 for k in BOILER_ZONES)}）")
+    pages_pairs = [assign_words_to_lines(pages_lines[i], doc[i].get_text("words"))
+                   for i in range(n_pages)]
+    footer_tops = page_footer_tops(pages_lines)
+
+    qstarts, n_questions, sections, ends, subs, badges_all = anchor_scan(
+        doc, pages_lines, pages_content, filler_pages)
+    # anchor_scan 需要 END OF QUESTIONS 当硬终点锚点，过滤放在它之后：
+    # 之后的 trimming / 分值 / 小问都用这份「干净内容」，END 标记与 QWC 方框
+    # 因此既不会被当成内容，也不会出现在题图里（王培琪 2026-10-21 定）。
+    pages_content = [[ln for ln in lines
+                      if not ln.get("boiler") and not ENDQ_RE.search(ln["raw"])]
+                     for lines in pages_content]
+    # 生物 9610 零选择题（60 卷实测）→ 不解析封面阅卷表、不做启发式题型判定。
+    # ⚠️ 保留 question_type_of() 的定义不用，是因为它的启发式会把「同列竖排
+    #    A/B/C 图注」判成 MCQ 并生成假热区（2024-jan U1 实测会踩到）。
+    print("    生物卷：零选择题，question_type 一律 structured，不产 option_hotzones")
+    if n_questions == 0:
+        sys.exit("未定位到任何题号徽章，请人工检查 source.pdf（疑似扫描卷或版式异常）。")
+
+    L, R, T, B = L_DEF, R_DEF, T_DEF, B_DEF
+
+    # 题号 ──→ Section 归属（题起点之前最近的一个 Section 标题）
+    def section_of(pi, y0):
+        cur = ""
+        for s in sections:
+            if (s["page"], s["y0"]) <= (pi, y0):
+                cur = s["letter"]
+            else:
+                break
+        return cur
+
+    # ── 逐题构建 ──
+    auto_questions = []
+    content_cache = {}
+    n_trim = n_cap = 0
+    for n in range(1, n_questions + 1):
+        st = qstarts[n]
+        q = {
+            "number": str(n),
+            "status": "auto",
+            "confidence": 0.0,
+            "regions": [],
+            "anchors": {"start": {"page": st["page"],
+                                  "bbox": [r2(v) for v in st["bbox"]]}},
+            "review_notes": [],
+            "subquestions": [],
+        }
+        notes = q["review_notes"]
+        note_conf = 0.0
+
+        # ── 终点：下一题徽章 / END OF SECTION / END OF QUESTIONS 取最近者 ──
+        stop = None   # (page, y0, y1, kind, letter)
+        nxt = qstarts.get(n + 1)
+        if nxt:
+            stop = (nxt["page"], nxt["y0"], nxt["y0"] - 2, "badge", "")
+        for e in ends:
+            if (e["page"], e["y0"]) <= (st["page"], st["y0"]):
+                continue
+            if stop is None or (e["page"], e["y0"]) < (stop[0], stop[1]):
+                stop = (e["page"], e["y0"], e["y1"] + 2, e["kind"], e["letter"])
+        if stop is None:
+            end_page, end_y1 = n_pages - 1, B
+            notes.append("缺终点锚点（无下一题徽章 / END 标记），边界由版心底兜底，请复核")
+            q["status"] = "review"
+        else:
+            if stop[3] == "badge":
+                # 下一题徽章顶 -2pt 就是本题终点；⚠️ 不能一律取「nxt.page-1 的版心底」
+                # ——AQA 会把一道题的末几小问排到下一页、下一题再从该页中部开始。
+                # 只有当下一题
+                # 那一页在徽章之上**没有本题内容**时（= 下一题从页顶起）才回退整页。
+                # 边界用「下一题所在行顶 -2」而非徽章 y0-2（见 row_top_of）。
+                nxt_top = row_top_of(stop[0], stop[1], pages_content)
+                y_end = nxt_top - 2
+                if stop[0] == st["page"]:
+                    end_page, end_y1 = stop[0], y_end
+                # ⚠️ 判「本页徽章之上还有没有本题内容」时把下界再收 6pt：
+                #    下一题徽章外面套着 1pt 的方框，框顶沿比文字 bbox 高约 1–5pt，
+                #    贴着 y_end 时会被算成内容，于是「下一题从页顶起」判失败、
+                #    上一题把这一页整页吞进来（2020-jan BL05 Q5 实测）。
+                elif region_has_content(stop[0], T, y_end - 6.0, pages_content,
+                                        content_cache, doc):
+                    end_page, end_y1 = stop[0], y_end
+                else:
+                    end_page, end_y1 = stop[0] - 1, B
+            else:
+                # END OF SECTION A/B / END OF QUESTIONS 是硬终点：题区止于标记底，
+                # 末项即标记本身，页尾空白问题被显式消解（无需再判空白性质）。
+                end_page, end_y1 = stop[0], stop[2]
+            q["anchors"]["end"] = {"page": end_page,
+                                   "bbox": [r2(L), r2(end_y1 - 16), r2(R), r2(end_y1)]}
+
+        # 剔除插入页（DO NOT WRITE / no questions / Additional page）
+        pages = [p for p in range(st["page"], end_page + 1) if p not in filler_pages]
+        if not pages:
+            pages = [st["page"]]
+            notes.append("题区间全为插入页，已回退到起始页，请复核")
+            q["status"] = "review"
+        sy0 = row_top_of(st["page"], st["y0"], pages_content) - 4
+        q["regions"] = build_regions(pages, sy0, end_y1, L, T, B, R,
+                                     footer_tops=footer_tops)
+        # 题型/选项行要在裁剪**前**判（用未裁 region 的 y 区间归属选项行），
+        # 热区在裁剪**后**换算（末项热区下界取裁后 region 底，归一化坐标不越界）。
+        qtype, opt_rows = "structured", []
+        trim_log = []
+        t, c = trim_regions(doc, q["regions"], pages_content, content_cache, trim_log,
+                            allow_cap=(qtype != "mcq"))
+        n_trim += t
+        n_cap += c
+        if args.probe:
+            for kind_d, idx, is_last, before, ly, kk, txt, nav in trim_log:
+                print(f"        裁剪 [{kind_d}] region#{idx}{' (末段)' if is_last else ''} "
+                      f"p{q['regions'][idx]['page']} {before:.0f}→{q['regions'][idx]['bbox'][3]:.0f} "
+                      f"末项={kk} nav={nav} {txt!r}")
+
+        if len(pages) > MAX_REGION_PAGES:
+            notes.append(f"题区间跨 {len(pages)} 页（超 {MAX_REGION_PAGES} 页阈值），"
+                         f"疑漏检题号徽章，请复核")
+            q["status"] = "review"
+            note_conf -= 0.2
+
+        sec = section_of(st["page"], st["y0"])
+        if sec:
+            q["section"] = sec
+
+        # ── 分值：题区间内行内 [N mark(s)] 求和 ──
+        marks = 0
+        for rg in q["regions"]:
+            bb = rg["bbox"]
+            for ln in pages_content[rg["page"]]:
+                if bb[1] - 1 <= ln["bbox"][1] <= bb[3] + 1:
+                    marks += sum(int(mm.group(1)) for mm in MARK_RE.finditer(ln["raw"]))
+        if marks > 0:
+            q["total_marks"] = marks
+            note_conf += 0.3
+        else:
+            notes.append("题区间内未取到任何 [N marks] 分值标记，请复核")
+            q["status"] = "review"
+
+        # ── 小问：合并式徽章（`0 1 . 4`）+ 独立 ". N" 行 ──
+        # ⚠️ 同一题的徽章会随每个小问**重复出现**，
+        # 题号序列扫描只保留首次出现 → 后续重复徽章里的小问号必须在这里捞回来，
+        # 否则小问会残缺（只捞到中间某几个 .N）。
+        subqs = []
+        for pi, y, num, sub, ln in badges_all:
+            if num != n or sub is None or pi in filler_pages:
+                continue
+            subqs.append({"label": str(sub), "page": pi,
+                          "bbox": [r2(v) for v in ln["bbox"]]})
+        for s in subs:
+            if (s["page"], s["y0"]) < (st["page"], st["y0"]):
+                continue
+            if (s["page"], s["y0"]) > (end_page, end_y1):
+                continue
+            if s["page"] in filler_pages:
+                continue
+            subqs.append({"label": str(s["n"]), "page": s["page"],
+                          "bbox": [r2(v) for v in s["bbox"]]})
+        # 去重（同一题内 label 唯一，取首次出现）
+        uniq, seen = [], set()
+        for s in subqs:
+            if s["label"] in seen:
+                continue
+            seen.add(s["label"])
+            uniq.append(s)
+        q["subquestions"] = sorted(uniq, key=lambda s: (s["page"], s["bbox"][1]))
+        if q["subquestions"]:
+            note_conf += 0.1
+
+        # ── 题型（封面表定调 + 按题启发式交叉校验） + MCQ 选项热区 ──
+        q["question_type"] = qtype
+        if qtype == "mcq":
+            rows_used = opt_rows
+            if not rows_used:
+                rows_used = fallback_option_rows(q["regions"], content_cache, doc)
+                if rows_used:
+                    notes.append("该选择题的四个选项是整块图形（文本层无 A–D 标签），"
+                                 "热区按图像高度四等分给出，请人工核对")
+            if extract_option_hotzones(q, rows_used, pages_content, B, R):
+                note_conf += 0.3
+                if rows_used is not opt_rows and rows_used:
+                    q["status"] = "review"
+            else:
+                notes.append(f"MCQ 选项不全（提取到 {sorted(o['label'] for o in q['option_hotzones'])}），"
+                             f"请人工补热区")
+                q["status"] = "review"
+            if q["total_marks"] != 1 and marks:
+                notes.append(f"选择题分值异常（{q['total_marks']}，通常为 1）")
+        elif opt_rows and cover_mcq is None:
+            # 只在封面阅卷表不可用（退回启发式）时才交叉告警。
+            # ⚠️ 化学 76/76 卷封面表都能解析，是权威来源；而化学题里常有
+            #    「A/B/C 列标题的表格」「以 A–D 开头的正文行」，启发式会误报。
+            #    封面表说结构化就信结构化，不再刷假 review（2026-10-17 实测）。
+            notes.append("封面表判为结构化题，但题段内检出选项行，请复核题型")
+        else:
+            if q["subquestions"]:
+                note_conf += 0.1
+
+        conf = round(min(max(0.4 + note_conf, 0.0), 1.0), 2)
+        q["confidence"] = conf
+        if conf < 0.6 and q["status"] == "auto":
+            q["status"] = "review"
+        auto_questions.append(q)
+
+    # ── 全卷不变量校验（72/72 成立，任一条不过即整卷降级 review） ──
+    marks_sum = sum(q.get("total_marks", 0) for q in auto_questions)
+    expect = paper_total_marks if paper_total_marks is not None else PAPER_TOTAL[paper_code_l]
+    invariant_msgs = []
+    if marks_sum != expect:
+        invariant_msgs.append(f"全卷分值合计 {marks_sum} ≠ 试卷总分 {expect}")
+        culprits = [q for q in auto_questions if q.get("total_marks", 0) <= 0]
+        for q in (culprits or auto_questions):
+            q["status"] = "review"
+            q["review_notes"].append(invariant_msgs[-1])
+    nums = [int(q["number"]) for q in auto_questions]
+    if nums != list(range(1, len(nums) + 1)):
+        invariant_msgs.append(f"题号序列不连续: {nums}")
+    got_endsq = sum(1 for e in ends if e["kind"] == "ENDQ")
+    if got_endsq != 1:
+        invariant_msgs.append(f"END OF QUESTIONS 出现 {got_endsq} 次（预期 1 次）")
+    if invariant_msgs:
+        for q in auto_questions:
+            q["status"] = "review"
+            for msg in invariant_msgs:
+                if msg not in q["review_notes"]:
+                    q["review_notes"].append(msg)
+
+    if args.probe:
+        print(f"PROBE {sdir.name}: {n_questions} 题 | 分={marks_sum}(期望 {expect}) "
+              f"| Sections={[s['letter'] + '@p' + str(s['page']) for s in sections]}")
+        print(f"      END 标记: {[(e['kind'], e.get('letter', ''), e['page']) for e in ends]}")
+        print(f"      插入页: {sorted(filler_pages)}  裁剪段={n_trim}(封顶 {n_cap})")
+        for q in auto_questions:
+            print(f"      Q{q['number']:>2} {q['question_type']:<9} sec={q.get('section', '-'):<2} "
+                  f"分={q.get('total_marks', '?'):<3} 页={[rg['page'] for rg in q['regions']]} "
+                  f"小问={[s['label'] for s in q['subquestions']]} "
+                  f"{('[' + '; '.join(q['review_notes']) + ']') if q['review_notes'] else ''}")
+        return
+
+    # ── 与已有 cut.json 合并（人工修改保护） ──
+    cut_path = sdir / "cut.json"
+    existing = None
+    if cut_path.exists():
+        existing = json.loads(cut_path.read_text(encoding="utf-8"))
+        if existing.get("source", {}).get("sha256") != sha:
+            sys.exit("source.pdf 的 sha256 与 cut.json 记录不符——源头已变，请人工处理。")
+    questions, merge_report = merge_with_existing(auto_questions, existing)
+
+    cut = {
+        "schema_version": 1,
+        "source": {"file": "source.pdf", "sha256": sha, "pages": n_pages,
+                   "paper_ref": f"{year}-{session}-{paper_code_l}"},
+        "page_size": {"w": r2(doc[0].rect.width), "h": r2(doc[0].rect.height)},
+        "render": {"dpi": 200, "format": "webp", "quality": 85},
+        "questions": [{k: v for k, v in q.items() if not k.startswith("_")} for q in questions],
+    }
+    cut_path.write_text(json.dumps(cut, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+    # ── 每题产物 qNN.md ──
+    (sdir / "assets").mkdir(exist_ok=True)
+    q_by_num = {q["number"]: q for q in questions}
+    for n in range(1, n_questions + 1):
+        q = q_by_num.get(str(n))
+        if q is None:
+            continue
+        write_question_md(sdir, n, q, board, qualification, subject, year, session,
+                          paper_code, pages_content, pages_pairs)
+    for q in questions:
+        q.pop("_options", None)
+
+    # ── 报告 ──
+    print(f"OK  {sdir.name}: {n_questions} 题 | 分值 {marks_sum}/{expect} | "
+          f"版心 L={L:.1f} R={R:.1f} T={T:.0f} B={B:.0f}")
+    if n_trim:
+        print(f"    页尾裁剪 {n_trim} 段（其中封顶 {n_cap} 段）")
+    for line in merge_report:
+        print("   ", line)
+    by_status = Counter(q["status"] for q in questions)
+    by_type = Counter(q.get("question_type", "?") for q in questions)
+    print("    status:", " / ".join(f"{k}×{v}" for k, v in sorted(by_status.items())),
+          "| 题型:", " / ".join(f"{k}×{v}" for k, v in sorted(by_type.items())))
+    for q in questions:
+        if q["review_notes"]:
+            print(f"    [review] Q{q['number']}: {'; '.join(q['review_notes'])}")
+
+
+# ── 文本/产物（与 cut_paper.py / cut_paper_cie.py 同构） ─────────────────────
+
+def regions_contain(regions, page, cx, cy):
+    for rg in regions:
+        if rg["page"] != page:
+            continue
+        b = rg["bbox"]
+        if b[0] <= cx <= b[2] and b[1] <= cy <= b[3]:
+            return True
+    return False
+
+
+def question_text_lines(q, pages_content, pages_pairs):
+    out = []
+    for rg in q["regions"]:
+        pi = rg["page"]
+        for ln in pages_content[pi]:
+            b = ln["bbox"]
+            cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+            if not regions_contain(q["regions"], pi, cx, cy):
+                continue
+            text = " ".join(w[4] for w, ref in pages_pairs[pi] if ref is ln)
+            text = text or ln["raw"]
+            text = re.sub(r"[\u2009\u00a0\t]+", " ", text).strip()
+            text = re.sub(r" {2,}", " ", text)
+            if text:
+                out.append(text)
+    return out
+
+
+def question_id(board, qualification, subject, year, session, paper_code, n):
+    # ⚠️ id 必须全小写（question.schema.json 的 pattern 只允许 [a-z0-9-]）
+    return f"{board}-{qualification}-{subject}-{year}-{session}-{paper_code.lower()}-q{n:02d}"
+
+
+def write_question_md(sdir, n, q, board, qualification, subject, year, session,
+                      paper_code, pages_content, pages_pairs):
+    qid = question_id(board, qualification, subject, year, session, paper_code, n)
+    path = sdir / f"q{n:02d}.md"
+    fm = [
+        ("id", qid),
+        ("board", board),
+        ("qualification", qualification),
+        ("subject", subject),
+        ("paper_code", paper_code.upper()),
+        ("year", year),
+        ("session", session),
+        ("question_number", str(n)),
+    ]
+    if "total_marks" in q:
+        fm.append(("total_marks", q["total_marks"]))
+    if "question_type" in q:
+        fm.append(("question_type", q["question_type"]))
+    if "section" in q:
+        fm.append(("section", q["section"]))
+    fm += [
+        ("image", f"assets/q{n:02d}.webp"),
+        ("layout", f"assets/q{n:02d}.layout.json"),
+    ]
+    body = "\n".join(question_text_lines(q, pages_content, pages_pairs))
+    if path.exists():
+        update_front_matter(path, fm, q)
+        return
+    options = q.get("_options")
+    lines = ["---"]
+    for k, v in fm:
+        lines.append(f"{k}: {yaml_scalar(v)}")
+    if options:
+        lines.append("options:")
+        for o in options:
+            lines.append(f"  - label: {o['label']}")
+            lines.append(f"    text: {yaml_scalar(o.get('text', ''))}")
+    lines.append("source: " + yaml_scalar(
+        f"Oxford AQA International A-Level {SUBJECT_LABEL.get(subject, subject.title())} "
+        f"{paper_code.upper()}, {year} {session}"))
+    lines.append("cut_status: " + q["status"])
+    lines.append("language: en")
+    lines.append("---")
+    lines.append("")
+    lines.append(body)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def update_front_matter(path, fm_pairs, q):
+    text = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n?(.*)$", text, re.S)
+    if not m:
+        print(f"    [warn] {path.name}: front-matter 无法解析，已跳过更新")
+        return
+    fm_text, body = m.group(1), m.group(2)
+    blocks, order, cur = {}, [], None
+    for line in fm_text.split("\n"):
+        km = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):", line)
+        if km and not line.startswith((" ", "-")):
+            cur = km.group(1)
+            blocks[cur] = [line]
+            order.append(cur)
+        elif cur is not None:
+            blocks[cur].append(line)
+    updates = dict(fm_pairs)
+    updates["cut_status"] = q["status"]
+    for k, v in updates.items():
+        new = f"{k}: {yaml_scalar(v)}"
+        blocks[k] = [new]
+        if k not in order:
+            order.append(k)
+    options = q.get("_options")
+    if options is not None and q.get("question_type") == "mcq" and q["status"] != "manual":
+        blk = ["options:"]
+        for o in options:
+            blk.append(f"  - label: {o['label']}")
+            blk.append(f"    text: {yaml_scalar(o.get('text', ''))}")
+        blocks["options"] = blk
+        if "options" not in order:
+            order.append("options")
+    new_fm = "\n".join(line for k in order for line in blocks[k])
+    path.write_text("---\n" + new_fm + "\n---\n" + body, encoding="utf-8")
+
+
+def merge_with_existing(auto_questions, existing):
+    """重跑保护：verified/manual 的题其 regions/anchors 不被自动结果覆盖。"""
+    report = []
+    if not existing:
+        return auto_questions, ["首次运行，全部采用自动结果"]
+    old_by_num = {q["number"]: q for q in existing.get("questions", [])}
+    result = []
+    for q in auto_questions:
+        old = old_by_num.get(q["number"])
+        if old is None:
+            report.append(f"Q{q['number']}: 新增")
+            result.append(q)
+            continue
+        status = old.get("status", "auto")
+        if status in ("auto", "review"):
+            q["_options"] = q.get("_options") or old.get("_options")
+            result.append(q)
+            continue
+        if status == "verified":
+            if regions_equal(old.get("regions", []), q["regions"]):
+                for k in ("confidence", "total_marks", "question_type", "subquestions", "section"):
+                    if k in q:
+                        old[k] = q[k]
+                old.setdefault("review_notes", [])
+                old["_options"] = q.get("_options") or old.get("_options")
+                report.append(f"Q{q['number']}: verified 一致，刷新可再生字段")
+                result.append(old)
+            else:
+                old["status"] = "review"
+                old.setdefault("review_notes", []).append("重跑的自动结果与人工确认不一致，请复核")
+                result.append(old)
+            continue
+        if status == "manual":
+            for k in ("total_marks", "question_type"):
+                if k in q and q[k] != old.get(k):
+                    old[k] = q[k]
+            report.append(f"Q{q['number']}: manual，regions/anchors 保留人工值")
+            result.append(old)
+    have = {q["number"] for q in result}
+    for num, old in old_by_num.items():
+        if num not in have:
+            report.append(f"Q{num}: 自动结果未覆盖（保留人工题）")
+            result.append(old)
+    result.sort(key=lambda q: int(q["number"]))
+    return result, report
+
+
+def regions_equal(a, b):
+    if len(a) != len(b):
+        return False
+    for ra, rb in zip(a, b):
+        if ra.get("page") != rb.get("page"):
+            return False
+        for va, vb in zip(ra.get("bbox", []), rb.get("bbox", [])):
+            if abs(va - vb) > 1.0:
+                return False
+    return True
+
+
+if __name__ == "__main__":
+    main()

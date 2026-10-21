@@ -1,0 +1,1416 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「化学」表 AL/AS 行（2026-10-18 导出），不含 IG/GCSE。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-the-basic-structure-of-substance",
+    "zh": "基本物质结构",
+    "en": "The Basic Structure of Substance"
+   },
+   {
+    "id": "u1g-ideal-gas-law-and-concentration",
+    "zh": "理想气体方程和浓度",
+    "en": "Ideal Gas Law and Concentration"
+   },
+   {
+    "id": "u1g-calculation-of-equations",
+    "zh": "方程式运算",
+    "en": "Calculation of Equations"
+   },
+   {
+    "id": "u1g-electronic-configuration",
+    "zh": "电子构型",
+    "en": "Electronic Configuration"
+   },
+   {
+    "id": "u1g-periodicity",
+    "zh": "元素周期律",
+    "en": "Periodicity"
+   },
+   {
+    "id": "u1g-chemical-bond",
+    "zh": "化学键",
+    "en": "Chemical Bond"
+   },
+   {
+    "id": "u1g-mass-spectrum",
+    "zh": "质谱",
+    "en": "Mass Spectrum"
+   },
+   {
+    "id": "u1g-molecular-shape-and-bonding",
+    "zh": "分子形状与共价成键",
+    "en": "Molecular Shape and Bonding"
+   },
+   {
+    "id": "u1g-polarity-and-polarising",
+    "zh": "极性与极化",
+    "en": "Polarity and Polarising"
+   },
+   {
+    "id": "u1g-elements-and-melting-boiling-point",
+    "zh": "单质与熔沸点",
+    "en": "Elements and Melting/Boiling Point"
+   },
+   {
+    "id": "u1g-organic-nomenclature-and-isomerism",
+    "zh": "有机命名与同分异构",
+    "en": "Organic Nomenclature and Isomerism"
+   },
+   {
+    "id": "u1g-crude-oil-lab-safety-and-environmental-protection",
+    "zh": "原油，实验室安全，环保",
+    "en": "Crude Oil, Lab Safety and Environmental Protection"
+   },
+   {
+    "id": "u1g-free-radical-substitution-of-alkane",
+    "zh": "烷烃的自由基取代",
+    "en": "Free Radical Substitution of Alkane"
+   },
+   {
+    "id": "u1g-electrophilic-addition-of-alkene",
+    "zh": "烯烃的亲电加成",
+    "en": "Electrophilic Addition of Alkene"
+   },
+   {
+    "id": "u1g-polymerisation",
+    "zh": "加成聚合反应",
+    "en": "Polymerisation"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-chemical-symbol",
+    "zh": "化学符号",
+    "en": "chemical symbol",
+    "group": "u1g-the-basic-structure-of-substance"
+   },
+   {
+    "id": "u1-ideal-gas-law",
+    "zh": "理想气体方程",
+    "en": "ideal gas law",
+    "group": "u1g-ideal-gas-law-and-concentration"
+   },
+   {
+    "id": "u1-write-and-balance-inorganic-equation",
+    "zh": "书写并配平无机反应方程式",
+    "en": "write and balance inorganic equation",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-definition-of-orbitals",
+    "zh": "轨道的定义",
+    "en": "definition of orbitals",
+    "group": "u1g-electronic-configuration"
+   },
+   {
+    "id": "u1-first-ionisation-energy-increasing-through-a-period",
+    "zh": "第一电离能-同周期递增",
+    "en": "first ionisation energy-increasing through a period",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-definition-of-chemical-bond",
+    "zh": "化学键定义",
+    "en": "definition of chemical bond",
+    "group": "u1g-chemical-bond"
+   },
+   {
+    "id": "u1-5-steps-in-mass-spectrometer",
+    "zh": "质谱仪五步",
+    "en": "5 steps in mass spectrometer",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-dot-and-cross-diagram",
+    "zh": "点叉图",
+    "en": "dot and cross diagram",
+    "group": "u1g-molecular-shape-and-bonding"
+   },
+   {
+    "id": "u1-polarity-of-bond",
+    "zh": "键的极性",
+    "en": "polarity of bond",
+    "group": "u1g-polarity-and-polarising"
+   },
+   {
+    "id": "u1-elements-of-carbon",
+    "zh": "碳的单质",
+    "en": "elements of carbon",
+    "group": "u1g-elements-and-melting-boiling-point"
+   },
+   {
+    "id": "u1-organic-nomenclature",
+    "zh": "有机命名",
+    "en": "organic nomenclature",
+    "group": "u1g-organic-nomenclature-and-isomerism"
+   },
+   {
+    "id": "u1-fractional-distillation",
+    "zh": "分馏",
+    "en": "fractional distillation",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-homolytic-and-heterolytic-fission",
+    "zh": "均裂和异裂",
+    "en": "homolytic and heterolytic fission",
+    "group": "u1g-free-radical-substitution-of-alkane"
+   },
+   {
+    "id": "u1-mechanism-of-electrophilic-addition",
+    "zh": "亲电加成机理",
+    "en": "mechanism of electrophilic addition",
+    "group": "u1g-electrophilic-addition-of-alkene"
+   },
+   {
+    "id": "u1-addition-polymer",
+    "zh": "加成聚合",
+    "en": "addition polymer",
+    "group": "u1g-polymerisation"
+   },
+   {
+    "id": "u1-isotope",
+    "zh": "同位素",
+    "en": "isotope",
+    "group": "u1g-the-basic-structure-of-substance"
+   },
+   {
+    "id": "u1-calculation-of-relative-atomic-mass",
+    "zh": "相对原子质量计算",
+    "en": "calculation of relative atomic mass",
+    "group": "u1g-the-basic-structure-of-substance"
+   },
+   {
+    "id": "u1-calculation-between-mass-and-amount-mole",
+    "zh": "质量与数量（摩尔）计算",
+    "en": "calculation between mass and amount (mole)",
+    "group": "u1g-the-basic-structure-of-substance"
+   },
+   {
+    "id": "u1-molecular-formula-and-empirical-formula",
+    "zh": "分子式与实验式",
+    "en": "molecular formula and empirical formula",
+    "group": "u1g-the-basic-structure-of-substance"
+   },
+   {
+    "id": "u1-molarity",
+    "zh": "摩尔浓度",
+    "en": "molarity",
+    "group": "u1g-ideal-gas-law-and-concentration"
+   },
+   {
+    "id": "u1-parts-per-million",
+    "zh": "百万分数ppm",
+    "en": "parts per million",
+    "group": "u1g-ideal-gas-law-and-concentration"
+   },
+   {
+    "id": "u1-molar-volume",
+    "zh": "摩尔体积",
+    "en": "molar volume",
+    "group": "u1g-ideal-gas-law-and-concentration"
+   },
+   {
+    "id": "u1-equation-with-state-symbol",
+    "zh": "带状态符号的方程式",
+    "en": "equation with state symbol",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-calculation-of-equation-for-volume-of-gases",
+    "zh": "气体体积方程式运算",
+    "en": "calculation of equation for volume of gases",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-calculation-of-equation",
+    "zh": "方程式运算",
+    "en": "calculation of equation",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-yield",
+    "zh": "产率",
+    "en": "yield",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-atom-economy",
+    "zh": "原子经济性",
+    "en": "atom economy",
+    "group": "u1g-calculation-of-equations"
+   },
+   {
+    "id": "u1-energy-level-diagram",
+    "zh": "能级图",
+    "en": "energy level diagram",
+    "group": "u1g-electronic-configuration"
+   },
+   {
+    "id": "u1-electronic-configuration",
+    "zh": "电子构型",
+    "en": "electronic configuration",
+    "group": "u1g-electronic-configuration"
+   },
+   {
+    "id": "u1-the-half-full-full-principle-and-electronic-configuration-of",
+    "zh": "过渡金属的半满、全满和离子电子构型",
+    "en": "the half-full/full principle and electronic configuration of transition metal ions",
+    "group": "u1g-electronic-configuration"
+   },
+   {
+    "id": "u1-first-ionisation-energy-decreasing-down-a-group",
+    "zh": "第一电离能-同族递减",
+    "en": "first ionisation energy-decreasing down a group",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-first-ionisation-energy-group-2-to-group-3",
+    "zh": "第一电离能-2主族至3主族",
+    "en": "first ionisation energy-group 2 to group 3",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-first-ionisation-energy-group-5-to-group-6",
+    "zh": "第一电离能-5主族至6主族",
+    "en": "first ionisation energy-group 5 to group 6",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-successive-ionisation-energy-general-increase",
+    "zh": "连续电离能-总体递增",
+    "en": "successive ionisation energy-general increase",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-successive-ionisation-energy-big-jump",
+    "zh": "连读电离能-跨层激增",
+    "en": "successive ionisation energy-big jump",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-atomic-radii",
+    "zh": "原子半径",
+    "en": "atomic radii",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-ionic-radii-of-isoelectronics",
+    "zh": "等电子体离子半径",
+    "en": "ionic radii of isoelectronics",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-determine-group-by-first-ionisation-energy-graph",
+    "zh": "根据第一电离能图判断元素的族",
+    "en": "determine group by first ionisation energy graph",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-electrical-conductivity-of-ionic-compound-and-metal",
+    "zh": "离子化合物与金属导电性",
+    "en": "electrical conductivity of ionic compound and metal",
+    "group": "u1g-chemical-bond"
+   },
+   {
+    "id": "u1-brittle-ionic-compound-and-malleable-metal",
+    "zh": "离子化合物的易碎与金属延展性",
+    "en": "brittle ionic compound and malleable metal",
+    "group": "u1g-chemical-bond"
+   },
+   {
+    "id": "u1-oxidation-number-and-inorganic-nomenclature",
+    "zh": "化合价和无机命名法",
+    "en": "oxidation number and inorganic nomenclature",
+    "group": "u1g-chemical-bond"
+   },
+   {
+    "id": "u1-ms-for-metal-elements",
+    "zh": "金属单质质谱",
+    "en": "MS for metal elements",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-ms-for-simple-covalent-molecules-isotope-peaks",
+    "zh": "共价简单分子质谱（同位素峰）",
+    "en": "MS for simple covalent molecules (isotope peaks)",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-plus-2-charge-peak",
+    "zh": "+2价阳离子峰",
+    "en": "+2 charge peak",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-path-of-ion-in-deflection",
+    "zh": "偏转步路径",
+    "en": "path of ion in deflection",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-vacuum-in-mass-spectrometer",
+    "zh": "质谱仪真空性",
+    "en": "vacuum in mass spectrometer",
+    "group": "u1g-mass-spectrum"
+   },
+   {
+    "id": "u1-shape-of-molecule-and-bond-angle",
+    "zh": "分子形状和键角",
+    "en": "shape of molecule and bond angle",
+    "group": "u1g-molecular-shape-and-bonding"
+   },
+   {
+    "id": "u1-bond-and-bond",
+    "zh": "σ键与π键",
+    "en": "σ bond and π bond",
+    "group": "u1g-molecular-shape-and-bonding"
+   },
+   {
+    "id": "u1-polarity-of-molecule",
+    "zh": "分子极性",
+    "en": "polarity of molecule",
+    "group": "u1g-polarity-and-polarising"
+   },
+   {
+    "id": "u1-polaring",
+    "zh": "极化作用",
+    "en": "polaring",
+    "group": "u1g-polarity-and-polarising"
+   },
+   {
+    "id": "u1-dative-dimer-polymer",
+    "zh": "配位二聚体、聚合物",
+    "en": "dative dimer/polymer",
+    "group": "u1g-polarity-and-polarising"
+   },
+   {
+    "id": "u1-cracking",
+    "zh": "裂化",
+    "en": "cracking",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-melting-boiling-point",
+    "zh": "熔沸点",
+    "en": "melting/boiling point",
+    "group": "u1g-elements-and-melting-boiling-point"
+   },
+   {
+    "id": "u1-structural-isomer",
+    "zh": "结构异构",
+    "en": "structural isomer",
+    "group": "u1g-organic-nomenclature-and-isomerism"
+   },
+   {
+    "id": "u1-geometric-isomer",
+    "zh": "几何异构",
+    "en": "geometric isomer",
+    "group": "u1g-organic-nomenclature-and-isomerism"
+   },
+   {
+    "id": "u1-reforming",
+    "zh": "重整",
+    "en": "reforming",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-hazard-symbol",
+    "zh": "危害标志",
+    "en": "hazard symbol",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-precaution",
+    "zh": "安全防护",
+    "en": "precaution",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-acid-rain",
+    "zh": "酸雨",
+    "en": "acid rain",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-carbon-neutrality",
+    "zh": "碳中和",
+    "en": "carbon neutrality",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-sustainability",
+    "zh": "可持续性",
+    "en": "sustainability",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-disposal-of-polymer",
+    "zh": "聚合物垃圾处理",
+    "en": "disposal of polymer",
+    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+   },
+   {
+    "id": "u1-mechanism-of-free-radical-substitution",
+    "zh": "自由基取代机理",
+    "en": "mechanism of free radical substitution",
+    "group": "u1g-free-radical-substitution-of-alkane"
+   },
+   {
+    "id": "u1-multiple-substitution",
+    "zh": "多重取代",
+    "en": "multiple substitution",
+    "group": "u1g-free-radical-substitution-of-alkane"
+   },
+   {
+    "id": "u1-determine-the-major-product",
+    "zh": "主产物判定",
+    "en": "determine the major product",
+    "group": "u1g-electrophilic-addition-of-alkene"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-the-enthalpy-change",
+    "zh": "焓变定义，焓变测定",
+    "en": "The Enthalpy Change"
+   },
+   {
+    "id": "u2g-hess-cycle",
+    "zh": "盖斯循环",
+    "en": "Hess Cycle"
+   },
+   {
+    "id": "u2g-bond-energy-and-analysis-of-error",
+    "zh": "键能和焓变测定误差分析",
+    "en": "Bond Energy and Analysis of Error"
+   },
+   {
+    "id": "u2g-intermolecular-force",
+    "zh": "分子间作用力",
+    "en": "Intermolecular Force"
+   },
+   {
+    "id": "u2g-redox",
+    "zh": "氧化还原",
+    "en": "Redox"
+   },
+   {
+    "id": "u2g-group1-alkali-metal-and-group2-alkaline-earth-metal",
+    "zh": "第1，2主族：碱金属与碱土金属",
+    "en": "Group1 Alkali Metal and Group2 Alkaline Earth Metal"
+   },
+   {
+    "id": "u2g-group7-halogen",
+    "zh": "第7主族：卤素",
+    "en": "Group7 Halogen"
+   },
+   {
+    "id": "u2g-acid-base-and-titration",
+    "zh": "酸碱滴定",
+    "en": "Acid-Base and Titration"
+   },
+   {
+    "id": "u2g-rate-of-reaction",
+    "zh": "反应速率",
+    "en": "Rate of Reaction"
+   },
+   {
+    "id": "u2g-dynamic-equilibrium",
+    "zh": "动态平衡",
+    "en": "Dynamic Equilibrium"
+   },
+   {
+    "id": "u2g-halogenoalkane",
+    "zh": "卤代烷烃的亲核取代反应",
+    "en": "Halogenoalkane"
+   },
+   {
+    "id": "u2g-elimination-reaction",
+    "zh": "消除反应",
+    "en": "Elimination Reaction"
+   },
+   {
+    "id": "u2g-alcohol",
+    "zh": "醇",
+    "en": "Alcohol"
+   },
+   {
+    "id": "u2g-spectroscopy-in-organics",
+    "zh": "有机光谱分析",
+    "en": "Spectroscopy in Organics"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-definition-of-enthalpy-change",
+    "zh": "焓变定义",
+    "en": "definition of enthalpy change",
+    "group": "u2g-the-enthalpy-change"
+   },
+   {
+    "id": "u2-hess-cycle",
+    "zh": "盖斯循环",
+    "en": "Hess Cycle",
+    "group": "u2g-hess-cycle"
+   },
+   {
+    "id": "u2-bond-energy",
+    "zh": "键能",
+    "en": "bond energy",
+    "group": "u2g-bond-energy-and-analysis-of-error"
+   },
+   {
+    "id": "u2-definition-of-intermolecular-forces",
+    "zh": "分子间作用力定义",
+    "en": "definition of intermolecular forces",
+    "group": "u2g-intermolecular-force"
+   },
+   {
+    "id": "u2-determine-redox-reaction",
+    "zh": "判定氧化还原反应",
+    "en": "determine redox reaction",
+    "group": "u2g-redox"
+   },
+   {
+    "id": "u2-solubility-of-hydroxide-and-sulfate",
+    "zh": "氢氧化物和硫酸盐溶解度",
+    "en": "solubility of hydroxide and sulfate",
+    "group": "u2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "u2-elements-of-halogen",
+    "zh": "单质形态",
+    "en": "elements of halogen",
+    "group": "u2g-group7-halogen"
+   },
+   {
+    "id": "u2-operation-of-titration",
+    "zh": "滴定操作",
+    "en": "operation of titration",
+    "group": "u2g-acid-base-and-titration"
+   },
+   {
+    "id": "u2-influence-factor",
+    "zh": "反应速率影响因素",
+    "en": "influence factor",
+    "group": "u2g-rate-of-reaction"
+   },
+   {
+    "id": "u2-definition-of-equilibrium",
+    "zh": "平衡定义",
+    "en": "definition of equilibrium",
+    "group": "u2g-dynamic-equilibrium"
+   },
+   {
+    "id": "u2-mechanism-of-nucleophilic-substitution",
+    "zh": "亲核取代机理",
+    "en": "mechanism of nucleophilic substitution",
+    "group": "u2g-halogenoalkane"
+   },
+   {
+    "id": "u2-elimination-of-halogenoalkane",
+    "zh": "卤代烃的消除反应",
+    "en": "elimination of halogenoalkane",
+    "group": "u2g-elimination-reaction"
+   },
+   {
+    "id": "u2-products-of-alcohol-oxidation",
+    "zh": "醇的氧化产物",
+    "en": "products of alcohol oxidation",
+    "group": "u2g-alcohol"
+   },
+   {
+    "id": "u2-mass-spectrum-in-organic",
+    "zh": "有机物的质谱",
+    "en": "Mass Spectrum in Organic",
+    "group": "u2g-spectroscopy-in-organics"
+   },
+   {
+    "id": "u2-measurement-of-enthalpy-change-calculation",
+    "zh": "焓变测定-计算",
+    "en": "measurement of enthalpy change-calculation",
+    "group": "u2g-the-enthalpy-change"
+   },
+   {
+    "id": "u2-analysis-of-error",
+    "zh": "误差分析",
+    "en": "analysis of error",
+    "group": "u2g-bond-energy-and-analysis-of-error"
+   },
+   {
+    "id": "u2-melting-boiling-point-of-simple-molecules",
+    "zh": "简单分子熔沸点",
+    "en": "melting/boiling point of simple molecules",
+    "group": "u2g-intermolecular-force"
+   },
+   {
+    "id": "u2-solubility",
+    "zh": "溶解度",
+    "en": "solubility",
+    "group": "u2g-intermolecular-force"
+   },
+   {
+    "id": "u2-balance-an-equation",
+    "zh": "配平方程式",
+    "en": "balance an equation",
+    "group": "u2g-redox"
+   },
+   {
+    "id": "u2-thermostability",
+    "zh": "热稳定性",
+    "en": "thermostability",
+    "group": "u2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "u2-thermo-decomposition-production",
+    "zh": "热分解产物",
+    "en": "thermo decomposition production",
+    "group": "u2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "u2-flame-test",
+    "zh": "焰色反应",
+    "en": "flame test",
+    "group": "u2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "u2-oxidation-power-of-elements",
+    "zh": "单质氧化性",
+    "en": "oxidation power of elements",
+    "group": "u2g-group7-halogen"
+   },
+   {
+    "id": "u2-reaction-between-halide-and-sulfuric-acid",
+    "zh": "阴离子与硫酸的反应",
+    "en": "reaction between halide and sulfuric acid",
+    "group": "u2g-group7-halogen"
+   },
+   {
+    "id": "u2-silver-halide",
+    "zh": "银卤化物",
+    "en": "silver halide",
+    "group": "u2g-group7-halogen"
+   },
+   {
+    "id": "u2-calculation-in-titraion",
+    "zh": "滴定计算",
+    "en": "calculation in titraion",
+    "group": "u2g-acid-base-and-titration"
+   },
+   {
+    "id": "u2-thermo-titraion",
+    "zh": "热滴定",
+    "en": "thermo titraion",
+    "group": "u2g-acid-base-and-titration"
+   },
+   {
+    "id": "u2-measurement-of-enthalpy-change-processing-of-graph",
+    "zh": "焓变测定-图像处理",
+    "en": "measurement of enthalpy change - processing of graph",
+    "group": "u2g-the-enthalpy-change"
+   },
+   {
+    "id": "u2-boltzmann-distirbution",
+    "zh": "麦克斯韦-玻尔兹曼分布",
+    "en": "Boltzmann distirbution",
+    "group": "u2g-rate-of-reaction"
+   },
+   {
+    "id": "u2-reaction-profile",
+    "zh": "反应进程图",
+    "en": "reaction profile",
+    "group": "u2g-rate-of-reaction"
+   },
+   {
+    "id": "u2-equilibrium-shift",
+    "zh": "平衡移动",
+    "en": "equilibrium shift",
+    "group": "u2g-dynamic-equilibrium"
+   },
+   {
+    "id": "u2-condition-of-the-substitution-reaction",
+    "zh": "取代反应条件",
+    "en": "condition of the substitution reaction",
+    "group": "u2g-halogenoalkane"
+   },
+   {
+    "id": "u2-elimination-of-alcohol",
+    "zh": "醇的消除反应",
+    "en": "elimination of alcohol",
+    "group": "u2g-elimination-reaction"
+   },
+   {
+    "id": "u2-substitution-of-alcohol",
+    "zh": "醇的取代",
+    "en": "substitution of alcohol",
+    "group": "u2g-alcohol"
+   },
+   {
+    "id": "u2-selection-of-oxidation-condition",
+    "zh": "氧化条件选择",
+    "en": "selection of oxidation condition",
+    "group": "u2g-alcohol"
+   },
+   {
+    "id": "u2-infra-red-spectrum",
+    "zh": "红外光谱",
+    "en": "Infra Red Spectrum",
+    "group": "u2g-spectroscopy-in-organics"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-inorganic-identification",
+    "zh": "无机鉴别",
+    "en": "Inorganic Identification"
+   },
+   {
+    "id": "u3g-titration",
+    "zh": "滴定",
+    "en": "Titration"
+   },
+   {
+    "id": "u3g-organic-identification",
+    "zh": "有机鉴别",
+    "en": "Organic Identification"
+   },
+   {
+    "id": "u3g-synthesis",
+    "zh": "合成类题目",
+    "en": "Synthesis"
+   },
+   {
+    "id": "u3g-enthalpy-measurement",
+    "zh": "焓变测定",
+    "en": "Enthalpy Measurement"
+   },
+   {
+    "id": "u3g-rate-measurement",
+    "zh": "速率测定",
+    "en": "Rate Measurement"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-inorganic-identification",
+    "zh": "无机鉴别",
+    "en": "Inorganic Identification",
+    "group": "u3g-inorganic-identification"
+   },
+   {
+    "id": "u3-titration",
+    "zh": "滴定",
+    "en": "Titration",
+    "group": "u3g-titration"
+   },
+   {
+    "id": "u3-organic-identification",
+    "zh": "有机鉴别",
+    "en": "Organic Identification",
+    "group": "u3g-organic-identification"
+   },
+   {
+    "id": "u3-synthesis",
+    "zh": "合成类题目",
+    "en": "Synthesis",
+    "group": "u3g-synthesis"
+   },
+   {
+    "id": "u3-enthalpy-measurement",
+    "zh": "焓变测定",
+    "en": "Enthalpy Measurement",
+    "group": "u3g-enthalpy-measurement"
+   },
+   {
+    "id": "u3-rate-measurement",
+    "zh": "速率测定",
+    "en": "Rate Measurement",
+    "group": "u3g-rate-measurement"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-rate-equation",
+    "zh": "速率方程",
+    "en": "Rate Equation"
+   },
+   {
+    "id": "u4g-chirlarity-and-mechanism",
+    "zh": "手性异构与机理",
+    "en": "Chirlarity and Mechanism"
+   },
+   {
+    "id": "u4g-arrhenius-equation",
+    "zh": "阿伦尼乌斯方程",
+    "en": "Arrhenius Equation"
+   },
+   {
+    "id": "u4g-lattice-energy",
+    "zh": "晶格能",
+    "en": "Lattice Energy"
+   },
+   {
+    "id": "u4g-enthalpy-in-solution",
+    "zh": "溶液中焓变",
+    "en": "Enthalpy in Solution"
+   },
+   {
+    "id": "u4g-entropy",
+    "zh": "熵",
+    "en": "Entropy"
+   },
+   {
+    "id": "u4g-chemical-equilibrium",
+    "zh": "化学平衡",
+    "en": "Chemical Equilibrium"
+   },
+   {
+    "id": "u4g-calculate-of-ph",
+    "zh": "计算酸碱度",
+    "en": "Calculate of pH"
+   },
+   {
+    "id": "u4g-buffer-and-titration-curve",
+    "zh": "缓冲溶液和滴定曲线",
+    "en": "Buffer and Titration Curve"
+   },
+   {
+    "id": "u4g-aldehyde-and-ketone",
+    "zh": "醛和酮",
+    "en": "Aldehyde and Ketone"
+   },
+   {
+    "id": "u4g-carboxylic-acid",
+    "zh": "羧酸",
+    "en": "Carboxylic Acid"
+   },
+   {
+    "id": "u4g-nuclear-magnetic-resonance",
+    "zh": "核磁共振",
+    "en": "Nuclear Magnetic Resonance"
+   },
+   {
+    "id": "u4g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-measurement-of-rate",
+    "zh": "反应速率测定",
+    "en": "Measurement of rate",
+    "group": "u4g-rate-equation"
+   },
+   {
+    "id": "u4-chiral-isomer",
+    "zh": "手性异构",
+    "en": "chiral isomer",
+    "group": "u4g-chirlarity-and-mechanism"
+   },
+   {
+    "id": "u4-arrhenius-equation",
+    "zh": "阿伦尼乌斯方程",
+    "en": "Arrhenius Equation",
+    "group": "u4g-arrhenius-equation"
+   },
+   {
+    "id": "u4-definition-of-lattice-energy-and-electron-affinity",
+    "zh": "晶格能、电子亲和能的定义",
+    "en": "definition of lattice energy and electron affinity",
+    "group": "u4g-lattice-energy"
+   },
+   {
+    "id": "u4-definition-of-hydration-enthalpy-and-solution-enthalpy",
+    "zh": "水化焓、溶解焓的定义",
+    "en": "definition of hydration enthalpy and solution enthalpy",
+    "group": "u4g-enthalpy-in-solution"
+   },
+   {
+    "id": "u4-definition-of-entropy",
+    "zh": "熵的定义",
+    "en": "definition of entropy",
+    "group": "u4g-entropy"
+   },
+   {
+    "id": "u4-kc",
+    "zh": "浓度平衡常数",
+    "en": "Kc",
+    "group": "u4g-chemical-equilibrium"
+   },
+   {
+    "id": "u4-ph-of-strong-acid",
+    "zh": "强酸pH",
+    "en": "pH of strong acid",
+    "group": "u4g-calculate-of-ph"
+   },
+   {
+    "id": "u4-definition-of-buffer-solution",
+    "zh": "缓冲溶液定义",
+    "en": "definition of buffer solution",
+    "group": "u4g-buffer-and-titration-curve"
+   },
+   {
+    "id": "u4-identify-aldehyde",
+    "zh": "醛鉴别",
+    "en": "identify aldehyde",
+    "group": "u4g-aldehyde-and-ketone"
+   },
+   {
+    "id": "u4-acidity-of-carboxylic-acid",
+    "zh": "羧酸酸性",
+    "en": "acidity of carboxylic acid",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-deduction-of-proton-nmr",
+    "zh": "氢谱推导",
+    "en": "deduction of proton-NMR",
+    "group": "u4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "u4-paper-chromatography",
+    "zh": "纸色谱",
+    "en": "paper chromatography",
+    "group": "u4g-chromatography"
+   },
+   {
+    "id": "u4-rate-equation-and-reaction-order",
+    "zh": "速率方程和反应级数",
+    "en": "rate equation and reaction order",
+    "group": "u4g-rate-equation"
+   },
+   {
+    "id": "u4-sampling-quench-titraion",
+    "zh": "取样-淬灭-滴定",
+    "en": "sampling-quench-titraion",
+    "group": "u4g-rate-equation"
+   },
+   {
+    "id": "u4-iodine-clock-reaction",
+    "zh": "碘钟反应",
+    "en": "iodine clock reaction",
+    "group": "u4g-rate-equation"
+   },
+   {
+    "id": "u4-sn1-and-sn2",
+    "zh": "SN1 和 SN2",
+    "en": "SN1 and SN2",
+    "group": "u4g-chirlarity-and-mechanism"
+   },
+   {
+    "id": "u4-fast-equilibrium-reaction",
+    "zh": "快速可逆反应",
+    "en": "fast equilibrium reaction",
+    "group": "u4g-chirlarity-and-mechanism"
+   },
+   {
+    "id": "u4-born-haber-cycle",
+    "zh": "伯恩-哈珀循环",
+    "en": "Born-Haber cycle",
+    "group": "u4g-lattice-energy"
+   },
+   {
+    "id": "u4-enthalpy-calculation-in-solution",
+    "zh": "溶液中焓变运算",
+    "en": "enthalpy calculation in solution",
+    "group": "u4g-enthalpy-in-solution"
+   },
+   {
+    "id": "u4-calculation-of-entropy",
+    "zh": "熵的运算",
+    "en": "calculation of entropy",
+    "group": "u4g-entropy"
+   },
+   {
+    "id": "u4-feasibility",
+    "zh": "反应可行性",
+    "en": "feasibility",
+    "group": "u4g-entropy"
+   },
+   {
+    "id": "u4-partial-pressure-and-kp",
+    "zh": "分压和分压平衡常数",
+    "en": "partial pressure and Kp",
+    "group": "u4g-chemical-equilibrium"
+   },
+   {
+    "id": "u4-analyze-of-rate-and-equilibrium-yield",
+    "zh": "速率和平衡产率综合分析",
+    "en": "analyze of rate and equilibrium yield",
+    "group": "u4g-chemical-equilibrium"
+   },
+   {
+    "id": "u4-kw",
+    "zh": "水的离子积系数",
+    "en": "Kw",
+    "group": "u4g-calculate-of-ph"
+   },
+   {
+    "id": "u4-ph-of-strong-base",
+    "zh": "强碱pH",
+    "en": "pH of strong base",
+    "group": "u4g-calculate-of-ph"
+   },
+   {
+    "id": "u4-ph-of-weak-acid",
+    "zh": "弱酸pH",
+    "en": "pH of weak acid",
+    "group": "u4g-calculate-of-ph"
+   },
+   {
+    "id": "u4-ph-of-buffer",
+    "zh": "缓冲溶液pH",
+    "en": "pH of buffer",
+    "group": "u4g-buffer-and-titration-curve"
+   },
+   {
+    "id": "u4-titration-curve",
+    "zh": "滴定曲线图像",
+    "en": "titration curve",
+    "group": "u4g-buffer-and-titration-curve"
+   },
+   {
+    "id": "u4-polyprotic-acid",
+    "zh": "多元酸",
+    "en": "polyprotic acid",
+    "group": "u4g-buffer-and-titration-curve"
+   },
+   {
+    "id": "u4-selection-of-indicators",
+    "zh": "指示剂选择",
+    "en": "selection of indicators",
+    "group": "u4g-buffer-and-titration-curve"
+   },
+   {
+    "id": "u4-identify-aldehyde-and-ketone",
+    "zh": "醛酮鉴别（2,4-dnph）",
+    "en": "identify aldehyde and ketone",
+    "group": "u4g-aldehyde-and-ketone"
+   },
+   {
+    "id": "u4-methyl-carbonyl-methyl-ketone",
+    "zh": "羰甲基/甲基酮",
+    "en": "methyl carbonyl/methyl ketone",
+    "group": "u4g-aldehyde-and-ketone"
+   },
+   {
+    "id": "u4-mechanism-of-nucleophilic-addition",
+    "zh": "亲核加成机理",
+    "en": "mechanism of nucleophilic addition",
+    "group": "u4g-aldehyde-and-ketone"
+   },
+   {
+    "id": "u4-boiling-point-and-solubility",
+    "zh": "（醛酮羧酸的）熔沸点和溶解度",
+    "en": "boiling point and solubility",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-prepare-of-carboxylic-acid",
+    "zh": "羧酸制备",
+    "en": "prepare of carboxylic acid",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-esterification",
+    "zh": "酯化反应",
+    "en": "esterification",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-acyl-chliride",
+    "zh": "酰氯",
+    "en": "acyl chliride",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-hydrolysis-of-ester",
+    "zh": "酯的水解",
+    "en": "hydrolysis of ester",
+    "group": "u4g-carboxylic-acid"
+   },
+   {
+    "id": "u4-deduction-of-organic-structure",
+    "zh": "有机物结构推导",
+    "en": "deduction of organic structure",
+    "group": "u4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "u4-carbon-13-nmr",
+    "zh": "碳谱",
+    "en": "carbon-13 NMR",
+    "group": "u4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "u4-liquid-and-gas-chromatography",
+    "zh": "液相和气相色谱",
+    "en": "liquid and gas chromatography",
+    "group": "u4g-chromatography"
+   },
+   {
+    "id": "u4-total-entropy-change-and-k",
+    "zh": "总熵和平衡常数",
+    "en": "total entropy change and K",
+    "group": "u4g-chemical-equilibrium"
+   },
+   {
+    "id": "u4-optical-activity-of-the-addition-product",
+    "zh": "加成产物光学活性",
+    "en": "optical activity of the addition product",
+    "group": "u4g-aldehyde-and-ketone"
+   }
+  ]
+ },
+ "U5": {
+  "groups": [
+   {
+    "id": "u5g-electric-cell",
+    "zh": "原电池",
+    "en": "Electric Cell"
+   },
+   {
+    "id": "u5g-electrode-potential",
+    "zh": "电极电势",
+    "en": "Electrode Potential"
+   },
+   {
+    "id": "u5g-transition-metal-defination-and-crystal-field-theory",
+    "zh": "过渡金属定义和晶体场理论",
+    "en": "Transition Metal: Defination and Crystal Field Theory"
+   },
+   {
+    "id": "u5g-transition-metal-elementary-reaction",
+    "zh": "过渡金属元素化学",
+    "en": "Transition Metal: Elementary Reaction"
+   },
+   {
+    "id": "u5g-transition-metal-catalyst-and-redox-titration",
+    "zh": "催化剂与氧化还原滴定",
+    "en": "Transition Metal: Catalyst and Redox Titration"
+   },
+   {
+    "id": "u5g-structure-of-benzene",
+    "zh": "苯的结构",
+    "en": "Structure of Benzene"
+   },
+   {
+    "id": "u5g-electrophilic-substitution",
+    "zh": "亲电取代反应",
+    "en": "Electrophilic Substitution"
+   },
+   {
+    "id": "u5g-amine",
+    "zh": "胺",
+    "en": "Amine"
+   },
+   {
+    "id": "u5g-amino-acid-and-polyamide",
+    "zh": "氨基酸和聚酰胺",
+    "en": "Amino Acid and Polyamide"
+   },
+   {
+    "id": "u5g-organic-synthesis",
+    "zh": "有机合成题目",
+    "en": "Organic Synthesis"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u5-structure-of-cell",
+    "zh": "原电池结构",
+    "en": "structure of cell",
+    "group": "u5g-electric-cell"
+   },
+   {
+    "id": "u5-electrode-potential-and-cell-potential",
+    "zh": "电极电势和电池电动势",
+    "en": "electrode potential and cell potential",
+    "group": "u5g-electrode-potential"
+   },
+   {
+    "id": "u5-definition-of-transition-metal",
+    "zh": "过渡金属定义",
+    "en": "definition of transition metal",
+    "group": "u5g-transition-metal-defination-and-crystal-field-theory"
+   },
+   {
+    "id": "u5-period-4-d-block-compound",
+    "zh": "四周期d区元素化合物颜色",
+    "en": "period 4 d-block compound",
+    "group": "u5g-transition-metal-elementary-reaction"
+   },
+   {
+    "id": "u5-homogeneous-and-heterogeneous-catalyst",
+    "zh": "均相催化剂与异相催化剂",
+    "en": "homogeneous and heterogeneous catalyst",
+    "group": "u5g-transition-metal-catalyst-and-redox-titration"
+   },
+   {
+    "id": "u5-structure-of-benzene",
+    "zh": "苯的结构",
+    "en": "Structure of Benzene",
+    "group": "u5g-structure-of-benzene"
+   },
+   {
+    "id": "u5-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "u5g-electrophilic-substitution"
+   },
+   {
+    "id": "u5-basicity-of-amine",
+    "zh": "胺的碱性",
+    "en": "basicity of amine",
+    "group": "u5g-amine"
+   },
+   {
+    "id": "u5-structure-of-amino-acid",
+    "zh": "氨基酸结构",
+    "en": "structure of amino acid",
+    "group": "u5g-amino-acid-and-polyamide"
+   },
+   {
+    "id": "u5-organic-synthesis",
+    "zh": "综合有机合成",
+    "en": "organic synthesis",
+    "group": "u5g-organic-synthesis"
+   },
+   {
+    "id": "u5-analyze-feasibility",
+    "zh": "反应可行性分析",
+    "en": "analyze feasibility",
+    "group": "u5g-electrode-potential"
+   },
+   {
+    "id": "u5-fuel-cell",
+    "zh": "燃料电池",
+    "en": "fuel cell",
+    "group": "u5g-electrode-potential"
+   },
+   {
+    "id": "u5-coordination-complex",
+    "zh": "配位化合物定义和结构",
+    "en": "coordination complex",
+    "group": "u5g-transition-metal-defination-and-crystal-field-theory"
+   },
+   {
+    "id": "u5-crystal-field-theory",
+    "zh": "化合物显色原理（晶体场理论）",
+    "en": "crystal field theory",
+    "group": "u5g-transition-metal-defination-and-crystal-field-theory"
+   },
+   {
+    "id": "u5-reaction-with-ammonia-and-alkali",
+    "zh": "与氨水和强碱溶液的反应",
+    "en": "reaction with ammonia and alkali",
+    "group": "u5g-transition-metal-elementary-reaction"
+   },
+   {
+    "id": "u5-redox-titration",
+    "zh": "氧化还原滴定",
+    "en": "redox titration",
+    "group": "u5g-transition-metal-catalyst-and-redox-titration"
+   },
+   {
+    "id": "u5-product-of-electrophilic-substitution",
+    "zh": "亲电取代产物",
+    "en": "product of electrophilic substitution",
+    "group": "u5g-electrophilic-substitution"
+   },
+   {
+    "id": "u5-nucleophilic-substitution-by-amine",
+    "zh": "胺的亲核取代",
+    "en": "nucleophilic substitution by amine",
+    "group": "u5g-amine"
+   },
+   {
+    "id": "u5-prepare-amine",
+    "zh": "胺的制备",
+    "en": "prepare amine",
+    "group": "u5g-amine"
+   },
+   {
+    "id": "u5-polypeptide-and-polyamide",
+    "zh": "多肽和聚酰胺",
+    "en": "polypeptide and polyamide",
+    "group": "u5g-amino-acid-and-polyamide"
+   },
+   {
+    "id": "u5-grignard-reagent",
+    "zh": "格氏试剂",
+    "en": "Grignard reagent",
+    "group": "u5g-organic-synthesis"
+   }
+  ]
+ },
+ "U6": {
+  "groups": [
+   {
+    "id": "u6g-inorganic-identification",
+    "zh": "过渡金属元素鉴别题",
+    "en": "Inorganic Identification"
+   },
+   {
+    "id": "u6g-organic-identification",
+    "zh": "综合有机鉴别",
+    "en": "Organic Identification"
+   },
+   {
+    "id": "u6g-synthesis-experiment",
+    "zh": "（有机）合成题",
+    "en": "Synthesis Experiment"
+   },
+   {
+    "id": "u6g-measurement-of-rate",
+    "zh": "反应速率测定",
+    "en": "Measurement of Rate"
+   },
+   {
+    "id": "u6g-redox-titration",
+    "zh": "滴定题，含氧化还原滴定和返滴定",
+    "en": "Redox Titration"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u6-inorganic-identification",
+    "zh": "过渡金属元素鉴别题",
+    "en": "Inorganic Identification",
+    "group": "u6g-inorganic-identification"
+   },
+   {
+    "id": "u6-organic-identification",
+    "zh": "综合有机鉴别",
+    "en": "Organic Identification",
+    "group": "u6g-organic-identification"
+   },
+   {
+    "id": "u6-synthesis-experiment",
+    "zh": "（有机）合成题",
+    "en": "Synthesis Experiment",
+    "group": "u6g-synthesis-experiment"
+   },
+   {
+    "id": "u6-measurement-of-rate",
+    "zh": "反应速率测定",
+    "en": "Measurement of Rate",
+    "group": "u6g-measurement-of-rate"
+   },
+   {
+    "id": "u6-redox-titration",
+    "zh": "滴定题，含氧化还原滴定和返滴定",
+    "en": "Redox Titration",
+    "group": "u6g-redox-titration"
+   }
+  ]
+ }
+}

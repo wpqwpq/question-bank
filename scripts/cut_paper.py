@@ -51,6 +51,7 @@
 """
 
 import argparse
+import os
 import hashlib
 import json
 import re
@@ -69,12 +70,56 @@ SIDEBAR_X = 30.0          # 左侧竖排边栏 "DO NOT WRITE IN THIS AREA" x1 �
 TRIM_MIN_GAP = 20.0       # 尾空白不超过此值视为正常排版间距，不裁
 TRIM_PAD = 8.0            # 裁剪后保留的底部余量（pt）
 
+# 页脚条带的文字特征：页码（纯数字）、Pearson 条形码（*P12345A01234*）、Turn over
+_FOOTER_ITEM_RE = re.compile(r"^(?:\d{1,3}|Turn over|\*?P\d{5}[A-Z]?\d*\*?)$", re.I)
+# 页脚判定线。不能定太低（700）：坐标轴刻度标签也是纯数字（"0/30/60/90/120"，
+# 实测 2024-oct WCH13 Q4 在 y≈727–741），会被页码规则当成页脚，导致图表下沿
+# 被裁掉半截。2019–2026 各卷页码都在 y≥766，750 这条线两边都安全。
+FOOTER_BAND = 750.0
+# 卷末的空白页/结束标记，不算正文
+_BLANK_PAGE_RE = re.compile(r"^(?:BLANK PAGE|END OF PAPER)$", re.I)
+
+
+def _is_footer_line(ln):
+    """页脚条带里的行（页码 / 条形码 / Turn over）。"""
+    return ln["bbox"][1] >= FOOTER_BAND and bool(_FOOTER_ITEM_RE.match(ln["raw"].strip()))
+
+
+def _last_content_extent(st_page, pages_lines):
+    """末题专用：从起始页往后找「最后一张有正文的页」及其内容底。
+
+    卷末不一定印逐题 "(Total for Question N = …)"——2021-jan WCH14 卷末印的是
+    "TOTAL FOR SECTION C = 20 MARKS" / "TOTAL FOR PAPER = 90 MARKS"，该题（Q20）
+    却跨了 5 页。旧逻辑退化成「只切起始页一页」，正文丢了 4 页、分值也算不出来。
+    这里往后扫，遇到空白页（无正文）即停，页脚/空白页标记不算正文。
+    """
+    last_p, last_y = st_page, None
+    for pi in range(st_page, len(pages_lines)):
+        ys = []
+        for ln in pages_lines[pi]:
+            b = ln["bbox"]
+            if b[1] >= FOOTER_Y or _is_footer_line(ln):
+                continue
+            if _BLANK_PAGE_RE.match(ln["raw"].strip()):
+                continue
+            ys.append(b[3])
+        if not ys:
+            if pi > st_page:
+                break
+            continue
+        last_p, last_y = pi, max(ys)
+    return last_p, last_y
+
 # 题号行：允许题号前星号（*16 …）、题号后可选冒号（2025-june 卷式 "1:\t A cube…"）
 QSTART_RE = re.compile(r"^\*?(\d{1,2}):?[\t\u0020\u00a0\u2009]+(\S.*)$")
 QNUM_ONLY_RE = re.compile(r"^\*?(\d{1,2}):?[\t\u0020\u00a0\u2009]*$")
-# Total 锚点：允许题号前星号（星号题写作 "(Total for Question *15 = 6 marks)"）
-TOTAL_RE = re.compile(r"\(\s*Total\s+for\s+Question\s*\*?\s*(\d+)\s*=\s*(\d+)\s*marks?\s*\)")
-TOTAL_SQUASH_RE = re.compile(r"TotalforQuestion\*?(\d+)=(\d+)marks?")
+# Total 锚点：允许题号前星号（星号题写作 "(Total for Question *15 = 6 marks)"）；
+# "for" 可缺失——2025-june WCH15 卷 Q18 印成 "(Total Question 18 = 8 marks)"，
+# 缺了它该题就永远拿不到终点锚点（分值合计短一份、边界靠下一题推）；
+# 左括号也可能是独立 span（2026-jan WCH11A Q23 文本层只剩 "Total for Question 23 = 10 marks)"），
+# 故外层括号整体按「可有可无」处理。
+TOTAL_RE = re.compile(r"\(?\s*Total\s+(?:for\s+)?Question\s*\*?\s*(\d+)\s*=\s*(\d+)\s*marks?\s*\)")
+TOTAL_SQUASH_RE = re.compile(r"Total(?:for)?Question\*?(\d+)=(\d+)marks?")
 SECTION_RE = re.compile(r"^SECTION\s+([A-Z])[\s\.]*$", re.I)
 OPTION_RE = re.compile(r"^([A-D])[\t\u0020\u00a0\u2009]*(.*)$")
 # 小问标题行：QP 侧 "13\t (a)\t Calculate…" / 册内 "14\t (a)\t (i)" / 星号延伸题 "16\t*(b)…"
@@ -181,6 +226,30 @@ def assign_words_to_lines(lines, words):
 
 # ── region 构建与页尾空白裁剪 ───────────────────────────────────────────────
 
+def _page_top_above_first_line(pi, pages_lines, T):
+    """跨页题「续页」的上边界：贴到该页第一个正文行之上。
+
+    续页默认用全卷版心顶 T。但有的页首行比 T 还靠上（2021-jan WCH15 Q19 末页
+    的 "(d) The rare mineral…" 起于 y=40.2，而 T=55.5），直接用 T 会把行首切掉
+    半截。另外该行 bbox 因 tab 结构虚高到 y=96（两个视觉行并成一行），
+    单靠边界吸附也救不回来。这里按「该页最小内容 y0 - 2」取，且不低于页眉线。
+    """
+    ys = []
+    for ln in pages_lines[pi]:
+        b = ln["bbox"]
+        # 只排除「完全落在页眉线以上」的页眉装饰；个别续页首行正常起于
+        # y=40.2（比 HEADER_Y=40 高不到 1pt），用 b[1] < HEADER_Y+1 会把
+        # 它整个滤掉，函数退回 T，等于没修。
+        if b[3] <= HEADER_Y + 1 or b[1] >= FOOTER_Y:
+            continue
+        if _is_footer_line(ln):
+            continue
+        ys.append(b[1])
+    if not ys:
+        return T
+    return r2(max(HEADER_Y + 0.5, min(T, min(ys) - 2)))
+
+
 def build_regions(start_page, sy0, end_page, end_y1, L, T, R, B):
     """从起点(页, y0)到终点(页, y1)构建有序 region 列表（跨页自动分段）。"""
     if end_page == start_page:
@@ -284,12 +353,28 @@ def trim_regions_trailing_blank(doc, regions, pages_lines, content_cache):
                 continue
             if lb[2] < bb[0] or lb[0] > bb[2]:
                 continue
+            # 页脚三件套（页码小字 / 条形码 / Turn over）不是正文内容。
+            # 2019–2022 化学卷页码印在 y≈767–776、条形码 y≈768–799，都高于
+            # FOOTER_Y=790，会被当成「最后一项内容」，让 gap 掉到 TRIM_MIN_GAP
+            # 以下而放弃裁剪 —— 于是跨页大题的中间页一直切到 788，把页码和
+            # 条形码带进题图接缝。
+            if lb[1] >= FOOTER_BAND and _FOOTER_ITEM_RE.match(ln["raw"].strip()) \
+                    and lb[2] - lb[0] <= 240:
+                continue
             if last_y is None or lb[3] > last_y:
                 last_y = lb[3]
         for y1, _y0, x0, x1, _is_hline in page_content_rects(doc, rg["page"], content_cache):
             if y1 > FOOTER_Y or y1 < bb[1] - 1:
                 continue
             if x1 < bb[0] or x0 > bb[2]:
+                continue
+            # 页脚角上的装饰短横（x 贴页边、y 在 700 以下）
+            if _y0 >= FOOTER_BAND and (x1 <= 60 or x0 >= 520):
+                continue
+            # 页边窄高竖条（右侧 "DO NOT WRITE IN THIS AREA" 底纹框，21×693）；
+            # 它的底界 762 会被当成「最后一项内容」，让裁剪停在 770 一带，
+            # 正好又落回页脚条码行里。
+            if (x1 - x0) <= 60 and (y1 - _y0) >= 300:
                 continue
             if last_y is None or y1 > last_y:
                 last_y = y1
@@ -400,6 +485,90 @@ def region_has_content(pages_lines, doc, content_cache, regs):
 
 # ── 主流程 ──────────────────────────────────────────────────────────────────
 
+def snap_region_bounds_to_lines(regions, pages_lines, doc=None, content_cache=None):
+    """把穿过文本行/图形内部的 region 边界吸附到行外（原地修改）。
+
+    版心底 B 是全卷横排内容 y1 的高分位数，个别页的内容会排到 B 之下：
+    2020-jan WBI11 Q5 的 "Time / minutes" 落在 y770–785，而 B=779，
+    切出来只剩上半截字；2019-jan WBI11 Q7 的 Key 图例框（109×73 @y689）
+    被 757 的边界削掉底边。同理上边界可能压在题号块上方的一行字上。
+
+    文本行一律吸附；图形只吸附「成块」的（宽高均 ≥12pt，且整体在
+    页眉线之下、页脚线之上）—— 细线/表格栅格可能是分栏线，页边装饰
+    图（Pearson 页眉标）超出页眉线，都不动。上下界分别受
+    FOOTER_Y / HEADER_Y 约束。推到新位置后若又落进下一项，最多迭代 3 次。
+    """
+    fixed = 0
+
+    def _rects(pi):
+        if doc is None:
+            return []
+        cache = content_cache if content_cache is not None else {}
+        return page_content_rects(doc, pi, cache)
+
+    for rg in regions:
+        bb = rg["bbox"]
+        lines = pages_lines[rg["page"]]
+        if bb[2] <= bb[0]:
+            continue
+
+        def _overlaps_x(x0, x1):
+            """x 方向是否有实质重叠。
+
+            只碰几个 pt 不算——2019–2022 化学卷右侧有「DO NOT WRITE IN THIS AREA」
+            灰色斜纹竖条（实测 21pt 宽 × 693pt 高，x≈543–564），它只与版心右边界
+            擦过 3.7pt，却横跨整页高度；旧判据（x0>=bb[2] 才算不相关）放它过去，
+            于是每个题区的上下边界都被吸附到页顶/页底，整卷题目全变成整页大图。
+            """
+            return min(x1, bb[2]) - max(x0, bb[0]) >= 8.0
+
+        def _crosses(y, is_bottom):
+            """y 落在某项内部 → 返回该项外沿新值，否则 None。"""
+            best = None
+            for ln in lines:
+                lb = ln["bbox"]
+                if not _overlaps_x(lb[0], lb[2]):
+                    continue
+                # 页脚三件套（页码 / 条形码 / Turn over）不是正文：边界落在它们
+                # 中间时不能吸附，否则刚裁到页脚上沿的题区又被推回页脚里。
+                if lb[1] >= FOOTER_BAND and _FOOTER_ITEM_RE.match(ln["raw"].strip()):
+                    continue
+                if lb[1] < y < lb[3]:
+                    if is_bottom and lb[3] <= FOOTER_Y - 0.5:
+                        best = min(lb[3] + 1.5, FOOTER_Y - 0.5) if best is None else max(best, min(lb[3] + 1.5, FOOTER_Y - 0.5))
+                    elif not is_bottom and lb[1] >= HEADER_Y + 0.5:
+                        best = max(lb[1] - 1.5, HEADER_Y + 0.5) if best is None else min(best, max(lb[1] - 1.5, HEADER_Y + 0.5))
+            for y1, y0, x0, x1, _hl in _rects(rg["page"]):
+                if not _overlaps_x(x0, x1):
+                    continue
+                if y1 - y0 < 12 or y0 < HEADER_Y + 1 or y1 > FOOTER_Y - 0.5:
+                    continue
+                if y0 < y < y1:
+                    if is_bottom:
+                        best = min(y1 + 1.5, FOOTER_Y - 0.5) if best is None else max(best, min(y1 + 1.5, FOOTER_Y - 0.5))
+                    else:
+                        best = max(y0 - 1.5, HEADER_Y + 0.5) if best is None else min(best, max(y0 - 1.5, HEADER_Y + 0.5))
+            return best
+
+        for _ in range(3):
+            nb = _crosses(bb[3], True)
+            if nb is None:
+                break
+            if os.environ.get("CUT_DEBUG"):
+                print(f"  [snap] p{rg['page']} bottom {bb[3]:.1f} -> {nb:.1f}")
+            bb[3] = r2(nb)
+            fixed += 1
+        for _ in range(3):
+            nb = _crosses(bb[1], False)
+            if nb is None:
+                break
+            if os.environ.get("CUT_DEBUG"):
+                print(f"  [snap] p{rg['page']} top    {bb[1]:.1f} -> {nb:.1f}")
+            bb[1] = r2(nb)
+            fixed += 1
+    return fixed
+
+
 def main():
     ap = argparse.ArgumentParser(description="真题按大题自动切割（Edexcel 策略）")
     ap.add_argument("session_dir", help="如 data/edexcel/a-level/physics/2026-june-wph11")
@@ -491,6 +660,34 @@ def main():
                     return "B"
         return "A" if sections else None
 
+    # ── 终点锚点：双模式匹配（常规 + 去空格兜底，对付 PDF 拆词） ──
+    # 先扫锚点再定题号起点：非粗体补位要靠「该题号确有 Total 行」来否决
+    # 正文里冒出来的假题号（如 2026-jan WCH13A 第 9 页步骤行 "5 drops of …"，
+    # x0≈97.8 落在左缘带内、非粗体，曾被当成 Q5 并把 Q4 拦腰截断）。
+    totals = {}  # n -> dict（每题首个命中 = Question Paper 内的）
+    total_occ = []  # 全部命中（含答题册重印），供答题册检测
+    for pi, lines in enumerate(pages_lines):
+        for ln in lines:
+            b = ln["bbox"]
+            if b[1] >= FOOTER_Y:
+                continue
+            m = TOTAL_RE.search(ln["raw"])
+            squashed = False
+            if not m:
+                sq = re.sub(r"\s+", "", ln["raw"])
+                m = TOTAL_SQUASH_RE.search(sq)
+                squashed = bool(m)
+            if m:
+                n = int(m.group(1))
+                total_occ.append({"n": n, "page": pi, "bbox": b, "marks": int(m.group(2))})
+                if n not in totals:
+                    totals[n] = {"page": pi, "bbox": b, "marks": int(m.group(2)),
+                                 "squashed": squashed, "line": ln}
+
+    def _has_total_after(n, pos):
+        """该题号在 pos 之后是否存在 Total 锚点（判定「这个题号是真题」）。"""
+        return any(t["n"] == n and (t["page"], t["bbox"][1]) > pos for t in total_occ)
+
     # ── 题号起点：题号开头 + 左缘带 + 序列约束（粗体优先，受阻时非粗体补位） ──
     # 粗体不能当硬条件：老卷（如 2021-jan U5）文本层里个别题号行丢失 bold 标记，
     # 一旦该行被跳过，严格递增的序列就永久卡死、其后所有题被丢弃。
@@ -521,12 +718,19 @@ def main():
     expected = 1
     last_pos = (-1, -1.0)
     while True:
-        pick = _pick(expected, last_pos, bold_only=True)
+        # 题号起点必须落在上一题 Total 行之后——选择题题干里的编号陈述
+        # （2026-june WCH15 Q2 的 "1/2/3 Haemoglobin is…" 粗体列表，
+        # x≈60.9、同样带 tab）会被误认成下一题题号，靠这条先后关系排除。
+        prev_end = totals.get(expected - 1)
+        after = last_pos
+        if prev_end is not None and (prev_end["page"], prev_end["bbox"][1]) > after:
+            after = (prev_end["page"], prev_end["bbox"][1])
+        pick = _pick(expected, after, bold_only=True)
         if pick is None:
-            nb = _pick(expected, last_pos, bold_only=False)
-            if nb is not None and not nb[2]:
+            nb = _pick(expected, after, bold_only=False)
+            if nb is not None and not nb[2] and _has_total_after(expected, (nb[0], nb[1])):
                 # 非粗体补位：必须早于下一题（expected+1）的首个粗体候选
-                nxt = _pick(expected + 1, last_pos, bold_only=True)
+                nxt = _pick(expected + 1, after, bold_only=True)
                 if nxt is None or (nb[0], nb[1]) < (nxt[0], nxt[1]):
                     pick = nb
         if pick is None:
@@ -535,27 +739,6 @@ def main():
         qstarts[expected] = {"page": pi, "bbox": b, "line": ln}
         last_pos = (pi, y)
         expected += 1
-
-    # ── 终点锚点：双模式匹配（常规 + 去空格兜底，对付 PDF 拆词） ──
-    totals = {}  # n -> dict（每题首个命中 = Question Paper 内的）
-    total_occ = []  # 全部命中（含答题册重印），供答题册检测
-    for pi, lines in enumerate(pages_lines):
-        for ln in lines:
-            b = ln["bbox"]
-            if b[1] >= FOOTER_Y:
-                continue
-            m = TOTAL_RE.search(ln["raw"])
-            squashed = False
-            if not m:
-                sq = re.sub(r"\s+", "", ln["raw"])
-                m = TOTAL_SQUASH_RE.search(sq)
-                squashed = bool(m)
-            if m:
-                n = int(m.group(1))
-                total_occ.append({"n": n, "page": pi, "bbox": b, "marks": int(m.group(2))})
-                if n not in totals:
-                    totals[n] = {"page": pi, "bbox": b, "marks": int(m.group(2)),
-                                 "squashed": squashed, "line": ln}
 
     n_questions = expected - 1
     if n_questions == 0:
@@ -587,6 +770,22 @@ def main():
         # Q13 的 "13" 行 bold=False）→ 该题定位不到册内标题、拿不到 answer_block。
         # 改为候选带 bold 标记，选标题时粗体优先、无粗体则接受非粗体。
         cur_n, cur_letter = None, None
+        # 答题册内的顶层小问缩进基准（与 QP 侧同口径）：字母标签行 x0 最小值。
+        # 裸 "(i)" 若与顶层同列 → 独立小问；缩进更深的才是罗马子项。
+        _bk_letters_x = []
+        for _pi in range(scan_from, n_pages):
+            for _ln in pages_lines[_pi]:
+                _b = _ln["bbox"]
+                if _b[1] >= FOOTER_Y or _b[0] > LEFT_MARGIN_MAX:
+                    continue
+                _p = parse_subhead(_ln["raw"])
+                _t = _p[2] if (_p and _p[2]) else None
+                if _t is None:
+                    _b2 = parse_bare_subhead(_ln["raw"])
+                    _t = _b2[1] if (_b2 and _b2[1]) else None
+                if _t and len(_t) == 1 and _t[0] not in ROMAN_TOKENS:
+                    _bk_letters_x.append(_b[0])
+        book_top_x = min(_bk_letters_x) if _bk_letters_x else None
         for pi in range(scan_from, n_pages):
             for ln in pages_lines[pi]:
                 b = ln["bbox"]
@@ -609,6 +808,9 @@ def main():
                     toks = bare[1]
                     if toks[0] not in ROMAN_TOKENS:  # 字母标签行：更新当前父字母
                         cur_letter = toks[0]
+                    elif len(toks) == 1 and book_top_x is not None \
+                            and b[0] <= book_top_x + 6:
+                        cur_letter = toks[0]  # 顶层 (i)：自己是父，不拼上一位
                     elif cur_letter is not None:  # 罗马接续行：拼父字母
                         toks = (cur_letter,) + toks
                     cand.append((pi, b[1], cur_n, toks, bare[0], b, bool(ln["bold"])))
@@ -663,8 +865,10 @@ def main():
                 end_page, end_y1 = (nxt["page"], nxt["bbox"][1] - 2) if nxt["page"] == st["page"] \
                     else (nxt["page"] - 1, B) if nxt["page"] > st["page"] else (st["page"], B)
             else:
-                end_page, end_y1 = st["page"], B
-            notes.append("缺终点锚点，边界由下一题起点/版心底推出，请人工复核")
+                end_page, end_y1 = _last_content_extent(st["page"], pages_lines)
+                if end_y1 is None:
+                    end_y1 = B
+                notes.append("缺终点锚点，已延伸到卷末最后一张有正文的页，请人工复核")
 
         if st is None:
             q["status"] = "review"
@@ -673,13 +877,42 @@ def main():
             continue
 
         sy0 = st["bbox"][1] - 4
+        # 题号行与「分节说明行」同高时（2025-jan WCH14 Q20 的
+        # "Answer ALL the questions. Write your answers…" 与裸题号 "20"
+        # y 区间重叠），上边界退到说明行之上，避免把那一行切成半截。
+        for _ln in pages_lines[st["page"]]:
+            _lb = _ln["bbox"]
+            if _ln is st["line"] or _lb[3] <= st["bbox"][1] or _lb[1] >= st["bbox"][3]:
+                continue
+            _t = _ln["raw"].strip()
+            if SECTION_RE.match(_t) or re.match(r"^Answer\s+ALL\s+the\s+questions", _t):
+                sy0 = min(sy0, r2(_lb[1] - 2))
         q["regions"] = build_regions(st["page"], sy0, end_page, end_y1, L, T, R, B)
+        # 续页（第 2 页起）的上边界贴到该页首行之上，别用全卷版心顶硬切行首
+        for _rg in q["regions"][1:]:
+            _rg["bbox"][1] = _page_top_above_first_line(_rg["page"], pages_lines, T)
         trim_stats += trim_regions_trailing_blank(doc, q["regions"], pages_lines, content_rects_cache)
 
         sec = section_of(st["page"], st["bbox"][1])
         if sec:
             q["section"] = sec
-        is_mcq = (sec == "A") if sec else (en is not None and en["marks"] == 1)
+        # 是否选择题：题干下方有 ≥3 个 A–D 粗体选项行，且总分 ≤2 分。
+        # 不能沿用「section == A 即 MCQ」——生物卷也有 SECTION A
+        # （2021-oct WBI11 Q5 是 10 分结构化题，曾被误判成选择题，
+        #  热区只搜到一个 "A"，还把整段表格塞进 options 文本）。
+        is_mcq = False
+        if en is not None and en["marks"] <= 2:
+            y0p = st["bbox"][1]
+            y1p = en["bbox"][3] if en["page"] == st["page"] else FOOTER_Y
+            letters = set()
+            for ln in pages_lines[st["page"]]:
+                lb = ln["bbox"]
+                if not (y0p - 2 <= lb[1] <= y1p) or not ln["bold"]:
+                    continue
+                m2 = OPTION_RE.match(ln["raw"].strip())
+                if m2:
+                    letters.add(m2.group(1))
+            is_mcq = len(letters) >= 3
         q["question_type"] = "mcq" if is_mcq else "structured"
 
         # ── 共用题干块 MCQ（2026-jan WPH15A Q9/Q10、WPH12A Q6/Q7 式） ──
@@ -721,13 +954,38 @@ def main():
                     mcq_shared_bottom = first_y - 2
                 break
 
-        # ── QP 侧小问标签锚点（结构化题；MCQ 无小问） ──
+        # ── QP 侧小问标签锚点 ──
         # 两种卷式：U2/U6 式粗体 "N (a)(i)……"（带题号前缀）；U1/U4/U5 式
         # "(a)\t ……"（无前缀、非粗体）。接续行省略父前缀（"(a)" 之后的裸
         # "(i)" 行）→ 拼上最近的父标签，记作 "a i"，与答题册标题对齐。
+        #
+        # MCQ 也扫：化学 Section A 有一类「(a)(b)(c) 各带一套 A–D」的多问选择题
+        # （2021-06 WCH14 Q4 式，每问 1 分），小问标签是下游按小问打标/切图的唯一
+        # 依据。单问 MCQ（marks=1）不扫，保持 subquestions=[] 的旧形态。
         subqs = []
         parent_letter = None
-        if not is_mcq:
+        # 顶层小问缩进基准：字母标签行的最小 x0。用来区分「裸 (i) 是独立顶层小问
+        # （小问字母一路排到 i）还是上一位的罗马子项」——两者排版缩进差约 13pt
+        # （2024-oct WBI15 Q8 的 (i) x0=63.9，与 (a)–(h) 同列；真子项在 73.5）。
+        _qp_letters_x = []
+        if (not is_mcq) or (q.get("total_marks") or 0) > 1:
+            for _rg in q["regions"]:
+                _rbb = _rg["bbox"]
+                for _ln in pages_lines[_rg["page"]]:
+                    _lb = _ln["bbox"]
+                    if _lb[1] >= FOOTER_Y or _lb[0] > LEFT_MARGIN_MAX:
+                        continue
+                    if _lb[1] < _rbb[1] - 1 or _lb[1] > _rbb[3] + 1:
+                        continue
+                    _p = parse_subhead(_ln["raw"])
+                    _t = _p[2] if (_p and _p[2]) else None
+                    if _t is None:
+                        _b2 = parse_bare_subhead(_ln["raw"])
+                        _t = _b2[1] if (_b2 and _b2[1]) else None
+                    if _t and len(_t) == 1 and _t[0] not in ROMAN_TOKENS:
+                        _qp_letters_x.append(_lb[0])
+        top_x = min(_qp_letters_x) if _qp_letters_x else None
+        if (not is_mcq) or (q.get("total_marks") or 0) > 1:
             for rg in q["regions"]:
                 rbb = rg["bbox"]
                 for ln in pages_lines[rg["page"]]:
@@ -746,8 +1004,12 @@ def main():
                             tokens, starred = bare[1], bare[0]
                     if tokens is None:
                         continue
-                    if tokens[0] in ROMAN_TOKENS:  # 罗马接续：(i) → (父, i)
-                        if parent_letter is not None:
+                    if tokens[0] in ROMAN_TOKENS:
+                        # 裸 "(i)" 的缩进与顶层小问同列 → 它是独立小问（字母排到 i），
+                        # 不并入上一位；缩进更深的才是罗马子项 → 拼父字母。
+                        if len(tokens) == 1 and top_x is not None and lb[0] <= top_x + 6:
+                            parent_letter = tokens[0]
+                        elif parent_letter is not None:
                             tokens = (parent_letter,) + tokens
                     else:  # 字母标签：(a) / (b)(i) → 更新当前父标签
                         parent_letter = tokens[0]
@@ -756,6 +1018,8 @@ def main():
                     if starred:
                         ent["starred"] = True
                     subqs.append(ent)
+        if is_mcq and len(subqs) < 2:
+            subqs = []  # 单问 MCQ（或标签识别失败）：不制造小问结构
         q["subquestions"] = subqs
 
         # ── 答题册另附卷：提取该题在答题册中的作答区 ──
@@ -886,12 +1150,19 @@ def main():
                 min_y=mcq_shared_top if mcq_shared_bottom is not None else None,
                 max_y=mcq_shared_bottom)
             q["_options"] = opts
-            q["option_hotzones"] = [{"label": o["label"], "bbox": o["bbox"]} for o in opts]
-            labels = {o["label"] for o in opts}
-            if labels == {"A", "B", "C", "D"}:
+            q["option_hotzones"] = [{k: o[k] for k in ("label", "bbox", "part") if k in o}
+                                    for o in opts]
+            # 逐「选项组」检查 A–D 完整性：化学 Section A 有 (a)/(b) 各一套选项的
+            # 2 分选择题（如 2025-june WCH11 Q14），一组一套，不能把两组合并计数。
+            sets = {}
+            for o in opts:
+                sets.setdefault(o.get("part"), set()).add(o["label"])
+            bad = [p for p, s in sets.items() if s != {"A", "B", "C", "D"}]
+            if not bad:
                 conf += 0.2
             else:
-                notes.append(f"MCQ 选项不全（提取到 {sorted(labels)}），请人工补热区")
+                detail = "；".join(f"{p or '主'}: {sorted(sets[p])}" for p in bad)
+                notes.append(f"MCQ 选项不全（{detail}），请人工补热区")
                 q["status"] = "review"
         else:
             conf += 0.2  # 结构化题无选项检查，该项记满分
@@ -902,6 +1173,16 @@ def main():
         auto_questions.append(q)
 
     # 分值合计校验
+    # 先补一次「末题缺分值」：卷末若不用逐题 Total 行（而是 TOTAL FOR SECTION/PAPER），
+    # 末题 total_marks 会是 None。只有「恰好一题缺分值且差值合理」才补，其余照旧报错。
+    if paper_total_marks is not None and marks_sum != paper_total_marks:
+        missing = [q for q in auto_questions if q.get("total_marks") is None]
+        delta = paper_total_marks - marks_sum
+        if len(missing) == 1 and 0 < delta <= 40:
+            missing[0]["total_marks"] = delta
+            marks_sum = paper_total_marks
+            missing[0].setdefault("review_notes", []).append(
+                f"卷末无逐题 Total 行，分值按试卷总分差推断为 {delta}")
     if paper_total_marks is not None and marks_sum != paper_total_marks:
         for q in auto_questions:
             q["status"] = "review"
@@ -915,6 +1196,20 @@ def main():
         existing = json.loads(cut_path.read_text(encoding="utf-8"))
         if existing.get("source", {}).get("sha256") != sha:
             sys.exit("source.pdf 的 sha256 与 cut.json 记录不符——源头已变，请人工处理。")
+
+    # 边界吸附：region 上下界穿过文本行/成块图形内部时推到外面（见函数 docstring）
+    snap_fixed = 0
+    for q in auto_questions:
+        snap_fixed += snap_region_bounds_to_lines(q.get("regions") or [], pages_lines,
+                                                  doc, content_rects_cache)
+        if q.get("answer_block"):
+            snap_fixed += snap_region_bounds_to_lines(q["answer_block"], pages_lines,
+                                                      doc, content_rects_cache)
+        for ent in q.get("answer_regions") or []:
+            snap_fixed += snap_region_bounds_to_lines(ent.get("regions") or [], pages_lines,
+                                                      doc, content_rects_cache)
+    if snap_fixed:
+        print(f"    边界吸附文本/图形: {snap_fixed} 处")
 
     questions, merge_report = merge_with_existing(auto_questions, existing)
 
@@ -969,6 +1264,65 @@ def main():
             print(f"    [review] Q{q['number']}: {'; '.join(q['review_notes'])}")
 
 
+def _option_rows_on_page(pi, pages_lines, R, y_top, scan_bottom, wide):
+    """某页上所有像选项标签的粗体行（A–D 开头），按 y 排序。"""
+    rows = []
+    for ln in pages_lines[pi]:
+        b = ln["bbox"]
+        if b[1] >= FOOTER_Y or not ln["bold"] or not (60.0 <= b[0] <= (R if wide else 140.0)):
+            continue
+        if b[1] < y_top or b[1] >= scan_bottom:
+            continue
+        m = OPTION_RE.match(ln["raw"].strip())
+        if m:
+            rows.append({"label": m.group(1), "y0": b[1], "x0": b[0], "x1": b[2],
+                         "tail": m.group(2).strip(), "page": pi})
+    rows.sort(key=lambda x: (round(x["y0"], 1), x["x0"]))
+    return rows
+
+
+def _group_options(rows):
+    """把按文档序排列的选项行切成「选项组」：同一字母第二次出现即开新组。
+
+    化学 Section A 的 2 分选择题常用 (a)/(b) 各一套 A–D（2025-june WCH11 Q14），
+    物理卷一路只有一个组 → 结果与原先的「每字母取首次」完全一致。
+    """
+    groups = []
+    for r in rows:
+        if not groups or r["label"] in {x["label"] for x in groups[-1]}:
+            groups.append([])
+        groups[-1].append(r)
+    return groups
+
+
+def _part_label_of(n, row, pages_lines, st):
+    """选项组所属小问标签（'a'/'b'）：向上找最近的 (a)/(b) 标签行。"""
+    best = None
+    for pi in range(st["page"], row["page"] + 1):
+        for ln in pages_lines[pi]:
+            b = ln["bbox"]
+            if pi == row["page"] and b[1] >= row["y0"]:
+                break
+            if b[0] > LEFT_MARGIN_MAX or b[1] >= FOOTER_Y:
+                continue
+            if pi == st["page"] and b[1] < st["bbox"][1] - 1:
+                continue  # 本题题干行之上的内容属上一题
+            p = parse_subhead(ln["raw"])
+            if p and p[0] == n and p[2] and p[2][0] not in ROMAN_TOKENS:
+                best = p[2][0]
+                continue
+            bare = parse_bare_subhead(ln["raw"])
+            if bare is None:
+                # 化学题号行形如 "14:\t(a)\t …"（题号后带冒号，SUBHEAD_RE 不收），
+                # 剥掉题号前缀再按裸标签行解析
+                m2 = re.match(r"^\*?(\d{1,2})\s*:?\s+(.*)$", ln["raw"].strip())
+                if m2 and int(m2.group(1)) == n:
+                    bare = parse_bare_subhead(m2.group(2))
+            if bare and bare[1] and bare[1][0] not in ROMAN_TOKENS:
+                best = bare[1][0]
+    return best
+
+
 def extract_mcq_options(n, q, pages_lines, pages_pairs, st, en, R, B, notes,
                         min_y=None, max_y=None):
     """MCQ 选项热区：粗体 A–D 行为标签，向下吸收到下一选项/Total 行。
@@ -978,83 +1332,120 @@ def extract_mcq_options(n, q, pages_lines, pages_pairs, st, en, R, B, notes,
     在题干行上方、位于拼接的干块 region 内，调用方传入块顶/块底。
     标签列先按窄列（x∈[60,140]）找；不足 4 个时放宽到整页宽——
     两列选项卷（如 WPH11A Q2 的 B/D 在右列 x≈396）需要宽列才能收齐。
+
+    多套选项（化学 2 分选择题，(a)/(b) 各一套 A–D，第二套可能落在下一页）：
+    按「字母重复出现」切成多组，每组单独算热区，写入 part 字段（'a'/'b'）；
+    单组时 part 省略，输出与旧版逐字节一致。
     """
-    opts = []
-    # 只在起始页（MCQ 不跨页；若跨页仍只处理首页）找标签行。
-    # 候选行上界 = 本题 Total 锚点顶（双列选项卷：窄列只收齐 A/C 时，
-    # 下一题的 B/D 行会被当首现字母凑数 → 跨题错配，2025-oct 化学实测）
-    pi = st["page"]
+    pi0 = st["page"]
     y_top = st["bbox"][1] if min_y is None else min_y
-    scan_bottom = en["bbox"][1] if en and en["page"] == pi else FOOTER_Y
-    if max_y is not None:
-        scan_bottom = min(scan_bottom, max_y)
-    labels = []
+    last_page = en["page"] if (en and en["page"] >= pi0) else pi0
+
+    def scan_bounds(pi):
+        top = y_top if pi == pi0 else 0.0
+        bot = en["bbox"][1] if (en and en["page"] == pi) else FOOTER_Y
+        if max_y is not None and pi == pi0:
+            bot = min(bot, max_y)
+        return top, bot
+
+    rows, groups, parts = [], [], []
     for wide in (False, True):
-        labels = []
-        for ln in pages_lines[pi]:
-            b = ln["bbox"]
-            if b[1] >= FOOTER_Y or not ln["bold"] or not (60.0 <= b[0] <= (R if wide else 140.0)):
-                continue
-            if b[1] < y_top or b[1] >= scan_bottom:
-                continue
-            m = OPTION_RE.match(ln["raw"].strip())
-            if m and m.group(2) is not None:
-                labels.append({"label": m.group(1), "y0": b[1], "x0": b[0], "x1": b[2],
-                               "tail": m.group(2).strip(), "page": pi})
-        # 每个字母取首次出现，按 y 排序
-        seen, uniq = set(), []
-        for lb in sorted(labels, key=lambda x: x["y0"]):
-            if lb["label"] not in seen:
-                seen.add(lb["label"])
-                uniq.append(lb)
-        if len(uniq) >= 4:
-            break
-    if not uniq:
-        return opts
-    # 每个选项的下界与右界（两列选项：下界取下一「行」选项；右邻列分割 x）
-    limit_y = en["bbox"][1] if en and en["page"] == pi else B
-    if max_y is not None:
-        limit_y = min(limit_y, max_y)
-    for i, lb in enumerate(uniq):
-        nxt_row = next((o for o in uniq if o["y0"] > lb["y0"] + 3), None)
-        y_end = nxt_row["y0"] - 2 if nxt_row else limit_y - 2
-        x1 = R
-        for other in uniq:
-            if other is not lb and abs(other["y0"] - lb["y0"]) <= 3 and other["x0"] > lb["x0"]:
-                x1 = min(x1, other["x0"] - 6)
-        bbox = [r2(lb["x0"] - 6), r2(lb["y0"] - 2), r2(x1), r2(y_end)]
-        # 文本：标签行尾部 + 同页 y 范围内 x 更靠右的行；同 y 的列用 " / " 连接
-        parts = []
-        if lb["tail"]:
-            parts.append(lb["tail"])
         rows = []
-        for ln in pages_lines[pi]:
-            b = ln["bbox"]
-            if lb["y0"] - 1 <= b[1] <= y_end + 1 and b[0] > lb["x0"] + 4:
-                rows.append(ln)
-        rows.sort(key=lambda l: (round(l["bbox"][1], 1), l["bbox"][0]))
-        grouped, last_y = [], None
-        for ln in rows:
-            y = round(ln["bbox"][1], 1)
-            if last_y is not None and abs(y - last_y) <= 2:
-                grouped[-1].append(ln)
+        for pi in range(pi0, last_page + 1):
+            top, bot = scan_bounds(pi)
+            rows += _option_rows_on_page(pi, pages_lines, R, top, bot, wide)
+        groups = _group_options(rows)
+        parts = [_part_label_of(n, g[0], pages_lines, st) if len(groups) > 1 else None
+                 for g in groups]
+        # 只有「确实分属不同小问」才算多套选项；小问标签缺失/重复时退回
+        # 「每个字母取首次出现」的旧规则（物理卷的箭头式选项常被误切成两组）
+        multi = (len(groups) > 1 and all(parts) and len(set(parts)) == len(parts))
+        if multi:
+            # 多套选项：每组都要收齐 A–D；两列/2×2 图片式选项
+            # （2025-june WCH15 Q13(b)：A/C 在左列、B/D 在 x≈314）才放宽到整页宽
+            if all(len({x["label"] for x in g}) == 4 for g in groups):
+                break
+        elif len({r["label"] for r in rows}) >= 4:
+            break  # 单套选项：旧规则——收齐 4 个字母即止，不再放宽
+    if not rows:
+        return []
+    multi = (len(groups) > 1 and all(parts) and len(set(parts)) == len(parts))
+    if not multi:
+        # 单套选项：退回旧规则（只在起始页找、按原始 y 排序、每字母取首次出现），
+        # 保证与历史物理卷产物逐字节一致（箭头式选项等版式的既有热区不变）
+        single = [r for r in rows if r["page"] == pi0]
+        seen, uniq_rows = set(), []
+        for r in sorted(single, key=lambda x: x["y0"]):
+            if r["label"] not in seen:
+                seen.add(r["label"])
+                uniq_rows.append(r)
+        groups, parts = [uniq_rows], [None]
+
+    opts = []
+    for gi, grp in enumerate(groups):
+        part = parts[gi] if multi else None
+        nxt_group = groups[gi + 1][0] if gi + 1 < len(groups) else None
+        for lb in grp:
+            # 下界：同组同页的下一行 → 下一组的首行（同页）→ 本题 Total 行
+            nxt_row = next((o for o in grp if o["page"] == lb["page"]
+                            and o["y0"] > lb["y0"] + 3), None)
+            if nxt_row:
+                y_end = nxt_row["y0"] - 2
+            elif nxt_group is not None and nxt_group["page"] == lb["page"]:
+                y_end = nxt_group["y0"] - 2
             else:
-                grouped.append([ln])
-                last_y = y
-        for grp in grouped:
-            parts.append(" / ".join(
-                " ".join(w[4] for w, ref in pages_pairs[pi]
-                         if ref is grp_item and w[1] >= grp_item["bbox"][1] - 1)
-                or grp_item["raw"].strip()
-                for grp_item in grp))
-        text = " ".join(p for p in parts if p).strip()
-        word_indices = []
-        for wi, (w, ref) in enumerate(pages_pairs[pi]):
-            cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
-            if bbox[0] <= cx <= bbox[2] and bbox[1] <= cy <= bbox[3]:
-                word_indices.append(wi)
-        opts.append({"label": lb["label"], "text": text, "bbox": bbox,
-                     "word_indices": word_indices})
+                limit_y = en["bbox"][1] if (en and en["page"] == lb["page"]) else B
+                if max_y is not None and lb["page"] == pi0:
+                    limit_y = min(limit_y, max_y)
+                if nxt_group is not None and nxt_group["page"] > lb["page"]:
+                    # 下一套选项在后续页：本组末个选项只吸收到本页 region 下沿，
+                    # 别一路伸到页底（2025-june WCH11 Q14(a) 的 D 曾吃到 785pt）
+                    for rg in (q.get("regions") or []):
+                        if rg["page"] == lb["page"]:
+                            limit_y = min(limit_y, rg["bbox"][3])
+                            break
+                y_end = limit_y - 2
+            x1 = R
+            for other in grp:
+                if other is not lb and other["page"] == lb["page"] \
+                        and abs(other["y0"] - lb["y0"]) <= 3 and other["x0"] > lb["x0"]:
+                    x1 = min(x1, other["x0"] - 6)
+            bbox = [r2(lb["x0"] - 6), r2(lb["y0"] - 2), r2(x1), r2(y_end)]
+            # 文本：标签行尾部 + 同页 y 范围内 x 更靠右的行；同 y 的列用 " / " 连接
+            txt_parts = []
+            if lb["tail"]:
+                txt_parts.append(lb["tail"])
+            rows_txt = []
+            for ln in pages_lines[lb["page"]]:
+                b = ln["bbox"]
+                if lb["y0"] - 1 <= b[1] <= y_end + 1 and b[0] > lb["x0"] + 4:
+                    rows_txt.append(ln)
+            rows_txt.sort(key=lambda l: (round(l["bbox"][1], 1), l["bbox"][0]))
+            grouped, last_y = [], None
+            for ln in rows_txt:
+                y = round(ln["bbox"][1], 1)
+                if last_y is not None and abs(y - last_y) <= 2:
+                    grouped[-1].append(ln)
+                else:
+                    grouped.append([ln])
+                    last_y = y
+            for grp_txt in grouped:
+                txt_parts.append(" / ".join(
+                    " ".join(w[4] for w, ref in pages_pairs[lb["page"]]
+                             if ref is grp_item and w[1] >= grp_item["bbox"][1] - 1)
+                    or grp_item["raw"].strip()
+                    for grp_item in grp_txt))
+            text = " ".join(p for p in txt_parts if p).strip()
+            word_indices = []
+            for wi, (w, ref) in enumerate(pages_pairs[lb["page"]]):
+                cx, cy = (w[0] + w[2]) / 2, (w[1] + w[3]) / 2
+                if bbox[0] <= cx <= bbox[2] and bbox[1] <= cy <= bbox[3]:
+                    word_indices.append(wi)
+            ent = {"label": lb["label"], "text": text, "bbox": bbox,
+                   "word_indices": word_indices}
+            if part is not None:
+                ent["part"] = part
+            opts.append(ent)
     return opts
 
 
@@ -1122,7 +1513,11 @@ def write_question_md(sdir, n, q, board, qualification, subject, year, session,
     if options:
         lines.append("options:")
         for o in options:
-            lines.append(f"  - label: {o['label']}")
+            if o.get("part"):
+                lines.append(f"  - part: {o['part']}")
+                lines.append(f"    label: {o['label']}")
+            else:
+                lines.append(f"  - label: {o['label']}")
             lines.append(f"    text: {yaml_scalar(o.get('text', ''))}")
     lines.append("source: " + yaml_scalar(f"Pearson Edexcel IAL {paper_code.upper()}/01, {year}"))
     lines.append("cut_status: " + q["status"])
@@ -1176,7 +1571,11 @@ def update_front_matter(path, fm_pairs, q):
     if options is not None and q["question_type"] == "mcq" and q["status"] != "manual":
         blk = ["options:"]
         for o in options:
-            blk.append(f"  - label: {o['label']}")
+            if o.get("part"):
+                blk.append(f"  - part: {o['part']}")
+                blk.append(f"    label: {o['label']}")
+            else:
+                blk.append(f"  - label: {o['label']}")
             blk.append(f"    text: {yaml_scalar(o.get('text', ''))}")
         blocks["options"] = blk
         if "options" not in order:

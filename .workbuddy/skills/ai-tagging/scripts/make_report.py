@@ -63,6 +63,18 @@ def chips(tags, zh, low=False, primary=None):
     return "".join(out)
 
 
+# 难度五档的中文短名（报告里显示用；打难度时才有值）
+DF = {"very-easy": "极简", "easy": "简单", "medium": "中等", "hard": "困难", "very-hard": "极难"}
+
+
+def dcell(it):
+    """难度单元格：整题一个词；拆分题按小问逐条列。"""
+    if it.get("subs"):
+        parts = [f'{s.get("label")} {DF.get(s.get("difficulty"), "—")}' for s in it["subs"]]
+        return '<div class="df">' + " · ".join(parts) + "</div>"
+    return f'<div class="df">{DF.get(it.get("difficulty"), "—")}</div>'
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("decisions")
@@ -85,15 +97,35 @@ def main():
             auto_map = {}
 
     rows, n_ok, n_sub, n_low, n_skip, n_img, n_auto, n_pri = [], 0, 0, 0, 0, 0, 0, 0
+    issue_rows = []
     for it in dec["items"]:
         n, marks = it.get("n"), it.get("marks", "—")
+        if it.get("issue"):
+            # 「题目有问题」：AI 不点「此题有误」，只在这里如实说明
+            n_skip += 1
+            n_img += 1
+            issue_rows.append(
+                f'<li><b>q{n}</b>（{marks} 分）　{it["issue"]}'
+                + (f'　<span class="muted">依据：{it["why"]}</span>' if it.get("why") else "")
+                + "</li>")
+            rows.append(
+                f'<tr class="skiprow"><td class="num">{n}</td><td class="mk">{marks}</td>'
+                f'<td class="df">—</td>'
+                f'<td colspan="2"><b>题目存疑</b>　<span class="muted">{it["issue"]}</span></td>'
+                f'<td class="why">{it.get("why", "")}</td></tr>')
+            continue
         if it.get("skip_reason"):
             n_skip += 1
             if it.get("skip_kind") == "image":
                 n_img += 1
-            tag = "疑似错图" if it.get("skip_kind") == "image" else "无合适标签"
+                issue_rows.append(
+                    f'<li><b>q{n}</b>（{marks} 分）　{it["skip_reason"]}'
+                    + (f'　<span class="muted">依据：{it["why"]}</span>' if it.get("why") else "")
+                    + "</li>")
+            tag = "题目存疑" if it.get("skip_kind") == "image" else "无合适标签"
             rows.append(
                 f'<tr class="skiprow"><td class="num">{n}</td><td class="mk">{marks}</td>'
+                f'<td class="df">—</td>'
                 f'<td colspan="2"><b>{tag}</b>　<span class="muted">{it["skip_reason"]}</span></td>'
                 f'<td class="why">{it.get("why", "")}</td></tr>')
             continue
@@ -122,6 +154,7 @@ def main():
                 cells.append(f'<div class="sub"><em>{lab}{s["label"]}</em> {inner}</div>')
                 whys.append(s.get("why", ""))
             rows.append(f'<tr{rowcls}><td class="num">{n}</td><td class="mk">{marks}</td>'
+                        f'<td>{dcell(it)}</td>'
                         f'<td class="lg">{len(subs)} 小问</td>'
                         f'<td>{"".join(cells)}{auto_note}</td>'
                         f'<td class="why">{" / ".join(w for w in whys if w)}</td></tr>')
@@ -134,12 +167,19 @@ def main():
             if pri:
                 n_pri += 1
             rows.append(f'<tr{rowcls}><td class="num">{n}</td><td class="mk">{marks}</td>'
+                        f'<td>{dcell(it)}</td>'
                         f'<td class="lg">整题</td>'
                         f'<td>{chips(tags, zh, it.get("low", False), pri)}{auto_note}</td>'
                         f'<td class="why">{it.get("why", "")}</td></tr>')
 
     # 补充说明块
     blocks = []
+    if issue_rows:
+        blocks.append(
+            '<div class="tip warn"><b>题目存疑（' + str(len(issue_rows)) + ' 处）</b>'
+            '<div class="muted" style="margin:2px 0 6px">以下题目没有打标，也<b>没有</b>点打标台的'
+            '「此题有误」——留给你判断；如需标记请人工操作。</div>'
+            '<ul class="gaps">' + "".join(issue_rows) + "</ul></div>")
     for note in dec.get("notes", []):
         kind = note.get("kind", "info")
         cls = {"ok": "tip", "warn": "tip warn", "info": "tip gray"}.get(kind, "tip gray")
@@ -150,6 +190,11 @@ def main():
                        for g in gaps)
         blocks.append(f'<div class="tip warn"><b>词表缺口（需你决定是否补标签）</b>'
                       f'<ul class="gaps">{body}</ul></div>')
+
+    has_diff = any(it.get("difficulty") or any(s.get("difficulty") for s in (it.get("subs") or []))
+                   for it in dec["items"])
+    foot = ("已标知识点 + 主标签 + 难度（难度按 rules.md §八 判定，可复核）" if has_diff
+            else "已标知识点 + 主标签（难度未标，按约定留给人工）")
 
     html = f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -174,6 +219,7 @@ td{{padding:8px 10px;border-bottom:1px solid #f1f2f4;vertical-align:top}}
 tr:last-child td{{border-bottom:none}}
 td.num{{text-align:center;font-weight:600;color:#111827;width:46px}}
 td.mk{{text-align:center;color:#6b7280;width:46px}}
+.df{{font-size:12px;color:#374151;text-align:center;width:92px;line-height:1.5}}
 td.lg{{color:#9ca3af;width:64px;white-space:nowrap;font-size:12px}}
 td.why{{color:#4b5563;width:32%;font-size:12.5px}}
 .skiprow td{{background:#fafafa}} .skiprow .num{{color:#b45309}}
@@ -212,18 +258,18 @@ ul.gaps{{margin:6px 0 0;padding-left:18px}} ul.gaps li{{margin:2px 0}}
   <div class="card{' warn' if n_auto else ''}"><b>{n_auto}</b><span>主标签兜底</span></div>
   <div class="card{' warn' if n_skip else ''}"><b>{n_skip}</b><span>跳过</span></div>
   <div class="card{' warn' if n_low else ''}"><b>{n_low}</b><span>低置信</span></div>
-  <div class="card{' warn' if n_img else ''}"><b>{n_img}</b><span>疑似错图</span></div>
+  <div class="card{' warn' if n_img else ''}"><b>{n_img}</b><span>题目存疑</span></div>
 </div>
 
 <h2>逐题结果</h2>
-<table><thead><tr><th>题</th><th>分</th><th>结构</th>
+<table><thead><tr><th>题</th><th>分</th><th>难度</th><th>结构</th>
 <th>知识点标签　<span class="hint">带「主」标记的是主标签（每单元恰好一个）</span></th>
 <th>依据</th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table>
 
 {''.join(blocks)}
 
-<div class="foot">由 ai-tagging 技能生成 · 已标知识点 + 主标签（难度未标，按约定留给人工）·
+<div class="foot">由 ai-tagging 技能生成 · {foot} ·
 标签与主标签可在打标台逐条修改</div>
 </body></html>"""
 
@@ -233,7 +279,7 @@ ul.gaps{{margin:6px 0 0;padding-left:18px}} ul.gaps li{{margin:2px 0}}
         f.write(html)
     print(f"✅ 报告：{out}（{len(html)} chars）")
     print(f"   成功 {n_ok} / 单元 {n_sub} / 主标签 {n_pri}（兜底 {n_auto}）"
-          f" / 跳过 {n_skip} / 低置信 {n_low} / 疑似错图 {n_img}")
+          f" / 跳过 {n_skip} / 低置信 {n_low} / 题目存疑 {n_img}")
 
 
 if __name__ == "__main__":

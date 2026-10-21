@@ -210,8 +210,9 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -
 # 标签管理页：整份词表的校验与保存（本期只支持「改」+「增」）
 # ---------------------------------------------------------------------------
 
-# 单元键：Edexcel/AQA 用 U1..U9，CIE 用 P1P2 / P4 这类形式。
-_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?)$")
+# 单元键：Edexcel/AQA 物理化学用 U1..U9，CIE 用 P1P2 / P4 这类形式，
+# Edexcel IAL 数学用 P1–P4 / M1–M3 / S1–S3 / D1 / F1–F3（词表按学科一文件，键只在文件内唯一）。
+_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|[SMFD][1-9])$")
 
 _TAG_KEYS = ("id", "zh", "en", "group")
 _GROUP_KEYS = ("id", "zh", "en")
@@ -246,7 +247,7 @@ def validate_taxonomy(data) -> list[str]:
     for unit in units:
         entry = data[unit]
         if not _UNIT_KEY_RE.match(unit):
-            errors.append(f"单元键不合法：{unit}（应形如 U1 或 P1P2）")
+            errors.append(f"单元键不合法：{unit}（应形如 U1 / P1P2 / M1）")
         if not isinstance(entry, dict):
             errors.append(f"{unit}：单元内容必须是对象")
             continue

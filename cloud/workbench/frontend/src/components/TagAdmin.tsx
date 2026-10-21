@@ -63,7 +63,11 @@ const sLock = (
   </svg>
 )
 
-const UNIT_RE = /^(?:U[1-9]|P[1-9](?:P[1-9])?)$/
+/** 与后端 taxonomy._UNIT_KEY_RE 保持一致：
+ *  物化 U1..U9 / CIE P1P2,P4,P5 / Edexcel IAL 数学 P1–P4,M1–M3,S1–S3,D1,F1–F3 /
+ *  CIE 9709 数学 P1–P6 / CIE 9231 进阶数学 FP1,FP2,FM,FS（FM/FS 两位字母无数字） /
+ *  牛津 AQA 会计 AS,AL（Paper 1+2 → AS，Paper 3+4 → AL） */
+const UNIT_RE = /^(?:U[1-9]|P[1-9](?:P[1-9])?|FP[1-9]|FM|FS|[SMFD][1-9]|AS|AL)$/
 
 /** 词表维度下拉（考试局 / 资格 / 学科） */
 function Picker({
@@ -104,7 +108,7 @@ function clientValidate(file: TaxFile): string[] {
   const groupOwner = new Map<string, string>()
 
   for (const u of units) {
-    if (!UNIT_RE.test(u)) errs.push(`单元键不合法：${u}（应形如 U1 或 P1P2）`)
+    if (!UNIT_RE.test(u)) errs.push(`单元键不合法：${u}（应形如 U1 / P1P2 / M1）`)
     const entry = asUnit(file, u)
     if (!entry || !Array.isArray(entry.groups) || !Array.isArray(entry.tags)) {
       errs.push(`${u}：结构异常（groups / tags 必须是数组）`)

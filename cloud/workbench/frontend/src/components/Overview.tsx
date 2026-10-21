@@ -40,10 +40,20 @@ const SUBJECT_ZH: Record<string, string> = {
   chemistry: '化学',
   biology: '生物',
   mathematics: '数学',
+  'further-mathematics': '进阶数学',
   economics: '经济',
   accounting: '会计',
   business: '商务',
 }
+/**
+ * 分区归并：进阶数学算数学的一部分（2026-10-21）。
+ * 只有 CIE 有 further-mathematics（9231，136 卷），合并后仍按考试局分行，
+ * 同局同科时再拆成「CIE」＋「CIE 进阶」两行，避免 9709 与 9231 的格子混成一条。
+ * 注意：只影响概览的分区与计数，p.subject 原值不动 —— tooltip、选中条照旧显示「进阶数学」。
+ */
+const CANON_SUBJECT: Record<string, string> = { 'further-mathematics': 'mathematics' }
+const canonSubject = (s: string) => CANON_SUBJECT[s] ?? s
+const isFurther = (s: string) => canonSubject(s) !== s
 const BOARD_ORDER = ['edexcel', 'aqa', 'cie']
 const BOARD_LABEL: Record<string, string> = { edexcel: 'Edexcel', aqa: 'AQA', cie: 'CIE' }
 const SESSION_ORDER: Record<string, number> = {
@@ -89,6 +99,8 @@ const qualForSelect = (q: string) => {
 
 interface BoardGroup {
   board: string
+  /** 该行卷的原始学科（进阶数学与数学同局时会各占一行，靠它区分） */
+  subject: string
   list: OverviewPaper[]
 }
 interface SubjectGroup {
@@ -97,6 +109,8 @@ interface SubjectGroup {
   total: number
   all: number
   some: number
+  /** 其中属于进阶数学的卷数（并进来的那部分，用于标题补注） */
+  further: number
 }
 
 export default function Overview({ onExit, onOpen }: Props) {
@@ -149,49 +163,56 @@ export default function Overview({ onExit, onOpen }: Props) {
     return m
   }, [papers])
 
-  /** 学科 → 考试局 → 卷（卷按年份、考季、卷号排，老的在前） */
+  /** 学科（归并后）→ 考试局 → 卷（卷按年份、考季、卷号排，老的在前） */
   const groups = useMemo<SubjectGroup[]>(() => {
-    const m = new Map<string, Map<string, OverviewPaper[]>>()
+    // 行键 = 考试局 + 是否进阶：同局同科才拼成一排，进阶数学单独起一行
+    const m = new Map<string, Map<string, BoardGroup>>()
     for (const p of papers) {
-      const sub = p.subject || 'other'
+      const raw = p.subject || 'other'
+      const sub = canonSubject(raw)
       let bm = m.get(sub)
       if (!bm) {
         bm = new Map()
         m.set(sub, bm)
       }
-      const b = p.board || 'other'
-      const arr = bm.get(b)
-      if (arr) arr.push(p)
-      else bm.set(b, [p])
+      const board = p.board || 'other'
+      const key = `${board}|${isFurther(raw) ? 'f' : 'm'}`
+      const row = bm.get(key)
+      if (row) row.list.push(p)
+      else bm.set(key, { board, subject: raw, list: [p] })
     }
     const out: SubjectGroup[] = []
     for (const [subject, bm] of m) {
-      const boards: BoardGroup[] = [...bm.entries()]
-        .map(([board, list]) => {
-          list.sort(
-            (a, b) =>
-              (a.year ?? 0) - (b.year ?? 0) ||
-              (SESSION_ORDER[a.session ?? ''] ?? 9) - (SESSION_ORDER[b.session ?? ''] ?? 9) ||
-              String(a.paper_code ?? '').localeCompare(String(b.paper_code ?? '')),
-          )
-          return { board, list }
-        })
-        .sort((a, b) => {
-          const ia = BOARD_ORDER.indexOf(a.board)
-          const ib = BOARD_ORDER.indexOf(b.board)
-          return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib)
-        })
+      const boards: BoardGroup[] = [...bm.values()]
+      for (const g of boards) {
+        g.list.sort(
+          (a, b) =>
+            (a.year ?? 0) - (b.year ?? 0) ||
+            (SESSION_ORDER[a.session ?? ''] ?? 9) - (SESSION_ORDER[b.session ?? ''] ?? 9) ||
+            String(a.paper_code ?? '').localeCompare(String(b.paper_code ?? '')),
+        )
+      }
+      boards.sort((a, b) => {
+        const ia = BOARD_ORDER.indexOf(a.board)
+        const ib = BOARD_ORDER.indexOf(b.board)
+        const da = ia < 0 ? 99 : ia
+        const db = ib < 0 ? 99 : ib
+        if (da !== db) return da - db
+        return (isFurther(a.subject) ? 1 : 0) - (isFurther(b.subject) ? 1 : 0) // 进阶排在同局数学之后
+      })
       let all = 0
       let some = 0
       let total = 0
+      let further = 0
       for (const g of boards) {
         for (const p of g.list) {
           total += 1
+          if (isFurther(g.subject)) further += 1
           if (p.state === 'all') all += 1
           else if (p.state === 'some') some += 1
         }
       }
-      out.push({ subject, boards, total, all, some })
+      out.push({ subject, boards, total, all, some, further })
     }
     out.sort((a, b) => {
       const ia = SUBJECT_ORDER.indexOf(a.subject)
@@ -470,6 +491,9 @@ export default function Overview({ onExit, onOpen }: Props) {
                       {g.subject}
                     </span>
                     <span className="text-xs text-gray-500">{g.total} 份试卷</span>
+                    {g.further > 0 && (
+                      <span className="text-[11px] text-gray-400">含进阶 {g.further}</span>
+                    )}
                     <div className="ml-auto flex items-center gap-2.5">
                       <span className="text-xs tabular-nums text-gray-500">
                         {g.all} 通过 · {Math.round((g.all / Math.max(1, g.total)) * 100)}%
@@ -491,10 +515,13 @@ export default function Overview({ onExit, onOpen }: Props) {
                     {g.boards.map((b) => {
                       const ba = b.list.filter((x) => x.state === 'all').length
                       return (
-                        <div key={b.board} className="flex items-start gap-3">
+                        <div key={`${b.board}|${b.subject}`} className="flex items-start gap-3">
                           <div className="w-[72px] shrink-0 pt-px text-right text-[10.5px] leading-[14px] text-gray-400">
                             <b className="block text-[10.5px] font-medium text-gray-500">
                               {BOARD_LABEL[b.board] ?? b.board}
+                              {isFurther(b.subject) && (
+                                <span className="ml-1 font-normal text-gray-400">进阶</span>
+                              )}
                             </b>
                             {ba}/{b.list.length}
                           </div>

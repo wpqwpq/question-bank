@@ -18,6 +18,8 @@ desktop.ini
 # ── 临时 / 导出 / 中间产物 ──
 _tmp/
 _exports/
+# 单题重传的云端备份（question-reupload 技能产生，含题图二进制，不入库）
+_prev/
 *.tmp
 ~$*
 # 全库打标导出脚本：本地按需跑，不入库（2026-10-16）
@@ -47,3 +49,20 @@ node_modules/
 
 # 批量下载的原始真题（性质同 data/，不入库）
 downloads/
+
+# ── 视觉切割工作目录（技能 vision-cut 的中间产物，可随时重建）──
+.vision_work/
+.tmp_vision/
+
+# ── 2026-10-21 补漏：downloadPapers 之前只在旧名 downloads/ 下被忽略，
+#    实际目录叫 downloadPapers/ 且已涨到 3.9G → 必须挡住，否则 git add -A 会把真题 PDF 全塞进仓库
+downloadPapers/
+
+# 部署/构建残留与手动备份（2026-10-21）
+dist-new.tar
+*.bak-*
+*.bak
+.tmp_*
+# lark 导出直落根目录的临时表数据
+/tbl*.ndjson
+/tbl*.manifest.json

@@ -55,12 +55,36 @@ GAP_PX = 2  # 册内切片向上扩的边距（覆盖到上一片底部即可，
 
 def top_labels(q) -> list[str]:
     """顶层小问标签（各标签行首 token，非罗马），按 subquestions 文档序去重。
-    QP 可无独立 "(b)" 行（直接 "(b)(i)"），故按首 token 归组而非只认单 token 行。"""
+    QP 可无独立 "(b)" 行（直接 "(b)(i)"），故按首 token 归组而非只认单 token 行。
+
+    单 token 罗马字母（i/v/x）默认当子项排除，但**顶层小问本身就叫 (i)**
+    （会计 a–l、CIE 化学 a–j 都排到 i）。补回判据是断档：h 与 j 都在却缺 i，
+    且 cut.json 里确实有独立的 "i" 行 —— 那它一定是顶层题被误排，插回 j 之前。
+
+    全罗马（2026-10-21 补）：Edexcel 数学另有一类 parent 丢失的裸 "i"——
+    **整题的顶层小问就是 (i)(ii)**，没有外层字母，序列也不断档。这种题过滤后
+    out 为空，以前直接返回 []，前端 split_eligible=False、后端 422「顶层小问不足 2 个」，
+    等于永远拆不了。现在：过滤后若一个都不剩、且首层全是罗马字母，则按文档序整体返回。"""
+    subs = q.get("subquestions") or []
     out: list[str] = []
-    for s in q.get("subquestions") or []:
+    for s in subs:
         top = s["label"].split()[0]
         if top not in ROMAN_TOKENS and top not in out:
             out.append(top)
+    if not out:
+        # 首层全是罗马 → 它们就是本题的顶层小问，不是子项
+        roman_only: list[str] = []
+        for s in subs:
+            top = s["label"].split()[0]
+            if top and top not in roman_only:
+                roman_only.append(top)
+        if roman_only and all(t in ROMAN_TOKENS for t in roman_only):
+            return roman_only
+    letters = [x for x in out if len(x) == 1]
+    for before, mid, after in (("h", "i", "j"), ("u", "v", "w"), ("w", "x", "y")):
+        if before in letters and after in letters and mid not in letters:
+            if any(s["label"] == mid for s in subs):
+                out.insert(out.index(after), mid)
     return out
 
 
@@ -181,10 +205,14 @@ def render_split(session_dir: str | Path, qnum: str | int,
     qp_end_px = smap.y(regions[-1]["page"], qp_end_pt)
 
     cuts: dict[str, float] = {}
+    wanted = list(labels)
     for s in q.get("subquestions") or []:
         top = s["label"].split()[0]
-        if top not in ROMAN_TOKENS and top not in cuts:
-            # 顶层标签行（"a"）或其首个子行（"b i"——QP 可无独立 "(b)" 行）
+        # 按「调用方请求的顶层标签」取切点：顶层标签行（"a"）或其首个子行
+        # （"b i"——QP 可无独立 "(b)" 行）都算。旧版用 `top not in ROMAN_TOKENS`
+        # 排除罗马字母，会把**本身就叫 (i) 的顶层小问**一并排掉（生物/化学/会计
+        # 小问字母排到 i），导致「顶层标签缺 QP 切点」。
+        if top in wanted and top not in cuts:
             cuts[top] = smap.y(s["page"], s["bbox"][1])
     missing = [l for l in labels if l not in cuts]
     if missing:

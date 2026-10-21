@@ -33,6 +33,14 @@ from pathlib import Path
 
 import jsonschema
 
+# Windows 控制台默认 GBK：化学正文含 − (U+2212) 等字符，print 会抛
+# UnicodeEncodeError 把整轮校验打断。强制 UTF-8 输出。
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 # schema/ 的位置：主仓库里脚本在 scripts/、schema 在仓库根（→ ../schema）；
@@ -200,10 +208,18 @@ def main():
             # 9. 与 cut.json option_hotzones 一致
             hz = q.get("option_hotzones") or []
             if q.get("question_type") == "mcq":
-                hz_labels = {o.get("label") for o in hz}
-                if hz_labels != {"A", "B", "C", "D"}:
-                    warnings.append(f"Q{n}: MCQ 选项热区为 {sorted(hz_labels)}")
-                if sorted(o.get("label") for o in lj.get("options", [])) != sorted(o.get("label") for o in hz):
+                # 按选项组（part）分别检查 A–D：化学 2 分选择题 (a)/(b) 各一套
+                sets = {}
+                for o in hz:
+                    sets.setdefault(o.get("part"), set()).add(o.get("label"))
+                if not sets:
+                    warnings.append(f"Q{n}: 无 MCQ 选项热区")
+                for part, s in sets.items():
+                    if s != {"A", "B", "C", "D"}:
+                        warnings.append(f"Q{n}: MCQ 选项热区 {part or '主'} 组为 {sorted(s)}")
+                lay_keys = sorted((o.get("part"), o.get("label")) for o in lj.get("options", []))
+                hz_keys = sorted((o.get("part"), o.get("label")) for o in hz)
+                if lay_keys != hz_keys:
                     failures.append(f"Q{n}: layout.json options 与 cut.json option_hotzones 标签不一致")
 
         # 6. qNN.md front-matter 同步

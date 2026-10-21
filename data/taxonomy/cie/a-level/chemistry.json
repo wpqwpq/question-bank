@@ -1,0 +1,2127 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「化学」表 AL/AS 行（2026-10-18 导出），不含 IG/GCSE。",
+ "P1P2": {
+  "groups": [
+   {
+    "id": "p1p2g-basic-structure-of-substance",
+    "zh": "基本物质结构",
+    "en": "Basic Structure of Substance"
+   },
+   {
+    "id": "p1p2g-calculations",
+    "zh": "摩尔和相关运算",
+    "en": "Calculations"
+   },
+   {
+    "id": "p1p2g-atomic-structure",
+    "zh": "原子结构",
+    "en": "Atomic Structure"
+   },
+   {
+    "id": "p1p2g-periodicity",
+    "zh": "元素周期律",
+    "en": "Periodicity"
+   },
+   {
+    "id": "p1p2g-chemical-bond",
+    "zh": "化学键",
+    "en": "Chemical Bond"
+   },
+   {
+    "id": "p1p2g-shape-of-molecules",
+    "zh": "分子形状和共价成键",
+    "en": "Shape of Molecules"
+   },
+   {
+    "id": "p1p2g-polarity-and-intermolecular-forces",
+    "zh": "极性和分子间作用力",
+    "en": "Polarity and Intermolecular Forces"
+   },
+   {
+    "id": "p1p2g-enthalpy",
+    "zh": "焓",
+    "en": "Enthalpy"
+   },
+   {
+    "id": "p1p2g-rate-of-reaction",
+    "zh": "反应速率",
+    "en": "Rate of Reaction"
+   },
+   {
+    "id": "p1p2g-chemical-equilibrium",
+    "zh": "化学平衡",
+    "en": "Chemical Equilibrium"
+   },
+   {
+    "id": "p1p2g-reduction-and-oxidation",
+    "zh": "氧化还原",
+    "en": "Reduction and Oxidation"
+   },
+   {
+    "id": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal",
+    "zh": "碱金属与碱土金属",
+    "en": "Group1: Alkali Metal and Group2: Alkaline Earth Metal"
+   },
+   {
+    "id": "p1p2g-group-17-halogen",
+    "zh": "卤素",
+    "en": "Group 17: Halogen"
+   },
+   {
+    "id": "p1p2g-nitrogen-and-sulfur",
+    "zh": "氮与硫",
+    "en": "Nitrogen and Sulfur"
+   },
+   {
+    "id": "p1p2g-hydrocarbons",
+    "zh": "烃",
+    "en": "Hydrocarbons"
+   },
+   {
+    "id": "p1p2g-halogenoalkane",
+    "zh": "卤代烷烃",
+    "en": "Halogenoalkane"
+   },
+   {
+    "id": "p1p2g-alcohol",
+    "zh": "醇的氧化和消除",
+    "en": "Alcohol"
+   },
+   {
+    "id": "p1p2g-carboxylic-acid-and-ester",
+    "zh": "羧酸和酯",
+    "en": "Carboxylic acid and Ester"
+   },
+   {
+    "id": "p1p2g-aldehyde-and-ketone",
+    "zh": "醛和酮",
+    "en": "Aldehyde and Ketone"
+   },
+   {
+    "id": "p1p2g-infra-red-and-mass-spectroscopy",
+    "zh": "红外光谱和质谱",
+    "en": "Infra-Red and Mass Spectroscopy"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p1p2-particles-in-the-atom-and-atomic-radius",
+    "zh": "亚原子粒子与原子半径",
+    "en": "particles in the atom and atomic radius",
+    "group": "p1p2g-basic-structure-of-substance"
+   },
+   {
+    "id": "p1p2-isotopes",
+    "zh": "同位素",
+    "en": "isotopes",
+    "group": "p1p2g-basic-structure-of-substance"
+   },
+   {
+    "id": "p1p2-relative-masses-of-atoms-and-molecules",
+    "zh": "相对原子质量与相对分子质量",
+    "en": "relative masses of atoms and molecules",
+    "group": "p1p2g-basic-structure-of-substance"
+   },
+   {
+    "id": "p1p2-formulas-and-ionic-equations",
+    "zh": "化学式与离子方程式",
+    "en": "formulas and ionic equations",
+    "group": "p1p2g-basic-structure-of-substance"
+   },
+   {
+    "id": "p1p2-the-mole-and-the-avogadro-constant",
+    "zh": "摩尔与阿伏加德罗常数",
+    "en": "the mole and the Avogadro constant",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-the-ideal-gas-equation",
+    "zh": "理想气体方程 pV=nRT",
+    "en": "the ideal gas equation",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-reacting-masses-and-volumes-of-solutions-and-gases",
+    "zh": "反应质量与气体体积的运算",
+    "en": "reacting masses and volumes of solutions and gases",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-concentration-of-solutions-and-titration-calculations",
+    "zh": "溶液浓度与滴定运算",
+    "en": "concentration of solutions and titration calculations",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-limiting-reactant-and-percentage-yield",
+    "zh": "限量反应物与百分产率",
+    "en": "limiting reactant and percentage yield",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-percentage-composition-and-percentage-purity",
+    "zh": "百分组成与百分纯度",
+    "en": "percentage composition and percentage purity",
+    "group": "p1p2g-calculations"
+   },
+   {
+    "id": "p1p2-energy-levels-and-atomic-orbitals",
+    "zh": "能级与原子轨道",
+    "en": "energy levels and atomic orbitals",
+    "group": "p1p2g-atomic-structure"
+   },
+   {
+    "id": "p1p2-shapes-and-capacities-of-s-and-p-orbitals",
+    "zh": "s 轨道与 p 轨道的形状与容纳电子数",
+    "en": "shapes and capacities of s and p orbitals",
+    "group": "p1p2g-atomic-structure"
+   },
+   {
+    "id": "p1p2-writing-electronic-configurations",
+    "zh": "电子构型的书写",
+    "en": "writing electronic configurations",
+    "group": "p1p2g-atomic-structure"
+   },
+   {
+    "id": "p1p2-orbital-diagrams-hund-s-rule-and-the-pauli-exclusion-princip",
+    "zh": "轨道表示式：洪特规则与泡利原理",
+    "en": "orbital diagrams: Hund's rule and the Pauli exclusion principle",
+    "group": "p1p2g-atomic-structure"
+   },
+   {
+    "id": "p1p2-definition-and-trends-in-first-ionisation-energy",
+    "zh": "第一电离能的定义与趋势",
+    "en": "definition and trends in first ionisation energy",
+    "group": "p1p2g-periodicity"
+   },
+   {
+    "id": "p1p2-general-increase-and-anomalies-across-a-period",
+    "zh": "同周期第一电离能的递增与反常",
+    "en": "general increase and anomalies across a period",
+    "group": "p1p2g-periodicity"
+   },
+   {
+    "id": "p1p2-decrease-down-a-group",
+    "zh": "同族第一电离能递减",
+    "en": "decrease down a group",
+    "group": "p1p2g-periodicity"
+   },
+   {
+    "id": "p1p2-deduce-the-group-from-successive-ionisation-energies",
+    "zh": "由连续电离能判断元素所在族",
+    "en": "deduce the group from successive ionisation energies",
+    "group": "p1p2g-periodicity"
+   },
+   {
+    "id": "p1p2-trends-in-atomic-and-ionic-radii",
+    "zh": "原子半径与离子半径的趋势",
+    "en": "trends in atomic and ionic radii",
+    "group": "p1p2g-periodicity"
+   },
+   {
+    "id": "p1p2-electronegativity-and-bonding",
+    "zh": "电负性与成键类型的判断",
+    "en": "electronegativity and bonding",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-ionic-bonding-and-the-giant-ionic-lattice",
+    "zh": "离子键与巨型离子晶格",
+    "en": "ionic bonding and the giant ionic lattice",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-metallic-bonding-and-a-sea-of-delocalised-electrons",
+    "zh": "金属键与离域电子海",
+    "en": "metallic bonding and a sea of delocalised electrons",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-covalent-bonding-and-coordinate-dative-covalent-bonding",
+    "zh": "共价键与配位共价键",
+    "en": "covalent bonding and coordinate (dative covalent) bonding",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-bonding-and-structure-determining-properties",
+    "zh": "成键与结构决定物质性质",
+    "en": "bonding and structure determining properties",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-electrical-conductivity-of-metallic-ionic-and-covalent-subst",
+    "zh": "金属、离子与共价物质的导电性",
+    "en": "electrical conductivity of metallic, ionic and covalent substances",
+    "group": "p1p2g-chemical-bond"
+   },
+   {
+    "id": "p1p2-formation-of-sigma-and-pi-bonds",
+    "zh": "σ键与π键的形成",
+    "en": "formation of sigma and pi bonds",
+    "group": "p1p2g-shape-of-molecules"
+   },
+   {
+    "id": "p1p2-shapes-of-molecules-by-electron-pair-repulsion",
+    "zh": "电子对互斥理论与分子形状",
+    "en": "shapes of molecules by electron pair repulsion",
+    "group": "p1p2g-shape-of-molecules"
+   },
+   {
+    "id": "p1p2-bond-angles-and-the-effect-of-lone-pairs",
+    "zh": "键角与孤对电子的影响",
+    "en": "bond angles and the effect of lone pairs",
+    "group": "p1p2g-shape-of-molecules"
+   },
+   {
+    "id": "p1p2-dot-and-cross-diagrams",
+    "zh": "点叉图",
+    "en": "dot-and-cross diagrams",
+    "group": "p1p2g-shape-of-molecules"
+   },
+   {
+    "id": "p1p2-electronegativity-and-bond-polarity",
+    "zh": "电负性与键的极性",
+    "en": "electronegativity and bond polarity",
+    "group": "p1p2g-polarity-and-intermolecular-forces"
+   },
+   {
+    "id": "p1p2-polarity-of-molecules-and-symmetry",
+    "zh": "分子的极性与对称性",
+    "en": "polarity of molecules and symmetry",
+    "group": "p1p2g-polarity-and-intermolecular-forces"
+   },
+   {
+    "id": "p1p2-hydrogen-bonding",
+    "zh": "氢键",
+    "en": "hydrogen bonding",
+    "group": "p1p2g-polarity-and-intermolecular-forces"
+   },
+   {
+    "id": "p1p2-permanent-dipole-permanent-dipole-force-and-instantaneous-di",
+    "zh": "取向力与色散力",
+    "en": "permanent dipole-permanent dipole force and instantaneous dipole-induced dipole force",
+    "group": "p1p2g-polarity-and-intermolecular-forces"
+   },
+   {
+    "id": "p1p2-effect-of-intermolecular-forces-on-melting-and-boiling-point",
+    "zh": "分子间作用力对熔沸点的影响",
+    "en": "effect of intermolecular forces on melting and boiling points",
+    "group": "p1p2g-polarity-and-intermolecular-forces"
+   },
+   {
+    "id": "p1p2-definition-of-enthalpy-change-and-reaction-pathway-diagrams",
+    "zh": "焓变的定义与反应进程图",
+    "en": "definition of enthalpy change and reaction pathway diagrams",
+    "group": "p1p2g-enthalpy"
+   },
+   {
+    "id": "p1p2-standard-enthalpy-changes-of-formation-combustion-and-neutra",
+    "zh": "标准生成焓、燃烧焓与中和焓",
+    "en": "standard enthalpy changes of formation, combustion and neutralisation",
+    "group": "p1p2g-enthalpy"
+   },
+   {
+    "id": "p1p2-calorimetry-and-q-eq-mc-t",
+    "zh": "量热测定与 Q=mcΔT",
+    "en": "calorimetry and Q = mcΔT",
+    "group": "p1p2g-enthalpy"
+   },
+   {
+    "id": "p1p2-hess-s-law-and-hess-cycles",
+    "zh": "盖斯定律与盖斯循环",
+    "en": "Hess's law and Hess cycles",
+    "group": "p1p2g-enthalpy"
+   },
+   {
+    "id": "p1p2-using-bond-enthalpies-to-calculate-enthalpy-changes",
+    "zh": "用键焓计算反应焓变",
+    "en": "using bond enthalpies to calculate enthalpy changes",
+    "group": "p1p2g-enthalpy"
+   },
+   {
+    "id": "p1p2-definition-and-measurement-of-rate-of-reaction",
+    "zh": "反应速率的定义与测定",
+    "en": "definition and measurement of rate of reaction",
+    "group": "p1p2g-rate-of-reaction"
+   },
+   {
+    "id": "p1p2-effect-of-concentration-pressure-temperature-and-use-of-a-ca",
+    "zh": "浓度、压强、温度与催化剂的影响",
+    "en": "effect of concentration, pressure, temperature and use of a catalyst",
+    "group": "p1p2g-rate-of-reaction"
+   },
+   {
+    "id": "p1p2-collision-theory-and-activation-energy",
+    "zh": "碰撞理论与活化能",
+    "en": "collision theory and activation energy",
+    "group": "p1p2g-rate-of-reaction"
+   },
+   {
+    "id": "p1p2-the-maxwell-boltzmann-distribution",
+    "zh": "麦克斯韦-玻尔兹曼分布",
+    "en": "the Maxwell-Boltzmann distribution",
+    "group": "p1p2g-rate-of-reaction"
+   },
+   {
+    "id": "p1p2-homogeneous-and-heterogeneous-catalysts",
+    "zh": "均相催化剂与异相催化剂",
+    "en": "homogeneous and heterogeneous catalysts",
+    "group": "p1p2g-rate-of-reaction"
+   },
+   {
+    "id": "p1p2-definition-and-characteristics-of-dynamic-equilibrium",
+    "zh": "动态平衡的定义与特征",
+    "en": "definition and characteristics of dynamic equilibrium",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-le-chatelier-s-principle-and-shift-of-equilibrium",
+    "zh": "勒夏特列原理与平衡移动",
+    "en": "Le Chatelier's principle and shift of equilibrium",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-effect-of-concentration-pressure-and-temperature",
+    "zh": "浓度、压强与温度对平衡的影响",
+    "en": "effect of concentration, pressure and temperature",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-equilibrium-constants-kc",
+    "zh": "平衡常数 Kc",
+    "en": "equilibrium constants Kc",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-calculation-of-partial-pressures-and-kp",
+    "zh": "分压与 Kp",
+    "en": "calculation of partial pressures and Kp",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-a-catalyst-does-not-affect-the-position-of-equilibrium",
+    "zh": "催化剂不影响平衡位置",
+    "en": "a catalyst does not affect the position of equilibrium",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-compromise-between-rate-and-equilibrium-in-the-haber-process",
+    "zh": "哈伯法中速率与平衡的权衡",
+    "en": "compromise between rate and equilibrium in the Haber process",
+    "group": "p1p2g-chemical-equilibrium"
+   },
+   {
+    "id": "p1p2-oxidation-number-rules-and-calculation",
+    "zh": "氧化数的规则与计算",
+    "en": "oxidation number rules and calculation",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-redox-in-terms-of-electron-transfer",
+    "zh": "以电子得失定义氧化还原",
+    "en": "redox in terms of electron transfer",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-oxidising-agents-and-reducing-agents",
+    "zh": "氧化剂与还原剂",
+    "en": "oxidising agents and reducing agents",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-balancing-equations-using-changes-in-oxidation-number",
+    "zh": "用氧化数变化配平方程式",
+    "en": "balancing equations using changes in oxidation number",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-balancing-ionic-equations-and-half-equations",
+    "zh": "配平离子方程式与半反应方程式",
+    "en": "balancing ionic equations and half-equations",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-colour-changes-with-acidified-manganate-vii-and-aqueous-iodi",
+    "zh": "高锰酸根与碘离子的显色鉴别",
+    "en": "colour changes with acidified manganate(VII) and aqueous iodide",
+    "group": "p1p2g-reduction-and-oxidation"
+   },
+   {
+    "id": "p1p2-reactions-of-group-2-metals-with-oxygen-water-and-dilute-aci",
+    "zh": "第2族金属与氧气、水、稀酸的反应",
+    "en": "reactions of Group 2 metals with oxygen, water and dilute acids",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-trend-in-basicity-of-oxides-and-hydroxides",
+    "zh": "氧化物与氢氧化物的碱性趋势",
+    "en": "trend in basicity of oxides and hydroxides",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-trends-in-solubility-of-hydroxides-and-sulfates",
+    "zh": "氢氧化物与硫酸盐的溶解度趋势",
+    "en": "trends in solubility of hydroxides and sulfates",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-thermal-decomposition-of-nitrates-and-carbonates",
+    "zh": "硝酸盐与碳酸盐的热分解",
+    "en": "thermal decomposition of nitrates and carbonates",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-flame-tests",
+    "zh": "焰色反应",
+    "en": "flame tests",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-comparison-with-group-1-alkali-metals",
+    "zh": "第1族碱金属的对比",
+    "en": "comparison with Group 1 alkali metals",
+    "group": "p1p2g-group1-alkali-metal-and-group2-alkaline-earth-metal"
+   },
+   {
+    "id": "p1p2-colours-and-physical-states-of-the-halogens",
+    "zh": "卤素单质的颜色与状态",
+    "en": "colours and physical states of the halogens",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-trends-in-boiling-point-and-volatility",
+    "zh": "沸点与挥发性的趋势",
+    "en": "trends in boiling point and volatility",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-trend-in-oxidising-power-of-the-halogens",
+    "zh": "卤素单质氧化性的趋势",
+    "en": "trend in oxidising power of the halogens",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-displacement-reactions-of-halogens-with-halide-ions",
+    "zh": "卤素与卤离子的置换反应",
+    "en": "displacement reactions of halogens with halide ions",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-trend-in-reducing-power-of-halide-ions",
+    "zh": "卤离子还原性的趋势",
+    "en": "trend in reducing power of halide ions",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-solubility-of-silver-halides-in-ammonia-and-photodecompositi",
+    "zh": "卤化银的氨溶性与光分解",
+    "en": "solubility of silver halides in ammonia and photodecomposition",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-reaction-of-chlorine-with-cold-and-hot-aqueous-sodium-hydrox",
+    "zh": "氯气与氢氧化钠的反应",
+    "en": "reaction of chlorine with cold and hot aqueous sodium hydroxide",
+    "group": "p1p2g-group-17-halogen"
+   },
+   {
+    "id": "p1p2-preparation-and-basicity-of-ammonia",
+    "zh": "氨的制备与碱性",
+    "en": "preparation and basicity of ammonia",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-ammonium-salts-and-fertilisers",
+    "zh": "铵盐与氮肥",
+    "en": "ammonium salts and fertilisers",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-formation-of-nitrogen-oxides-and-acid-rain",
+    "zh": "氮氧化物的生成与酸雨",
+    "en": "formation of nitrogen oxides and acid rain",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-removal-of-nitrogen-oxides-by-catalytic-converters",
+    "zh": "催化转化器去除氮氧化物",
+    "en": "removal of nitrogen oxides by catalytic converters",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-reactions-of-period-3-chlorides-with-water",
+    "zh": "三周期氯化物与水的反应",
+    "en": "reactions of Period 3 chlorides with water",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-sulfur-dioxide-and-acid-rain",
+    "zh": "二氧化硫与酸雨",
+    "en": "sulfur dioxide and acid rain",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-the-contact-process",
+    "zh": "接触法制硫酸",
+    "en": "the Contact process",
+    "group": "p1p2g-nitrogen-and-sulfur"
+   },
+   {
+    "id": "p1p2-fractional-distillation-of-petroleum-and-uses-of-fractions",
+    "zh": "石油分馏与馏分用途",
+    "en": "fractional distillation of petroleum and uses of fractions",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-catalytic-cracking",
+    "zh": "催化裂化",
+    "en": "catalytic cracking",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-mechanism-of-free-radical-substitution-of-alkanes",
+    "zh": "烷烃的自由基取代机理",
+    "en": "mechanism of free radical substitution of alkanes",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-mechanism-of-electrophilic-addition-of-alkenes",
+    "zh": "烯烃的亲电加成机理",
+    "en": "mechanism of electrophilic addition of alkenes",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-determining-the-major-product-and-carbocation-stability",
+    "zh": "主产物判定与碳正离子稳定性",
+    "en": "determining the major product and carbocation stability",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-test-with-aqueous-bromine",
+    "zh": "溴水鉴别饱和与不饱和烃",
+    "en": "test with aqueous bromine",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-addition-polymerisation-and-deducing-monomers",
+    "zh": "加成聚合与单体推断",
+    "en": "addition polymerisation and deducing monomers",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-combustion-of-fossil-fuels-greenhouse-effect-and-acid-rain",
+    "zh": "化石燃料燃烧与温室效应、酸雨",
+    "en": "combustion of fossil fuels, greenhouse effect and acid rain",
+    "group": "p1p2g-hydrocarbons"
+   },
+   {
+    "id": "p1p2-preparation-of-halogenoalkanes",
+    "zh": "卤代烷的制备",
+    "en": "preparation of halogenoalkanes",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-mechanism-of-nucleophilic-substitution",
+    "zh": "亲核取代机理",
+    "en": "mechanism of nucleophilic substitution",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-rate-of-hydrolysis-and-c-x-bond-strength",
+    "zh": "水解速率与 C-X 键强弱",
+    "en": "rate of hydrolysis and C-X bond strength",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-primary-secondary-and-tertiary-halogenoalkanes",
+    "zh": "一级、二级与三级卤代烷",
+    "en": "primary, secondary and tertiary halogenoalkanes",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-elimination-reaction-and-products",
+    "zh": "消除反应与产物",
+    "en": "elimination reaction and products",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-cfcs-and-depletion-of-the-ozone-layer",
+    "zh": "氟氯烃与臭氧层破坏",
+    "en": "CFCs and depletion of the ozone layer",
+    "group": "p1p2g-halogenoalkane"
+   },
+   {
+    "id": "p1p2-products-of-alcohol-oxidation",
+    "zh": "醇的氧化产物",
+    "en": "products of alcohol oxidation",
+    "group": "p1p2g-alcohol"
+   },
+   {
+    "id": "p1p2-oxidation-with-acidified-potassium-dichromate-vi",
+    "zh": "酸性重铬酸钾氧化的条件",
+    "en": "oxidation with acidified potassium dichromate(VI)",
+    "group": "p1p2g-alcohol"
+   },
+   {
+    "id": "p1p2-elimination-dehydration-of-alcohols",
+    "zh": "醇的消除（脱水）反应",
+    "en": "elimination (dehydration) of alcohols",
+    "group": "p1p2g-alcohol"
+   },
+   {
+    "id": "p1p2-reactions-of-alcohols-with-sodium-carboxylic-acids-and-halog",
+    "zh": "醇与钠、羧酸、卤化试剂的反应",
+    "en": "reactions of alcohols with sodium, carboxylic acids and halogenating agents",
+    "group": "p1p2g-alcohol"
+   },
+   {
+    "id": "p1p2-preparation-of-carboxylic-acids",
+    "zh": "羧酸的制备",
+    "en": "preparation of carboxylic acids",
+    "group": "p1p2g-carboxylic-acid-and-ester"
+   },
+   {
+    "id": "p1p2-acidity-of-carboxylic-acids",
+    "zh": "羧酸的酸性",
+    "en": "acidity of carboxylic acids",
+    "group": "p1p2g-carboxylic-acid-and-ester"
+   },
+   {
+    "id": "p1p2-reactions-of-carboxylic-acids",
+    "zh": "羧酸的典型反应",
+    "en": "reactions of carboxylic acids",
+    "group": "p1p2g-carboxylic-acid-and-ester"
+   },
+   {
+    "id": "p1p2-esterification",
+    "zh": "酯化反应",
+    "en": "esterification",
+    "group": "p1p2g-carboxylic-acid-and-ester"
+   },
+   {
+    "id": "p1p2-acid-and-alkaline-hydrolysis-of-esters",
+    "zh": "酯的酸性水解与碱性水解",
+    "en": "acid and alkaline hydrolysis of esters",
+    "group": "p1p2g-carboxylic-acid-and-ester"
+   },
+   {
+    "id": "p1p2-structures-of-aldehydes-and-ketones",
+    "zh": "醛与酮的结构",
+    "en": "structures of aldehydes and ketones",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-oxidation-of-aldehydes",
+    "zh": "醛的氧化（斐林试剂、土伦试剂、重铬酸钾）",
+    "en": "oxidation of aldehydes",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-reduction-of-aldehydes-and-ketones",
+    "zh": "醛与酮的还原",
+    "en": "reduction of aldehydes and ketones",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-identification-with-2-4-dnph",
+    "zh": "2,4-DNPH 鉴别醛酮",
+    "en": "identification with 2,4-DNPH",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-the-iodoform-reaction",
+    "zh": "碘仿反应",
+    "en": "the iodoform reaction",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-mechanism-of-nucleophilic-addition",
+    "zh": "亲核加成机理",
+    "en": "mechanism of nucleophilic addition",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-addition-of-hydrogen-cyanide",
+    "zh": "与 HCN 的加成",
+    "en": "addition of hydrogen cyanide",
+    "group": "p1p2g-aldehyde-and-ketone"
+   },
+   {
+    "id": "p1p2-infra-red-spectroscopy-and-functional-group-identification",
+    "zh": "红外光谱的官能团识别",
+    "en": "infra-red spectroscopy and functional group identification",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   },
+   {
+    "id": "p1p2-use-of-the-fingerprint-region",
+    "zh": "红外光谱指纹区的应用",
+    "en": "use of the fingerprint region",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   },
+   {
+    "id": "p1p2-mass-spectrometry-for-relative-molecular-mass",
+    "zh": "质谱测定相对分子质量",
+    "en": "mass spectrometry for relative molecular mass",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   },
+   {
+    "id": "p1p2-molecular-ion-peak-and-fragment-peaks",
+    "zh": "分子离子峰与碎片峰",
+    "en": "molecular ion peak and fragment peaks",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   },
+   {
+    "id": "p1p2-isotope-peaks",
+    "zh": "同位素峰",
+    "en": "isotope peaks",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   },
+   {
+    "id": "p1p2-deducing-structure-from-spectra",
+    "zh": "由图谱推断有机物结构",
+    "en": "deducing structure from spectra",
+    "group": "p1p2g-infra-red-and-mass-spectroscopy"
+   }
+  ]
+ },
+ "P4": {
+  "groups": [
+   {
+    "id": "p4g-lattice-energy",
+    "zh": "晶格能",
+    "en": "Lattice Energy"
+   },
+   {
+    "id": "p4g-electrochemistry",
+    "zh": "电化学",
+    "en": "Electrochemistry"
+   },
+   {
+    "id": "p4g-acid-base-equilibria",
+    "zh": "酸碱平衡",
+    "en": "Acid-Base Equilibria"
+   },
+   {
+    "id": "p4g-solubility-product-and-partition-coefficient",
+    "zh": "溶度积系数和分配系数",
+    "en": "Solubility Product and Partition Coefficient"
+   },
+   {
+    "id": "p4g-kinetics",
+    "zh": "动力学",
+    "en": "Kinetics"
+   },
+   {
+    "id": "p4g-entropy-and-gibbs-free-energy",
+    "zh": "熵与吉布斯自由能",
+    "en": "Entropy and Gibbs Free Energy"
+   },
+   {
+    "id": "p4g-transition-metal",
+    "zh": "过渡金属",
+    "en": "Transition Metal"
+   },
+   {
+    "id": "p4g-carboxylic-acid-derivatives",
+    "zh": "羧酸衍生物",
+    "en": "Carboxylic Acid Derivatives"
+   },
+   {
+    "id": "p4g-arenes",
+    "zh": "芳烃",
+    "en": "Arenes"
+   },
+   {
+    "id": "p4g-organic-nitrogen-compound",
+    "zh": "氨和酰胺",
+    "en": "Organic Nitrogen Compound"
+   },
+   {
+    "id": "p4g-amino-acid-and-condensation-polymer",
+    "zh": "氨基酸，聚酯和聚酰胺",
+    "en": "Amino Acid and Condensation Polymer"
+   },
+   {
+    "id": "p4g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   },
+   {
+    "id": "p4g-nuclear-magnetic-resonance",
+    "zh": "核磁共振",
+    "en": "Nuclear Magnetic Resonance"
+   },
+   {
+    "id": "p4g-quantitative-analysis",
+    "zh": "定量分析",
+    "en": "Quantitative Analysis"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p4-definition-of-lattice-energy",
+    "zh": "晶格能的定义",
+    "en": "definition of lattice energy",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-electron-affinity",
+    "zh": "电子亲和能",
+    "en": "electron affinity",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-factors-affecting-the-magnitude-of-lattice-energy",
+    "zh": "影响晶格能大小的因素",
+    "en": "factors affecting the magnitude of lattice energy",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-born-haber-cycles",
+    "zh": "伯恩-哈珀循环",
+    "en": "Born-Haber cycles",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-enthalpies-of-solution-and-hydration",
+    "zh": "溶解焓与水化焓",
+    "en": "enthalpies of solution and hydration",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-calculating-an-unknown-enthalpy-change-from-an-energy-cycle",
+    "zh": "由能量循环计算未知焓变",
+    "en": "calculating an unknown enthalpy change from an energy cycle",
+    "group": "p4g-lattice-energy"
+   },
+   {
+    "id": "p4-electrolysis-and-faraday-s-laws",
+    "zh": "电解与法拉第定律",
+    "en": "electrolysis and Faraday's laws",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-standard-electrode-potential",
+    "zh": "标准电极电势 E°",
+    "en": "standard electrode potential",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-standard-cell-potential",
+    "zh": "标准电池电动势 E°cell",
+    "en": "standard cell potential",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-cell-notation-and-the-salt-bridge",
+    "zh": "电池符号与盐桥",
+    "en": "cell notation and the salt bridge",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-predicting-feasibility-from-e",
+    "zh": "由 E° 判断反应可行性",
+    "en": "predicting feasibility from E°",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-comparison-of-galvanic-and-electrolytic-cells",
+    "zh": "原电池与电解池的比较",
+    "en": "comparison of galvanic and electrolytic cells",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-the-nernst-equation",
+    "zh": "能斯特方程",
+    "en": "the Nernst equation",
+    "group": "p4g-electrochemistry"
+   },
+   {
+    "id": "p4-bronsted-lowry-acids-and-bases",
+    "zh": "布朗斯特-劳里酸碱理论",
+    "en": "Bronsted-Lowry acids and bases",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-conjugate-acid-base-pairs",
+    "zh": "共轭酸碱对",
+    "en": "conjugate acid-base pairs",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-ph-calculations",
+    "zh": "pH 的运算",
+    "en": "pH calculations",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-the-ionic-product-of-water",
+    "zh": "水的离子积 Kw",
+    "en": "the ionic product of water",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-ka-and-pka-for-weak-acids",
+    "zh": "弱酸的 Ka 与 pKa",
+    "en": "Ka and pKa for weak acids",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-kb-for-weak-bases",
+    "zh": "弱碱的 Kb",
+    "en": "Kb for weak bases",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-composition-and-mode-of-action-of-buffer-solutions",
+    "zh": "缓冲溶液的组成与作用原理",
+    "en": "composition and mode of action of buffer solutions",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-calculation-of-the-ph-of-a-buffer-solution",
+    "zh": "缓冲溶液 pH 的计算",
+    "en": "calculation of the pH of a buffer solution",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-titration-curves-and-the-equivalence-point",
+    "zh": "滴定曲线与等当点",
+    "en": "titration curves and the equivalence point",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-selection-of-indicators",
+    "zh": "指示剂的选择",
+    "en": "selection of indicators",
+    "group": "p4g-acid-base-equilibria"
+   },
+   {
+    "id": "p4-expression-for-the-solubility-product",
+    "zh": "溶度积 Ksp 的表达式",
+    "en": "expression for the solubility product",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-calculating-solubility-from-ksp",
+    "zh": "由 Ksp 计算溶解度",
+    "en": "calculating solubility from Ksp",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-the-common-ion-effect",
+    "zh": "同离子效应",
+    "en": "the common ion effect",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-predicting-precipitation",
+    "zh": "沉淀生成的预测",
+    "en": "predicting precipitation",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-the-partition-coefficient",
+    "zh": "分配系数 Kpc",
+    "en": "the partition coefficient",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-partition-coefficient-and-solvent-extraction",
+    "zh": "分配系数与溶剂萃取",
+    "en": "partition coefficient and solvent extraction",
+    "group": "p4g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p4-rate-equation-and-order-of-reaction",
+    "zh": "速率方程与反应级数",
+    "en": "rate equation and order of reaction",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-rate-constant-and-its-units",
+    "zh": "速率常数 k 与单位",
+    "en": "rate constant and its units",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-the-initial-rates-method",
+    "zh": "初速法测定反应级数",
+    "en": "the initial rates method",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-deducing-order-from-concentration-time-graphs",
+    "zh": "由浓度-时间图判断级数",
+    "en": "deducing order from concentration-time graphs",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-half-life",
+    "zh": "半衰期",
+    "en": "half-life",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-reaction-mechanism-and-the-rate-determining-step",
+    "zh": "反应机理与决速步",
+    "en": "reaction mechanism and the rate-determining step",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-the-arrhenius-equation-and-activation-energy",
+    "zh": "阿伦尼乌斯方程与活化能",
+    "en": "the Arrhenius equation and activation energy",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-homogeneous-and-heterogeneous-catalysis",
+    "zh": "均相催化与异相催化",
+    "en": "homogeneous and heterogeneous catalysis",
+    "group": "p4g-kinetics"
+   },
+   {
+    "id": "p4-definition-of-entropy",
+    "zh": "熵的定义与符号",
+    "en": "definition of entropy",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-predicting-the-sign-of-an-entropy-change",
+    "zh": "熵变正负的判断",
+    "en": "predicting the sign of an entropy change",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-calculating-s-from-standard-entropies",
+    "zh": "由标准熵计算 ΔS°",
+    "en": "calculating ΔS° from standard entropies",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-gibbs-free-energy-change",
+    "zh": "吉布斯自由能变 ΔG = ΔH − TΔS",
+    "en": "Gibbs free energy change",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-predicting-feasibility-from-g",
+    "zh": "由 ΔG 判断反应自发性",
+    "en": "predicting feasibility from ΔG",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-effect-of-temperature-on-feasibility",
+    "zh": "温度对自发性的影响",
+    "en": "effect of temperature on feasibility",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-relationship-between-g-k-and-e-cell",
+    "zh": "ΔG 与平衡常数、E°cell 的关系",
+    "en": "relationship between ΔG, K and E°cell",
+    "group": "p4g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p4-definition-and-electronic-configuration-of-transition-elemen",
+    "zh": "过渡金属的定义与电子构型",
+    "en": "definition and electronic configuration of transition elements",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-general-physical-properties-of-transition-elements",
+    "zh": "过渡元素的物理性质",
+    "en": "general physical properties of transition elements",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-variable-oxidation-states",
+    "zh": "可变氧化态",
+    "en": "variable oxidation states",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-coordination-complexes-and-ligands",
+    "zh": "配位化合物与配体",
+    "en": "coordination complexes and ligands",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-coordination-number-and-geometry-of-complexes",
+    "zh": "配位数与几何构型",
+    "en": "coordination number and geometry of complexes",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-colour-of-complexes",
+    "zh": "配离子的显色原理",
+    "en": "colour of complexes",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-stereoisomerism-in-transition-element-complexes",
+    "zh": "配离子的立体异构（顺反与光学异构）",
+    "en": "stereoisomerism in transition element complexes",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-ligand-substitution-and-stability-constants",
+    "zh": "配体取代与稳定常数 Kstab",
+    "en": "ligand substitution and stability constants",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-transition-metals-as-catalysts",
+    "zh": "过渡金属催化剂",
+    "en": "transition metals as catalysts",
+    "group": "p4g-transition-metal"
+   },
+   {
+    "id": "p4-preparation-of-acyl-chlorides",
+    "zh": "酰氯的制备",
+    "en": "preparation of acyl chlorides",
+    "group": "p4g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p4-reaction-of-acyl-chlorides-with-water",
+    "zh": "酰氯与水的反应",
+    "en": "reaction of acyl chlorides with water",
+    "group": "p4g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p4-reaction-of-acyl-chlorides-with-alcohols-phenols-and-amines",
+    "zh": "酰氯与醇、酚、胺的反应",
+    "en": "reaction of acyl chlorides with alcohols, phenols and amines",
+    "group": "p4g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p4-addition-elimination-condensation-mechanism",
+    "zh": "加成-消除（缩合）机理",
+    "en": "addition-elimination (condensation) mechanism",
+    "group": "p4g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p4-comparison-of-the-reactivity-of-acyl-chlorides-and-carboxyli",
+    "zh": "酰氯与羧酸活性的比较",
+    "en": "comparison of the reactivity of acyl chlorides and carboxylic acids",
+    "group": "p4g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p4-structure-of-benzene-and-evidence-for-delocalisation",
+    "zh": "苯的结构与离域 π 键的证据",
+    "en": "structure of benzene and evidence for delocalisation",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-stability-of-benzene-and-enthalpy-of-hydrogenation",
+    "zh": "苯的稳定性与加氢焓",
+    "en": "stability of benzene and enthalpy of hydrogenation",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-combustion-of-arenes",
+    "zh": "芳烃的燃烧",
+    "en": "combustion of arenes",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-nitration-of-benzene",
+    "zh": "苯的硝化",
+    "en": "nitration of benzene",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-halogenation-of-benzene",
+    "zh": "苯的卤代",
+    "en": "halogenation of benzene",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-friedel-crafts-alkylation-and-acylation",
+    "zh": "傅-克烷基化与酰基化",
+    "en": "Friedel-Crafts alkylation and acylation",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-acidity-and-reactions-of-phenol",
+    "zh": "苯酚的酸性与反应",
+    "en": "acidity and reactions of phenol",
+    "group": "p4g-arenes"
+   },
+   {
+    "id": "p4-preparation-of-amines",
+    "zh": "胺的制备",
+    "en": "preparation of amines",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-basicity-of-amines",
+    "zh": "胺的碱性",
+    "en": "basicity of amines",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-nucleophilic-reactions-of-amines",
+    "zh": "胺的亲核反应",
+    "en": "nucleophilic reactions of amines",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-phenylamine-and-diazonium-salts",
+    "zh": "苯胺与重氮盐",
+    "en": "phenylamine and diazonium salts",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-azo-compounds-and-dyes",
+    "zh": "偶氮化合物与染料",
+    "en": "azo compounds and dyes",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-nitriles-and-hydroxynitriles",
+    "zh": "腈与羟基腈",
+    "en": "nitriles and hydroxynitriles",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-amides-and-their-hydrolysis",
+    "zh": "酰胺的结构与水解",
+    "en": "amides and their hydrolysis",
+    "group": "p4g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p4-amino-acids-as-zwitterions-and-the-isoelectric-point",
+    "zh": "氨基酸的两性与等电点",
+    "en": "amino acids as zwitterions and the isoelectric point",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-the-peptide-bond-and-polypeptides",
+    "zh": "肽键与多肽",
+    "en": "the peptide bond and polypeptides",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-structure-of-proteins",
+    "zh": "蛋白质的结构",
+    "en": "structure of proteins",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-condensation-polymerisation",
+    "zh": "缩聚反应",
+    "en": "condensation polymerisation",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-polyamides-nylon",
+    "zh": "聚酰胺（尼龙）",
+    "en": "polyamides (nylon)",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-polyesters-pet",
+    "zh": "聚酯（PET）",
+    "en": "polyesters (PET)",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-degradable-polymers",
+    "zh": "可降解聚合物",
+    "en": "degradable polymers",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-deducing-polymers-from-monomers-and-vice-versa",
+    "zh": "由单体推断聚合物及反向",
+    "en": "deducing polymers from monomers and vice versa",
+    "group": "p4g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p4-thin-layer-chromatography-and-rf-values",
+    "zh": "薄层色谱与 Rf 值",
+    "en": "thin-layer chromatography and Rf values",
+    "group": "p4g-chromatography"
+   },
+   {
+    "id": "p4-gas-chromatography",
+    "zh": "气相色谱",
+    "en": "gas chromatography",
+    "group": "p4g-chromatography"
+   },
+   {
+    "id": "p4-liquid-chromatography",
+    "zh": "液相色谱",
+    "en": "liquid chromatography",
+    "group": "p4g-chromatography"
+   },
+   {
+    "id": "p4-retention-time-and-qualitative-analysis",
+    "zh": "保留时间与定性分析",
+    "en": "retention time and qualitative analysis",
+    "group": "p4g-chromatography"
+   },
+   {
+    "id": "p4-peak-area-and-quantitative-analysis",
+    "zh": "峰面积与定量分析",
+    "en": "peak area and quantitative analysis",
+    "group": "p4g-chromatography"
+   },
+   {
+    "id": "p4-carbon-13-nmr-spectroscopy",
+    "zh": "碳-13 核磁共振谱",
+    "en": "carbon-13 NMR spectroscopy",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-chemical-shift-in-proton-nmr",
+    "zh": "氢谱的化学位移",
+    "en": "chemical shift in proton NMR",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-integration-trace-and-ratio-of-protons",
+    "zh": "积分曲线与氢原子数比",
+    "en": "integration trace and ratio of protons",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-spin-spin-splitting-and-the-n-plus-1-rule",
+    "zh": "自旋-自旋裂分与 n+1 规律",
+    "en": "spin-spin splitting and the n+1 rule",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-deuterated-solvents-and-the-tms-reference",
+    "zh": "氘代溶剂与 TMS 基准",
+    "en": "deuterated solvents and the TMS reference",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-deducing-structure-from-proton-nmr",
+    "zh": "由氢谱推断结构",
+    "en": "deducing structure from proton NMR",
+    "group": "p4g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p4-acid-base-titration-and-indicators",
+    "zh": "酸碱滴定与指示剂",
+    "en": "acid-base titration and indicators",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-titration-with-potassium-manganate-vii",
+    "zh": "高锰酸钾滴定",
+    "en": "titration with potassium manganate(VII)",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-iodine-thiosulfate-titration",
+    "zh": "碘量法滴定",
+    "en": "iodine-thiosulfate titration",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-back-titration",
+    "zh": "返滴定",
+    "en": "back titration",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-thermometric-titration-and-enthalpy-determination",
+    "zh": "热滴定与焓变测定",
+    "en": "thermometric titration and enthalpy determination",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-error-analysis-and-apparatus-precision",
+    "zh": "滴定误差分析与仪器精度",
+    "en": "error analysis and apparatus precision",
+    "group": "p4g-quantitative-analysis"
+   },
+   {
+    "id": "p4-quantitative-measurement-of-gas-volume-and-mass-change",
+    "zh": "气体体积与质量变化的定量测定",
+    "en": "quantitative measurement of gas volume and mass change",
+    "group": "p4g-quantitative-analysis"
+   }
+  ]
+ },
+ "P5": {
+  "groups": [
+   {
+    "id": "p5g-lattice-energy",
+    "zh": "晶格能",
+    "en": "Lattice Energy"
+   },
+   {
+    "id": "p5g-electrochemistry",
+    "zh": "电化学",
+    "en": "Electrochemistry"
+   },
+   {
+    "id": "p5g-acid-base-equilibria",
+    "zh": "酸碱平衡",
+    "en": "Acid-Base Equilibria"
+   },
+   {
+    "id": "p5g-solubility-product-and-partition-coefficient",
+    "zh": "溶度积系数和分配系数",
+    "en": "Solubility Product and Partition Coefficient"
+   },
+   {
+    "id": "p5g-kinetics",
+    "zh": "动力学",
+    "en": "Kinetics"
+   },
+   {
+    "id": "p5g-entropy-and-gibbs-free-energy",
+    "zh": "熵与吉布斯自由能",
+    "en": "Entropy and Gibbs Free Energy"
+   },
+   {
+    "id": "p5g-transition-metal",
+    "zh": "过渡金属",
+    "en": "Transition Metal"
+   },
+   {
+    "id": "p5g-carboxylic-acid-derivatives",
+    "zh": "羧酸衍生物",
+    "en": "Carboxylic Acid Derivatives"
+   },
+   {
+    "id": "p5g-arenes",
+    "zh": "芳烃",
+    "en": "Arenes"
+   },
+   {
+    "id": "p5g-organic-nitrogen-compound",
+    "zh": "氨和酰胺",
+    "en": "Organic Nitrogen Compound"
+   },
+   {
+    "id": "p5g-amino-acid-and-condensation-polymer",
+    "zh": "氨基酸，聚酯和聚酰胺",
+    "en": "Amino Acid and Condensation Polymer"
+   },
+   {
+    "id": "p5g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   },
+   {
+    "id": "p5g-nuclear-magnetic-resonance",
+    "zh": "核磁共振",
+    "en": "Nuclear Magnetic Resonance"
+   },
+   {
+    "id": "p5g-quantitative-analysis",
+    "zh": "定量分析",
+    "en": "Quantitative Analysis"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p5-definition-of-lattice-energy",
+    "zh": "晶格能的定义",
+    "en": "definition of lattice energy",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-electron-affinity",
+    "zh": "电子亲和能",
+    "en": "electron affinity",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-factors-affecting-the-magnitude-of-lattice-energy",
+    "zh": "影响晶格能大小的因素",
+    "en": "factors affecting the magnitude of lattice energy",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-born-haber-cycles",
+    "zh": "伯恩-哈珀循环",
+    "en": "Born-Haber cycles",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-enthalpies-of-solution-and-hydration",
+    "zh": "溶解焓与水化焓",
+    "en": "enthalpies of solution and hydration",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-calculating-an-unknown-enthalpy-change-from-an-energy-cycle",
+    "zh": "由能量循环计算未知焓变",
+    "en": "calculating an unknown enthalpy change from an energy cycle",
+    "group": "p5g-lattice-energy"
+   },
+   {
+    "id": "p5-electrolysis-and-faraday-s-laws",
+    "zh": "电解与法拉第定律",
+    "en": "electrolysis and Faraday's laws",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-standard-electrode-potential",
+    "zh": "标准电极电势 E°",
+    "en": "standard electrode potential",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-standard-cell-potential",
+    "zh": "标准电池电动势 E°cell",
+    "en": "standard cell potential",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-cell-notation-and-the-salt-bridge",
+    "zh": "电池符号与盐桥",
+    "en": "cell notation and the salt bridge",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-predicting-feasibility-from-e",
+    "zh": "由 E° 判断反应可行性",
+    "en": "predicting feasibility from E°",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-comparison-of-galvanic-and-electrolytic-cells",
+    "zh": "原电池与电解池的比较",
+    "en": "comparison of galvanic and electrolytic cells",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-the-nernst-equation",
+    "zh": "能斯特方程",
+    "en": "the Nernst equation",
+    "group": "p5g-electrochemistry"
+   },
+   {
+    "id": "p5-bronsted-lowry-acids-and-bases",
+    "zh": "布朗斯特-劳里酸碱理论",
+    "en": "Bronsted-Lowry acids and bases",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-conjugate-acid-base-pairs",
+    "zh": "共轭酸碱对",
+    "en": "conjugate acid-base pairs",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-ph-calculations",
+    "zh": "pH 的运算",
+    "en": "pH calculations",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-the-ionic-product-of-water",
+    "zh": "水的离子积 Kw",
+    "en": "the ionic product of water",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-ka-and-pka-for-weak-acids",
+    "zh": "弱酸的 Ka 与 pKa",
+    "en": "Ka and pKa for weak acids",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-kb-for-weak-bases",
+    "zh": "弱碱的 Kb",
+    "en": "Kb for weak bases",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-composition-and-mode-of-action-of-buffer-solutions",
+    "zh": "缓冲溶液的组成与作用原理",
+    "en": "composition and mode of action of buffer solutions",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-calculation-of-the-ph-of-a-buffer-solution",
+    "zh": "缓冲溶液 pH 的计算",
+    "en": "calculation of the pH of a buffer solution",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-titration-curves-and-the-equivalence-point",
+    "zh": "滴定曲线与等当点",
+    "en": "titration curves and the equivalence point",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-selection-of-indicators",
+    "zh": "指示剂的选择",
+    "en": "selection of indicators",
+    "group": "p5g-acid-base-equilibria"
+   },
+   {
+    "id": "p5-expression-for-the-solubility-product",
+    "zh": "溶度积 Ksp 的表达式",
+    "en": "expression for the solubility product",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-calculating-solubility-from-ksp",
+    "zh": "由 Ksp 计算溶解度",
+    "en": "calculating solubility from Ksp",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-the-common-ion-effect",
+    "zh": "同离子效应",
+    "en": "the common ion effect",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-predicting-precipitation",
+    "zh": "沉淀生成的预测",
+    "en": "predicting precipitation",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-the-partition-coefficient",
+    "zh": "分配系数 Kpc",
+    "en": "the partition coefficient",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-partition-coefficient-and-solvent-extraction",
+    "zh": "分配系数与溶剂萃取",
+    "en": "partition coefficient and solvent extraction",
+    "group": "p5g-solubility-product-and-partition-coefficient"
+   },
+   {
+    "id": "p5-rate-equation-and-order-of-reaction",
+    "zh": "速率方程与反应级数",
+    "en": "rate equation and order of reaction",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-rate-constant-and-its-units",
+    "zh": "速率常数 k 与单位",
+    "en": "rate constant and its units",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-the-initial-rates-method",
+    "zh": "初速法测定反应级数",
+    "en": "the initial rates method",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-deducing-order-from-concentration-time-graphs",
+    "zh": "由浓度-时间图判断级数",
+    "en": "deducing order from concentration-time graphs",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-half-life",
+    "zh": "半衰期",
+    "en": "half-life",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-reaction-mechanism-and-the-rate-determining-step",
+    "zh": "反应机理与决速步",
+    "en": "reaction mechanism and the rate-determining step",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-the-arrhenius-equation-and-activation-energy",
+    "zh": "阿伦尼乌斯方程与活化能",
+    "en": "the Arrhenius equation and activation energy",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-homogeneous-and-heterogeneous-catalysis",
+    "zh": "均相催化与异相催化",
+    "en": "homogeneous and heterogeneous catalysis",
+    "group": "p5g-kinetics"
+   },
+   {
+    "id": "p5-definition-of-entropy",
+    "zh": "熵的定义与符号",
+    "en": "definition of entropy",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-predicting-the-sign-of-an-entropy-change",
+    "zh": "熵变正负的判断",
+    "en": "predicting the sign of an entropy change",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-calculating-s-from-standard-entropies",
+    "zh": "由标准熵计算 ΔS°",
+    "en": "calculating ΔS° from standard entropies",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-gibbs-free-energy-change",
+    "zh": "吉布斯自由能变 ΔG = ΔH − TΔS",
+    "en": "Gibbs free energy change",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-predicting-feasibility-from-g",
+    "zh": "由 ΔG 判断反应自发性",
+    "en": "predicting feasibility from ΔG",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-effect-of-temperature-on-feasibility",
+    "zh": "温度对自发性的影响",
+    "en": "effect of temperature on feasibility",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-relationship-between-g-k-and-e-cell",
+    "zh": "ΔG 与平衡常数、E°cell 的关系",
+    "en": "relationship between ΔG, K and E°cell",
+    "group": "p5g-entropy-and-gibbs-free-energy"
+   },
+   {
+    "id": "p5-definition-and-electronic-configuration-of-transition-elemen",
+    "zh": "过渡金属的定义与电子构型",
+    "en": "definition and electronic configuration of transition elements",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-general-physical-properties-of-transition-elements",
+    "zh": "过渡元素的物理性质",
+    "en": "general physical properties of transition elements",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-variable-oxidation-states",
+    "zh": "可变氧化态",
+    "en": "variable oxidation states",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-coordination-complexes-and-ligands",
+    "zh": "配位化合物与配体",
+    "en": "coordination complexes and ligands",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-coordination-number-and-geometry-of-complexes",
+    "zh": "配位数与几何构型",
+    "en": "coordination number and geometry of complexes",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-colour-of-complexes",
+    "zh": "配离子的显色原理",
+    "en": "colour of complexes",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-stereoisomerism-in-transition-element-complexes",
+    "zh": "配离子的立体异构（顺反与光学异构）",
+    "en": "stereoisomerism in transition element complexes",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-ligand-substitution-and-stability-constants",
+    "zh": "配体取代与稳定常数 Kstab",
+    "en": "ligand substitution and stability constants",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-transition-metals-as-catalysts",
+    "zh": "过渡金属催化剂",
+    "en": "transition metals as catalysts",
+    "group": "p5g-transition-metal"
+   },
+   {
+    "id": "p5-preparation-of-acyl-chlorides",
+    "zh": "酰氯的制备",
+    "en": "preparation of acyl chlorides",
+    "group": "p5g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p5-reaction-of-acyl-chlorides-with-water",
+    "zh": "酰氯与水的反应",
+    "en": "reaction of acyl chlorides with water",
+    "group": "p5g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p5-reaction-of-acyl-chlorides-with-alcohols-phenols-and-amines",
+    "zh": "酰氯与醇、酚、胺的反应",
+    "en": "reaction of acyl chlorides with alcohols, phenols and amines",
+    "group": "p5g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p5-addition-elimination-condensation-mechanism",
+    "zh": "加成-消除（缩合）机理",
+    "en": "addition-elimination (condensation) mechanism",
+    "group": "p5g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p5-comparison-of-the-reactivity-of-acyl-chlorides-and-carboxyli",
+    "zh": "酰氯与羧酸活性的比较",
+    "en": "comparison of the reactivity of acyl chlorides and carboxylic acids",
+    "group": "p5g-carboxylic-acid-derivatives"
+   },
+   {
+    "id": "p5-structure-of-benzene-and-evidence-for-delocalisation",
+    "zh": "苯的结构与离域 π 键的证据",
+    "en": "structure of benzene and evidence for delocalisation",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-stability-of-benzene-and-enthalpy-of-hydrogenation",
+    "zh": "苯的稳定性与加氢焓",
+    "en": "stability of benzene and enthalpy of hydrogenation",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-combustion-of-arenes",
+    "zh": "芳烃的燃烧",
+    "en": "combustion of arenes",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-nitration-of-benzene",
+    "zh": "苯的硝化",
+    "en": "nitration of benzene",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-halogenation-of-benzene",
+    "zh": "苯的卤代",
+    "en": "halogenation of benzene",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-friedel-crafts-alkylation-and-acylation",
+    "zh": "傅-克烷基化与酰基化",
+    "en": "Friedel-Crafts alkylation and acylation",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-acidity-and-reactions-of-phenol",
+    "zh": "苯酚的酸性与反应",
+    "en": "acidity and reactions of phenol",
+    "group": "p5g-arenes"
+   },
+   {
+    "id": "p5-preparation-of-amines",
+    "zh": "胺的制备",
+    "en": "preparation of amines",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-basicity-of-amines",
+    "zh": "胺的碱性",
+    "en": "basicity of amines",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-nucleophilic-reactions-of-amines",
+    "zh": "胺的亲核反应",
+    "en": "nucleophilic reactions of amines",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-phenylamine-and-diazonium-salts",
+    "zh": "苯胺与重氮盐",
+    "en": "phenylamine and diazonium salts",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-azo-compounds-and-dyes",
+    "zh": "偶氮化合物与染料",
+    "en": "azo compounds and dyes",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-nitriles-and-hydroxynitriles",
+    "zh": "腈与羟基腈",
+    "en": "nitriles and hydroxynitriles",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-amides-and-their-hydrolysis",
+    "zh": "酰胺的结构与水解",
+    "en": "amides and their hydrolysis",
+    "group": "p5g-organic-nitrogen-compound"
+   },
+   {
+    "id": "p5-amino-acids-as-zwitterions-and-the-isoelectric-point",
+    "zh": "氨基酸的两性与等电点",
+    "en": "amino acids as zwitterions and the isoelectric point",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-the-peptide-bond-and-polypeptides",
+    "zh": "肽键与多肽",
+    "en": "the peptide bond and polypeptides",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-structure-of-proteins",
+    "zh": "蛋白质的结构",
+    "en": "structure of proteins",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-condensation-polymerisation",
+    "zh": "缩聚反应",
+    "en": "condensation polymerisation",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-polyamides-nylon",
+    "zh": "聚酰胺（尼龙）",
+    "en": "polyamides (nylon)",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-polyesters-pet",
+    "zh": "聚酯（PET）",
+    "en": "polyesters (PET)",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-degradable-polymers",
+    "zh": "可降解聚合物",
+    "en": "degradable polymers",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-deducing-polymers-from-monomers-and-vice-versa",
+    "zh": "由单体推断聚合物及反向",
+    "en": "deducing polymers from monomers and vice versa",
+    "group": "p5g-amino-acid-and-condensation-polymer"
+   },
+   {
+    "id": "p5-thin-layer-chromatography-and-rf-values",
+    "zh": "薄层色谱与 Rf 值",
+    "en": "thin-layer chromatography and Rf values",
+    "group": "p5g-chromatography"
+   },
+   {
+    "id": "p5-gas-chromatography",
+    "zh": "气相色谱",
+    "en": "gas chromatography",
+    "group": "p5g-chromatography"
+   },
+   {
+    "id": "p5-liquid-chromatography",
+    "zh": "液相色谱",
+    "en": "liquid chromatography",
+    "group": "p5g-chromatography"
+   },
+   {
+    "id": "p5-retention-time-and-qualitative-analysis",
+    "zh": "保留时间与定性分析",
+    "en": "retention time and qualitative analysis",
+    "group": "p5g-chromatography"
+   },
+   {
+    "id": "p5-peak-area-and-quantitative-analysis",
+    "zh": "峰面积与定量分析",
+    "en": "peak area and quantitative analysis",
+    "group": "p5g-chromatography"
+   },
+   {
+    "id": "p5-carbon-13-nmr-spectroscopy",
+    "zh": "碳-13 核磁共振谱",
+    "en": "carbon-13 NMR spectroscopy",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-chemical-shift-in-proton-nmr",
+    "zh": "氢谱的化学位移",
+    "en": "chemical shift in proton NMR",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-integration-trace-and-ratio-of-protons",
+    "zh": "积分曲线与氢原子数比",
+    "en": "integration trace and ratio of protons",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-spin-spin-splitting-and-the-n-plus-1-rule",
+    "zh": "自旋-自旋裂分与 n+1 规律",
+    "en": "spin-spin splitting and the n+1 rule",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-deuterated-solvents-and-the-tms-reference",
+    "zh": "氘代溶剂与 TMS 基准",
+    "en": "deuterated solvents and the TMS reference",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-deducing-structure-from-proton-nmr",
+    "zh": "由氢谱推断结构",
+    "en": "deducing structure from proton NMR",
+    "group": "p5g-nuclear-magnetic-resonance"
+   },
+   {
+    "id": "p5-acid-base-titration-and-indicators",
+    "zh": "酸碱滴定与指示剂",
+    "en": "acid-base titration and indicators",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-titration-with-potassium-manganate-vii",
+    "zh": "高锰酸钾滴定",
+    "en": "titration with potassium manganate(VII)",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-iodine-thiosulfate-titration",
+    "zh": "碘量法滴定",
+    "en": "iodine-thiosulfate titration",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-back-titration",
+    "zh": "返滴定",
+    "en": "back titration",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-thermometric-titration-and-enthalpy-determination",
+    "zh": "热滴定与焓变测定",
+    "en": "thermometric titration and enthalpy determination",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-error-analysis-and-apparatus-precision",
+    "zh": "滴定误差分析与仪器精度",
+    "en": "error analysis and apparatus precision",
+    "group": "p5g-quantitative-analysis"
+   },
+   {
+    "id": "p5-quantitative-measurement-of-gas-volume-and-mass-change",
+    "zh": "气体体积与质量变化的定量测定",
+    "en": "quantitative measurement of gas volume and mass change",
+    "group": "p5g-quantitative-analysis"
+   }
+  ]
+ }
+}

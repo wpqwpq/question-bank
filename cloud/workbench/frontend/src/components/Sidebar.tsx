@@ -57,6 +57,7 @@ export default function Sidebar(p: Props) {
           <option value="chemistry">Chemistry</option>
           <option value="biology">Biology</option>
           <option value="mathematics">Mathematics</option>
+          <option value="further-mathematics">Further Mathematics</option>
           <option value="accounting">Accounting</option>
           <option value="economics">Economics</option>
         </select>

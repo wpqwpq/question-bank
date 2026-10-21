@@ -48,8 +48,16 @@ from PIL import Image, ImageDraw, ImageFont
 # 超限时对该题单独降 DPI 渲染（layout.json 是归一化坐标，不受缩放影响）。
 WEBP_MAX_SIDE = 16320
 
-# ── 作答提示与交界分隔（仅 answer_regions 分区式成图使用） ──────────────
+# ── 作答提示与交界分隔（仅分区式成图使用） ──────────────
 NOTICE_TEXT = "请在题目后面的专属作答区回答"
+# 会计卷：资料块拼在题面之前，提示要说清楚三段顺序
+NOTICE_TEXT_MATERIAL = "本题依次为：资料（Source Booklet）→ 题面 → 作答区"
+NOTICE_TEXT_MATERIAL_ONLY = "上方为资料（Source Booklet），下方为题面与作答区"
+# CIE 经济（2026-10-21）：资料在题目前、且全卷无作答区 → 不能说「作答区」
+NOTICE_TEXT_MATERIAL_NOANS = "上方为资料，下方为题目"
+# 经济卷（material_order = after）：题面在前、资料在后，且不切作答区
+NOTICE_TEXT_MATERIAL_AFTER = "本题依次为：题面 → 资料（Source Booklet）"
+NOTICE_TEXT_MATERIAL_AFTER_ANS = "本题依次为：题面 → 资料（Source Booklet）→ 作答区"
 
 # 提示文字中文字体：按平台列出常见候选，命中第一个存在的即用。
 # 跨平台（Windows / macOS / Linux）——原先只列 Windows 路径，非 Windows 机器
@@ -160,6 +168,71 @@ def _notice_font(dpi, path):
         return None, 0
 
 
+def _mask_sidebars(doc, rg, im, zoom):
+    """把落在题段内、被上下边界切断的「Do not write in this area」竖排底纹涂白。
+
+    经济卷 652×899 那 3 卷的左侧边栏框（x≈41.6–50、h≈645）压在版心内，
+    而版心左沿取 39——矩形切割分不开它：正文题号行与它在 x 上重叠、只在 y 上错开。
+    不处理的话图左会露出半截竖排字（2026-10-19）。
+
+    只涂「窄且高」的竖条，且必须与题段在 y 上有实质交叠；物理/化学的边栏在
+    版心外（x<36 或 x>558），根本进不了题段，这里什么都不会发生。
+    """
+    try:
+        page = doc[rg["page"]]
+        pw = page.rect.width
+        if pw < 620:
+            return                       # A4 卷的边栏在版心外，不必遮（也避免误伤表格边框）
+        drawn = page.get_drawings()
+    except Exception:
+        return
+    bb = rg["bbox"]
+    for dr in drawn:
+        db = dr["rect"]
+        # 边栏是「灰底纹框 + 两条竖线」三层叠在一起，宽度 8–36pt 都要收
+        if db.width > 60 or db.height < 300:
+            continue
+        if not (db.x1 <= 60 or db.x0 >= pw - 60):
+            continue
+        ov = min(bb[3], db.y1) - max(bb[1], db.y0)
+        if ov < 60:                      # 只蹭到一点边，不值得涂
+            continue
+        x0 = max(0, int((db.x0 - bb[0]) * zoom) - 1)
+        x1 = min(im.width, int((db.x1 - bb[0]) * zoom) + 1)
+        if x1 - x0 < 2 or x0 >= im.width:
+            continue
+        ImageDraw.Draw(im).rectangle([x0, 0, x1 - 1, im.height], fill="white")
+
+
+def _mask_corner_label(doc, rg, im, zoom):
+    """涂白压在题段顶部的旧版「Leave blank」角标（2020–2022 数学卷）。
+
+    老版式在每页右上角印两行小字 "Leave / blank"（x≈530、y≈38–61）。切割层
+    已把它剔出内容行，但数学题号行本身就在 y≈58，题段上沿只能压到 y≈55，
+    角标下半截仍会漏进题图右上角（看起来像水印残字）。这里按词框精确涂白，
+    只在 x>500 且 y<70 且整词为 Leave/blank 时触发——其他学科卷没有这两个词
+    长在这个位置，等于空操作。
+    """
+    bb = rg["bbox"]
+    if bb[3] < 40 or bb[1] > 75:
+        return
+    try:
+        words = doc[rg["page"]].get_text("words")
+    except Exception:
+        return
+    for w in words:
+        if w[4].strip() not in ("Leave", "blank"):
+            continue
+        if w[0] < 500 or w[3] > 70:
+            continue
+        x0 = max(0, int((w[0] - bb[0]) * zoom) - 1)
+        y0 = max(0, int((w[1] - bb[1]) * zoom) - 1)
+        x1 = min(im.width, int((w[2] - bb[0]) * zoom) + 1)
+        y1 = min(im.height, int((w[3] - bb[1]) * zoom) + 1)
+        if x1 > x0 and y1 > y0:
+            ImageDraw.Draw(im).rectangle([x0, y0, x1 - 1, y1 - 1], fill="white")
+
+
 def main():
     ap = argparse.ArgumentParser(description="按 cut.json 渲染每题 WebP 题图")
     ap.add_argument("session_dir")
@@ -196,57 +269,69 @@ def main():
     n_layout = 0
     for q in cut.get("questions", []):
         regions = [dict(r) for r in q.get("regions", [])]
+        mat = [dict(r) for r in (q.get("material_regions") or [])]
         ans = q.get("answer_regions") or []
         n_qp = len(regions)
-        # pieces: (kind, label, region)；kind="qp" 题干段，"answer" 作答区
-        # （记录进 layout），"answer_block" 册内整块（记录进 layout 换算用）
-        pieces = []
         block = q.get("answer_block") or []
+        # pieces: (kind, label, region)。kind：
+        #   "material"     资料块（会计卷 Source Booklet，拼在最前；经济卷拼在题面之后）
+        #   "qp"           题目块（理化=题干；会计=题面+点线作答区）
+        #   "answer_block" 答题册整块（01A 会计 / 理化 A 卷）
+        #   "answer"       答题册按小问分条（记录进 layout.areas）
+        # material_order: "before"（默认，会计/理化）= 资料在前；
+        #                 "after"（经济）= 题面在前、资料在后（2026-10-19 经济卷定）。
+        mat_after = (cut.get("material_order") or "before") == "after"
+        pieces = []
         if ans or block:
-            if block:
-                # 分区式：题干全部在上（含 QP 末尾的 Total 行，不再切掉），
-                # 答题册整块连续在下（册内题号行 → 册内 Total，小问标签/
-                # 预留空白/横线/分值原样保留）
-                for r in regions:
-                    pieces.append(("qp", None, r))
-                for r in block:
-                    pieces.append(("answer_block", None, r))
-                tag = f"QP {n_qp} + 册整块 {len(block)} region（题号→Total）"
-            else:
-                # 兜底（人工题等无 answer_block 的旧结构）：题干切 Total 行 +
-                # 册内作答区按条目拼接
+            if not block:
+                # 兜底（无 answer_block 的旧结构）：题干切 Total 行 + 册内按条拼接
                 en = (q.get("anchors") or {}).get("end")
                 if en and regions and regions[-1]["page"] == en.get("page"):
                     y_top = en["bbox"][1] - 6
                     if y_top > regions[-1]["bbox"][1] + 10:
                         regions[-1] = {**regions[-1], "bbox": regions[-1]["bbox"][:3] + [y_top]}
-                for r in regions:
-                    pieces.append(("qp", None, r))
-                n_ans = 0
-                for a in ans:
-                    for r in a.get("regions", []):
-                        pieces.append(("answer", a.get("label"), r))
-                        n_ans += 1
-                tag = f"QP {n_qp} + 册 {n_ans} region 分区"
-        else:
-            for r in regions:
-                pieces.append(("qp", None, r))
-            tag = f"{n_qp} region"
+        if not mat_after:
+            for r in mat:
+                pieces.append(("material", None, r))
+        for r in regions:
+            pieces.append(("qp", None, r))
+        if mat_after:
+            for r in mat:
+                pieces.append(("material", None, r))
+        if block:
+            for r in block:
+                pieces.append(("answer_block", None, r))
+        elif ans:
+            for a in ans:
+                for r in a.get("regions", []):
+                    pieces.append(("answer", a.get("label"), r))
         if not pieces:
             continue
+        # 段间分隔线：只在不同 kind 交界处画（资料|题目、题目|答题册各一条）
+        boundaries = [i for i in range(1, len(pieces))
+                      if pieces[i][0] != pieces[i - 1][0]]
+        n_kind = len({k for k, _, _ in pieces})
         has_ans = any(k in ("answer", "answer_block") for k, _, _ in pieces)
+        tag = f"资料 {len(mat)} + QP {n_qp}" + (
+            f" + 册 {len(block) or sum(len(a.get('regions', [])) for a in ans)}"
+            if has_ans else "")
 
         # ── 尺寸预检：整卷题图纵向拼接，高度可能超过 WebP 单边上限 ──
         # 超限时按比例下调本题 DPI（layout.json 用归一化坐标，缩放无关），
         # 避免整卷因一题过长而渲染中断。
-        est_pt = sum(pymupdf.Rect(r["bbox"]).height for _k, _l, r in pieces)
+        def _h_after(r):
+            """该段渲染进画布后的高度（旋转 90° 的段，高度变成原宽度）。"""
+            b = pymupdf.Rect(r["bbox"])
+            return b.width if r.get("rotate") in (90, -90) else b.height
+
+        est_pt = sum(_h_after(r) for _k, _l, r in pieces)
         q_dpi = dpi
-        for _ in range(5):
+        for _ in range(6):
             _z = q_dpi / 72.0
-            if has_ans:
+            if n_kind > 1:
                 _fs = max(int(round(9 * q_dpi / 72.0)), 13)
                 _extra = _fs + 2 * max(int(round(5 * q_dpi / 72.0)), 4) \
-                    + max(int(round(18 * q_dpi / 72.0)), 10)
+                    + len(boundaries) * max(int(round(18 * q_dpi / 72.0)), 10)
             else:
                 _extra = 0
             if est_pt * _z + _extra <= WEBP_MAX_SIDE - 16:
@@ -260,13 +345,23 @@ def main():
 
         notice_h = sep_h = 0
         font = None
-        if has_ans:
+        if n_kind > 1:
             font, fs_px = _notice_font(q_dpi, _resolve_notice_font_path(args.notice_font))
             pad = max(int(round(5 * q_dpi / 72.0)), 4)
             notice_h = fs_px + 2 * pad if font is not None else 0
             sep_h = max(int(round(18 * q_dpi / 72.0)), 10)
+        # 点线压缩接缝：同页两段之间被删掉了一截，交界处画一条浅灰虚线提示
+        seam_idx = set()
+        for i in range(1, len(pieces)):
+            pa, pb = pieces[i - 1][2], pieces[i][2]
+            if pa["page"] == pb["page"] and pb["bbox"][1] - pa["bbox"][3] > 2:
+                seam_idx.add(i)
+
         imgs, areas, block_pieces, offsets = [], [], [], []
-        for kind, label, rg in pieces:
+        y_cursor = notice_h
+        for i, (kind, label, rg) in enumerate(pieces):
+            if i in boundaries:
+                y_cursor += sep_h
             if rg["page"] >= doc.page_count:
                 sys.exit(f"Q{q['number']}: 页码 {rg['page']} 越界")
             clip = pymupdf.Rect(rg["bbox"])
@@ -274,36 +369,51 @@ def main():
                 sys.exit(f"Q{q['number']}: 非法 bbox {rg['bbox']}")
             pix = doc[rg["page"]].get_pixmap(matrix=q_mat, clip=clip, alpha=False)
             im = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
-            offsets.append(sum(i.height for i in imgs) + notice_h
-                           + (sep_h if kind in ("answer", "answer_block") else 0))
+            if rg.get("rotate"):
+                # 整页横排印刷的作答页（D1 网络图/网格）：先转正再进画布。
+                # 涂白边栏/角标的换算是按未旋转坐标写的，旋转后必然错位，故跳过。
+                im = im.rotate(int(rg["rotate"]), expand=True, fillcolor="white")
+            else:
+                _mask_sidebars(doc, rg, im, q_zoom)
+                _mask_corner_label(doc, rg, im, q_zoom)
+            offsets.append(y_cursor)
             if kind == "answer":
-                areas.append({"label": label, "region": rg, "y_off": offsets[-1], "im": im})
+                areas.append({"label": label, "region": rg, "y_off": y_cursor, "im": im})
             elif kind == "answer_block":
-                block_pieces.append((rg, offsets[-1], im))
+                block_pieces.append((rg, y_cursor, im))
             imgs.append(im)
-        if has_ans:
-            # 分区式合成：顶部提示带 → 题干 → 交界分隔线 → 册内作答区
+            y_cursor += im.height
+
+        if n_kind > 1:
+            # 分区式合成：提示带 → 资料 → 分隔 → 题目 → 分隔 → 答题区
             W = max(i.width for i in imgs)
-            H = sum(i.height for i in imgs) + notice_h + sep_h
+            H = sum(i.height for i in imgs) + notice_h + len(boundaries) * sep_h
             canvas = Image.new("RGB", (W, H), "white")
             draw = ImageDraw.Draw(canvas)
+            has_mat = any(k == "material" for k, _, _ in pieces)
+            if mat_after:
+                notice = (NOTICE_TEXT_MATERIAL_AFTER_ANS if has_ans
+                          else NOTICE_TEXT_MATERIAL_AFTER) if has_mat else NOTICE_TEXT
+            elif has_mat:
+                notice = NOTICE_TEXT_MATERIAL if has_ans else NOTICE_TEXT_MATERIAL_NOANS
+            else:
+                notice = NOTICE_TEXT
             if font is not None and notice_h > 0:
-                tb = draw.textbbox((0, 0), NOTICE_TEXT, font=font)
+                tb = draw.textbbox((0, 0), notice, font=font)
                 draw.text(((W - (tb[2] - tb[0])) // 2 - tb[0],
                            (notice_h - (tb[3] - tb[1])) // 2 - tb[1]),
-                          NOTICE_TEXT, font=font, fill=(110, 110, 110))
-            y = notice_h
+                          notice, font=font, fill=(110, 110, 110))
             lw = max(int(round(1.2 * q_dpi / 72.0)), 2)
-            sep_drawn = False
-            for (kind, _lbl, _rg), im in zip(pieces, imgs):
-                if kind in ("answer", "answer_block") and not sep_drawn:
-                    # 分隔线只画在题干/答题册交界一处
-                    ly = y + (sep_h - lw) // 2
+            for i, (kind, _lbl, _rg) in enumerate(pieces):
+                y = offsets[i]
+                if i in boundaries:
+                    ly = y - sep_h + (sep_h - lw) // 2
                     draw.rectangle([0, ly, W, ly + lw - 1], fill=(205, 205, 205))
-                    y += sep_h
-                    sep_drawn = True
-                canvas.paste(im, (0, y))
-                y += im.height
+                if i in seam_idx:
+                    # 点线压缩接缝：画一条**实线**（虚线会跟作答点线混淆，看着像多了一行）
+                    h = max(int(round(1.0 * q_dpi / 72.0)), 2)
+                    draw.rectangle([0, y, W, y + h - 1], fill=(226, 226, 226))
+                canvas.paste(imgs[i], (0, y))
             out = canvas
         else:
             out = imgs[0]
@@ -320,6 +430,12 @@ def main():
         W, H = out.width, out.height
 
         def nbox(x0, y0, x1, y1):
+            # 夹紧到图内：小问/选项 bbox 可能比题段左沿还靠左几个 pt（D1 的
+            # "(a)" 标签 x≈35 < 版心 L=39），直接归一化会算出负数被 schema 拒。
+            x0 = min(max(x0, 0.0), W)
+            x1 = min(max(x1, 0.0), W)
+            y0 = min(max(y0, 0.0), H)
+            y1 = min(max(y1, 0.0), H)
             return {"x": round(x0 / W, 4), "y": round(y0 / H, 4),
                     "w": round((x1 - x0) / W, 4), "h": round((y1 - y0) / H, 4)}
 
@@ -370,7 +486,10 @@ def main():
                     bb0 = pieces[0][2]["bbox"]
                     box = nbox((b[0] - bb0[0]) * q_zoom, (b[1] - bb0[1]) * q_zoom,
                                (b[2] - bb0[0]) * q_zoom, (b[3] - bb0[1]) * q_zoom)
-                opt_entries.append({"label": hz["label"], "box": box})
+                ent = {"label": hz["label"], "box": box}
+                if hz.get("part"):
+                    ent["part"] = hz["part"]
+                opt_entries.append(ent)
         # 小问标签行在图内的位置（归一化）。下游据此按纵向区间判断内容/笔迹
         # 落在哪个小问下——小问纵向排列，故 y 区间即可界定归属。
         # ⚠️ 小问可跨页，必须同时匹配 page（options 不必，选项总在同一段内）；

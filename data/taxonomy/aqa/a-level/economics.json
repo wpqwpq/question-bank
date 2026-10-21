@@ -1,0 +1,2323 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base（D28lbXMsyasWyas8iWhch1KXnB5）经济表 tblpumffV0hIbvEc，视图 vewRrsDFTd，筛 考试局=AQA 且 考试阶段∈{AL-AS,AL-A2}，共 321 条（Unit1=EC01、Unit2=EC02、Unit3=EC03、Unit4=EC04）；2026-10-21 导出。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-the-nature-of-economics",
+    "zh": "经济学的性质",
+    "en": "The nature of economics"
+   },
+   {
+    "id": "u1g-positive-and-normative-economics",
+    "zh": "实证经济学与规范经济学",
+    "en": "Positive and normative economics"
+   },
+   {
+    "id": "u1g-scarcity",
+    "zh": "稀缺性",
+    "en": "Scarcity"
+   },
+   {
+    "id": "u1g-production-possibility-frontiers",
+    "zh": "生产可能性边界",
+    "en": "Production possibility frontiers"
+   },
+   {
+    "id": "u1g-specialisation-and-the-role-of-money-and-financial-markets",
+    "zh": "专业化分工与货币、金融市场的作用",
+    "en": "Specialisation and the role of money and financial markets"
+   },
+   {
+    "id": "u1g-free-market-mixed-and-command-economies",
+    "zh": "自由市场经济、混合经济与计划经济",
+    "en": "Free market, mixed and command economies"
+   },
+   {
+    "id": "u1g-rational-and-irrational-decision-making",
+    "zh": "理性与非理性决策",
+    "en": "Rational and irrational decision making"
+   },
+   {
+    "id": "u1g-the-demand-curve",
+    "zh": "需求曲线",
+    "en": "The demand curve"
+   },
+   {
+    "id": "u1g-price-income-and-cross-elasticities-of-demand",
+    "zh": "需求的价格弹性、收入弹性与交叉弹性",
+    "en": "Price, income and cross-elasticities of demand"
+   },
+   {
+    "id": "u1g-the-supply-curve",
+    "zh": "供给曲线",
+    "en": "The supply curve"
+   },
+   {
+    "id": "u1g-price-elasticity-of-supply",
+    "zh": "供给价格弹性",
+    "en": "Price elasticity of supply"
+   },
+   {
+    "id": "u1g-determination-of-market-equilibrium",
+    "zh": "市场均衡的决定",
+    "en": "Determination of market equilibrium"
+   },
+   {
+    "id": "u1g-consumer-and-producer-surplus",
+    "zh": "消费者剩余与生产者剩余",
+    "en": "Consumer and producer surplus"
+   },
+   {
+    "id": "u1g-functions-of-the-price-mechanism",
+    "zh": "价格机制的职能",
+    "en": "Functions of the price mechanism"
+   },
+   {
+    "id": "u1g-indirect-taxes-and-subsidies",
+    "zh": "间接税与补贴",
+    "en": "Indirect taxes and subsidies"
+   },
+   {
+    "id": "u1g-market-failure",
+    "zh": "市场失灵",
+    "en": "Market failure"
+   },
+   {
+    "id": "u1g-purpose-and-methods-of-government-intervention",
+    "zh": "政府干预的目的与手段",
+    "en": "Purpose and methods of government intervention"
+   },
+   {
+    "id": "u1g-government-failure",
+    "zh": "政府失灵",
+    "en": "Government failure"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-the-nature-and-methods-of-economics",
+    "zh": "经济学的性质与研究方法",
+    "en": "The nature and methods of economics",
+    "group": "u1g-the-nature-of-economics"
+   },
+   {
+    "id": "u1-positive-and-normative-statements",
+    "zh": "实证与规范陈述",
+    "en": "Positive and normative statements",
+    "group": "u1g-positive-and-normative-economics"
+   },
+   {
+    "id": "u1-factors-of-production-and-rewards",
+    "zh": "生产要素与报酬",
+    "en": "Factors of production and rewards",
+    "group": "u1g-scarcity"
+   },
+   {
+    "id": "u1-scarcity-choice-and-opportunity-cost",
+    "zh": "稀缺、选择与机会成本",
+    "en": "Scarcity, choice and opportunity cost",
+    "group": "u1g-scarcity"
+   },
+   {
+    "id": "u1-three-economic-questions",
+    "zh": "三个经济问题",
+    "en": "Three economic questions",
+    "group": "u1g-scarcity"
+   },
+   {
+    "id": "u1-renewable-and-non-renewable-resources",
+    "zh": "可再生与不可再生资源",
+    "en": "Renewable and non-renewable resources",
+    "group": "u1g-scarcity"
+   },
+   {
+    "id": "u1-economic-goods-and-free-goods",
+    "zh": "经济物品与自由物品",
+    "en": "Economic goods and free goods",
+    "group": "u1g-scarcity"
+   },
+   {
+    "id": "u1-ppf-shifts-and-growth",
+    "zh": "PPF移动与增长",
+    "en": "PPF shifts and growth",
+    "group": "u1g-production-possibility-frontiers"
+   },
+   {
+    "id": "u1-opportunity-cost-on-the-ppf",
+    "zh": "PPF机会成本",
+    "en": "Opportunity cost on the PPF",
+    "group": "u1g-production-possibility-frontiers"
+   },
+   {
+    "id": "u1-ppf-and-efficiency",
+    "zh": "PPF与效率",
+    "en": "PPF and efficiency",
+    "group": "u1g-production-possibility-frontiers"
+   },
+   {
+    "id": "u1-drawing-and-interpreting-ppfs",
+    "zh": "PPF绘制与解读",
+    "en": "Drawing and interpreting PPFs",
+    "group": "u1g-production-possibility-frontiers"
+   },
+   {
+    "id": "u1-capital-goods-and-consumer-goods",
+    "zh": "资本品与消费品",
+    "en": "Capital goods and consumer goods",
+    "group": "u1g-production-possibility-frontiers"
+   },
+   {
+    "id": "u1-financial-markets-and-institutions",
+    "zh": "金融市场与机构",
+    "en": "Financial markets and institutions",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-forward-markets",
+    "zh": "远期市场",
+    "en": "Forward markets",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-markets-and-exchange",
+    "zh": "市场与交换",
+    "en": "Markets and exchange",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-economic-sectors",
+    "zh": "经济部门",
+    "en": "Economic sectors",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-specialisation-and-division-of-labour",
+    "zh": "专业化与分工",
+    "en": "Specialisation and division of labour",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-functions-of-money",
+    "zh": "货币职能",
+    "en": "Functions of money",
+    "group": "u1g-specialisation-and-the-role-of-money-and-financial-markets"
+   },
+   {
+    "id": "u1-economic-systems",
+    "zh": "经济体制类型",
+    "en": "Economic systems",
+    "group": "u1g-free-market-mixed-and-command-economies"
+   },
+   {
+    "id": "u1-evaluating-economic-systems",
+    "zh": "经济体制评价",
+    "en": "Evaluating economic systems",
+    "group": "u1g-free-market-mixed-and-command-economies"
+   },
+   {
+    "id": "u1-resource-allocation",
+    "zh": "资源配置",
+    "en": "Resource allocation",
+    "group": "u1g-free-market-mixed-and-command-economies"
+   },
+   {
+    "id": "u1-rationality-and-maximisation",
+    "zh": "理性与最大化",
+    "en": "Rationality and maximisation",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-herding-behaviour",
+    "zh": "羊群行为",
+    "en": "Herding behaviour",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-habitual-behaviour",
+    "zh": "习惯性行为",
+    "en": "Habitual behaviour",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-inertia",
+    "zh": "惯性",
+    "en": "Inertia",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-poor-computational-skills",
+    "zh": "计算能力不足",
+    "en": "Poor computational skills",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-need-to-feel-valued",
+    "zh": "被重视的需要",
+    "en": "Need to feel valued",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-framing-and-bias",
+    "zh": "框架与偏差",
+    "en": "Framing and bias",
+    "group": "u1g-rational-and-irrational-decision-making"
+   },
+   {
+    "id": "u1-demand-shifts",
+    "zh": "需求曲线移动",
+    "en": "Demand shifts",
+    "group": "u1g-the-demand-curve"
+   },
+   {
+    "id": "u1-demand-and-changes-in-quantity-demanded",
+    "zh": "需求与需求量变动",
+    "en": "Demand and changes in quantity demanded",
+    "group": "u1g-the-demand-curve"
+   },
+   {
+    "id": "u1-diminishing-marginal-utility",
+    "zh": "边际效用递减",
+    "en": "Diminishing marginal utility",
+    "group": "u1g-the-demand-curve"
+   },
+   {
+    "id": "u1-ped-determinants",
+    "zh": "PED影响因素",
+    "en": "PED determinants",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-xed",
+    "zh": "需求交叉弹性",
+    "en": "XED",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-ped-and-total-revenue",
+    "zh": "PED与总收益",
+    "en": "PED and total revenue",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-ped-definition-and-calculation",
+    "zh": "PED含义与计算",
+    "en": "PED definition and calculation",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-yed",
+    "zh": "需求收入弹性",
+    "en": "YED",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-interpreting-ped-values-and-diagrams",
+    "zh": "PED数值与图像解读",
+    "en": "Interpreting PED values and diagrams",
+    "group": "u1g-price-income-and-cross-elasticities-of-demand"
+   },
+   {
+    "id": "u1-supply-shifts",
+    "zh": "供给曲线移动",
+    "en": "Supply shifts",
+    "group": "u1g-the-supply-curve"
+   },
+   {
+    "id": "u1-supply-and-changes-in-quantity-supplied",
+    "zh": "供给与供给量变动",
+    "en": "Supply and changes in quantity supplied",
+    "group": "u1g-the-supply-curve"
+   },
+   {
+    "id": "u1-pes-determinants",
+    "zh": "PES影响因素",
+    "en": "PES determinants",
+    "group": "u1g-price-elasticity-of-supply"
+   },
+   {
+    "id": "u1-short-run-and-long-run-supply",
+    "zh": "供给的短期与长期",
+    "en": "Short-run and long-run supply",
+    "group": "u1g-price-elasticity-of-supply"
+   },
+   {
+    "id": "u1-pes-definition-and-calculation",
+    "zh": "PES含义与计算",
+    "en": "PES definition and calculation",
+    "group": "u1g-price-elasticity-of-supply"
+   },
+   {
+    "id": "u1-market-equilibrium-and-changes-in-equilibrium",
+    "zh": "市场均衡及其变动",
+    "en": "Market equilibrium and changes in equilibrium",
+    "group": "u1g-determination-of-market-equilibrium"
+   },
+   {
+    "id": "u1-consumer-surplus",
+    "zh": "消费者剩余",
+    "en": "Consumer surplus",
+    "group": "u1g-consumer-and-producer-surplus"
+   },
+   {
+    "id": "u1-producer-surplus",
+    "zh": "生产者剩余",
+    "en": "Producer surplus",
+    "group": "u1g-consumer-and-producer-surplus"
+   },
+   {
+    "id": "u1-changes-in-surplus",
+    "zh": "剩余变动",
+    "en": "Changes in surplus",
+    "group": "u1g-consumer-and-producer-surplus"
+   },
+   {
+    "id": "u1-price-mechanism-functions",
+    "zh": "价格机制职能",
+    "en": "Price mechanism functions",
+    "group": "u1g-functions-of-the-price-mechanism"
+   },
+   {
+    "id": "u1-indirect-taxes",
+    "zh": "间接税",
+    "en": "Indirect taxes",
+    "group": "u1g-indirect-taxes-and-subsidies"
+   },
+   {
+    "id": "u1-subsidies",
+    "zh": "补贴",
+    "en": "Subsidies",
+    "group": "u1g-indirect-taxes-and-subsidies"
+   },
+   {
+    "id": "u1-tax-incidence",
+    "zh": "税收归宿",
+    "en": "Tax incidence",
+    "group": "u1g-indirect-taxes-and-subsidies"
+   },
+   {
+    "id": "u1-subsidy-incidence",
+    "zh": "补贴归宿",
+    "en": "Subsidy incidence",
+    "group": "u1g-indirect-taxes-and-subsidies"
+   },
+   {
+    "id": "u1-tax-subsidy-and-elasticity",
+    "zh": "税收、补贴与弹性",
+    "en": "Tax, subsidy and elasticity",
+    "group": "u1g-indirect-taxes-and-subsidies"
+   },
+   {
+    "id": "u1-market-failure-meaning-and-identification",
+    "zh": "市场失灵的含义与识别",
+    "en": "Market failure: meaning and identification",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-private-and-social-costs-benefits",
+    "zh": "私人与社会成本收益",
+    "en": "Private and social costs/benefits",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-welfare-gain-welfare-loss",
+    "zh": "福利增益/福利损失",
+    "en": "Welfare gain/Welfare loss",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-socially-optimal-output",
+    "zh": "社会最优产量",
+    "en": "Socially optimal output",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-negative-positive-production-externalities",
+    "zh": "生产负/正外部性",
+    "en": "Negative/Positive production externalities",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-positive-negative-consumption-externalities",
+    "zh": "消费正/负外部性",
+    "en": "Positive/Negative consumption externalities",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-free-rider-problem",
+    "zh": "搭便车问题",
+    "en": "Free-rider problem",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-public-and-private-goods",
+    "zh": "公共与私人物品",
+    "en": "Public and private goods",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-information-failure",
+    "zh": "信息失灵",
+    "en": "Information failure",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-moral-hazard",
+    "zh": "道德风险",
+    "en": "Moral hazard",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-speculation-and-bubbles",
+    "zh": "投机与市场泡沫",
+    "en": "Speculation and bubbles",
+    "group": "u1g-market-failure"
+   },
+   {
+    "id": "u1-state-provision-of-goods-and-services",
+    "zh": "政府直接提供商品与服务",
+    "en": "State provision of goods and services",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-information-provision",
+    "zh": "信息提供",
+    "en": "Information provision",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-maximum-prices",
+    "zh": "最高限价",
+    "en": "Maximum prices",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-minimum-prices",
+    "zh": "最低限价",
+    "en": "Minimum prices",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-regulation",
+    "zh": "监管",
+    "en": "Regulation",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-tradeable-pollution-permits",
+    "zh": "可交易排污许可",
+    "en": "Tradeable pollution permits",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-comparing-and-selecting-government-interventions",
+    "zh": "政府干预政策的比较与选择",
+    "en": "Comparing and selecting government interventions",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-property-rights-extension",
+    "zh": "产权延伸",
+    "en": "Property rights extension",
+    "group": "u1g-purpose-and-methods-of-government-intervention"
+   },
+   {
+    "id": "u1-market-vs-government-failure",
+    "zh": "市场与政府失灵比较",
+    "en": "Market vs government failure",
+    "group": "u1g-government-failure"
+   },
+   {
+    "id": "u1-administrative-costs-and-information-gaps",
+    "zh": "行政成本与信息缺口",
+    "en": "Administrative costs and information gaps",
+    "group": "u1g-government-failure"
+   },
+   {
+    "id": "u1-distortions-and-unintended-consequences",
+    "zh": "信号扭曲与意外后果",
+    "en": "Distortions and unintended consequences",
+    "group": "u1g-government-failure"
+   },
+   {
+    "id": "u1-conflicts-and-political-self-interest",
+    "zh": "目标冲突与政治自利",
+    "en": "Conflicts and political self-interest",
+    "group": "u1g-government-failure"
+   },
+   {
+    "id": "u1-government-failure-meaning-and-causes",
+    "zh": "政府失灵含义与成因",
+    "en": "Government failure: meaning and causes",
+    "group": "u1g-government-failure"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-economic-growth",
+    "zh": "经济增长",
+    "en": "Economic growth"
+   },
+   {
+    "id": "u2g-inflation",
+    "zh": "通货膨胀",
+    "en": "Inflation"
+   },
+   {
+    "id": "u2g-employment-and-unemployment",
+    "zh": "就业与失业",
+    "en": "Employment and unemployment"
+   },
+   {
+    "id": "u2g-balance-of-payments",
+    "zh": "国际收支",
+    "en": "Balance of payments"
+   },
+   {
+    "id": "u2g-the-characteristics-of-ad",
+    "zh": "总需求的特征",
+    "en": "The characteristics of AD"
+   },
+   {
+    "id": "u2g-consumption-c",
+    "zh": "消费（C）",
+    "en": "Consumption (C)"
+   },
+   {
+    "id": "u2g-investment-i",
+    "zh": "投资（I）",
+    "en": "Investment (I)"
+   },
+   {
+    "id": "u2g-government-expenditure-g",
+    "zh": "政府支出（G）",
+    "en": "Government expenditure (G)"
+   },
+   {
+    "id": "u2g-net-trade-balance-x-m",
+    "zh": "净出口（X−M）",
+    "en": "Net trade balance (X−M)"
+   },
+   {
+    "id": "u2g-aggregate-supply",
+    "zh": "总供给",
+    "en": "Aggregate supply"
+   },
+   {
+    "id": "u2g-national-income-and-the-circular-flow",
+    "zh": "国民收入与循环流动",
+    "en": "National income and the circular flow"
+   },
+   {
+    "id": "u2g-equilibrium-level-of-real-output",
+    "zh": "实际产出的均衡水平",
+    "en": "Equilibrium level of real output"
+   },
+   {
+    "id": "u2g-the-multiplier",
+    "zh": "乘数",
+    "en": "The multiplier"
+   },
+   {
+    "id": "u2g-economic-growth-causes-effects-and-fluctuations",
+    "zh": "经济增长的成因、影响与波动",
+    "en": "Economic growth: causes, effects and fluctuations"
+   },
+   {
+    "id": "u2g-macroeconomic-objectives-and-conflicts",
+    "zh": "宏观经济目标与冲突",
+    "en": "Macroeconomic objectives and conflicts"
+   },
+   {
+    "id": "u2g-macroeconomic-supply-side-policies",
+    "zh": "宏观供给侧政策",
+    "en": "Macroeconomic supply-side policies"
+   },
+   {
+    "id": "u2g-macroeconomic-demand-side-policies",
+    "zh": "宏观需求侧政策",
+    "en": "Macroeconomic demand-side policies"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-economic-growth-recession-and-growth-data",
+    "zh": "经济增长、衰退及增长数据比较",
+    "en": "Economic growth, recession and growth data",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-real-gdp-and-nominal-gdp",
+    "zh": "实际GDP与名义GDP",
+    "en": "Real GDP and nominal GDP",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-total-gdp-and-gdp-per-capita",
+    "zh": "总量GDP与人均GDP",
+    "en": "Total GDP and GDP per capita",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-gdp-and-gni",
+    "zh": "GDP与GNI",
+    "en": "GDP and GNI",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-purchasing-power-parity-and-living-standard-comparisons",
+    "zh": "购买力平价与生活水平比较",
+    "en": "Purchasing power parity and living-standard comparisons",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-accuracy-and-limitations-of-national-income-statistics",
+    "zh": "国民收入统计的准确性与局限",
+    "en": "Accuracy and limitations of national income statistics",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-income-happiness-and-alternative-well-being-indicators",
+    "zh": "收入、幸福感与其他福祉指标",
+    "en": "Income, happiness and alternative well-being indicators",
+    "group": "u2g-economic-growth"
+   },
+   {
+    "id": "u2-effects-of-inflation-and-deflation",
+    "zh": "通货膨胀与通货紧缩的影响",
+    "en": "Effects of inflation and deflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-causes-of-deflation",
+    "zh": "通货紧缩的成因",
+    "en": "Causes of deflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-measuring-inflation-using-the-cpi",
+    "zh": "使用消费者物价指数衡量通货膨胀",
+    "en": "Measuring inflation using the CPI",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-the-producer-price-index-ppi",
+    "zh": "生产者价格指数",
+    "en": "The producer price index (PPI)",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-inflation-deflation-and-disinflation",
+    "zh": "通货膨胀、通货紧缩与通胀率下降",
+    "en": "Inflation, deflation and disinflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-demand-pull-inflation",
+    "zh": "需求拉动型通货膨胀",
+    "en": "Demand-pull inflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-cost-push-inflation",
+    "zh": "成本推动型通货膨胀",
+    "en": "Cost-push inflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-money-supply-growth-and-inflation",
+    "zh": "货币供应增长与通货膨胀",
+    "en": "Money supply growth and inflation",
+    "group": "u2g-inflation"
+   },
+   {
+    "id": "u2-measures-of-unemployment",
+    "zh": "失业的衡量",
+    "en": "Measures of unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-costs-of-unemployment",
+    "zh": "失业的代价",
+    "en": "Costs of unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-employment-unemployment-and-activity-rates",
+    "zh": "就业、失业与经济活动率",
+    "en": "Employment, unemployment and activity rates",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-cyclical-unemployment",
+    "zh": "周期性失业",
+    "en": "Cyclical unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-structural-unemployment",
+    "zh": "结构性失业",
+    "en": "Structural unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-frictional-unemployment",
+    "zh": "摩擦性失业",
+    "en": "Frictional unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-seasonal-unemployment",
+    "zh": "季节性失业",
+    "en": "Seasonal unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-real-wage-unemployment",
+    "zh": "实际工资失业",
+    "en": "Real-wage unemployment",
+    "group": "u2g-employment-and-unemployment"
+   },
+   {
+    "id": "u2-balance-of-payments-account-and-capital-financial-flows",
+    "zh": "国际收支账户与资本、金融流动",
+    "en": "Balance of payments account and capital/financial flows",
+    "group": "u2g-balance-of-payments"
+   },
+   {
+    "id": "u2-the-current-account-components-surpluses-and-deficits",
+    "zh": "经常账户的构成、盈余与赤字",
+    "en": "The current account: components, surpluses and deficits",
+    "group": "u2g-balance-of-payments"
+   },
+   {
+    "id": "u2-aggregate-demand-components-the-curve-and-changes",
+    "zh": "总需求的构成、曲线与变动",
+    "en": "Aggregate demand: components, the curve and changes",
+    "group": "u2g-the-characteristics-of-ad"
+   },
+   {
+    "id": "u2-saving-and-the-savings-ratio-causes-changes-and-effects",
+    "zh": "储蓄与储蓄率：成因、变动及影响",
+    "en": "Saving and the savings ratio: causes, changes and effects",
+    "group": "u2g-consumption-c"
+   },
+   {
+    "id": "u2-consumption-the-consumption-function-and-determinants",
+    "zh": "消费、消费函数与决定因素",
+    "en": "Consumption, the consumption function and determinants",
+    "group": "u2g-consumption-c"
+   },
+   {
+    "id": "u2-investment-meaning-gross-investment-and-net-investment",
+    "zh": "投资的含义、总投资与净投资",
+    "en": "Investment: meaning, gross investment and net investment",
+    "group": "u2g-investment-i"
+   },
+   {
+    "id": "u2-determinants-and-macroeconomic-effects-of-investment",
+    "zh": "投资的决定因素及宏观影响",
+    "en": "Determinants and macroeconomic effects of investment",
+    "group": "u2g-investment-i"
+   },
+   {
+    "id": "u2-the-accelerator-process",
+    "zh": "加速原理",
+    "en": "The accelerator process",
+    "group": "u2g-investment-i"
+   },
+   {
+    "id": "u2-determinants-and-macroeconomic-effects-of-government-expendi",
+    "zh": "政府支出的决定因素与宏观影响",
+    "en": "Determinants and macroeconomic effects of government expenditure",
+    "group": "u2g-government-expenditure-g"
+   },
+   {
+    "id": "u2-budget-deficits-and-surpluses",
+    "zh": "预算赤字与预算盈余",
+    "en": "Budget deficits and surpluses",
+    "group": "u2g-government-expenditure-g"
+   },
+   {
+    "id": "u2-the-trade-balance-in-goods-and-services-meaning-and-calculat",
+    "zh": "货物与服务贸易差额：含义与计算",
+    "en": "The trade balance in goods and services: meaning and calculation",
+    "group": "u2g-net-trade-balance-x-m"
+   },
+   {
+    "id": "u2-factors-influencing-net-trade-balance",
+    "zh": "净贸易余额的影响因素",
+    "en": "Factors influencing net trade balance",
+    "group": "u2g-net-trade-balance-x-m"
+   },
+   {
+    "id": "u2-aggregate-supply-and-short-run-aggregate-supply-curves-and-c",
+    "zh": "总供给与短期总供给的曲线及变动",
+    "en": "Aggregate supply and short-run aggregate supply: curves and changes",
+    "group": "u2g-aggregate-supply"
+   },
+   {
+    "id": "u2-the-keynesian-long-run-aggregate-supply-curve",
+    "zh": "凯恩斯长期总供给曲线",
+    "en": "The Keynesian long-run aggregate supply curve",
+    "group": "u2g-aggregate-supply"
+   },
+   {
+    "id": "u2-the-classical-long-run-aggregate-supply-curve",
+    "zh": "古典长期总供给曲线",
+    "en": "The classical long-run aggregate supply curve",
+    "group": "u2g-aggregate-supply"
+   },
+   {
+    "id": "u2-determinants-of-long-run-aggregate-supply",
+    "zh": "长期总供给的决定因素",
+    "en": "Determinants of long-run aggregate supply",
+    "group": "u2g-aggregate-supply"
+   },
+   {
+    "id": "u2-the-circular-flow-of-income-injections-and-withdrawals",
+    "zh": "收入循环、注入与漏出",
+    "en": "The circular flow of income, injections and withdrawals",
+    "group": "u2g-national-income-and-the-circular-flow"
+   },
+   {
+    "id": "u2-the-distinction-between-income-and-wealth",
+    "zh": "收入与财富的区别",
+    "en": "The distinction between income and wealth",
+    "group": "u2g-national-income-and-the-circular-flow"
+   },
+   {
+    "id": "u2-ad-as-equilibrium-and-changes-in-equilibrium",
+    "zh": "AD—AS均衡及其变动",
+    "en": "AD–AS equilibrium and changes in equilibrium",
+    "group": "u2g-equilibrium-level-of-real-output"
+   },
+   {
+    "id": "u2-comparing-equilibrium-in-classical-and-keynesian-models",
+    "zh": "古典与凯恩斯模型的均衡比较",
+    "en": "Comparing equilibrium in classical and Keynesian models",
+    "group": "u2g-equilibrium-level-of-real-output"
+   },
+   {
+    "id": "u2-the-multiplier-marginal-propensities-and-calculations",
+    "zh": "乘数、边际倾向与计算",
+    "en": "The multiplier, marginal propensities and calculations",
+    "group": "u2g-the-multiplier"
+   },
+   {
+    "id": "u2-the-multiplier-process-and-policy-applications",
+    "zh": "乘数过程及政策应用",
+    "en": "The multiplier process and policy applications",
+    "group": "u2g-the-multiplier"
+   },
+   {
+    "id": "u2-actual-economic-growth-and-its-causes",
+    "zh": "实际增长及其成因",
+    "en": "Actual economic growth and its causes",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-potential-economic-growth-and-its-causes",
+    "zh": "潜在增长及其成因",
+    "en": "Potential economic growth and its causes",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-benefits-of-economic-growth-and-their-distribution",
+    "zh": "经济增长的收益及其分配",
+    "en": "Benefits of economic growth and their distribution",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-costs-of-economic-growth",
+    "zh": "经济增长的代价",
+    "en": "Costs of economic growth",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-hysteresis-and-costs-of-recessions",
+    "zh": "滞后效应与衰退成本",
+    "en": "Hysteresis and costs of recessions",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-output-gaps-identification-measurement-and-effects",
+    "zh": "产出缺口：识别、衡量与影响",
+    "en": "Output gaps: identification, measurement and effects",
+    "group": "u2g-economic-growth-causes-effects-and-fluctuations"
+   },
+   {
+    "id": "u2-an-overview-of-macroeconomic-objectives",
+    "zh": "宏观经济目标概览",
+    "en": "An overview of macroeconomic objectives",
+    "group": "u2g-macroeconomic-objectives-and-conflicts"
+   },
+   {
+    "id": "u2-conflicts-between-macroeconomic-objectives",
+    "zh": "宏观经济目标之间的冲突",
+    "en": "Conflicts between macroeconomic objectives",
+    "group": "u2g-macroeconomic-objectives-and-conflicts"
+   },
+   {
+    "id": "u2-the-short-run-phillips-curve-trade-off",
+    "zh": "短期菲利普斯曲线的权衡",
+    "en": "The short-run Phillips curve trade-off",
+    "group": "u2g-macroeconomic-objectives-and-conflicts"
+   },
+   {
+    "id": "u2-interventionist-supply-side-policies",
+    "zh": "干预主义供给侧政策",
+    "en": "Interventionist supply-side policies",
+    "group": "u2g-macroeconomic-supply-side-policies"
+   },
+   {
+    "id": "u2-free-market-supply-side-policies",
+    "zh": "自由市场供给侧政策",
+    "en": "Free-market supply-side policies",
+    "group": "u2g-macroeconomic-supply-side-policies"
+   },
+   {
+    "id": "u2-comparing-and-evaluating-supply-side-policies",
+    "zh": "供给侧政策的比较与评价",
+    "en": "Comparing and evaluating supply-side policies",
+    "group": "u2g-macroeconomic-supply-side-policies"
+   },
+   {
+    "id": "u2-fiscal-policy-and-its-transmission",
+    "zh": "财政政策及其传导",
+    "en": "Fiscal policy and its transmission",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   },
+   {
+    "id": "u2-comparing-and-evaluating-demand-side-policies",
+    "zh": "需求侧政策的比较与评价",
+    "en": "Comparing and evaluating demand-side policies",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   },
+   {
+    "id": "u2-the-role-of-central-banks-in-the-conduct-of-monetary-policy",
+    "zh": "中央银行在货币政策实施中的作用",
+    "en": "The role of central banks in the conduct of monetary policy",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   },
+   {
+    "id": "u2-interest-rates-as-a-monetary-policy-instrument",
+    "zh": "作为货币政策工具的利率",
+    "en": "Interest rates as a monetary policy instrument",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   },
+   {
+    "id": "u2-quantitative-easing",
+    "zh": "量化宽松",
+    "en": "Quantitative easing",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   },
+   {
+    "id": "u2-lending-criteria",
+    "zh": "贷款标准",
+    "en": "Lending criteria",
+    "group": "u2g-macroeconomic-demand-side-policies"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-types-of-business",
+    "zh": "企业的类型",
+    "en": "Types of business"
+   },
+   {
+    "id": "u3g-size-of-businesses",
+    "zh": "企业的规模",
+    "en": "Size of businesses"
+   },
+   {
+    "id": "u3g-business-objectives",
+    "zh": "企业的目标",
+    "en": "Business objectives"
+   },
+   {
+    "id": "u3g-revenue",
+    "zh": "收入",
+    "en": "Revenue"
+   },
+   {
+    "id": "u3g-costs",
+    "zh": "成本",
+    "en": "Costs"
+   },
+   {
+    "id": "u3g-economies-and-diseconomies-of-scale",
+    "zh": "规模经济与规模不经济",
+    "en": "Economies and diseconomies of scale"
+   },
+   {
+    "id": "u3g-profits-and-losses",
+    "zh": "利润与亏损",
+    "en": "Profits and losses"
+   },
+   {
+    "id": "u3g-efficiency",
+    "zh": "效率",
+    "en": "Efficiency"
+   },
+   {
+    "id": "u3g-concentration-ratio",
+    "zh": "市场集中度",
+    "en": "Concentration ratio"
+   },
+   {
+    "id": "u3g-perfect-competition",
+    "zh": "完全竞争",
+    "en": "Perfect competition"
+   },
+   {
+    "id": "u3g-monopolistic-competition",
+    "zh": "垄断竞争",
+    "en": "Monopolistic competition"
+   },
+   {
+    "id": "u3g-oligopoly",
+    "zh": "寡头垄断",
+    "en": "Oligopoly"
+   },
+   {
+    "id": "u3g-monopoly",
+    "zh": "垄断",
+    "en": "Monopoly"
+   },
+   {
+    "id": "u3g-monopsony",
+    "zh": "买方垄断",
+    "en": "Monopsony"
+   },
+   {
+    "id": "u3g-contestability",
+    "zh": "可竞争性",
+    "en": "Contestability"
+   },
+   {
+    "id": "u3g-the-demand-for-labour",
+    "zh": "劳动需求",
+    "en": "The demand for labour"
+   },
+   {
+    "id": "u3g-the-supply-of-labour",
+    "zh": "劳动供给",
+    "en": "The supply of labour"
+   },
+   {
+    "id": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe",
+    "zh": "竞争与非竞争性市场中工资率",
+    "en": "The determination of wage rates in competitive and non-competitive markets"
+   },
+   {
+    "id": "u3g-market-failure-in-the-labour-market",
+    "zh": "劳动市场中的市场失灵",
+    "en": "Market failure in the labour market"
+   },
+   {
+    "id": "u3g-government-intervention-in-product-markets",
+    "zh": "政府对产品市场的干预",
+    "en": "Government intervention in product markets"
+   },
+   {
+    "id": "u3g-government-intervention-in-labour-markets",
+    "zh": "政府对劳动市场的干预",
+    "en": "Government intervention in labour markets"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-state-owned-enterprises-and-private-sector-organisations",
+    "zh": "国有企业与私营部门组织",
+    "en": "State-owned enterprises and private-sector organisations",
+    "group": "u3g-types-of-business"
+   },
+   {
+    "id": "u3-for-profit-and-not-for-profit-organisations",
+    "zh": "营利性与非营利性组织",
+    "en": "For-profit and not-for-profit organisations",
+    "group": "u3g-types-of-business"
+   },
+   {
+    "id": "u3-joint-ventures",
+    "zh": "合资企业",
+    "en": "Joint ventures",
+    "group": "u3g-types-of-business"
+   },
+   {
+    "id": "u3-co-operatives",
+    "zh": "合作社",
+    "en": "Co-operatives",
+    "group": "u3g-types-of-business"
+   },
+   {
+    "id": "u3-organic-growth",
+    "zh": "有机增长",
+    "en": "Organic growth",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-mergers-and-takeovers",
+    "zh": "合并与收购",
+    "en": "Mergers and takeovers",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-constraints-on-business-growth-and-reasons-for-remaining-sma",
+    "zh": "企业增长的制约与保持小规模的原因",
+    "en": "Constraints on business growth and reasons for remaining small",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-impact-of-business-growth-on-economic-agents",
+    "zh": "企业增长对经济参与者的影响",
+    "en": "Impact of business growth on economic agents",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-reasons-for-demergers-and-their-impact",
+    "zh": "分拆的原因及其影响",
+    "en": "Reasons for demergers and their impact",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-types-of-business-integration",
+    "zh": "企业整合的类型",
+    "en": "Types of business integration",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-measures-of-business-size-and-the-classification-of-smes-and",
+    "zh": "企业规模的衡量与中小及大型企业",
+    "en": "Measures of business size and the classification of SMEs and large corporations",
+    "group": "u3g-size-of-businesses"
+   },
+   {
+    "id": "u3-profit-maximisation-conditions-and-diagrams",
+    "zh": "利润最大化：条件与图像",
+    "en": "Profit maximisation: conditions and diagrams",
+    "group": "u3g-business-objectives"
+   },
+   {
+    "id": "u3-divorce-of-ownership-from-control-and-the-principal-agent-pr",
+    "zh": "所有权与控制权分离与委托-代理问题",
+    "en": "Divorce of ownership from control and the principal-agent problem",
+    "group": "u3g-business-objectives"
+   },
+   {
+    "id": "u3-revenue-maximisation",
+    "zh": "收入最大化",
+    "en": "Revenue maximisation",
+    "group": "u3g-business-objectives"
+   },
+   {
+    "id": "u3-behavioural-theories-satisficing",
+    "zh": "行为理论：满意化",
+    "en": "Behavioural theories: satisficing",
+    "group": "u3g-business-objectives"
+   },
+   {
+    "id": "u3-sales-volume-maximisation",
+    "zh": "销售量最大化",
+    "en": "Sales volume maximisation",
+    "group": "u3g-business-objectives"
+   },
+   {
+    "id": "u3-total-revenue",
+    "zh": "总收入",
+    "en": "Total revenue",
+    "group": "u3g-revenue"
+   },
+   {
+    "id": "u3-average-revenue",
+    "zh": "平均收入",
+    "en": "Average revenue",
+    "group": "u3g-revenue"
+   },
+   {
+    "id": "u3-marginal-revenue",
+    "zh": "边际收入",
+    "en": "Marginal revenue",
+    "group": "u3g-revenue"
+   },
+   {
+    "id": "u3-revenue-and-price-elasticity-of-demand",
+    "zh": "收益与需求价格弹性",
+    "en": "Revenue and price elasticity of demand",
+    "group": "u3g-revenue"
+   },
+   {
+    "id": "u3-short-run-cost-curves-and-the-relationship-between-ac-and-mc",
+    "zh": "短期成本曲线与AC、MC的关系",
+    "en": "Short-run cost curves and the relationship between AC and MC",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-the-law-of-diminishing-returns",
+    "zh": "边际报酬递减规律",
+    "en": "The law of diminishing returns",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-total-cost",
+    "zh": "总成本",
+    "en": "Total cost",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-fixed-variable-and-semi-variable-costs",
+    "zh": "固定、可变与半可变成本",
+    "en": "Fixed, variable and semi-variable costs",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-average-costs",
+    "zh": "平均成本",
+    "en": "Average costs",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-marginal-cost",
+    "zh": "边际成本",
+    "en": "Marginal cost",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-economic-cost-and-opportunity-cost",
+    "zh": "经济成本与机会成本",
+    "en": "Economic cost and opportunity cost",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-returns-to-scale",
+    "zh": "规模报酬",
+    "en": "Returns to scale",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-the-short-run-and-the-long-run",
+    "zh": "短期与长期",
+    "en": "The short run and the long run",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-increasing-returns-in-real-world-contexts",
+    "zh": "现实情境中的递增收益",
+    "en": "Increasing returns in real-world contexts",
+    "group": "u3g-costs"
+   },
+   {
+    "id": "u3-economies-of-scale-and-short-run-and-long-run-average-cost-c",
+    "zh": "规模经济与长短期平均成本曲线",
+    "en": "Economies of scale and short-run and long-run average cost curves",
+    "group": "u3g-economies-and-diseconomies-of-scale"
+   },
+   {
+    "id": "u3-internal-economies-of-scale",
+    "zh": "内部规模经济",
+    "en": "Internal economies of scale",
+    "group": "u3g-economies-and-diseconomies-of-scale"
+   },
+   {
+    "id": "u3-external-economies-of-scale",
+    "zh": "外部规模经济",
+    "en": "External economies of scale",
+    "group": "u3g-economies-and-diseconomies-of-scale"
+   },
+   {
+    "id": "u3-diseconomies-of-scale",
+    "zh": "规模不经济",
+    "en": "Diseconomies of scale",
+    "group": "u3g-economies-and-diseconomies-of-scale"
+   },
+   {
+    "id": "u3-minimum-efficient-scale",
+    "zh": "最小有效规模",
+    "en": "Minimum efficient scale",
+    "group": "u3g-economies-and-diseconomies-of-scale"
+   },
+   {
+    "id": "u3-shut-down-points-in-the-short-run-and-long-run",
+    "zh": "短期与长期停业点",
+    "en": "Shut down points in the short run and long run",
+    "group": "u3g-profits-and-losses"
+   },
+   {
+    "id": "u3-normal-profit-supernormal-profit-and-losses",
+    "zh": "正常利润、超额利润与亏损",
+    "en": "Normal profit, supernormal profit and losses",
+    "group": "u3g-profits-and-losses"
+   },
+   {
+    "id": "u3-productive-efficiency-cost-and-ppf-analysis",
+    "zh": "生产效率：成本与PPF分析",
+    "en": "Productive efficiency: cost and PPF analysis",
+    "group": "u3g-efficiency"
+   },
+   {
+    "id": "u3-comparing-efficiency-across-market-structures",
+    "zh": "不同市场结构的效率比较",
+    "en": "Comparing efficiency across market structures",
+    "group": "u3g-efficiency"
+   },
+   {
+    "id": "u3-x-inefficiency",
+    "zh": "X-低效率",
+    "en": "X-inefficiency",
+    "group": "u3g-efficiency"
+   },
+   {
+    "id": "u3-allocative-efficiency",
+    "zh": "配置效率",
+    "en": "Allocative efficiency",
+    "group": "u3g-efficiency"
+   },
+   {
+    "id": "u3-dynamic-efficiency",
+    "zh": "动态效率",
+    "en": "Dynamic efficiency",
+    "group": "u3g-efficiency"
+   },
+   {
+    "id": "u3-concentration-ratios",
+    "zh": "市场集中度",
+    "en": "Concentration ratios",
+    "group": "u3g-concentration-ratio"
+   },
+   {
+    "id": "u3-characteristics-of-market-structures",
+    "zh": "市场结构的特征",
+    "en": "Characteristics of market structures",
+    "group": "u3g-concentration-ratio"
+   },
+   {
+    "id": "u3-perfect-competition-characteristics-demand-and-revenue",
+    "zh": "完全竞争的特征、需求与收益",
+    "en": "Perfect competition: characteristics, demand and revenue",
+    "group": "u3g-perfect-competition"
+   },
+   {
+    "id": "u3-cost-and-supply-curves-in-perfect-competition",
+    "zh": "完全竞争中的成本与供给曲线",
+    "en": "Cost and supply curves in perfect competition",
+    "group": "u3g-perfect-competition"
+   },
+   {
+    "id": "u3-short-run-and-long-run-equilibrium-in-perfect-competition",
+    "zh": "完全竞争中的短期与长期均衡",
+    "en": "Short-run and long-run equilibrium in perfect competition",
+    "group": "u3g-perfect-competition"
+   },
+   {
+    "id": "u3-monopolistic-competition-characteristics-and-product-differe",
+    "zh": "垄断竞争的特征与产品差异化",
+    "en": "Monopolistic competition: characteristics and product differentiation",
+    "group": "u3g-monopolistic-competition"
+   },
+   {
+    "id": "u3-short-run-and-long-run-equilibrium-in-monopolistic-competiti",
+    "zh": "垄断竞争的短期与长期均衡",
+    "en": "Short-run and long-run equilibrium in monopolistic competition",
+    "group": "u3g-monopolistic-competition"
+   },
+   {
+    "id": "u3-interdependence-and-simple-game-theory",
+    "zh": "相互依赖与简单博弈论",
+    "en": "Interdependence and simple game theory",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-non-price-competition-in-oligopoly",
+    "zh": "寡头垄断中的非价格竞争",
+    "en": "Non-price competition in oligopoly",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-assumptions-of-oligopoly",
+    "zh": "寡头垄断的假设",
+    "en": "Assumptions of oligopoly",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-collusion-cartels-and-price-leadership",
+    "zh": "合谋、卡特尔与价格领导",
+    "en": "Collusion, cartels and price leadership",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-price-wars",
+    "zh": "价格战",
+    "en": "Price wars",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-predatory-pricing",
+    "zh": "掠夺性定价",
+    "en": "Predatory pricing",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-limit-pricing",
+    "zh": "限制性定价",
+    "en": "Limit pricing",
+    "group": "u3g-oligopoly"
+   },
+   {
+    "id": "u3-third-degree-price-discrimination",
+    "zh": "三级价格歧视",
+    "en": "Third-degree price discrimination",
+    "group": "u3g-monopoly"
+   },
+   {
+    "id": "u3-monopoly-characteristics-and-profit-maximising-equilibrium",
+    "zh": "垄断的特征与利润最大化均衡",
+    "en": "Monopoly: characteristics and profit-maximising equilibrium",
+    "group": "u3g-monopoly"
+   },
+   {
+    "id": "u3-natural-monopoly",
+    "zh": "自然垄断",
+    "en": "Natural monopoly",
+    "group": "u3g-monopoly"
+   },
+   {
+    "id": "u3-costs-and-benefits-of-monopoly",
+    "zh": "垄断的成本与收益",
+    "en": "Costs and benefits of monopoly",
+    "group": "u3g-monopoly"
+   },
+   {
+    "id": "u3-monopsony-characteristics-behaviour-and-effects",
+    "zh": "买方垄断的特征、行为与影响",
+    "en": "Monopsony: characteristics, behaviour and effects",
+    "group": "u3g-monopsony"
+   },
+   {
+    "id": "u3-contestable-markets-entry-and-exit-barriers-and-the-degree-o",
+    "zh": "可竞争市场、进入退出壁垒与可竞争程度",
+    "en": "Contestable markets, entry and exit barriers, and the degree of contestability",
+    "group": "u3g-contestability"
+   },
+   {
+    "id": "u3-effects-of-contestability-on-firm-behaviour-and-stakeholders",
+    "zh": "可竞争性对企业行为与利益相关者的影响",
+    "en": "Effects of contestability on firm behaviour and stakeholders",
+    "group": "u3g-contestability"
+   },
+   {
+    "id": "u3-sunk-costs",
+    "zh": "沉没成本",
+    "en": "Sunk costs",
+    "group": "u3g-contestability"
+   },
+   {
+    "id": "u3-labour-demand-marginal-revenue-product-theory-and-applicatio",
+    "zh": "劳动需求、MRP理论及其应用",
+    "en": "Labour demand, marginal revenue product theory and applications",
+    "group": "u3g-the-demand-for-labour"
+   },
+   {
+    "id": "u3-elasticity-of-labour-demand-and-substitution-between-labour",
+    "zh": "劳动需求弹性与劳动—资本替代",
+    "en": "Elasticity of labour demand and substitution between labour and capital",
+    "group": "u3g-the-demand-for-labour"
+   },
+   {
+    "id": "u3-shifts-in-the-demand-for-labour",
+    "zh": "劳动需求的移动",
+    "en": "Shifts in the demand for labour",
+    "group": "u3g-the-demand-for-labour"
+   },
+   {
+    "id": "u3-labour-supply-to-an-occupation-and-changes-in-supply",
+    "zh": "特定职业的劳动供给及其变动",
+    "en": "Labour supply to an occupation and changes in supply",
+    "group": "u3g-the-supply-of-labour"
+   },
+   {
+    "id": "u3-elasticity-of-supply-of-labour",
+    "zh": "劳动供给弹性",
+    "en": "Elasticity of supply of labour",
+    "group": "u3g-the-supply-of-labour"
+   },
+   {
+    "id": "u3-trade-unions-as-monopoly-sellers-of-labour",
+    "zh": "工会作为劳动力的垄断卖方",
+    "en": "Trade unions as monopoly sellers of labour",
+    "group": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe"
+   },
+   {
+    "id": "u3-monopsony-in-the-labour-market",
+    "zh": "劳动力市场中的买方垄断",
+    "en": "Monopsony in the labour market",
+    "group": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe"
+   },
+   {
+    "id": "u3-wage-and-employment-equilibrium-in-competitive-labour-market",
+    "zh": "竞争性劳动市场的工资与就业均衡",
+    "en": "Wage and employment equilibrium in competitive labour markets",
+    "group": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe"
+   },
+   {
+    "id": "u3-wage-differences-and-the-role-of-net-benefits",
+    "zh": "工资差异与净收益的作用",
+    "en": "Wage differences and the role of net benefits",
+    "group": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe"
+   },
+   {
+    "id": "u3-wage-setting-in-the-public-sector-and-state-owned-enterprise",
+    "zh": "公共部门与国有企业的工资决定",
+    "en": "Wage setting in the public sector and state-owned enterprises",
+    "group": "u3g-the-determination-of-wage-rates-in-competitive-and-non-compe"
+   },
+   {
+    "id": "u3-occupational-and-geographical-immobility-of-labour",
+    "zh": "劳动流动性不足：职业与地理",
+    "en": "Occupational and geographical immobility of labour",
+    "group": "u3g-market-failure-in-the-labour-market"
+   },
+   {
+    "id": "u3-measures-to-protect-suppliers-and-employees",
+    "zh": "保护供应商与员工的措施",
+    "en": "Measures to protect suppliers and employees",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-limitations-of-government-intervention-and-regulation",
+    "zh": "政府干预与监管的局限",
+    "en": "Limitations of government intervention and regulation",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-measures-to-promote-competition-and-contestability",
+    "zh": "促进竞争与可竞争性的措施",
+    "en": "Measures to promote competition and contestability",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-impacts-of-government-intervention-in-product-markets",
+    "zh": "政府干预产品市场的影响",
+    "en": "Impacts of government intervention in product markets",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-price-regulation",
+    "zh": "价格监管",
+    "en": "Price regulation",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-profit-regulation",
+    "zh": "利润监管",
+    "en": "Profit regulation",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-quality-standards-and-performance-targets",
+    "zh": "质量标准与绩效目标",
+    "en": "Quality standards and performance targets",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-merger-and-takeover-regulation",
+    "zh": "合并与收购监管",
+    "en": "Merger and takeover regulation",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-regulatory-capture",
+    "zh": "监管俘获",
+    "en": "Regulatory capture",
+    "group": "u3g-government-intervention-in-product-markets"
+   },
+   {
+    "id": "u3-maximum-wage-controls",
+    "zh": "最高工资管制",
+    "en": "Maximum wage controls",
+    "group": "u3g-government-intervention-in-labour-markets"
+   },
+   {
+    "id": "u3-direct-taxes",
+    "zh": "直接税",
+    "en": "Direct taxes",
+    "group": "u3g-government-intervention-in-labour-markets"
+   },
+   {
+    "id": "u3-minimum-wage-controls",
+    "zh": "最低工资管制",
+    "en": "Minimum wage controls",
+    "group": "u3g-government-intervention-in-labour-markets"
+   },
+   {
+    "id": "u3-reasons-for-government-intervention-in-labour-markets",
+    "zh": "政府干预劳动市场的原因",
+    "en": "Reasons for government intervention in labour markets",
+    "group": "u3g-government-intervention-in-labour-markets"
+   },
+   {
+    "id": "u3-measures-to-reduce-labour-immobility-and-discrimination",
+    "zh": "减少劳动力流动障碍与歧视的措施",
+    "en": "Measures to reduce labour immobility and discrimination",
+    "group": "u3g-government-intervention-in-labour-markets"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-globalisation",
+    "zh": "全球化",
+    "en": "Globalisation"
+   },
+   {
+    "id": "u4g-specialisation-and-comparative-advantage",
+    "zh": "专业化分工与比较优势",
+    "en": "Specialisation and comparative advantage"
+   },
+   {
+    "id": "u4g-patterns-and-volume-of-world-trade",
+    "zh": "世界贸易的格局与规模",
+    "en": "Patterns and volume of world trade"
+   },
+   {
+    "id": "u4g-terms-of-trade",
+    "zh": "贸易条件",
+    "en": "Terms of trade"
+   },
+   {
+    "id": "u4g-trade-liberalisation-and-trading-blocs",
+    "zh": "贸易自由化与贸易集团",
+    "en": "Trade liberalisation and trading blocs"
+   },
+   {
+    "id": "u4g-restrictions-on-free-trade",
+    "zh": "对自由贸易的限制",
+    "en": "Restrictions on free trade"
+   },
+   {
+    "id": "u4g-balance-of-payments",
+    "zh": "国际收支",
+    "en": "Balance of payments"
+   },
+   {
+    "id": "u4g-exchange-rates",
+    "zh": "汇率",
+    "en": "Exchange rates"
+   },
+   {
+    "id": "u4g-international-competitiveness",
+    "zh": "国际竞争力",
+    "en": "International competitiveness"
+   },
+   {
+    "id": "u4g-poverty",
+    "zh": "贫困",
+    "en": "Poverty"
+   },
+   {
+    "id": "u4g-inequality",
+    "zh": "不平等",
+    "en": "Inequality"
+   },
+   {
+    "id": "u4g-public-expenditure",
+    "zh": "公共支出",
+    "en": "Public expenditure"
+   },
+   {
+    "id": "u4g-taxation",
+    "zh": "税收",
+    "en": "Taxation"
+   },
+   {
+    "id": "u4g-public-sector-borrowing-and-public-sector-debt",
+    "zh": "公共部门借款与债务",
+    "en": "Public sector borrowing and public sector debt"
+   },
+   {
+    "id": "u4g-macroeconomic-policies",
+    "zh": "宏观经济政策",
+    "en": "Macroeconomic policies"
+   },
+   {
+    "id": "u4g-measures-of-economic-development",
+    "zh": "经济发展的衡量指标",
+    "en": "Measures of economic development"
+   },
+   {
+    "id": "u4g-constraints-on-growth-and-development",
+    "zh": "增长与发展的制约因素",
+    "en": "Constraints on growth and development"
+   },
+   {
+    "id": "u4g-measures-to-promote-growth-and-development",
+    "zh": "促进增长与发展的措施",
+    "en": "Measures to promote growth and development"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-globalisation-meaning-and-characteristics",
+    "zh": "全球化的含义与特征",
+    "en": "Globalisation: meaning and characteristics",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-fdi-transnational-companies-and-motives-for-outward-investme",
+    "zh": "FDI、跨国公司与对外投资动机",
+    "en": "FDI, transnational companies and motives for outward investment",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-effects-of-fdi-on-host-countries",
+    "zh": "FDI对东道国的影响",
+    "en": "Effects of FDI on host countries",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-factors-contributing-to-increased-globalisation",
+    "zh": "促进全球化加剧的因素",
+    "en": "Factors contributing to increased globalisation",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-benefits-costs-and-wider-effects-of-globalisation",
+    "zh": "全球化的收益、代价与综合影响",
+    "en": "Benefits, costs and wider effects of globalisation",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-benefits-and-costs-of-specialisation-and-trade",
+    "zh": "专业化与贸易的收益及成本",
+    "en": "Benefits and costs of specialisation and trade",
+    "group": "u4g-specialisation-and-comparative-advantage"
+   },
+   {
+    "id": "u4-assumptions-and-limitations-of-the-theory-of-comparative-adv",
+    "zh": "比较优势理论的假设与局限",
+    "en": "Assumptions and limitations of the theory of comparative advantage",
+    "group": "u4g-specialisation-and-comparative-advantage"
+   },
+   {
+    "id": "u4-absolute-and-comparative-advantage",
+    "zh": "绝对优势与比较优势",
+    "en": "Absolute and comparative advantage",
+    "group": "u4g-specialisation-and-comparative-advantage"
+   },
+   {
+    "id": "u4-why-comparative-advantage-exists-and-how-it-changes",
+    "zh": "比较优势存在的原因及其变化",
+    "en": "Why comparative advantage exists and how it changes",
+    "group": "u4g-specialisation-and-comparative-advantage"
+   },
+   {
+    "id": "u4-patterns-and-volume-of-world-trade-and-their-changes",
+    "zh": "世界贸易格局、规模及其变化",
+    "en": "Patterns and volume of world trade and their changes",
+    "group": "u4g-patterns-and-volume-of-world-trade"
+   },
+   {
+    "id": "u4-effects-of-changes-in-the-terms-of-trade",
+    "zh": "贸易条件变动的影响",
+    "en": "Effects of changes in the terms of trade",
+    "group": "u4g-terms-of-trade"
+   },
+   {
+    "id": "u4-definition-and-calculation-of-the-terms-of-trade",
+    "zh": "贸易条件的定义与计算",
+    "en": "Definition and calculation of the terms of trade",
+    "group": "u4g-terms-of-trade"
+   },
+   {
+    "id": "u4-factors-influencing-the-terms-of-trade",
+    "zh": "影响贸易条件的因素",
+    "en": "Factors influencing the terms of trade",
+    "group": "u4g-terms-of-trade"
+   },
+   {
+    "id": "u4-the-role-of-the-wto-in-trade-liberalisation",
+    "zh": "世界贸易组织在贸易自由化中的作用",
+    "en": "The role of the WTO in trade liberalisation",
+    "group": "u4g-trade-liberalisation-and-trading-blocs"
+   },
+   {
+    "id": "u4-benefits-and-costs-of-trading-bloc-membership",
+    "zh": "加入贸易集团的收益与成本",
+    "en": "Benefits and costs of trading bloc membership",
+    "group": "u4g-trade-liberalisation-and-trading-blocs"
+   },
+   {
+    "id": "u4-possible-conflicts-between-trading-blocs-and-the-wto",
+    "zh": "贸易集团与世界贸易组织之间可能的冲突",
+    "en": "Possible conflicts between trading blocs and the WTO",
+    "group": "u4g-trade-liberalisation-and-trading-blocs"
+   },
+   {
+    "id": "u4-types-of-trading-blocs",
+    "zh": "贸易集团的类型",
+    "en": "Types of trading blocs",
+    "group": "u4g-trade-liberalisation-and-trading-blocs"
+   },
+   {
+    "id": "u4-trade-creation-and-trade-diversion",
+    "zh": "贸易创造与贸易转移",
+    "en": "Trade creation and trade diversion",
+    "group": "u4g-trade-liberalisation-and-trading-blocs"
+   },
+   {
+    "id": "u4-reasons-for-restrictions-on-free-trade",
+    "zh": "限制自由贸易的原因",
+    "en": "Reasons for restrictions on free trade",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-impact-of-protectionist-policies",
+    "zh": "保护主义政策的影响",
+    "en": "Impact of protectionist policies",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-tariffs-and-their-welfare-effects",
+    "zh": "关税及其福利效应",
+    "en": "Tariffs and their welfare effects",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-quotas-and-their-welfare-effects",
+    "zh": "配额及其福利效应",
+    "en": "Quotas and their welfare effects",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-subsidies-to-domestic-producers",
+    "zh": "对国内生产者的补贴",
+    "en": "Subsidies to domestic producers",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-other-non-tariff-barriers",
+    "zh": "其他非关税壁垒",
+    "en": "Other non-tariff barriers",
+    "group": "u4g-restrictions-on-free-trade"
+   },
+   {
+    "id": "u4-components-of-the-balance-of-payments",
+    "zh": "国际收支的组成部分",
+    "en": "Components of the balance of payments",
+    "group": "u4g-balance-of-payments"
+   },
+   {
+    "id": "u4-significance-of-global-trade-imbalances",
+    "zh": "全球贸易失衡的重要性",
+    "en": "Significance of global trade imbalances",
+    "group": "u4g-balance-of-payments"
+   },
+   {
+    "id": "u4-measures-to-reduce-a-current-account-imbalance",
+    "zh": "减少经常账户失衡的措施",
+    "en": "Measures to reduce a current account imbalance",
+    "group": "u4g-balance-of-payments"
+   },
+   {
+    "id": "u4-causes-of-current-account-surpluses-and-deficits",
+    "zh": "经常账户盈余与赤字的原因",
+    "en": "Causes of current account surpluses and deficits",
+    "group": "u4g-balance-of-payments"
+   },
+   {
+    "id": "u4-exchange-rate-systems-and-concepts-of-exchange-rate-change",
+    "zh": "汇率制度与汇率变动的基本概念",
+    "en": "Exchange-rate systems and concepts of exchange-rate change",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-factors-influencing-floating-exchange-rates",
+    "zh": "影响浮动汇率的因素",
+    "en": "Factors influencing floating exchange rates",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-economic-effects-of-exchange-rate-changes-including-competit",
+    "zh": "汇率变动的经济影响（含竞争性贬值）",
+    "en": "Economic effects of exchange-rate changes, including competitive devaluation",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-government-intervention-in-currency-markets",
+    "zh": "政府对外汇市场的干预",
+    "en": "Government intervention in currency markets",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-the-marshall-lerner-condition",
+    "zh": "马歇尔—勒纳条件",
+    "en": "The Marshall–Lerner condition",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-the-j-curve-effect",
+    "zh": "J曲线效应",
+    "en": "The J-curve effect",
+    "group": "u4g-exchange-rates"
+   },
+   {
+    "id": "u4-measures-of-international-competitiveness",
+    "zh": "国际竞争力的衡量指标",
+    "en": "Measures of international competitiveness",
+    "group": "u4g-international-competitiveness"
+   },
+   {
+    "id": "u4-significance-of-international-competitiveness",
+    "zh": "国际竞争力的重要性",
+    "en": "Significance of international competitiveness",
+    "group": "u4g-international-competitiveness"
+   },
+   {
+    "id": "u4-determinants-of-international-competitiveness-and-policies-t",
+    "zh": "国际竞争力的决定因素与提升措施",
+    "en": "Determinants of international competitiveness and policies to improve it",
+    "group": "u4g-international-competitiveness"
+   },
+   {
+    "id": "u4-trends-in-poverty-and-causes-of-change",
+    "zh": "贫困变化的趋势与成因",
+    "en": "Trends in poverty and causes of change",
+    "group": "u4g-poverty"
+   },
+   {
+    "id": "u4-absolute-and-relative-poverty",
+    "zh": "绝对贫困与相对贫困",
+    "en": "Absolute and relative poverty",
+    "group": "u4g-poverty"
+   },
+   {
+    "id": "u4-economic-and-social-effects-of-inequality",
+    "zh": "不平等的经济与社会影响",
+    "en": "Economic and social effects of inequality",
+    "group": "u4g-inequality"
+   },
+   {
+    "id": "u4-causes-of-income-and-wealth-inequality-between-countries",
+    "zh": "国家之间收入与财富不平等的成因",
+    "en": "Causes of income and wealth inequality between countries",
+    "group": "u4g-inequality"
+   },
+   {
+    "id": "u4-causes-of-income-and-wealth-inequality-within-countries",
+    "zh": "国家内部收入与财富不平等的成因",
+    "en": "Causes of income and wealth inequality within countries",
+    "group": "u4g-inequality"
+   },
+   {
+    "id": "u4-measuring-inequality-lorenz-curves-and-the-gini-coefficient",
+    "zh": "不平等的衡量：洛伦兹曲线与基尼系数",
+    "en": "Measuring inequality: Lorenz curves and the Gini coefficient",
+    "group": "u4g-inequality"
+   },
+   {
+    "id": "u4-income-and-wealth-inequality",
+    "zh": "收入与财富不平等",
+    "en": "Income and wealth inequality",
+    "group": "u4g-inequality"
+   },
+   {
+    "id": "u4-determinants-of-the-size-and-composition-of-public-expenditu",
+    "zh": "公共支出规模与结构的决定因素",
+    "en": "Determinants of the size and composition of public expenditure",
+    "group": "u4g-public-expenditure"
+   },
+   {
+    "id": "u4-categories-of-public-expenditure",
+    "zh": "公共支出的类别",
+    "en": "Categories of public expenditure",
+    "group": "u4g-public-expenditure"
+   },
+   {
+    "id": "u4-economic-effects-of-public-expenditure-including-crowding-in",
+    "zh": "公共支出的经济影响（含挤入效应）",
+    "en": "Economic effects of public expenditure, including crowding in",
+    "group": "u4g-public-expenditure"
+   },
+   {
+    "id": "u4-crowding-out",
+    "zh": "挤出效应",
+    "en": "Crowding out",
+    "group": "u4g-public-expenditure"
+   },
+   {
+    "id": "u4-direct-and-indirect-taxation",
+    "zh": "直接税与间接税",
+    "en": "Direct and indirect taxation",
+    "group": "u4g-taxation"
+   },
+   {
+    "id": "u4-reasons-for-taxation",
+    "zh": "征税的原因",
+    "en": "Reasons for taxation",
+    "group": "u4g-taxation"
+   },
+   {
+    "id": "u4-economic-effects-of-changes-in-tax-rates",
+    "zh": "税率变动的经济影响",
+    "en": "Economic effects of changes in tax rates",
+    "group": "u4g-taxation"
+   },
+   {
+    "id": "u4-progressive-proportional-and-regressive-taxes",
+    "zh": "累进税、比例税与累退税",
+    "en": "Progressive, proportional and regressive taxes",
+    "group": "u4g-taxation"
+   },
+   {
+    "id": "u4-laffer-curve-analysis",
+    "zh": "拉弗曲线分析",
+    "en": "Laffer curve analysis",
+    "group": "u4g-taxation"
+   },
+   {
+    "id": "u4-factors-influencing-the-size-of-fiscal-deficits-and-national",
+    "zh": "影响财政赤字与国民债务规模的因素",
+    "en": "Factors influencing the size of fiscal deficits and national debt",
+    "group": "u4g-public-sector-borrowing-and-public-sector-debt"
+   },
+   {
+    "id": "u4-fiscal-deficits-and-fiscal-surpluses",
+    "zh": "财政赤字与财政盈余",
+    "en": "Fiscal deficits and fiscal surpluses",
+    "group": "u4g-public-sector-borrowing-and-public-sector-debt"
+   },
+   {
+    "id": "u4-cyclical-and-structural-deficits-automatic-stabilisers-and-d",
+    "zh": "周期性与结构性赤字、自动稳定器及相机抉择",
+    "en": "Cyclical and structural deficits, automatic stabilisers and discretionary fiscal policy",
+    "group": "u4g-public-sector-borrowing-and-public-sector-debt"
+   },
+   {
+    "id": "u4-significance-of-fiscal-deficits-and-national-debt",
+    "zh": "财政赤字与国民债务的重要性",
+    "en": "Significance of fiscal deficits and national debt",
+    "group": "u4g-public-sector-borrowing-and-public-sector-debt"
+   },
+   {
+    "id": "u4-tax-avoidance-by-transnational-companies-and-transfer-pricin",
+    "zh": "跨国公司避税与转移定价",
+    "en": "Tax avoidance by transnational companies and transfer pricing",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-limits-to-government-control-of-tncs",
+    "zh": "政府管控跨国公司的局限",
+    "en": "Limits to government control of TNCs",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-policies-to-reduce-fiscal-deficits-and-national-debts",
+    "zh": "减少财政赤字和国债的政策",
+    "en": "Policies to Reduce Fiscal Deficits and National Debts",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-macroeconomic-policy-instruments-transmission-and-effects",
+    "zh": "宏观政策工具、传导与经济影响",
+    "en": "Macroeconomic policy instruments, transmission and effects",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-policy-responses-to-external-shocks-and-financial-crises",
+    "zh": "应对外部冲击与金融危机的政策",
+    "en": "Policy responses to external shocks and financial crises",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-policies-to-reduce-poverty-and-inequality",
+    "zh": "减少贫困和不平等的政策",
+    "en": "Policies to Reduce Poverty and Inequality",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-policies-to-control-the-rate-of-inflation",
+    "zh": "控制通货膨胀率的政策",
+    "en": "Policies to Control the Rate of Inflation",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-problems-facing-policy-makers",
+    "zh": "政策制定者面临的问题",
+    "en": "Problems Facing Policy Makers",
+    "group": "u4g-macroeconomic-policies"
+   },
+   {
+    "id": "u4-economic-growth-development-and-country-characteristics",
+    "zh": "经济增长、经济发展与国家发展特征",
+    "en": "Economic growth, development and country characteristics",
+    "group": "u4g-measures-of-economic-development"
+   },
+   {
+    "id": "u4-other-measures-of-development",
+    "zh": "其他发展衡量指标",
+    "en": "Other measures of development",
+    "group": "u4g-measures-of-economic-development"
+   },
+   {
+    "id": "u4-the-human-development-index-hdi",
+    "zh": "人类发展指数（HDI）",
+    "en": "The Human Development Index (HDI)",
+    "group": "u4g-measures-of-economic-development"
+   },
+   {
+    "id": "u4-commodity-price-volatility",
+    "zh": "初级产品价格波动",
+    "en": "Commodity price volatility",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-primary-product-dependency-and-the-prebisch-singer-hypothesi",
+    "zh": "初级产品依赖与普雷维什—辛格假说",
+    "en": "Primary product dependency and the Prebisch–Singer hypothesis",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-foreign-currency-gaps",
+    "zh": "外汇缺口",
+    "en": "Foreign currency gaps",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-capital-flight",
+    "zh": "资本外逃",
+    "en": "Capital flight",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-demographic-change-migration-and-development",
+    "zh": "人口变化、人口迁移与发展",
+    "en": "Demographic change, migration and development",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-household-and-overseas-debt",
+    "zh": "家庭债务与外债",
+    "en": "Household and overseas debt",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-access-to-credit-and-banking",
+    "zh": "信贷与银行服务的可获得性",
+    "en": "Access to credit and banking",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-infrastructure-as-a-development-constraint",
+    "zh": "作为发展约束的基础设施",
+    "en": "Infrastructure as a development constraint",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-education-and-skills-as-development-constraints",
+    "zh": "作为发展约束的教育与技能",
+    "en": "Education and skills as development constraints",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-non-economic-constraints-governance-conflict-and-security",
+    "zh": "非经济约束：治理、冲突与安全",
+    "en": "Non-economic constraints: governance, conflict and security",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-savings-gaps-and-the-harrod-domar-model",
+    "zh": "储蓄缺口与哈罗德—多马模型",
+    "en": "Savings gaps and the Harrod–Domar model",
+    "group": "u4g-constraints-on-growth-and-development"
+   },
+   {
+    "id": "u4-interventionist-strategies",
+    "zh": "干预主义战略",
+    "en": "Interventionist strategies",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-foreign-aid",
+    "zh": "对外援助",
+    "en": "Foreign aid",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-debt-relief",
+    "zh": "债务减免",
+    "en": "Debt relief",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-financial-sector-development",
+    "zh": "金融部门发展",
+    "en": "Financial sector development",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-microfinance",
+    "zh": "小额信贷",
+    "en": "Microfinance",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-industrialisation-and-the-lewis-dual-sector-model",
+    "zh": "工业化与刘易斯二元部门模型",
+    "en": "Industrialisation and the Lewis dual-sector model",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-tourism-and-development",
+    "zh": "旅游业与发展",
+    "en": "Tourism and development",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-development-of-primary-industries",
+    "zh": "初级产业发展",
+    "en": "Development of primary industries",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-joint-ventures-with-tncs",
+    "zh": "与跨国公司成立合资企业",
+    "en": "Joint ventures with TNCs",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-buffer-stock-schemes",
+    "zh": "缓冲库存计划",
+    "en": "Buffer stock schemes",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-the-world-bank-and-development",
+    "zh": "世界银行与发展",
+    "en": "The World Bank and development",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-the-imf-and-development",
+    "zh": "国际货币基金组织与发展",
+    "en": "The IMF and development",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-ngos-and-development",
+    "zh": "非政府组织与发展",
+    "en": "NGOs and development",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   },
+   {
+    "id": "u4-market-orientated-strategies",
+    "zh": "市场导向战略",
+    "en": "Market-orientated strategies",
+    "group": "u4g-measures-to-promote-growth-and-development"
+   }
+  ]
+ }
+}

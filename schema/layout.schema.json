@@ -55,9 +55,13 @@
         "type": "object",
         "required": ["label", "box"],
         "additionalProperties": false,
-        "properties": {
-          "label": { "type": "string", "description": "A / B / C / D" },
-          "box": { "$ref": "#/$defs/box" }
+            "properties": {
+              "label": { "type": "string", "description": "A / B / C / D" },
+              "part": {
+                "type": "string",
+                "description": "所属小问标签（化学 2 分选择题 (a)/(b) 各一套选项时才有）"
+              },
+              "box": { "$ref": "#/$defs/box" }
         }
       }
     },
@@ -78,7 +82,7 @@
             "required": ["kind", "page", "pt", "img"],
             "additionalProperties": false,
             "properties": {
-              "kind": { "type": "string", "enum": ["qp", "answer", "answer_block"] },
+              "kind": { "type": "string", "enum": ["material", "qp", "answer", "answer_block"] },
               "page": { "type": "integer", "description": "源 PDF 页码（0 起）" },
               "pt": {
                 "type": "array", "items": { "type": "number" },

@@ -40,7 +40,11 @@ from PIL import Image, ImageDraw
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from render_questions import NOTICE_TEXT, _notice_font  # noqa: E402
+from render_questions import (  # noqa: E402
+    NOTICE_TEXT,
+    _notice_font,
+    _resolve_notice_font_path,
+)
 
 ROMAN_TOKENS = {"i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii"}
 GAP_PX = 2  # 册内切片向上扩的边距（覆盖到上一片底部即可，标签行在间隙里）
@@ -48,12 +52,59 @@ GAP_PX = 2  # 册内切片向上扩的边距（覆盖到上一片底部即可，
 
 def top_labels(q) -> list[str]:
     """顶层小问标签（各标签行首 token，非罗马），按 subquestions 文档序去重。
-    QP 可无独立 "(b)" 行（直接 "(b)(i)"），故按首 token 归组而非只认单 token 行。"""
+    QP 可无独立 "(b)" 行（直接 "(b)(i)"），故按首 token 归组而非只认单 token 行。
+
+    单 token 罗马字母（i/v/x）默认当子项排除，但**顶层小问本身就叫 (i)**
+    （会计 a–l、CIE 化学 a–j 都排到 i）。补回判据是断档：h 与 j 都在却缺 i，
+    且 cut.json 里确实有独立的 "i" 行 —— 那它一定是顶层题被误排，插回 j 之前。
+
+    全罗马（2026-10-21 补）：Edexcel 数学另有一类 parent 丢失的裸 "i"——
+    **整题的顶层小问就是 (i)(ii)**，没有外层字母，序列也不断档。这种题过滤后
+    out 为空，以前直接返回 []，前端 split_eligible=False、后端 422「顶层小问不足 2 个」，
+    等于永远拆不了。现在：过滤后若一个都不剩、且首层全是罗马字母，则按文档序整体返回。"""
+    subs = q.get("subquestions") or []
     out: list[str] = []
-    for s in q.get("subquestions") or []:
+    for s in subs:
         top = s["label"].split()[0]
         if top not in ROMAN_TOKENS and top not in out:
             out.append(top)
+    if not out:
+        # 首层全是罗马 → 它们就是本题的顶层小问，不是子项
+        roman_only: list[str] = []
+        for s in subs:
+            top = s["label"].split()[0]
+            if top and top not in roman_only:
+                roman_only.append(top)
+        if roman_only and all(t in ROMAN_TOKENS for t in roman_only):
+            return roman_only
+    letters = [x for x in out if len(x) == 1]
+    for before, mid, after in (("h", "i", "j"), ("u", "v", "w"), ("w", "x", "y")):
+        if before in letters and after in letters and mid not in letters:
+            if any(s["label"] == mid for s in subs):
+                out.insert(out.index(after), mid)
+    return out
+
+
+def leaf_labels(q) -> list[str]:
+    """打标叶子标签：把「字母 + 罗马」结构展开成实际答题单元。
+
+    · 字母有罗马子项的（a / a i / a ii）→ 字母本身不单独成单元，只留 "a i"、"a ii"；
+    · 字母没有子项的（b 后面直接跟 c）→ 字母自己算一个单元。
+
+    例：['a','a i','a ii','b','c','c i','c ii','d'] → ['a i','a ii','b','c i','c ii','d']
+
+    会计（IAL Accounting）按 (a)(i)(ii) 打分，一个 (a) 下面往往 3–5 分项，
+    按顶层字母打标会粗到没法区分知识点，故该学科走这条。
+    纯函数，不碰磁盘与依赖，云端/本地两份脚本内容一致。
+    """
+    subs = q.get("subquestions") or []
+    parents = {s["label"].split()[0] for s in subs if len(s["label"].split()) > 1}
+    out: list[str] = []
+    for s in subs:
+        lab = s["label"]
+        if len(lab.split()) > 1 or lab not in parents:
+            if lab not in out:
+                out.append(lab)
     return out
 
 
@@ -109,8 +160,9 @@ def render_split(session_dir: str | Path, qnum: str | int,
     q = next((x for x in cut["questions"] if str(x["number"]) == str(qnum)), None)
     if q is None:
         raise KeyError(f"cut.json 中无第 {qnum} 题")
-    if q.get("question_type") == "mcq":
-        raise ValueError("MCQ 无小问结构，不支持切分")
+    # MCQ 也可有小问（化学 Section A「(a)(b)(c) 各带一套 A–D」，2026-10-19 起
+    # cut.json.subquestions 已补）。MCQ 无答题册 → booklet=False → 自动走 qp_inline，
+    # 只按 QP 切点裁剪；真正的闸是下面的「顶层标签 ≥ 2」，单问 MCQ 照样切不了。
     labels = labels or top_labels(q)
     if len(labels) < 2:
         raise ValueError(f"顶层小问不足 2 个（{labels}），无需切分")
@@ -136,10 +188,14 @@ def render_split(session_dir: str | Path, qnum: str | int,
     qp_end_px = smap.y(regions[-1]["page"], qp_end_pt)
 
     cuts: dict[str, float] = {}
+    wanted = list(labels)
     for s in q.get("subquestions") or []:
         top = s["label"].split()[0]
-        if top not in ROMAN_TOKENS and top not in cuts:
-            # 顶层标签行（"a"）或其首个子行（"b i"——QP 可无独立 "(b)" 行）
+        # 按「调用方请求的顶层标签」取切点：顶层标签行（"a"）或其首个子行
+        # （"b i"——QP 可无独立 "(b)" 行）都算。旧版用 `top not in ROMAN_TOKENS`
+        # 排除罗马字母，会把**本身就叫 (i) 的顶层小问**一并排掉（生物/化学/会计
+        # 小问字母排到 i），导致「顶层标签缺 QP 切点」。
+        if top in wanted and top not in cuts:
             cuts[top] = smap.y(s["page"], s["bbox"][1])
     missing = [l for l in labels if l not in cuts]
     if missing:
@@ -215,9 +271,10 @@ def render_split(session_dir: str | Path, qnum: str | int,
     notice_h = sep_h = 0
     font = None
     if has_bk:
-        font, fs_px = _notice_font(render.get("dpi", 200))
+        font, fs_px = _notice_font(render.get("dpi", 200), _resolve_notice_font_path())
         pad = max(int(round(5 * render.get("dpi", 200) / 72.0)), 4)
-        notice_h = fs_px + 2 * pad
+        # 与 render_questions 一致：拿不到中文字体就不留提示带，只保留分隔线
+        notice_h = fs_px + 2 * pad if font is not None else 0
         sep_h = max(int(round(18 * render.get("dpi", 200) / 72.0)), 10)
 
     assets = sdir / "assets"
@@ -238,7 +295,7 @@ def render_split(session_dir: str | Path, qnum: str | int,
         H = notice_h + sum(im.height for im in imgs) + (sep_h if bk is not None else 0)
         canvas = Image.new("RGB", (W, H), "white")
         draw = ImageDraw.Draw(canvas)
-        if has_bk:
+        if has_bk and font is not None and notice_h > 0:
             tb = draw.textbbox((0, 0), NOTICE_TEXT, font=font)
             draw.text(((W - (tb[2] - tb[0])) // 2 - tb[0],
                        (notice_h - (tb[3] - tb[1])) // 2 - tb[1]),

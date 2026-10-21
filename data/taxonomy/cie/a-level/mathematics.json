@@ -1,0 +1,1164 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的数学表（tblIZGjYO4y3TCkw）视图 vewRrsDFTd，取 考试局=CAIE / 考试阶段=AL 中属于 9709 的 155 行（2026-10-20 导出）。单元键按 paper 号：P1/P2/P3 纯数，P4 力学(Paper 4)，P5 统计1(Paper 5)，P6 统计2(Paper 6)。9231 进阶数学（FP1/FP2/FM/FS，74 行）与 IGCSE 段未收入。",
+ "P1": {
+  "groups": [
+   {
+    "id": "p1g-quadratics",
+    "zh": "二次函数",
+    "en": "Quadratics"
+   },
+   {
+    "id": "p1g-functions",
+    "zh": "反函数及图像变换",
+    "en": "Functions"
+   },
+   {
+    "id": "p1g-coordinate-geometry",
+    "zh": "直线和圆",
+    "en": "Coordinate geometry"
+   },
+   {
+    "id": "p1g-circular-measure",
+    "zh": "弧度制及扇形",
+    "en": "Circular measure"
+   },
+   {
+    "id": "p1g-trigonometry",
+    "zh": "三角函数图像及方程",
+    "en": "Trigonometry"
+   },
+   {
+    "id": "p1g-series",
+    "zh": "二项展开和等差等比数列",
+    "en": "Series"
+   },
+   {
+    "id": "p1g-differentiation",
+    "zh": "链式法则及切线法线求解",
+    "en": "Differentiation"
+   },
+   {
+    "id": "p1g-further-differentiation",
+    "zh": "利用微分求最值",
+    "en": "Further differentiation"
+   },
+   {
+    "id": "p1g-integration",
+    "zh": "利用积分求面积和体积",
+    "en": "Integration"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p1-quadratics-factorising-to-find-roots",
+    "zh": "因式分解求根",
+    "en": "Quadratics: factorising to find roots",
+    "group": "p1g-quadratics"
+   },
+   {
+    "id": "p1-completing-the-square-and-quadratic-formula",
+    "zh": "配方法与二次公式",
+    "en": "Completing the square & quadratic formula",
+    "group": "p1g-quadratics"
+   },
+   {
+    "id": "p1-discriminant-and-number-of-roots",
+    "zh": "判别式与根的个数",
+    "en": "Discriminant & number of roots",
+    "group": "p1g-quadratics"
+   },
+   {
+    "id": "p1-quadratic-inequalities",
+    "zh": "二次不等式",
+    "en": "Quadratic inequalities",
+    "group": "p1g-quadratics"
+   },
+   {
+    "id": "p1-quadratic-max-min-and-line-curve-intersections",
+    "zh": "二次最值与线曲交点",
+    "en": "Quadratic max/min & line-curve intersections",
+    "group": "p1g-quadratics"
+   },
+   {
+    "id": "p1-functions-definition-and-composites",
+    "zh": "函数定义与复合",
+    "en": "Functions: definition & composites",
+    "group": "p1g-functions"
+   },
+   {
+    "id": "p1-inverse-functions-and-their-graphs",
+    "zh": "反函数及其图像",
+    "en": "Inverse functions & their graphs",
+    "group": "p1g-functions"
+   },
+   {
+    "id": "p1-transformations-translations-and-reflections",
+    "zh": "平移与反射变换",
+    "en": "Transformations: translations & reflections",
+    "group": "p1g-functions"
+   },
+   {
+    "id": "p1-stretches-as-graph-transformations",
+    "zh": "拉伸变换",
+    "en": "Stretches as graph transformations",
+    "group": "p1g-functions"
+   },
+   {
+    "id": "p1-combined-transformations",
+    "zh": "组合变换",
+    "en": "Combined transformations",
+    "group": "p1g-functions"
+   },
+   {
+    "id": "p1-length-midpoint-and-gradient",
+    "zh": "长度中点与斜率",
+    "en": "Length, midpoint & gradient",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-parallel-and-perpendicular-lines",
+    "zh": "平行线与垂直线",
+    "en": "Parallel & perpendicular lines",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-equation-of-a-circle",
+    "zh": "圆的方程",
+    "en": "Equation of a circle",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-line-circle-intersection-problems",
+    "zh": "线圆交点问题",
+    "en": "Line-circle intersection problems",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-radians-and-degree-conversion",
+    "zh": "弧度与角度换算",
+    "en": "Radians & degree conversion",
+    "group": "p1g-circular-measure"
+   },
+   {
+    "id": "p1-arc-length",
+    "zh": "弧长",
+    "en": "Arc length",
+    "group": "p1g-circular-measure"
+   },
+   {
+    "id": "p1-area-of-a-sector",
+    "zh": "扇形面积",
+    "en": "Area of a sector",
+    "group": "p1g-circular-measure"
+   },
+   {
+    "id": "p1-general-angles-and-trig-ratios",
+    "zh": "任意角与三角比",
+    "en": "General angles & trig ratios",
+    "group": "p1g-trigonometry"
+   },
+   {
+    "id": "p1-graphs-of-trig-functions",
+    "zh": "三角函数图像",
+    "en": "Graphs of trig functions",
+    "group": "p1g-trigonometry"
+   },
+   {
+    "id": "p1-inverse-trig-functions",
+    "zh": "反三角函数",
+    "en": "Inverse trig functions",
+    "group": "p1g-trigonometry"
+   },
+   {
+    "id": "p1-solving-trigonometric-equations",
+    "zh": "三角方程求解",
+    "en": "Solving trigonometric equations",
+    "group": "p1g-trigonometry"
+   },
+   {
+    "id": "p1-trigonometric-identities",
+    "zh": "三角恒等式",
+    "en": "Trigonometric identities",
+    "group": "p1g-trigonometry"
+   },
+   {
+    "id": "p1-binomial-expansion-and-coefficients",
+    "zh": "二项展开与系数",
+    "en": "Binomial expansion & coefficients",
+    "group": "p1g-series"
+   },
+   {
+    "id": "p1-arithmetic-progressions",
+    "zh": "等差数列",
+    "en": "Arithmetic progressions",
+    "group": "p1g-series"
+   },
+   {
+    "id": "p1-geometric-progressions",
+    "zh": "等比数列",
+    "en": "Geometric progressions",
+    "group": "p1g-series"
+   },
+   {
+    "id": "p1-infinite-geometric-series",
+    "zh": "无穷等比级数",
+    "en": "Infinite geometric series",
+    "group": "p1g-series"
+   },
+   {
+    "id": "p1-general-term-of-a-binomial-expansion",
+    "zh": "二项展开通项",
+    "en": "General term of a binomial expansion",
+    "group": "p1g-series"
+   },
+   {
+    "id": "p1-derivatives-and-gradient-functions",
+    "zh": "导数与导函数",
+    "en": "Derivatives & gradient functions",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-the-chain-rule",
+    "zh": "链式法则",
+    "en": "The chain rule",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-tangents-and-normals",
+    "zh": "切线与法线",
+    "en": "Tangents & normals",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-second-derivatives",
+    "zh": "二阶导数",
+    "en": "Second derivatives",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-increasing-and-decreasing-functions",
+    "zh": "增减函数判断",
+    "en": "Increasing & decreasing functions",
+    "group": "p1g-further-differentiation"
+   },
+   {
+    "id": "p1-stationary-points-and-their-nature",
+    "zh": "驻点与性质判定",
+    "en": "Stationary points & their nature",
+    "group": "p1g-further-differentiation"
+   },
+   {
+    "id": "p1-practical-max-and-min-problems",
+    "zh": "实际最值问题",
+    "en": "Practical max & min problems",
+    "group": "p1g-further-differentiation"
+   },
+   {
+    "id": "p1-related-rates-of-change",
+    "zh": "相关变化率",
+    "en": "Related rates of change",
+    "group": "p1g-further-differentiation"
+   },
+   {
+    "id": "p1-indefinite-integration-and-the-constant",
+    "zh": "不定积分与常数",
+    "en": "Indefinite integration & the constant",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-definite-integrals-and-area-under-curves",
+    "zh": "定积分与曲线下面积",
+    "en": "Definite integrals & area under curves",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-area-between-a-curve-and-a-line",
+    "zh": "曲线与直线围成面积",
+    "en": "Area between a curve & a line",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-improper-integrals",
+    "zh": "广义积分",
+    "en": "Improper integrals",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-volumes-of-revolution",
+    "zh": "旋转体体积",
+    "en": "Volumes of revolution",
+    "group": "p1g-integration"
+   }
+  ]
+ },
+ "P2": {
+  "groups": [
+   {
+    "id": "p2g-algebra",
+    "zh": "长除法及绝对值函数",
+    "en": "Algebra"
+   },
+   {
+    "id": "p2g-logarithmic-and-exponential-functions",
+    "zh": "指数和对数函数",
+    "en": "Logarithmic and exponential functions"
+   },
+   {
+    "id": "p2g-trigonometric-identities-and-formulae",
+    "zh": "二倍角及辅助角公式",
+    "en": "Trigonometric identities & formulae"
+   },
+   {
+    "id": "p2g-differentiation",
+    "zh": "求导法则及常见函数的微分",
+    "en": "Differentiation"
+   },
+   {
+    "id": "p2g-integration",
+    "zh": "常见函数的积分及梯形法则",
+    "en": "Integration"
+   },
+   {
+    "id": "p2g-numerical-solutions-of-equations",
+    "zh": "方程的数值解",
+    "en": "Numerical solutions of equations"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p2-modulus-functions-and-their-graphs",
+    "zh": "绝对值函数与图像",
+    "en": "Modulus functions & their graphs",
+    "group": "p2g-algebra"
+   },
+   {
+    "id": "p2-modulus-equations-and-inequalities",
+    "zh": "绝对值方程与不等式",
+    "en": "Modulus equations & inequalities",
+    "group": "p2g-algebra"
+   },
+   {
+    "id": "p2-division-of-polynomials",
+    "zh": "多项式除法",
+    "en": "Division of polynomials",
+    "group": "p2g-algebra"
+   },
+   {
+    "id": "p2-factor-and-remainder-theorems",
+    "zh": "因式与余数定理",
+    "en": "Factor & remainder theorems",
+    "group": "p2g-algebra"
+   },
+   {
+    "id": "p2-logarithms-definition-and-change-of-base",
+    "zh": "对数定义与换底",
+    "en": "Logarithms: definition & change of base",
+    "group": "p2g-logarithmic-and-exponential-functions"
+   },
+   {
+    "id": "p2-laws-of-logarithms",
+    "zh": "对数运算法则",
+    "en": "Laws of logarithms",
+    "group": "p2g-logarithmic-and-exponential-functions"
+   },
+   {
+    "id": "p2-exponential-and-logarithmic-equations",
+    "zh": "指数与对数方程",
+    "en": "Exponential & logarithmic equations",
+    "group": "p2g-logarithmic-and-exponential-functions"
+   },
+   {
+    "id": "p2-natural-logarithms-and-exponentials",
+    "zh": "自然对数与自然指数",
+    "en": "Natural logarithms & exponentials",
+    "group": "p2g-logarithmic-and-exponential-functions"
+   },
+   {
+    "id": "p2-transforming-to-linear-form",
+    "zh": "转化为线性形式",
+    "en": "Transforming to linear form",
+    "group": "p2g-logarithmic-and-exponential-functions"
+   },
+   {
+    "id": "p2-secant-cosecant-and-cotangent",
+    "zh": "正割余割与余切",
+    "en": "Secant, cosecant & cotangent",
+    "group": "p2g-trigonometric-identities-and-formulae"
+   },
+   {
+    "id": "p2-compound-and-double-angle-formulae",
+    "zh": "和差角与二倍角",
+    "en": "Compound & double angle formulae",
+    "group": "p2g-trigonometric-identities-and-formulae"
+   },
+   {
+    "id": "p2-proving-trig-identities",
+    "zh": "三角恒等式证明",
+    "en": "Proving trig identities",
+    "group": "p2g-trigonometric-identities-and-formulae"
+   },
+   {
+    "id": "p2-auxiliary-and-r-forms",
+    "zh": "辅助角与R形式",
+    "en": "Auxiliary & R-forms",
+    "group": "p2g-trigonometric-identities-and-formulae"
+   },
+   {
+    "id": "p2-product-and-quotient-rules",
+    "zh": "乘积法则与商法则",
+    "en": "Product & quotient rules",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-derivatives-of-exponentials-and-logs",
+    "zh": "指数对数函数导数",
+    "en": "Derivatives of exponentials & logs",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-derivatives-of-trig-functions",
+    "zh": "三角函数的导数",
+    "en": "Derivatives of trig functions",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-implicit-differentiation",
+    "zh": "隐函数求导",
+    "en": "Implicit differentiation",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-parametric-differentiation",
+    "zh": "参数方程求导",
+    "en": "Parametric differentiation",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-integrating-exponentials-and-reciprocals",
+    "zh": "指数与倒数式积分",
+    "en": "Integrating exponentials & reciprocals",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-integrating-trig-functions",
+    "zh": "三角函数积分",
+    "en": "Integrating trig functions",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-further-trig-integration",
+    "zh": "进阶三角函数积分",
+    "en": "Further trig integration",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-the-trapezium-rule",
+    "zh": "梯形法则",
+    "en": "The trapezium rule",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-locating-roots-by-sign-change",
+    "zh": "根的区间定位",
+    "en": "Locating roots by sign change",
+    "group": "p2g-numerical-solutions-of-equations"
+   },
+   {
+    "id": "p2-iterative-formulae-and-convergence",
+    "zh": "迭代公式与收敛",
+    "en": "Iterative formulae & convergence",
+    "group": "p2g-numerical-solutions-of-equations"
+   },
+   {
+    "id": "p2-iterative-methods-across-topics",
+    "zh": "迭代法跨领域应用",
+    "en": "Iterative methods across topics",
+    "group": "p2g-numerical-solutions-of-equations"
+   }
+  ]
+ },
+ "P3": {
+  "groups": [
+   {
+    "id": "p3g-further-algebra",
+    "zh": "分式拆分及二项展开",
+    "en": "Further algebra"
+   },
+   {
+    "id": "p3g-integration-by-substitution-and-parts",
+    "zh": "换元积分与分部积分",
+    "en": "Integration by substitution & parts"
+   },
+   {
+    "id": "p3g-vectors",
+    "zh": "向量",
+    "en": "Vectors"
+   },
+   {
+    "id": "p3g-differential-equations",
+    "zh": "微分方程求解",
+    "en": "Differential equations"
+   },
+   {
+    "id": "p3g-complex-numbers",
+    "zh": "复数",
+    "en": "Complex numbers"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p3-improper-fractions-and-division",
+    "zh": "假分式与除法",
+    "en": "Improper fractions & division",
+    "group": "p3g-further-algebra"
+   },
+   {
+    "id": "p3-partial-fractions",
+    "zh": "部分分式",
+    "en": "Partial fractions",
+    "group": "p3g-further-algebra"
+   },
+   {
+    "id": "p3-binomial-expansion-for-general-n",
+    "zh": "一般二项展开",
+    "en": "Binomial expansion for general n",
+    "group": "p3g-further-algebra"
+   },
+   {
+    "id": "p3-partial-fractions-in-expansions",
+    "zh": "展开中的部分分式",
+    "en": "Partial fractions in expansions",
+    "group": "p3g-further-algebra"
+   },
+   {
+    "id": "p3-differentiating-the-inverse-tan-function",
+    "zh": "反正切函数求导",
+    "en": "Differentiating the inverse tan function",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-standard-integral-forms",
+    "zh": "标准积分形式",
+    "en": "Standard integral forms",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-integration-by-substitution",
+    "zh": "换元积分法",
+    "en": "Integration by substitution",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-integration-by-parts",
+    "zh": "分部积分法",
+    "en": "Integration by parts",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-integrating-with-partial-fractions",
+    "zh": "部分分式积分",
+    "en": "Integrating with partial fractions",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-further-integration-techniques",
+    "zh": "积分综合技巧",
+    "en": "Further integration techniques",
+    "group": "p3g-integration-by-substitution-and-parts"
+   },
+   {
+    "id": "p3-displacement-and-position-vectors",
+    "zh": "位移与位置向量",
+    "en": "Displacement & position vectors",
+    "group": "p3g-vectors"
+   },
+   {
+    "id": "p3-vector-operations-and-magnitude",
+    "zh": "向量运算与长度",
+    "en": "Vector operations & magnitude",
+    "group": "p3g-vectors"
+   },
+   {
+    "id": "p3-scalar-product-and-angles",
+    "zh": "数量积与夹角",
+    "en": "Scalar product & angles",
+    "group": "p3g-vectors"
+   },
+   {
+    "id": "p3-vector-line-equations-and-intersections",
+    "zh": "直线向量方程与交点",
+    "en": "Vector line equations & intersections",
+    "group": "p3g-vectors"
+   },
+   {
+    "id": "p3-separating-the-variables",
+    "zh": "分离变量法",
+    "en": "Separating the variables",
+    "group": "p3g-differential-equations"
+   },
+   {
+    "id": "p3-forming-differential-equations",
+    "zh": "建立微分方程",
+    "en": "Forming differential equations",
+    "group": "p3g-differential-equations"
+   },
+   {
+    "id": "p3-modelling-with-differential-equations",
+    "zh": "微分方程建模应用",
+    "en": "Modelling with differential equations",
+    "group": "p3g-differential-equations"
+   },
+   {
+    "id": "p3-imaginary-and-complex-number-operations",
+    "zh": "虚数与复数运算",
+    "en": "Imaginary & complex number operations",
+    "group": "p3g-complex-numbers"
+   },
+   {
+    "id": "p3-the-complex-plane-and-argand-diagrams",
+    "zh": "复平面与阿根图",
+    "en": "The complex plane & Argand diagrams",
+    "group": "p3g-complex-numbers"
+   },
+   {
+    "id": "p3-solving-equations-with-complex-roots",
+    "zh": "复数方程求解",
+    "en": "Solving equations with complex roots",
+    "group": "p3g-complex-numbers"
+   },
+   {
+    "id": "p3-loci-and-inequalities-with-complex-numbers",
+    "zh": "复数轨迹与不等式",
+    "en": "Loci & inequalities with complex numbers",
+    "group": "p3g-complex-numbers"
+   }
+  ]
+ },
+ "P4": {
+  "groups": [
+   {
+    "id": "p4g-forces-and-equilibrium",
+    "zh": "力与平衡",
+    "en": "Forces and equilibrium"
+   },
+   {
+    "id": "p4g-kinematics-of-motion-in-a-straight-line",
+    "zh": "直线运动学",
+    "en": "Kinematics of motion in a straight line"
+   },
+   {
+    "id": "p4g-momentum",
+    "zh": "动量",
+    "en": "Momentum"
+   },
+   {
+    "id": "p4g-newton-s-laws-of-motion",
+    "zh": "牛顿运动定律",
+    "en": "Newton’s laws of motion"
+   },
+   {
+    "id": "p4g-energy-work-and-power",
+    "zh": "能量功与功率",
+    "en": "Energy, work & power"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p4-resolving-forces-and-equilibrium",
+    "zh": "力的分解与平衡",
+    "en": "Resolving forces & equilibrium",
+    "group": "p4g-forces-and-equilibrium"
+   },
+   {
+    "id": "p4-triangle-of-forces-and-lami-theorem",
+    "zh": "力的三角形与拉米定理",
+    "en": "Triangle of forces & Lami theorem",
+    "group": "p4g-forces-and-equilibrium"
+   },
+   {
+    "id": "p4-forces-on-inclined-planes",
+    "zh": "斜面上的受力",
+    "en": "Forces on inclined planes",
+    "group": "p4g-forces-and-equilibrium"
+   },
+   {
+    "id": "p4-friction-and-the-friction-law",
+    "zh": "摩擦力与摩擦定律",
+    "en": "Friction & the friction law",
+    "group": "p4g-forces-and-equilibrium"
+   },
+   {
+    "id": "p4-angle-and-limiting-friction",
+    "zh": "摩擦角与极限摩擦",
+    "en": "Angle & limiting friction",
+    "group": "p4g-forces-and-equilibrium"
+   },
+   {
+    "id": "p4-displacement-velocity-and-acceleration",
+    "zh": "位移速度与加速度",
+    "en": "Displacement, velocity & acceleration",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-constant-acceleration-formulae",
+    "zh": "匀加速度公式",
+    "en": "Constant acceleration formulae",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-displacement-time-graphs",
+    "zh": "位移时间图",
+    "en": "Displacement-time graphs",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-velocity-time-graphs",
+    "zh": "速度时间图",
+    "en": "Velocity-time graphs",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-velocity-and-acceleration-by-differentiation",
+    "zh": "微分求速度与加速度",
+    "en": "Velocity & acceleration by differentiation",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-displacement-and-velocity-by-integration",
+    "zh": "积分求位移与速度",
+    "en": "Displacement & velocity by integration",
+    "group": "p4g-kinematics-of-motion-in-a-straight-line"
+   },
+   {
+    "id": "p4-momentum-and-impulse",
+    "zh": "动量与冲量",
+    "en": "Momentum & impulse",
+    "group": "p4g-momentum"
+   },
+   {
+    "id": "p4-collisions-and-conservation-of-momentum",
+    "zh": "碰撞与动量守恒",
+    "en": "Collisions & conservation of momentum",
+    "group": "p4g-momentum"
+   },
+   {
+    "id": "p4-newton-s-first-law-and-resultant-forces",
+    "zh": "牛顿第一定律与合力",
+    "en": "Newton's first law & resultant forces",
+    "group": "p4g-newton-s-laws-of-motion"
+   },
+   {
+    "id": "p4-weight-and-vertical-motion",
+    "zh": "重力与竖直运动",
+    "en": "Weight & vertical motion",
+    "group": "p4g-newton-s-laws-of-motion"
+   },
+   {
+    "id": "p4-newton-s-third-law",
+    "zh": "牛顿第三定律",
+    "en": "Newton's third law",
+    "group": "p4g-newton-s-laws-of-motion"
+   },
+   {
+    "id": "p4-connected-bodies-rods-and-strings",
+    "zh": "连接体问题",
+    "en": "Connected bodies: rods & strings",
+    "group": "p4g-newton-s-laws-of-motion"
+   },
+   {
+    "id": "p4-lifts-and-normal-contact-forces",
+    "zh": "电梯与法向接触力",
+    "en": "Lifts & normal contact forces",
+    "group": "p4g-newton-s-laws-of-motion"
+   },
+   {
+    "id": "p4-work-done-by-a-force",
+    "zh": "力做的功",
+    "en": "Work done by a force",
+    "group": "p4g-energy-work-and-power"
+   },
+   {
+    "id": "p4-kinetic-and-gravitational-potential-energy",
+    "zh": "动能与重力势能",
+    "en": "Kinetic & gravitational potential energy",
+    "group": "p4g-energy-work-and-power"
+   },
+   {
+    "id": "p4-the-work-energy-principle",
+    "zh": "功-能原理",
+    "en": "The work-energy principle",
+    "group": "p4g-energy-work-and-power"
+   },
+   {
+    "id": "p4-energy-conservation-and-resistive-forces",
+    "zh": "能量守恒与非保守力",
+    "en": "Energy conservation & resistive forces",
+    "group": "p4g-energy-work-and-power"
+   },
+   {
+    "id": "p4-power-and-efficiency",
+    "zh": "功率与效率",
+    "en": "Power & efficiency",
+    "group": "p4g-energy-work-and-power"
+   }
+  ]
+ },
+ "P5": {
+  "groups": [
+   {
+    "id": "p5g-representation-of-data",
+    "zh": "常见统计图像",
+    "en": "Representation of data"
+   },
+   {
+    "id": "p5g-measures-of-central-tendency",
+    "zh": "描述趋中性的统计量",
+    "en": "Measures of central tendency"
+   },
+   {
+    "id": "p5g-measures-of-variation",
+    "zh": "描述分散程度的统计量",
+    "en": "Measures of variation"
+   },
+   {
+    "id": "p5g-probability",
+    "zh": "常用概率公式及计算",
+    "en": "Probability"
+   },
+   {
+    "id": "p5g-permutations-and-combinations",
+    "zh": "排列组合",
+    "en": "Permutations and combinations"
+   },
+   {
+    "id": "p5g-probability-distributions",
+    "zh": "离散型变量的概率分布",
+    "en": "Probability distributions"
+   },
+   {
+    "id": "p5g-the-binomial-and-geometric-distributions",
+    "zh": "二项分布和几何分布",
+    "en": "The binomial and geometric distributions"
+   },
+   {
+    "id": "p5g-the-normal-distribution",
+    "zh": "正态分布",
+    "en": "The normal distribution"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p5-types-of-data-and-sampling",
+    "zh": "数据类型与抽样",
+    "en": "Types of data & sampling",
+    "group": "p5g-representation-of-data"
+   },
+   {
+    "id": "p5-stem-and-leaf-for-discrete-data",
+    "zh": "茎叶图与离散数据",
+    "en": "Stem-and-leaf for discrete data",
+    "group": "p5g-representation-of-data"
+   },
+   {
+    "id": "p5-histograms-for-continuous-data",
+    "zh": "直方图与连续数据",
+    "en": "Histograms for continuous data",
+    "group": "p5g-representation-of-data"
+   },
+   {
+    "id": "p5-cumulative-frequency-and-comparisons",
+    "zh": "累积频率图与比较",
+    "en": "Cumulative frequency & comparisons",
+    "group": "p5g-representation-of-data"
+   },
+   {
+    "id": "p5-mode-and-modal-class",
+    "zh": "众数与众数组",
+    "en": "Mode & modal class",
+    "group": "p5g-measures-of-central-tendency"
+   },
+   {
+    "id": "p5-calculating-the-mean",
+    "zh": "平均数计算",
+    "en": "Calculating the mean",
+    "group": "p5g-measures-of-central-tendency"
+   },
+   {
+    "id": "p5-median-and-quartiles",
+    "zh": "中位数与四分位数",
+    "en": "Median & quartiles",
+    "group": "p5g-measures-of-central-tendency"
+   },
+   {
+    "id": "p5-range-and-interquartile-range",
+    "zh": "极差与四分位差",
+    "en": "Range & interquartile range",
+    "group": "p5g-measures-of-variation"
+   },
+   {
+    "id": "p5-percentiles",
+    "zh": "百分位数",
+    "en": "Percentiles",
+    "group": "p5g-measures-of-variation"
+   },
+   {
+    "id": "p5-variance-and-standard-deviation",
+    "zh": "方差与标准差",
+    "en": "Variance & standard deviation",
+    "group": "p5g-measures-of-variation"
+   },
+   {
+    "id": "p5-events-and-probability-basics",
+    "zh": "事件与概率基础",
+    "en": "Events & probability basics",
+    "group": "p5g-probability"
+   },
+   {
+    "id": "p5-mutually-exclusive-events-and-addition-law",
+    "zh": "互斥事件与加法法则",
+    "en": "Mutually exclusive events & addition law",
+    "group": "p5g-probability"
+   },
+   {
+    "id": "p5-independent-events-and-multiplication-law",
+    "zh": "独立事件与乘法法则",
+    "en": "Independent events & multiplication law",
+    "group": "p5g-probability"
+   },
+   {
+    "id": "p5-conditional-probability-and-dependence",
+    "zh": "条件概率与相依事件",
+    "en": "Conditional probability & dependence",
+    "group": "p5g-probability"
+   },
+   {
+    "id": "p5-factorials-and-permutations",
+    "zh": "阶乘与排列",
+    "en": "Factorials & permutations",
+    "group": "p5g-permutations-and-combinations"
+   },
+   {
+    "id": "p5-combinations",
+    "zh": "组合",
+    "en": "Combinations",
+    "group": "p5g-permutations-and-combinations"
+   },
+   {
+    "id": "p5-mixing-permutations-and-combinations",
+    "zh": "排列组合综合",
+    "en": "Mixing permutations & combinations",
+    "group": "p5g-permutations-and-combinations"
+   },
+   {
+    "id": "p5-discrete-random-variables",
+    "zh": "离散随机变量",
+    "en": "Discrete random variables",
+    "group": "p5g-probability-distributions"
+   },
+   {
+    "id": "p5-probability-distribution-tables",
+    "zh": "概率分布表",
+    "en": "Probability distribution tables",
+    "group": "p5g-probability-distributions"
+   },
+   {
+    "id": "p5-expectation-and-variance",
+    "zh": "期望与方差",
+    "en": "Expectation & variance",
+    "group": "p5g-probability-distributions"
+   },
+   {
+    "id": "p5-the-binomial-distribution",
+    "zh": "二项分布",
+    "en": "The binomial distribution",
+    "group": "p5g-the-binomial-and-geometric-distributions"
+   },
+   {
+    "id": "p5-the-geometric-distribution",
+    "zh": "几何分布",
+    "en": "The geometric distribution",
+    "group": "p5g-the-binomial-and-geometric-distributions"
+   },
+   {
+    "id": "p5-mean-and-variance-of-the-binomial-distn",
+    "zh": "二项分布均值方差",
+    "en": "Mean & variance of the binomial distn",
+    "group": "p5g-the-binomial-and-geometric-distributions"
+   },
+   {
+    "id": "p5-mean-and-variance-of-the-geometric-distn",
+    "zh": "几何分布均值与方差",
+    "en": "Mean & variance of the geometric distn",
+    "group": "p5g-the-binomial-and-geometric-distributions"
+   },
+   {
+    "id": "p5-continuous-random-variables",
+    "zh": "连续随机变量",
+    "en": "Continuous random variables",
+    "group": "p5g-the-normal-distribution"
+   },
+   {
+    "id": "p5-normal-distribution-and-standardising",
+    "zh": "正态分布与标准化",
+    "en": "Normal distribution & standardising",
+    "group": "p5g-the-normal-distribution"
+   },
+   {
+    "id": "p5-normal-approximation-to-the-binomial-distn",
+    "zh": "正态近似二项分布",
+    "en": "Normal approximation to the binomial distn",
+    "group": "p5g-the-normal-distribution"
+   }
+  ]
+ },
+ "P6": {
+  "groups": [
+   {
+    "id": "p6g-hypothesis-testing",
+    "zh": "假设检验",
+    "en": "Hypothesis testing"
+   },
+   {
+    "id": "p6g-the-poisson-distribution",
+    "zh": "泊松分布",
+    "en": "The Poisson distribution"
+   },
+   {
+    "id": "p6g-linear-combinations-of-random-variables",
+    "zh": "随机变量的线性组合",
+    "en": "Linear combinations of random variables"
+   },
+   {
+    "id": "p6g-continuous-random-variables",
+    "zh": "连续型随机变量",
+    "en": "Continuous random variables"
+   },
+   {
+    "id": "p6g-sampling",
+    "zh": "抽样及抽样分布",
+    "en": "Sampling"
+   },
+   {
+    "id": "p6g-estimation",
+    "zh": "估计量及置信区间",
+    "en": "Estimation"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p6-concepts-of-hypothesis-testing",
+    "zh": "假设检验概念",
+    "en": "Concepts of hypothesis testing",
+    "group": "p6g-hypothesis-testing"
+   },
+   {
+    "id": "p6-one-tailed-and-two-tailed-tests",
+    "zh": "单侧与双侧检验",
+    "en": "One-tailed & two-tailed tests",
+    "group": "p6g-hypothesis-testing"
+   },
+   {
+    "id": "p6-type-i-and-type-ii-errors",
+    "zh": "两类错误",
+    "en": "Type I & Type II errors",
+    "group": "p6g-hypothesis-testing"
+   },
+   {
+    "id": "p6-the-poisson-distribution",
+    "zh": "泊松分布基础",
+    "en": "The Poisson distribution",
+    "group": "p6g-the-poisson-distribution"
+   },
+   {
+    "id": "p6-poisson-for-different-intervals",
+    "zh": "泊松区间调整",
+    "en": "Poisson for different intervals",
+    "group": "p6g-the-poisson-distribution"
+   },
+   {
+    "id": "p6-poisson-approximation-to-the-binomial-distn",
+    "zh": "泊松近似二项分布",
+    "en": "Poisson approximation to the binomial distn",
+    "group": "p6g-the-poisson-distribution"
+   },
+   {
+    "id": "p6-hypothesis-tests-with-the-poisson-distn",
+    "zh": "泊松假设检验",
+    "en": "Hypothesis tests with the Poisson distn",
+    "group": "p6g-the-poisson-distribution"
+   },
+   {
+    "id": "p6-expectation-and-variance-of-combinations",
+    "zh": "组合的期望与方差",
+    "en": "Expectation & variance of combinations",
+    "group": "p6g-linear-combinations-of-random-variables"
+   },
+   {
+    "id": "p6-sums-and-differences-of-independent-variables",
+    "zh": "独立变量的和与差",
+    "en": "Sums & differences of independent variables",
+    "group": "p6g-linear-combinations-of-random-variables"
+   },
+   {
+    "id": "p6-combinations-of-normal-variables",
+    "zh": "正态变量的组合",
+    "en": "Combinations of normal variables",
+    "group": "p6g-linear-combinations-of-random-variables"
+   },
+   {
+    "id": "p6-introduction-to-continuous-random-variables",
+    "zh": "连续随机变量入门",
+    "en": "Introduction to continuous random variables",
+    "group": "p6g-continuous-random-variables"
+   },
+   {
+    "id": "p6-median-and-percentiles-of-continuous-variables",
+    "zh": "连续变量的中位数",
+    "en": "Median & percentiles of continuous variables",
+    "group": "p6g-continuous-random-variables"
+   },
+   {
+    "id": "p6-expectation-and-variance-continuous-variables",
+    "zh": "连续变量的期望方差",
+    "en": "Expectation & variance: continuous variables",
+    "group": "p6g-continuous-random-variables"
+   },
+   {
+    "id": "p6-concepts-of-sampling-and-samples",
+    "zh": "抽样概念与样本",
+    "en": "Concepts of sampling & samples",
+    "group": "p6g-sampling"
+   },
+   {
+    "id": "p6-distribution-of-the-sample-mean",
+    "zh": "样本均值的分布",
+    "en": "Distribution of the sample mean",
+    "group": "p6g-sampling"
+   },
+   {
+    "id": "p6-the-central-limit-theorem",
+    "zh": "中心极限定理",
+    "en": "The central limit theorem",
+    "group": "p6g-sampling"
+   },
+   {
+    "id": "p6-unbiased-estimates-of-mean-and-variance",
+    "zh": "均值方差无偏估计",
+    "en": "Unbiased estimates of mean & variance",
+    "group": "p6g-estimation"
+   },
+   {
+    "id": "p6-hypothesis-tests-for-the-population-mean",
+    "zh": "总体均值检验",
+    "en": "Hypothesis tests for the population mean",
+    "group": "p6g-estimation"
+   },
+   {
+    "id": "p6-confidence-intervals-mean-and-proportion",
+    "zh": "均值与比例的置信区间",
+    "en": "Confidence intervals: mean & proportion",
+    "group": "p6g-estimation"
+   }
+  ]
+ }
+}

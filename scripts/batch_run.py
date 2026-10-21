@@ -29,6 +29,9 @@ if VENV.exists():
     ENV["PYTHONPATH"] = str(VENV)
 
 CUT_SCRIPT = {"edexcel": "cut_paper.py", "cie": "cut_paper_cie.py", "aqa": "cut_paper_aqa.py"}
+# 切割脚本按「考试局 × 学科」各一份（2026-10-17 定规）：AQA 化学走自己的脚本，
+# 物理那份改不动化学、化学这份也改不动物理。
+SUBJECT_CUT = {("aqa", "chemistry"): "cut_paper_aqa_chem.py"}
 
 
 def run(script, d):
@@ -52,7 +55,8 @@ def main():
     ap.add_argument("--json", default=None)
     args = ap.parse_args()
 
-    cut_script = args.cut or CUT_SCRIPT.get(args.board)
+    cut_script = (args.cut or SUBJECT_CUT.get((args.board, args.subject))
+                  or CUT_SCRIPT.get(args.board))
     if not cut_script:
         sys.exit(f"未知 board={args.board}，请用 --cut 显式指定切割脚本")
     base = ROOT / "data" / args.board / args.qual / args.subject

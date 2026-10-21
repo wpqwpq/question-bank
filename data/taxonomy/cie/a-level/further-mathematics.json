@@ -1,0 +1,591 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的数学表（tblIZGjYO4y3TCkw）视图 vewRrsDFTd，取 考试局=CAIE / 考试阶段=AL 中属于 9231 的 74 行（2026-10-20 导出）。单元键 FP1/FP2/FM/FS 对应 Paper 1–4（Further Pure 1/2、Further Mechanics、Further Probability & Statistics）。",
+ "FP1": {
+  "groups": [
+   {
+    "id": "fp1g-roots-of-polynomial-equations",
+    "zh": "多项式方程的根",
+    "en": "Roots of polynomial equations"
+   },
+   {
+    "id": "fp1g-rational-functions",
+    "zh": "分式函数画图",
+    "en": "Rational functions"
+   },
+   {
+    "id": "fp1g-summation-of-series",
+    "zh": "级数求和",
+    "en": "Summation of series"
+   },
+   {
+    "id": "fp1g-matrices",
+    "zh": "矩阵及其变换",
+    "en": "Matrices"
+   },
+   {
+    "id": "fp1g-polar-coordinates",
+    "zh": "极坐标",
+    "en": "Polar coordinates"
+   },
+   {
+    "id": "fp1g-vectors",
+    "zh": "向量",
+    "en": "Vectors"
+   },
+   {
+    "id": "fp1g-proof-by-induction",
+    "zh": "数学归纳法证明",
+    "en": "Proof by induction"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fp1-quadratic-equations-sum-and-product-of-roots",
+    "zh": "二次方程根与系数",
+    "en": "Quadratic equations: sum & product of roots",
+    "group": "fp1g-roots-of-polynomial-equations"
+   },
+   {
+    "id": "fp1-cubic-equations-sum-and-product-of-roots",
+    "zh": "三次方程根与系数",
+    "en": "Cubic equations: sum & product of roots",
+    "group": "fp1g-roots-of-polynomial-equations"
+   },
+   {
+    "id": "fp1-quartic-equations-sum-and-product-of-roots",
+    "zh": "四次方程根与系数",
+    "en": "Quartic equations: sum & product of roots",
+    "group": "fp1g-roots-of-polynomial-equations"
+   },
+   {
+    "id": "fp1-substitutions-to-find-roots",
+    "zh": "代换法求根",
+    "en": "Substitutions to find roots",
+    "group": "fp1g-roots-of-polynomial-equations"
+   },
+   {
+    "id": "fp1-linear-denominators-and-asymptotes",
+    "zh": "线性分母与渐近线",
+    "en": "Linear denominators & asymptotes",
+    "group": "fp1g-rational-functions"
+   },
+   {
+    "id": "fp1-quadratic-denominators-and-asymptotes",
+    "zh": "二次分母与渐近线",
+    "en": "Quadratic denominators & asymptotes",
+    "group": "fp1g-rational-functions"
+   },
+   {
+    "id": "fp1-oblique-asymptotes",
+    "zh": "斜渐近线",
+    "en": "Oblique asymptotes",
+    "group": "fp1g-rational-functions"
+   },
+   {
+    "id": "fp1-curve-sketching-and-inequalities",
+    "zh": "曲线关系与不等式",
+    "en": "Curve sketching & inequalities",
+    "group": "fp1g-rational-functions"
+   },
+   {
+    "id": "fp1-using-standard-summation-formulae",
+    "zh": "求和公式应用",
+    "en": "Using standard summation formulae",
+    "group": "fp1g-summation-of-series"
+   },
+   {
+    "id": "fp1-convergence-of-series",
+    "zh": "级数收敛性",
+    "en": "Convergence of series",
+    "group": "fp1g-summation-of-series"
+   },
+   {
+    "id": "fp1-method-of-differences-for-sums",
+    "zh": "差分法求和",
+    "en": "Method of differences for sums",
+    "group": "fp1g-summation-of-series"
+   },
+   {
+    "id": "fp1-matrix-operations",
+    "zh": "矩阵运算",
+    "en": "Matrix operations",
+    "group": "fp1g-matrices"
+   },
+   {
+    "id": "fp1-determinants-and-inverse-matrices",
+    "zh": "行列式与逆矩阵",
+    "en": "Determinants & inverse matrices",
+    "group": "fp1g-matrices"
+   },
+   {
+    "id": "fp1-matrix-transformations",
+    "zh": "矩阵变换",
+    "en": "Matrix transformations",
+    "group": "fp1g-matrices"
+   },
+   {
+    "id": "fp1-combined-transforms-and-invariant-points",
+    "zh": "变换组合与不变点",
+    "en": "Combined transforms & invariant points",
+    "group": "fp1g-matrices"
+   },
+   {
+    "id": "fp1-polar-coordinates-and-conversion",
+    "zh": "极坐标与转换",
+    "en": "Polar coordinates & conversion",
+    "group": "fp1g-polar-coordinates"
+   },
+   {
+    "id": "fp1-polar-areas-and-tangents",
+    "zh": "极坐标面积与切线",
+    "en": "Polar areas & tangents",
+    "group": "fp1g-polar-coordinates"
+   },
+   {
+    "id": "fp1-vector-equation-of-a-line",
+    "zh": "直线向量方程",
+    "en": "Vector equation of a line",
+    "group": "fp1g-vectors"
+   },
+   {
+    "id": "fp1-equations-of-planes",
+    "zh": "平面方程",
+    "en": "Equations of planes",
+    "group": "fp1g-vectors"
+   },
+   {
+    "id": "fp1-angles-and-relative-positions",
+    "zh": "夹角与位置关系",
+    "en": "Angles & relative positions",
+    "group": "fp1g-vectors"
+   },
+   {
+    "id": "fp1-the-inductive-process",
+    "zh": "归纳法步骤",
+    "en": "The inductive process",
+    "group": "fp1g-proof-by-induction"
+   },
+   {
+    "id": "fp1-induction-for-divisibility-and-series",
+    "zh": "整除性与级数归纳",
+    "en": "Induction for divisibility & series",
+    "group": "fp1g-proof-by-induction"
+   },
+   {
+    "id": "fp1-induction-for-matrices-and-recurrences",
+    "zh": "归纳法证矩阵与递推",
+    "en": "Induction for matrices & recurrences",
+    "group": "fp1g-proof-by-induction"
+   }
+  ]
+ },
+ "FP2": {
+  "groups": [
+   {
+    "id": "fp2g-hyperbolic-functions",
+    "zh": "双曲函数",
+    "en": "Hyperbolic functions"
+   },
+   {
+    "id": "fp2g-eigenvalues-and-eigenvectors",
+    "zh": "矩阵的特征值特征向量",
+    "en": "Eigenvalues & eigenvectors"
+   },
+   {
+    "id": "fp2g-further-differentiation-and-series",
+    "zh": "进阶微分与级数",
+    "en": "Further differentiation & series"
+   },
+   {
+    "id": "fp2g-arc-length-and-surface-area",
+    "zh": "弧长及旋转体表面积",
+    "en": "Arc length & surface area"
+   },
+   {
+    "id": "fp2g-complex-numbers",
+    "zh": "棣莫弗定理及复数方程求解",
+    "en": "Complex numbers"
+   },
+   {
+    "id": "fp2g-differential-equations",
+    "zh": "一阶及二阶微分方程求解",
+    "en": "Differential equations"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fp2-definitions-of-hyperbolic-functions",
+    "zh": "双曲函数定义",
+    "en": "Definitions of hyperbolic functions",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-hyperbolic-identities",
+    "zh": "双曲恒等式",
+    "en": "Hyperbolic identities",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-inverse-hyperbolic-and-log-forms",
+    "zh": "反双曲与对数形式",
+    "en": "Inverse hyperbolic & log forms",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-eigenvalues-and-eigenvectors",
+    "zh": "特征值与特征向量",
+    "en": "Eigenvalues & eigenvectors",
+    "group": "fp2g-eigenvalues-and-eigenvectors"
+   },
+   {
+    "id": "fp2-diagonalisation-of-matrices",
+    "zh": "矩阵对角化",
+    "en": "Diagonalisation of matrices",
+    "group": "fp2g-eigenvalues-and-eigenvectors"
+   },
+   {
+    "id": "fp2-solving-systems-of-equations",
+    "zh": "方程组求解",
+    "en": "Solving systems of equations",
+    "group": "fp2g-eigenvalues-and-eigenvectors"
+   },
+   {
+    "id": "fp2-parametric-differentiation",
+    "zh": "参数方程微分",
+    "en": "Parametric differentiation",
+    "group": "fp2g-further-differentiation-and-series"
+   },
+   {
+    "id": "fp2-differentiating-hyperbolic-and-inverse-fns",
+    "zh": "双曲与反函数微分",
+    "en": "Differentiating hyperbolic & inverse fns",
+    "group": "fp2g-further-differentiation-and-series"
+   },
+   {
+    "id": "fp2-maclaurin-series",
+    "zh": "麦克劳林级数",
+    "en": "Maclaurin series",
+    "group": "fp2g-further-differentiation-and-series"
+   },
+   {
+    "id": "fp2-standard-integrals-and-techniques",
+    "zh": "标准积分与技巧",
+    "en": "Standard integrals & techniques",
+    "group": "fp2g-arc-length-and-surface-area"
+   },
+   {
+    "id": "fp2-reduction-formulae",
+    "zh": "递推公式",
+    "en": "Reduction formulae",
+    "group": "fp2g-arc-length-and-surface-area"
+   },
+   {
+    "id": "fp2-arc-length-and-surface-areas",
+    "zh": "弧长与表面积",
+    "en": "Arc length & surface areas",
+    "group": "fp2g-arc-length-and-surface-area"
+   },
+   {
+    "id": "fp2-de-moivre-and-the-roots-of-unity",
+    "zh": "棣莫弗定理与单位根",
+    "en": "De Moivre & the roots of unity",
+    "group": "fp2g-complex-numbers"
+   },
+   {
+    "id": "fp2-complex-summations",
+    "zh": "复数求和",
+    "en": "Complex summations",
+    "group": "fp2g-complex-numbers"
+   },
+   {
+    "id": "fp2-exponential-form-of-complex-numbers",
+    "zh": "复数指数形式",
+    "en": "Exponential form of complex numbers",
+    "group": "fp2g-complex-numbers"
+   },
+   {
+    "id": "fp2-first-order-linear-equations",
+    "zh": "一阶线性方程",
+    "en": "First-order linear equations",
+    "group": "fp2g-differential-equations"
+   },
+   {
+    "id": "fp2-homogeneous-second-order-equations",
+    "zh": "齐次二阶方程",
+    "en": "Homogeneous second-order equations",
+    "group": "fp2g-differential-equations"
+   },
+   {
+    "id": "fp2-non-homogeneous-second-order-equations",
+    "zh": "非齐次二阶方程",
+    "en": "Non-homogeneous second-order equations",
+    "group": "fp2g-differential-equations"
+   }
+  ]
+ },
+ "FM": {
+  "groups": [
+   {
+    "id": "fmg-motion-of-a-projectile",
+    "zh": "抛体运动",
+    "en": "Motion of a projectile"
+   },
+   {
+    "id": "fmg-equilibrium-of-rigid-body",
+    "zh": "刚体的平衡",
+    "en": "Equilibrium of rigid body"
+   },
+   {
+    "id": "fmg-circular-motion",
+    "zh": "圆周运动",
+    "en": "Circular motion"
+   },
+   {
+    "id": "fmg-hooke-s-law",
+    "zh": "胡克定律",
+    "en": "Hooke’s Law"
+   },
+   {
+    "id": "fmg-linear-motion-under-a-variable-force",
+    "zh": "变力作用下的线性运动",
+    "en": "Linear motion under a variable force"
+   },
+   {
+    "id": "fmg-momentum",
+    "zh": "动量",
+    "en": "Momentum"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fm-motion-in-the-vertical-plane",
+    "zh": "竖直平面运动",
+    "en": "Motion in the vertical plane",
+    "group": "fmg-motion-of-a-projectile"
+   },
+   {
+    "id": "fm-the-cartesian-equation-of-trajectories",
+    "zh": "轨迹方程",
+    "en": "The Cartesian equation of trajectories",
+    "group": "fmg-motion-of-a-projectile"
+   },
+   {
+    "id": "fm-range-and-maximum-height",
+    "zh": "射程与最大高度",
+    "en": "Range & maximum height",
+    "group": "fmg-motion-of-a-projectile"
+   },
+   {
+    "id": "fm-moments-and-equilibrium",
+    "zh": "力矩与平衡",
+    "en": "Moments & equilibrium",
+    "group": "fmg-equilibrium-of-rigid-body"
+   },
+   {
+    "id": "fm-centres-of-mass-of-rods-and-laminas",
+    "zh": "杆与薄片质心",
+    "en": "Centres of mass of rods & laminas",
+    "group": "fmg-equilibrium-of-rigid-body"
+   },
+   {
+    "id": "fm-centres-of-mass-of-solids-and-composites",
+    "zh": "固体与复合体质心",
+    "en": "Centres of mass of solids & composites",
+    "group": "fmg-equilibrium-of-rigid-body"
+   },
+   {
+    "id": "fm-motion-in-horizontal-circles",
+    "zh": "水平圆周运动",
+    "en": "Motion in horizontal circles",
+    "group": "fmg-circular-motion"
+   },
+   {
+    "id": "fm-three-dimensional-circular-motion",
+    "zh": "三维圆周运动",
+    "en": "Three-dimensional circular motion",
+    "group": "fmg-circular-motion"
+   },
+   {
+    "id": "fm-motion-in-vertical-circles",
+    "zh": "竖直圆周运动",
+    "en": "Motion in vertical circles",
+    "group": "fmg-circular-motion"
+   },
+   {
+    "id": "fm-hooke-s-law",
+    "zh": "胡克定律",
+    "en": "Hooke's law",
+    "group": "fmg-hooke-s-law"
+   },
+   {
+    "id": "fm-elastic-potential-energy",
+    "zh": "弹性势能",
+    "en": "Elastic potential energy",
+    "group": "fmg-hooke-s-law"
+   },
+   {
+    "id": "fm-applying-the-work-energy-principle",
+    "zh": "功与能的应用",
+    "en": "Applying the work-energy principle",
+    "group": "fmg-hooke-s-law"
+   },
+   {
+    "id": "fm-acceleration-as-a-function-of-time",
+    "zh": "加速度与时间",
+    "en": "Acceleration as a function of time",
+    "group": "fmg-linear-motion-under-a-variable-force"
+   },
+   {
+    "id": "fm-acceleration-as-a-function-of-displacement",
+    "zh": "加速度与位移",
+    "en": "Acceleration as a function of displacement",
+    "group": "fmg-linear-motion-under-a-variable-force"
+   },
+   {
+    "id": "fm-modelling-with-variable-acceleration",
+    "zh": "变加速度建模",
+    "en": "Modelling with variable acceleration",
+    "group": "fmg-linear-motion-under-a-variable-force"
+   },
+   {
+    "id": "fm-impulse-and-conservation-of-momentum",
+    "zh": "冲量与动量守恒",
+    "en": "Impulse & conservation of momentum",
+    "group": "fmg-momentum"
+   },
+   {
+    "id": "fm-oblique-collisions",
+    "zh": "斜碰撞",
+    "en": "Oblique collisions",
+    "group": "fmg-momentum"
+   }
+  ]
+ },
+ "FS": {
+  "groups": [
+   {
+    "id": "fsg-continuous-random-variables",
+    "zh": "连续型随机变量",
+    "en": "Continuous random variables"
+   },
+   {
+    "id": "fsg-inferential-statistics",
+    "zh": "t-检验和置信区间",
+    "en": "Inferential statistics"
+   },
+   {
+    "id": "fsg-chi-squared-tests",
+    "zh": "卡方检验",
+    "en": "Chi-squared tests"
+   },
+   {
+    "id": "fsg-non-parametric-tests",
+    "zh": "非参数检验",
+    "en": "Non-parametric tests"
+   },
+   {
+    "id": "fsg-probability-generating-functions",
+    "zh": "概率母函数",
+    "en": "Probability generating functions"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fs-the-probability-density-function",
+    "zh": "概率密度函数",
+    "en": "The probability density function",
+    "group": "fsg-continuous-random-variables"
+   },
+   {
+    "id": "fs-the-cumulative-distribution-function",
+    "zh": "累积分布函数",
+    "en": "The cumulative distribution function",
+    "group": "fsg-continuous-random-variables"
+   },
+   {
+    "id": "fs-distns-of-functions-of-random-variables",
+    "zh": "随机变量函数的分布",
+    "en": "Distns of functions of random variables",
+    "group": "fsg-continuous-random-variables"
+   },
+   {
+    "id": "fs-t-distribution-and-t-tests",
+    "zh": "t分布与t检验",
+    "en": "t-distribution & t-tests",
+    "group": "fsg-inferential-statistics"
+   },
+   {
+    "id": "fs-tests-for-a-difference-of-means",
+    "zh": "两均值差的检验",
+    "en": "Tests for a difference of means",
+    "group": "fsg-inferential-statistics"
+   },
+   {
+    "id": "fs-paired-sample-t-tests",
+    "zh": "配对样本t检验",
+    "en": "Paired-sample t-tests",
+    "group": "fsg-inferential-statistics"
+   },
+   {
+    "id": "fs-confidence-intervals-for-small-samples",
+    "zh": "小样本置信区间",
+    "en": "Confidence intervals for small samples",
+    "group": "fsg-inferential-statistics"
+   },
+   {
+    "id": "fs-forming-hypotheses",
+    "zh": "建立统计假设",
+    "en": "Forming hypotheses",
+    "group": "fsg-chi-squared-tests"
+   },
+   {
+    "id": "fs-goodness-of-fit-tests",
+    "zh": "拟合优度检验",
+    "en": "Goodness-of-fit tests",
+    "group": "fsg-chi-squared-tests"
+   },
+   {
+    "id": "fs-contingency-table-tests-of-association",
+    "zh": "列联表关联性检验",
+    "en": "Contingency-table tests of association",
+    "group": "fsg-chi-squared-tests"
+   },
+   {
+    "id": "fs-the-single-sample-sign-test",
+    "zh": "符号检验",
+    "en": "The single-sample sign test",
+    "group": "fsg-non-parametric-tests"
+   },
+   {
+    "id": "fs-wilcoxon-signed-rank-test",
+    "zh": "威尔科克森符号秩检验",
+    "en": "Wilcoxon signed-rank test",
+    "group": "fsg-non-parametric-tests"
+   },
+   {
+    "id": "fs-wilcoxon-rank-sum-test",
+    "zh": "威尔科克森秩和检验",
+    "en": "Wilcoxon rank-sum test",
+    "group": "fsg-non-parametric-tests"
+   },
+   {
+    "id": "fs-the-probability-generating-function",
+    "zh": "概率母函数定义",
+    "en": "The probability generating function",
+    "group": "fsg-probability-generating-functions"
+   },
+   {
+    "id": "fs-mean-and-variance-from-the-pgf",
+    "zh": "用母函数求均值方差",
+    "en": "Mean & variance from the PGF",
+    "group": "fsg-probability-generating-functions"
+   },
+   {
+    "id": "fs-sums-of-independent-variables",
+    "zh": "独立变量之和",
+    "en": "Sums of independent variables",
+    "group": "fsg-probability-generating-functions"
+   }
+  ]
+ }
+}

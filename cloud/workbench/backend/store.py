@@ -98,6 +98,40 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
     不能沿用物理化学的 P1P2 合用池——否则 P1/P2 混池、QP6x 还会落到 unknown。
     """
     subj = (subject or "").strip().lower()
+    if subj == "accounting":
+        # 牛津 AQA 会计 9615（2026-10-21）：单元不按 paper 分，而是按 AS/A2 两套词表——
+        # Paper 1+2（AC01/AC02）→ AS，Paper 3+4（AC03/AC04）→ AL。卷号 AC0N 不含 `1\d`，
+        # 也不匹配 [PC]H，不加这条会落到 unknown、整科无法打标。
+        m = re.match(r"(?i)^AC0?([1-4])$", code.strip())
+        if m:
+            return "AS" if int(m.group(1)) <= 2 else "AL"
+    if subj == "biology":
+        # 牛津 AQA 生物 9610（2026-10-21）：BL01–BL05 → U1–U5。
+        # 卷号 BL0N 既不含 `1\d`，也不匹配 [PC]H，不加这条会落到 unknown、整科无法打标。
+        # ⚠️ 与 Edexcel 生物（WBI11）不冲突：那里走下面的通用 `1(\d)` 分支 → U1。
+        m = re.match(r"(?i)^BL0?([1-5])$", code.strip())
+        if m:
+            return f"U{int(m.group(1))}"
+    if subj == "further-mathematics":
+        # CIE 9231 进阶数学：Paper 1–4 → FP1/FP2/FM/FS。
+        # 卷号 QP11–QP44，与 9709 数学、物理、化学全撞，必须按 subject 先分流。
+        m = re.match(r"(?i)^QP([1-4])\d$", code.strip())
+        if m:
+            return {"1": "FP1", "2": "FP2", "3": "FM", "4": "FS"}[m.group(1)]
+    if subj == "economics":
+        # 牛津 AQA 经济 9625（2026-10-21）：一纸一单元，EC01–EC04 → U1–U4。
+        # 与 CIE 9708 的 AS/AL 两套词表不同（那边 QP1x–QP4x），必须先按卷号前缀分流，
+        # 否则 EC01 落到 unknown、整科无法打标（前端表现为「标签改不了」）。
+        m = re.match(r"(?i)^EC0?([1-4])$", code.strip())
+        if m:
+            return f"U{m.group(1)}"
+        # CIE 9708 经济（2026-10-21）：与会计同一套约定，按 AS/AL 两套词表——
+        # Paper 1+2（QP1x/QP2x）→ AS，Paper 3+4（QP3x/QP4x）→ AL。
+        # 卷号与物理/化学/数学全撞，通用分支会把 QP3x 判成 P3、QP4x 判成 P4，
+        # 而经济词表里只有 AS/AL 两个单元，不加这条整科无法打标。
+        m = re.match(r"(?i)^QP([1-4])\d$", code.strip())
+        if m:
+            return "AS" if int(m.group(1)) <= 2 else "AL"
     if subj == "mathematics":
         m = re.match(r"(?i)^QP([1-6])\d$", code.strip())
         if m:

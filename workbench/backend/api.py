@@ -82,6 +82,18 @@ def _verify_state(units: list[str], conf: set[str]) -> tuple[str, int, int]:
     return state, done, total
 
 
+def _labels_for(paper: store.Paper, cut_q: dict) -> list[str]:
+    """本题的「小问单元」列表。
+
+    默认是顶层字母（a/b/c）——物理/化学/AQA/CIE 都走这条；
+    会计走 leaf 粒度：把 (a)(i)(ii) 展平成 "a i"/"a ii"，有罗马子项的字母本身不再成单元。
+    粒度开关在 store.sub_label_mode（按学科）。
+    """
+    if store.sub_label_mode(paper.board, paper.subject) == "leaf":
+        return render_subsplit.leaf_labels(cut_q)
+    return render_subsplit.top_labels(cut_q)
+
+
 def _validate_tags(paper: store.Paper, tags: list[str], where: str) -> None:
     if not tags:
         raise HTTPException(422, f"{where}: 至少勾选 1 个知识点标签")
@@ -222,7 +234,7 @@ def get_question(qid: str):
     booklet_warn: list[str] = []
     cut_q = store.cut_question(paper, pmeta.get("question_number"))
     if cut_q and cut_q.get("question_type") != "mcq":
-        top_labels = render_subsplit.top_labels(cut_q)
+        top_labels = _labels_for(paper, cut_q)
         split_eligible = len(top_labels) >= 2
 
     split_active = bool(pmeta.get("split"))
@@ -356,7 +368,7 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         raise HTTPException(422, "该题缺少 cut.json 切割数据，无法切分")
     if cut_q.get("question_type") == "mcq":
         raise HTTPException(422, "MCQ 不支持小问切分")
-    top_labels = render_subsplit.top_labels(cut_q)
+    top_labels = _labels_for(paper, cut_q)
     if len(top_labels) < 2:
         raise HTTPException(422, f"顶层小问不足 2 个（{top_labels}），无法切分")
 
@@ -384,9 +396,10 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         for sm in paper.sub_metas(qpath)
     }
 
-    # 渲染子图：AQA/CIE 按小问打标但「不切子图」——子题文件不带 image/layout，
-    # 预览自动回退整题图（前端 imageOverride ?? null）。Edexcel 维持切子图。
-    if paper.board in store.SUB_NO_IMAGE_BOARDS:
+    # 渲染子图：AQA/CIE，以及 accounting 学科（任何考试局）按小问打标但「不切子图」——
+    # 子题文件不带 image/layout，预览自动回退整题图（前端 imageOverride ?? null）。
+    # 其余（Edexcel physics/chemistry）维持切子图。判定统一走 store.sub_images_enabled。
+    if not store.sub_images_enabled(paper.board, paper.subject):
         render_res: dict = {
             "results": [{"label": l, "image": None, "layout": None} for l in top_labels],
             "warnings": [],

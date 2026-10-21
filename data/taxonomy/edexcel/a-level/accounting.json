@@ -1,0 +1,968 @@
+{
+  "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的「会计」表（tblwJaD4xPq61wWB）第 1–117 行，即 Edexcel IAL 段（表内元数据几乎全空，按段首标记行定位；2026-10-19 导出）。",
+  "U1": {
+    "groups": [
+      {
+        "id": "u1g-transaction-recording",
+        "zh": "交易记录",
+        "en": "Transaction recording"
+      },
+      {
+        "id": "u1g-non-current-asset",
+        "zh": "固定资产",
+        "en": "Non-current asset"
+      },
+      {
+        "id": "u1g-receivables",
+        "zh": "应收账款",
+        "en": "Receivables"
+      },
+      {
+        "id": "u1g-control-account",
+        "zh": "控制账户",
+        "en": "Control account"
+      },
+      {
+        "id": "u1g-inventory-valuation",
+        "zh": "存货估值",
+        "en": "Inventory valuation"
+      },
+      {
+        "id": "u1g-prepayments-and-accruals",
+        "zh": "预付与拖欠",
+        "en": "Prepayments and accruals"
+      },
+      {
+        "id": "u1g-accounting-principles-and-concepts",
+        "zh": "会计准则",
+        "en": "Accounting principles and concepts"
+      },
+      {
+        "id": "u1g-basic-financial-statements",
+        "zh": "基础财务报表",
+        "en": "Basic financial statements"
+      },
+      {
+        "id": "u1g-departmental-account",
+        "zh": "部门报表",
+        "en": "Departmental account"
+      },
+      {
+        "id": "u1g-partnership",
+        "zh": "合伙制企业",
+        "en": "Partnership"
+      },
+      {
+        "id": "u1g-non-profit-organisations",
+        "zh": "非盈利组织",
+        "en": "Non-profit organisations"
+      },
+      {
+        "id": "u1g-manufacturing-accounts",
+        "zh": "加工制造账户",
+        "en": "Manufacturing accounts"
+      },
+      {
+        "id": "u1g-overhead-and-job-costing",
+        "zh": "制造成本和订单成本法",
+        "en": "Overhead and job costing"
+      },
+      {
+        "id": "u1g-error-correction",
+        "zh": "错误更正",
+        "en": "Error Correction"
+      },
+      {
+        "id": "u1g-incomplete-records",
+        "zh": "不完整记账",
+        "en": "Incomplete records"
+      },
+      {
+        "id": "u1g-financial-ratios",
+        "zh": "财务比率",
+        "en": "Financial ratios"
+      },
+      {
+        "id": "u1g-social-accounting-and-ethics",
+        "zh": "会计社会责任和道德",
+        "en": "Social accounting and ethics"
+      },
+      {
+        "id": "u1g-ict",
+        "zh": "信息科技",
+        "en": "ICT"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u1-journal-entries",
+        "zh": "日记账",
+        "en": "Journal entries",
+        "group": "u1g-transaction-recording"
+      },
+      {
+        "id": "u1-leger-account",
+        "zh": "分类账",
+        "en": "Leger account",
+        "group": "u1g-transaction-recording"
+      },
+      {
+        "id": "u1-trial-balance",
+        "zh": "试算平衡表",
+        "en": "Trial balance",
+        "group": "u1g-transaction-recording"
+      },
+      {
+        "id": "u1-capital-expenditure-revenue-expenditure",
+        "zh": "资本性支出,费用性支出",
+        "en": "Capital expenditure, revenue expenditure",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-straight-line-method",
+        "zh": "直线折旧法",
+        "en": "Straight line method",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-reducing-balance-method",
+        "zh": "余额递减法",
+        "en": "Reducing balance method",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-revaluation-method",
+        "zh": "重估法",
+        "en": "Revaluation method",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-schedule-of-non-current-assets",
+        "zh": "固定资产明细表",
+        "en": "Schedule of non-current assets",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-non-current-asset-account",
+        "zh": "固定资产成本账户",
+        "en": "Non-current asset account",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-provision-for-depreciation-account",
+        "zh": "累计折旧账户",
+        "en": "Provision for depreciation account",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-depreciation",
+        "zh": "折旧",
+        "en": "Depreciation",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-trade-discounts-and-cash-discounts",
+        "zh": "商业折扣与现金折扣",
+        "en": "Trade discounts and cash discounts",
+        "group": "u1g-receivables"
+      },
+      {
+        "id": "u1-irrecoverable-debts",
+        "zh": "坏账",
+        "en": "Irrecoverable debts",
+        "group": "u1g-receivables"
+      },
+      {
+        "id": "u1-bad-debts-recovered",
+        "zh": "已收回的坏账",
+        "en": "Bad debts recovered",
+        "group": "u1g-receivables"
+      },
+      {
+        "id": "u1-allowance-for-irrecoverable-debts",
+        "zh": "坏账准备",
+        "en": "Allowance for irrecoverable debts",
+        "group": "u1g-receivables"
+      },
+      {
+        "id": "u1-management-and-collection-of-receivables",
+        "zh": "应收款项的管理与收回",
+        "en": "Management and collection of receivables",
+        "group": "u1g-receivables"
+      },
+      {
+        "id": "u1-trade-receivable-control-account",
+        "zh": "应收账款控制账户",
+        "en": "Trade receivable control account",
+        "group": "u1g-control-account"
+      },
+      {
+        "id": "u1-trade-payable-control-account",
+        "zh": "应付账款控制账户",
+        "en": "Trade payable control account",
+        "group": "u1g-control-account"
+      },
+      {
+        "id": "u1-evaluation-of-control-accounts",
+        "zh": "评价控制账户",
+        "en": "Evaluation of control accounts",
+        "group": "u1g-control-account"
+      },
+      {
+        "id": "u1-fifo",
+        "zh": "先进先出法",
+        "en": "FIFO",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-lifo",
+        "zh": "后进先出法",
+        "en": "LIFO",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-net-realisable-value-nrv",
+        "zh": "可变现净值",
+        "en": "Net realisable value (NRV)",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-periodic-and-perpetual-inventory-valuation",
+        "zh": "定期盘存制与永续盘存制",
+        "en": "Periodic and perpetual inventory valuation",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-effect-of-inventory-valuation-on-profit-and-net-assets",
+        "zh": "存货估值对报表的影响",
+        "en": "Effect of inventory valuation on financial statements",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-accrued-expenses",
+        "zh": "应计费用",
+        "en": "Accrued expenses",
+        "group": "u1g-prepayments-and-accruals"
+      },
+      {
+        "id": "u1-accrued-income",
+        "zh": "应计收入",
+        "en": "Accrued income",
+        "group": "u1g-prepayments-and-accruals"
+      },
+      {
+        "id": "u1-prepaid-expenses",
+        "zh": "预付费用",
+        "en": "Prepaid expenses",
+        "group": "u1g-prepayments-and-accruals"
+      },
+      {
+        "id": "u1-prepaid-income",
+        "zh": "预收收入",
+        "en": "Prepaid income",
+        "group": "u1g-prepayments-and-accruals"
+      },
+      {
+        "id": "u1-accounting-principles-and-concepts",
+        "zh": "会计准则",
+        "en": "Accounting principles and concepts",
+        "group": "u1g-accounting-principles-and-concepts"
+      },
+      {
+        "id": "u1-statement-of-financial-position",
+        "zh": "资产负债表",
+        "en": "Statement of financial position",
+        "group": "u1g-basic-financial-statements"
+      },
+      {
+        "id": "u1-statement-of-profit-or-loss",
+        "zh": "利润表",
+        "en": "Statement of profit or loss",
+        "group": "u1g-basic-financial-statements"
+      },
+      {
+        "id": "u1-purpose-and-benefits-of-departmental-records",
+        "zh": "部门记录的目的与益处",
+        "en": "Purpose and benefits of departmental records",
+        "group": "u1g-departmental-account"
+      },
+      {
+        "id": "u1-apportionment-of-expenses",
+        "zh": "费用的分摊",
+        "en": "Apportionment of expenses",
+        "group": "u1g-departmental-account"
+      },
+      {
+        "id": "u1-departmental-statement-of-profit-or-loss",
+        "zh": "部门利润表",
+        "en": "Departmental statement of profit or loss",
+        "group": "u1g-departmental-account"
+      },
+      {
+        "id": "u1-decisions-on-expanding-or-closing-departments",
+        "zh": "部门扩张或关闭的决策",
+        "en": "Decisions on expanding or closing departments",
+        "group": "u1g-departmental-account"
+      },
+      {
+        "id": "u1-appropriation-of-partnership-profits",
+        "zh": "合伙利润的分配",
+        "en": "Appropriation of partnership profits",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-capital-account",
+        "zh": "合伙企业的资本账户",
+        "en": "Capital account",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-current-account",
+        "zh": "合伙企业的往来账户",
+        "en": "Current account",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-revaluation-account",
+        "zh": "重估账户",
+        "en": "Revaluation account",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-goodwill",
+        "zh": "商誉",
+        "en": "Goodwill",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-statement-of-profit-or-loss-and-other-comprehensive-income-f",
+        "zh": "合伙企业利润表",
+        "en": "Statement of profit or loss and other comprehensive income for a parntership",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-statement-of-financial-position-for-a-partnership",
+        "zh": "合伙企业资产负债表",
+        "en": "Statement of financial position for a partnership",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-partnership-financial-statements-and-evaluation",
+        "zh": "合伙企业评价",
+        "en": "Evaluation of partnership",
+        "group": "u1g-partnership"
+      },
+      {
+        "id": "u1-receipts-and-payments-account",
+        "zh": "收付款账户",
+        "en": "Receipts and payments account",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-trading-accounts-for-different-activities",
+        "zh": "不同活动的交易账户",
+        "en": "Trading accounts for different activities",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-subscriptions-account",
+        "zh": "会费账户",
+        "en": "Subscriptions account",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-income-and-expenditure-account-and-statement-of-financial-po",
+        "zh": "收支账户",
+        "en": "Income and expenditure account and statement of financial position",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-statement-of-financial-position-for-a-non-profit-organisatio",
+        "zh": "非盈利组织的资产负债表",
+        "en": "Statement of financial position for a non-profit organisation",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-long-term-and-life-memberships",
+        "zh": "长期与终身会员资格",
+        "en": "Long-term and life memberships",
+        "group": "u1g-non-profit-organisations"
+      },
+      {
+        "id": "u1-cost-classification",
+        "zh": "成本分类",
+        "en": "Cost classification",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-manufacturing-account",
+        "zh": "制造账户",
+        "en": "Manufacturing account",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-statement-of-profit-or-loss-and-other-comprehensive-income-f-2",
+        "zh": "制造企业的利润表",
+        "en": "Statement of profit or loss and other comprehensive income for a manufacturing business",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-statement-of-financial-position-for-a-manufacturing-business",
+        "zh": "制造企业的资产负债表",
+        "en": "Statement of financial position for a manufacturing business",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-unrealised-profit",
+        "zh": "未实现利润",
+        "en": "Unrealised profit",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-allocation-apportionment-and-reapportionment",
+        "zh": "制造费用分摊",
+        "en": "Allocation, apportionment and reapportionment",
+        "group": "u1g-overhead-and-job-costing"
+      },
+      {
+        "id": "u1-overhead-recovery-rate",
+        "zh": "间接费用分摊率",
+        "en": "Overhead recovery rate",
+        "group": "u1g-overhead-and-job-costing"
+      },
+      {
+        "id": "u1-quotation",
+        "zh": "报价",
+        "en": "Quotation",
+        "group": "u1g-overhead-and-job-costing"
+      },
+      {
+        "id": "u1-types-of-errors",
+        "zh": "错误类型",
+        "en": "Types of errors",
+        "group": "u1g-error-correction"
+      },
+      {
+        "id": "u1-error-correction",
+        "zh": "错误更正",
+        "en": "Error correction",
+        "group": "u1g-error-correction"
+      },
+      {
+        "id": "u1-suspense-account",
+        "zh": "暂记账户",
+        "en": "Suspense account",
+        "group": "u1g-error-correction"
+      },
+      {
+        "id": "u1-revised-profit",
+        "zh": "修正利润",
+        "en": "Revised profit",
+        "group": "u1g-error-correction"
+      },
+      {
+        "id": "u1-total-revneue",
+        "zh": "总收入",
+        "en": "Total revneue",
+        "group": "u1g-incomplete-records"
+      },
+      {
+        "id": "u1-total-purchase-cost",
+        "zh": "总采购成本",
+        "en": "Total purchase cost",
+        "group": "u1g-incomplete-records"
+      },
+      {
+        "id": "u1-damaged-stolen-inventory",
+        "zh": "损坏/被偷盗的存货",
+        "en": "Damaged/stolen inventory",
+        "group": "u1g-incomplete-records"
+      },
+      {
+        "id": "u1-trading-account",
+        "zh": "利润表（购销账户）",
+        "en": "Trading account",
+        "group": "u1g-incomplete-records"
+      },
+      {
+        "id": "u1-liquidity-ratios",
+        "zh": "流动性比率",
+        "en": "Liquidity ratios",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-efficiency-ratios",
+        "zh": "经营效率比率",
+        "en": "Efficiency ratios",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-profitability-ratios",
+        "zh": "盈利能力比率",
+        "en": "Profitability ratios",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-use-of-assets-ratio",
+        "zh": "资产使用率",
+        "en": "Use of assets ratio",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-evaluating-ratios-and-making-projections",
+        "zh": "比率评估与预测",
+        "en": "Evaluating ratios and making projections",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-labour-remuneration",
+        "zh": "劳动力薪酬方式",
+        "en": "Labour remuneration",
+        "group": "u1g-manufacturing-accounts"
+      },
+      {
+        "id": "u1-social-accounting-and-ethics",
+        "zh": "会计社会责任和道德",
+        "en": "Social accounting and ethics",
+        "group": "u1g-social-accounting-and-ethics"
+      },
+      {
+        "id": "u1-ict",
+        "zh": "信息科技",
+        "en": "ICT",
+        "group": "u1g-ict"
+      },
+      {
+        "id": "u1-accounting-elements-and-accounts",
+        "zh": "会计元素和账户",
+        "en": "Accounting elements and accounts",
+        "group": "u1g-transaction-recording"
+      },
+      {
+        "id": "u1-evaluation-of-incomplete-records",
+        "zh": "记账方式的评估",
+        "en": "Evaluation of ways of recording",
+        "group": "u1g-incomplete-records"
+      },
+      {
+        "id": "u1-total-cost",
+        "zh": "总成本",
+        "en": "Total cost",
+        "group": "u1g-overhead-and-job-costing"
+      },
+      {
+        "id": "u1-liquidity-and-profitability",
+        "zh": "流动性和盈利能力",
+        "en": "Liquidity and profitability",
+        "group": "u1g-financial-ratios"
+      },
+      {
+        "id": "u1-causes-and-reasons-for-depreciation",
+        "zh": "折旧的原因与理由",
+        "en": "Causes and reasons for depreciation",
+        "group": "u1g-non-current-asset"
+      },
+      {
+        "id": "u1-evaluation-of-inventory-valuation-methods",
+        "zh": "存货估值方法的评估",
+        "en": "Evaluation of inventory valuation methods",
+        "group": "u1g-inventory-valuation"
+      },
+      {
+        "id": "u1-disposal",
+        "zh": "固定资产清理",
+        "en": "Disposal",
+        "group": "u1g-non-current-asset"
+      }
+    ]
+  },
+  "U2": {
+    "groups": [
+      {
+        "id": "u2g-capital-structure",
+        "zh": "资本结构",
+        "en": "Capital structure"
+      },
+      {
+        "id": "u2g-statement-of-comprehensive-income",
+        "zh": "利润表",
+        "en": "Statement of comprehensive income"
+      },
+      {
+        "id": "u2g-statement-of-financial-position",
+        "zh": "资产负债表",
+        "en": "Statement of financial position"
+      },
+      {
+        "id": "u2g-statement-of-cash-flow",
+        "zh": "现金流量表",
+        "en": "Statement of cash flow"
+      },
+      {
+        "id": "u2g-business-purchase-and-merger",
+        "zh": "企业收购与合并",
+        "en": "Business purchase and merger"
+      },
+      {
+        "id": "u2g-budget",
+        "zh": "预算",
+        "en": "Budget"
+      },
+      {
+        "id": "u2g-investment-ratios",
+        "zh": "投资比率",
+        "en": "Investment ratios"
+      },
+      {
+        "id": "u2g-investment-appraisal",
+        "zh": "投资评估",
+        "en": "Investment appraisal"
+      },
+      {
+        "id": "u2g-absorption-and-marginal-costing",
+        "zh": "全部成本法和边际成本法",
+        "en": "Absorption and marginal costing"
+      },
+      {
+        "id": "u2g-break-even-analysis",
+        "zh": "盈亏平衡分析",
+        "en": "Break-even analysis"
+      },
+      {
+        "id": "u2g-standard-costing",
+        "zh": "标准化成本",
+        "en": "Standard costing"
+      },
+      {
+        "id": "u2g-ict",
+        "zh": "信息科技",
+        "en": "ICT"
+      },
+      {
+        "id": "u2g-audit",
+        "zh": "审计",
+        "en": "Audit"
+      }
+    ],
+    "tags": [
+      {
+        "id": "u2-journal-entries-for-equity-transactions",
+        "zh": "权益交易日记账",
+        "en": "Journal entries for equity transactions",
+        "group": "u2g-capital-structure"
+      },
+      {
+        "id": "u2-statement-of-changes-in-equity",
+        "zh": "权益变动表",
+        "en": "Statement of changes in equity",
+        "group": "u2g-capital-structure"
+      },
+      {
+        "id": "u2-application-allotment-and-calls",
+        "zh": "股票发行：申请、分配和催缴",
+        "en": "Application, allotment, and calls",
+        "group": "u2g-capital-structure"
+      },
+      {
+        "id": "u2-cost-classification-cost-of-sales-distribution-costs-and-adm",
+        "zh": "成本分类：销售成本、分销费用与管理费用",
+        "en": "Cost classification: cost of sales, distribution costs, and administration expenses",
+        "group": "u2g-statement-of-comprehensive-income"
+      },
+      {
+        "id": "u2-statement-of-profit-or-loss-and-other-comprehensive-income",
+        "zh": "利润表及其他综合收益表",
+        "en": "Statement of profit or loss and other comprehensive income",
+        "group": "u2g-statement-of-comprehensive-income"
+      },
+      {
+        "id": "u2-statement-of-financial-position",
+        "zh": "资产负债表",
+        "en": "Statement of financial position",
+        "group": "u2g-statement-of-financial-position"
+      },
+      {
+        "id": "u2-statement-of-cash-flows",
+        "zh": "现金流量表",
+        "en": "Statement of cash flows",
+        "group": "u2g-statement-of-cash-flow"
+      },
+      {
+        "id": "u2-purchase-price",
+        "zh": "收购价值",
+        "en": "Purchase price",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-company-value-value-of-net-assets",
+        "zh": "公司价值/净资产价值",
+        "en": "Company value / Value of net assets",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-goodwill",
+        "zh": "商誉",
+        "en": "Goodwill",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-acquisition-account",
+        "zh": "收购账户",
+        "en": "Acquisition account",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-statement-of-financial-position-after-purchase-or-merger",
+        "zh": "合并资产负债表",
+        "en": "Statement of financial position after purchase or merger",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-realisation-account",
+        "zh": "变现账户",
+        "en": "Realisation account",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-sundry-shareholders-account",
+        "zh": "股东杂项账户",
+        "en": "Sundry shareholders account",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-evaluation-on-business-purchase-and-merger",
+        "zh": "收购合并评估",
+        "en": "Evaluation on business purchase and merger",
+        "group": "u2g-business-purchase-and-merger"
+      },
+      {
+        "id": "u2-sales-revenue-budget",
+        "zh": "销售预算",
+        "en": "Sales / Revenue budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-production-budget",
+        "zh": "生产预算",
+        "en": "Production budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-purchase-budget",
+        "zh": "采购预算",
+        "en": "Purchase budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-capital-budget",
+        "zh": "融资预算",
+        "en": "Capital budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-inventory-budget",
+        "zh": "存货预算",
+        "en": "Inventory budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-trade-receivable-budget",
+        "zh": "应收账款预算",
+        "en": "Trade receivable budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-trade-payable-budget",
+        "zh": "应付账款预算",
+        "en": "Trade payable budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-cash-budget",
+        "zh": "现金预算",
+        "en": "Cash budget",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-flexible-budgets",
+        "zh": "弹性预算",
+        "en": "Flexible budgets",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-investment-ratios",
+        "zh": "投资比率",
+        "en": "Investment ratios",
+        "group": "u2g-investment-ratios"
+      },
+      {
+        "id": "u2-evaluation-of-investment-ratios",
+        "zh": "投资比率的评估",
+        "en": "Evaluation of investment ratios",
+        "group": "u2g-investment-ratios"
+      },
+      {
+        "id": "u2-average-rate-of-return-method",
+        "zh": "平均收益率法",
+        "en": "Average Rate of Return Method",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-payback-period-method",
+        "zh": "回收期法",
+        "en": "Payback Period Method",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-net-present-value-method",
+        "zh": "净现值法",
+        "en": "Net Present Value Method",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-internal-rate-of-return-method",
+        "zh": "内部收益率法",
+        "en": "Internal Rate of Return Method",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-weighted-average-cost-of-capital",
+        "zh": "加权平均资本成本",
+        "en": "Weighted Average Cost of Capital",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-profitability-index",
+        "zh": "盈利指数",
+        "en": "Profitability Index",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-evaluation-of-the-project",
+        "zh": "项目评估",
+        "en": "Evaluation of the project",
+        "group": "u2g-investment-appraisal"
+      },
+      {
+        "id": "u2-absorption-costing",
+        "zh": "全部成本法",
+        "en": "Absorption costing",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-marginal-costing",
+        "zh": "边际成本",
+        "en": "Marginal costing",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-contribution",
+        "zh": "边际贡献",
+        "en": "Contribution",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-marginal-costing-in-decision-making",
+        "zh": "边际成本法在决策中的应用",
+        "en": "Marginal costing in decision making",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-evaluation-of-inventory-valuation-methods",
+        "zh": "存货估值方法评估",
+        "en": "Evaluation of inventory valuation methods",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-limiting-factor",
+        "zh": "限制因素",
+        "en": "Limiting factor",
+        "group": "u2g-absorption-and-marginal-costing"
+      },
+      {
+        "id": "u2-break-even-point",
+        "zh": "盈亏平衡点",
+        "en": "Break-even point",
+        "group": "u2g-break-even-analysis"
+      },
+      {
+        "id": "u2-break-even-chart",
+        "zh": "盈亏平衡图像",
+        "en": "Break-even chart",
+        "group": "u2g-break-even-analysis"
+      },
+      {
+        "id": "u2-classification-of-costs",
+        "zh": "成本分类",
+        "en": "Classification of costs",
+        "group": "u2g-break-even-analysis"
+      },
+      {
+        "id": "u2-evaluation-of-break-even-analysis",
+        "zh": "盈亏平衡分析的评价",
+        "en": "Evaluation of break-even analysis",
+        "group": "u2g-break-even-analysis"
+      },
+      {
+        "id": "u2-labour-variances",
+        "zh": "人工差异",
+        "en": "Labour variances",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-material-variances",
+        "zh": "材料差异",
+        "en": "Material variances",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-reasons-for-variances",
+        "zh": "差异原因分析",
+        "en": "Reasons for variances",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-standard-costing-system",
+        "zh": "标准成本制度",
+        "en": "Standard costing system",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-purpose-of-standard-costing",
+        "zh": "标准成本法的目的",
+        "en": "Purpose of standard costing",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-evaluation-of-standard-costing",
+        "zh": "标准成本法的评价",
+        "en": "Evaluation of standard costing",
+        "group": "u2g-standard-costing"
+      },
+      {
+        "id": "u2-ict",
+        "zh": "信息科技",
+        "en": "ICT",
+        "group": "u2g-ict"
+      },
+      {
+        "id": "u2-audit",
+        "zh": "审计",
+        "en": "Audit",
+        "group": "u2g-audit"
+      },
+      {
+        "id": "u2-evalutaion-of-payment-options",
+        "zh": "付款方式评估",
+        "en": "Evalutaion of payment options",
+        "group": "u2g-budget"
+      },
+      {
+        "id": "u2-evaluation-of-liquidity",
+        "zh": "流动性评估",
+        "en": "Evaluation of liquidity",
+        "group": "u2g-statement-of-cash-flow"
+      }
+    ]
+  }
+}

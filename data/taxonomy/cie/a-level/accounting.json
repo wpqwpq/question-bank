@@ -1,0 +1,1101 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的会计表，取 考试局=CAIE 且 考试阶段不含 IG 的记录（2026-10-20 导出，10-21 修正）。",
+ "P1P2": {
+  "groups": [
+   {
+    "id": "p1p2g-transaction-recording",
+    "zh": "交易记录",
+    "en": "Transaction recording"
+   },
+   {
+    "id": "p1p2g-x",
+    "zh": "分类账",
+    "en": "Leger account"
+   },
+   {
+    "id": "p1p2g-non-current-asset",
+    "zh": "固定资产",
+    "en": "Non-current asset"
+   },
+   {
+    "id": "p1p2g-receivables",
+    "zh": "应收账款",
+    "en": "Receivables"
+   },
+   {
+    "id": "p1p2g-control-account",
+    "zh": "控制账户",
+    "en": "Control account"
+   },
+   {
+    "id": "p1p2g-inventory-valuation",
+    "zh": "存货估值",
+    "en": "Inventory valuation"
+   },
+   {
+    "id": "p1p2g-prepayments-and-accruals",
+    "zh": "预付与拖欠",
+    "en": "Prepayments and accruals"
+   },
+   {
+    "id": "p1p2g-accounting-principles-and-concepts",
+    "zh": "会计准则",
+    "en": "Accounting principles and concepts"
+   },
+   {
+    "id": "p1p2g-basic-financial-statements",
+    "zh": "基础财务报表",
+    "en": "Basic financial statements"
+   },
+   {
+    "id": "p1p2g-partnership",
+    "zh": "合伙制企业",
+    "en": "Partnership"
+   },
+   {
+    "id": "p1p2g-error-correction",
+    "zh": "错误更正",
+    "en": "Error Correction"
+   },
+   {
+    "id": "p1p2g-incomplete-records",
+    "zh": "不完整记账",
+    "en": "Incomplete records"
+   },
+   {
+    "id": "p1p2g-financial-ratios",
+    "zh": "财务比率",
+    "en": "Financial ratios"
+   },
+   {
+    "id": "p1p2g-limited-company",
+    "zh": "有限责任公司",
+    "en": "Limited company"
+   },
+   {
+    "id": "p1p2g-computerised-accounting-systems",
+    "zh": "电脑化会计系统",
+    "en": "Computerised accounting systems "
+   },
+   {
+    "id": "p1p2g-bank-reconciliation-statements",
+    "zh": "银行存款余额调节表",
+    "en": "Bank reconciliation statements "
+   },
+   {
+    "id": "p1p2g-costing-of-materials-and-labour",
+    "zh": "材料与人工成本核算 ",
+    "en": "Costing of materials and labour"
+   },
+   {
+    "id": "p1p2g-absorption-costing",
+    "zh": "吸收成本法 ",
+    "en": "Absorption costing "
+   },
+   {
+    "id": "p1p2g-unit-job-and-batch-costing",
+    "zh": "单位、订单与分批成本法",
+    "en": " Unit, job and batch costing"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p1p2-journal-entries",
+    "zh": "日记账",
+    "en": "Journal entries",
+    "group": "p1p2g-transaction-recording"
+   },
+   {
+    "id": "p1p2-leger-account",
+    "zh": "分类账",
+    "en": "Leger account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-trial-balance",
+    "zh": "试算平衡表",
+    "en": "Trial balance",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-capital-expenditure-revenue-expenditure",
+    "zh": "资本性支出,费用性支出",
+    "en": "Capital expenditure, revenue expenditure",
+    "group": "p1p2g-non-current-asset"
+   },
+   {
+    "id": "p1p2-straight-line-method",
+    "zh": "直线折旧法",
+    "en": "Straight line method",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-reducing-balance-method",
+    "zh": "余额递减法",
+    "en": "Reducing balance method",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-revaluation-method",
+    "zh": "重估法",
+    "en": "Revaluation method",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-disposal-of-non-current-assets",
+    "zh": "固定资产处置",
+    "en": "Disposal of non-current assets",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-schedule-of-non-current-assets",
+    "zh": "固定资产明细表",
+    "en": "Schedule of non-current assets",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-non-current-asset-account",
+    "zh": "固定资产成本账户",
+    "en": "Non-current asset account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-provision-for-depreciation-account",
+    "zh": "累计折旧账户",
+    "en": "Provision for depreciation account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-causes-and-reasons-for-depreciation",
+    "zh": "折旧的原因与理由",
+    "en": "Causes and reasons for depreciation",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-trade-discounts-and-cash-discounts",
+    "zh": "商业折扣与现金折扣",
+    "en": "Trade discounts and cash discounts",
+    "group": "p1p2g-receivables"
+   },
+   {
+    "id": "p1p2-irrecoverable-debts",
+    "zh": "坏账",
+    "en": "Irrecoverable debts",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-bad-debts-recovered",
+    "zh": "已收回的坏账",
+    "en": "Bad debts recovered",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-allowance-for-irrecoverable-debts",
+    "zh": "坏账准备",
+    "en": "Allowance for irrecoverable debts",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-management-and-collection-of-receivables",
+    "zh": "应收款项的管理与收回",
+    "en": "Management and collection of receivables",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-trade-receivable-control-account",
+    "zh": "应收账款控制账户",
+    "en": "Trade receivable control account",
+    "group": "p1p2g-control-account"
+   },
+   {
+    "id": "p1p2-trade-payable-control-account",
+    "zh": "应付账款控制账户",
+    "en": "Trade payable control account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-fifo",
+    "zh": "先进先出法",
+    "en": "FIFO",
+    "group": "p1p2g-inventory-valuation"
+   },
+   {
+    "id": "p1p2-lifo",
+    "zh": "后进先出法",
+    "en": "LIFO",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-net-realisable-value-nrv",
+    "zh": "可变现净值",
+    "en": "Net realisable value (NRV)",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-periodic-and-perpetual-inventory-valuation",
+    "zh": "定期盘存制与永续盘存制",
+    "en": "Periodic and perpetual inventory valuation",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-effect-of-inventory-valuation-on-profit-and-net-assets",
+    "zh": "存货估值对利润和净资产的影响",
+    "en": "Effect of inventory valuation on profit and net assets",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-accrued-expenses",
+    "zh": "应计费用",
+    "en": "Accrued expenses",
+    "group": "p1p2g-prepayments-and-accruals"
+   },
+   {
+    "id": "p1p2-accrued-income",
+    "zh": "应计收入",
+    "en": "Accrued income",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-prepaid-expenses",
+    "zh": "预付费用",
+    "en": "Prepaid expenses",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-prepaid-income",
+    "zh": "预收收入",
+    "en": "Prepaid income",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-accounting-principles-and-concepts",
+    "zh": "会计准则",
+    "en": "Accounting principles and concepts",
+    "group": "p1p2g-accounting-principles-and-concepts"
+   },
+   {
+    "id": "p1p2-statement-of-financial-position",
+    "zh": "资产负债表",
+    "en": "Statement of financial position",
+    "group": "p1p2g-basic-financial-statements"
+   },
+   {
+    "id": "p1p2-statement-of-profit-or-loss",
+    "zh": "利润表",
+    "en": "Statement of profit or loss",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-appropriation-of-partnership-profits",
+    "zh": "合伙利润的分配",
+    "en": "Appropriation of partnership profits",
+    "group": "p1p2g-partnership"
+   },
+   {
+    "id": "p1p2-capital-accounts-for-partnerships",
+    "zh": "合伙企业的资本账户",
+    "en": "Capital accounts for partnerships",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-current-accounts-for-partnerships",
+    "zh": "合伙企业的往来账户",
+    "en": "Current accounts for partnerships",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-revaluation-account",
+    "zh": "重估账户",
+    "en": "Revaluation account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-goodwill",
+    "zh": "商誉",
+    "en": "Goodwill",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-parntership",
+    "zh": "合伙企业利润表",
+    "en": "Statement of profit or loss and other comprehensive income for a parntership",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-statement-of-financial-position-for-a-partnership",
+    "zh": "合伙企业资产负债表",
+    "en": "Statement of financial position for a partnership",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-partnership-financial-statements-and-evaluation",
+    "zh": "合伙企业财务报表与评价",
+    "en": "Partnership financial statements and evaluation",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-types-of-errors",
+    "zh": "错误类型",
+    "en": "Types of errors",
+    "group": "p1p2g-error-correction"
+   },
+   {
+    "id": "p1p2-error-correction",
+    "zh": "错误更正",
+    "en": "Error correction",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-suspense-account",
+    "zh": "暂记账户",
+    "en": "Suspense account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-revised-profit",
+    "zh": "修正利润",
+    "en": "Revised profit",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-total-revneue",
+    "zh": "总收入",
+    "en": "Total revneue",
+    "group": "p1p2g-incomplete-records"
+   },
+   {
+    "id": "p1p2-total-purchase-cost",
+    "zh": "总采购成本",
+    "en": "Total purchase cost",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-damaged-stolen-inventory",
+    "zh": "损坏/被偷盗的存货",
+    "en": "damaged/stolen inventory",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-trading-account",
+    "zh": "利润表（购销账户）",
+    "en": "Trading account",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-liquidity-ratios",
+    "zh": "流动性比率",
+    "en": "Liquidity ratios",
+    "group": "p1p2g-financial-ratios"
+   },
+   {
+    "id": "p1p2-efficiency-ratios",
+    "zh": "经营效率比率",
+    "en": "Efficiency ratios",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-profitability-ratios",
+    "zh": "盈利能力比率",
+    "en": "Profitability ratios",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-use-of-assets-ratio",
+    "zh": "资产使用率",
+    "en": "Use of assets ratio",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-evaluating-ratios-and-making-projections",
+    "zh": "比率评估与预测",
+    "en": "Evaluating ratios and making projections",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-statement-of-changes-in-equity",
+    "zh": "权益变动表",
+    "en": "Statement of changes in equity",
+    "group": "p1p2g-limited-company"
+   },
+   {
+    "id": "p1p2-statement-of-profit-or-loss-for-a-limited-company",
+    "zh": "有限公司的损益表",
+    "en": "Statement of profit or loss for a limited company",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-statement-of-financial-position-for-a-limited-company",
+    "zh": "有限公司的财务状况表",
+    "en": "Statement of financial position for a limited company",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-financing-methods",
+    "zh": "融资方式",
+    "en": "Financing methods",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-computerised-accounting-systems",
+    "zh": "电脑化会计系统",
+    "en": "Computerised accounting systems ",
+    "group": "p1p2g-computerised-accounting-systems"
+   },
+   {
+    "id": "p1p2-bank-reconciliation-statements",
+    "zh": "银行存款余额调节表",
+    "en": "Bank reconciliation statements ",
+    "group": "p1p2g-bank-reconciliation-statements"
+   },
+   {
+    "id": "p1p2-direct-and-indirect-costs",
+    "zh": "直接成本与间接成本",
+    "en": "Direct and indirect costs",
+    "group": "p1p2g-costing-of-materials-and-labour"
+   },
+   {
+    "id": "p1p2-just-in-time-management-of-inventory",
+    "zh": "存货的适时管理",
+    "en": "Just-in-time management of inventory",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-overheads-apportionment",
+    "zh": "间接费用分摊",
+    "en": "Overheads apportionment",
+    "group": "p1p2g-absorption-costing"
+   },
+   {
+    "id": "p1p2-absorption-of-overheads-into-cost-units",
+    "zh": "单位间接费用成本",
+    "en": "Absorption of overheads into cost units",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-under-and-over-absorption-of-overheads",
+    "zh": "间接费用分配不足与超额分配",
+    "en": "Under- and over-absorption of overheads",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-quotation",
+    "zh": "定价",
+    "en": "Quotation",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-marginal-cost",
+    "zh": "边际成本",
+    "en": "Marginal cost",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-the-break-even-point",
+    "zh": "盈亏平衡点",
+    "en": "The break-even point",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-break-even-charts",
+    "zh": "盈亏平衡图",
+    "en": "Break-even charts",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-profit-volume-charts",
+    "zh": "利润—业务量图",
+    "en": "Profit/volume charts",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-continuous-and-specific-order-operations",
+    "zh": "连续生产与特定订单生产",
+    "en": "Continuous and specific order operations",
+    "group": "p1p2g-unit-job-and-batch-costing"
+   },
+   {
+    "id": "p1p2-unit-costing",
+    "zh": "单位成本法",
+    "en": "Unit costing",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-job-costing",
+    "zh": "订单成本法",
+    "en": "Job costing",
+    "group": "p1p2g-x"
+   },
+   {
+    "id": "p1p2-batch-costing",
+    "zh": "批量成本法",
+    "en": "Batch costing",
+    "group": "p1p2g-x"
+   }
+  ]
+ },
+ "P3P4": {
+  "groups": [
+   {
+    "id": "p3p4g-incomplete-records",
+    "zh": "不完整记账",
+    "en": "Incomplete records"
+   },
+   {
+    "id": "p3p4g-x",
+    "zh": "总采购成本",
+    "en": "Total purchase cost"
+   },
+   {
+    "id": "p3p4g-partnership",
+    "zh": "合伙制企业",
+    "en": "Partnership"
+   },
+   {
+    "id": "p3p4g-limited-company",
+    "zh": "有限责任公司",
+    "en": "Limited company"
+   },
+   {
+    "id": "p3p4g-manufacturing-accounts",
+    "zh": "加工制造账户",
+    "en": "Manufacturing accounts"
+   },
+   {
+    "id": "p3p4g-non-profit-organisations",
+    "zh": "非盈利组织",
+    "en": " Non-profit organisations"
+   },
+   {
+    "id": "p3p4g-statement-of-cash-flow",
+    "zh": "现金流量表",
+    "en": "Statement of cash flow"
+   },
+   {
+    "id": "p3p4g-auditing-and-stewardship",
+    "zh": "审计与受托责任",
+    "en": "Auditing and stewardship "
+   },
+   {
+    "id": "p3p4g-international-accounting-standards",
+    "zh": "国际会计准则",
+    "en": "International accounting standards"
+   },
+   {
+    "id": "p3p4g-computerised-accounting-systems",
+    "zh": "电脑化会计系统",
+    "en": "Computerised accounting systems "
+   },
+   {
+    "id": "p3p4g-business-acquisition-and-merger",
+    "zh": "企业收购与合并",
+    "en": "Business acquisition and merger"
+   },
+   {
+    "id": "p3p4g-ethics",
+    "zh": "职业道德",
+    "en": "Ethics"
+   },
+   {
+    "id": "p3p4g-financial-ratios",
+    "zh": "财务比率",
+    "en": "Financial ratios"
+   },
+   {
+    "id": "p3p4g-activity-based-costing",
+    "zh": "作业成本法 ",
+    "en": "Activity-based costing"
+   },
+   {
+    "id": "p3p4g-standard-costing",
+    "zh": "标准化成本",
+    "en": "Standard costing"
+   },
+   {
+    "id": "p3p4g-investment-appraisal",
+    "zh": "投资评估",
+    "en": "Investment appraisal"
+   },
+   {
+    "id": "p3p4g-budget",
+    "zh": "预算",
+    "en": "Budget"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p3p4-total-revneue",
+    "zh": "总收入",
+    "en": "Total revneue",
+    "group": "p3p4g-incomplete-records"
+   },
+   {
+    "id": "p3p4-total-purchase-cost",
+    "zh": "总采购成本",
+    "en": "Total purchase cost",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-damaged-stolen-inventory",
+    "zh": "损坏/被偷盗的存货",
+    "en": "Damaged/stolen inventory",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-appropriation-account",
+    "zh": "合伙利润的分配",
+    "en": "Appropriation account",
+    "group": "p3p4g-partnership"
+   },
+   {
+    "id": "p3p4-capital-account",
+    "zh": "合伙企业的资本账户",
+    "en": "Capital account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-current-account",
+    "zh": "合伙企业的往来账户",
+    "en": "Current account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-revaluation-account",
+    "zh": "重估账户",
+    "en": "Revaluation account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-goodwill",
+    "zh": "商誉",
+    "en": "Goodwill",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-parntership",
+    "zh": "合伙企业利润表",
+    "en": "Statement of profit or loss and other comprehensive income for a parntership",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-financial-position-for-a-partnership",
+    "zh": "合伙企业资产负债表",
+    "en": "Statement of financial position for a partnership",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-partnership-financial-statements-and-evaluation",
+    "zh": "合伙企业财务报表与评价",
+    "en": "Partnership financial statements and evaluation",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-changes-in-equity",
+    "zh": "权益变动表",
+    "en": "Statement of changes in equity",
+    "group": "p3p4g-limited-company"
+   },
+   {
+    "id": "p3p4-statement-of-profit-or-loss-for-a-limited-company",
+    "zh": "有限公司的损益表",
+    "en": "Statement of profit or loss for a limited company",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-financial-position-for-a-limited-company",
+    "zh": "有限公司的财务状况表",
+    "en": "Statement of financial position for a limited company",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-cost-classification",
+    "zh": "成本分类",
+    "en": "Cost classification",
+    "group": "p3p4g-manufacturing-accounts"
+   },
+   {
+    "id": "p3p4-manufacturing-account",
+    "zh": "制造账户",
+    "en": "Manufacturing account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-manufacturing-business",
+    "zh": "制造企业的利润表",
+    "en": "Statement of profit or loss and other comprehensive income for a manufacturing business",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-financial-position-for-a-manufacturing-business",
+    "zh": "制造企业的资产负债表",
+    "en": "Statement of financial position for a manufacturing business",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-unrealised-profit",
+    "zh": "未实现利润",
+    "en": "Unrealised profit",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-receipts-and-payments-account",
+    "zh": "收付款账户",
+    "en": "Receipts and payments account",
+    "group": "p3p4g-non-profit-organisations"
+   },
+   {
+    "id": "p3p4-trading-accounts-for-different-activities",
+    "zh": "不同活动的交易账户",
+    "en": "Trading accounts for different activities",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-subscriptions-account",
+    "zh": "会费账户",
+    "en": "Subscriptions account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-income-and-expenditure-account-and-statement-of-financial-position",
+    "zh": "收支账户",
+    "en": "Income and expenditure account and statement of financial position",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-financial-position-for-a-non-profit-organisation",
+    "zh": "非盈利组织的资产负债表",
+    "en": "Statement of financial position for a non-profit organisation",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-long-term-and-life-memberships",
+    "zh": "长期与终身会员资格",
+    "en": "Long-term and life memberships",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-cash-flows-from-operating-activities",
+    "zh": "经营活动现金流量",
+    "en": "Cash flows from operating activities",
+    "group": "p3p4g-statement-of-cash-flow"
+   },
+   {
+    "id": "p3p4-cash-flows-from-financing-activities",
+    "zh": "筹资活动现金流量",
+    "en": "Cash flows from financing activities",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-cash-flows-from-investing-activities",
+    "zh": "投资活动现金流量",
+    "en": "Cash flows from investing activities",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-cash-flows",
+    "zh": "现金流量表",
+    "en": "Statement of cash flows",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-ias-37-provisions-contingent-assets-and-contingent-liabilities",
+    "zh": "IAS 37 准备、或有资产和或有负债",
+    "en": "IAS 37 Provisions, contingent assets and contingent liabilities",
+    "group": "p3p4g-auditing-and-stewardship"
+   },
+   {
+    "id": "p3p4-ias-8-accounting-policies-changes-in-accounting-estimates-and-errors",
+    "zh": "IAS 8 会计政策、会计估计变更和差错",
+    "en": "IAS 8 Accounting policies, changes in accounting estimates and errors",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-ias-10-events-after-the-statement-of-financial-position-date",
+    "zh": "IAS 10 资产负债表日后事项",
+    "en": "IAS 10 Events after the statement of financial position date",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-stewardship",
+    "zh": "受托责任",
+    "en": "Stewardship",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-roles-and-responsibilities-of-auditors",
+    "zh": "审计师的角色与责任",
+    "en": "Roles and responsibilities of auditors",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-ias-2-inventories",
+    "zh": "IAS 2 存货",
+    "en": "IAS 2 Inventories",
+    "group": "p3p4g-international-accounting-standards"
+   },
+   {
+    "id": "p3p4-ias-16-property-plant-and-equipment",
+    "zh": "IAS 16 不动产、厂房和设备",
+    "en": "IAS 16 Property, plant and equipment",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-ias-36-impairment-of-assets",
+    "zh": "IAS 36 资产减值",
+    "en": "IAS 36 Impairment of assets",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-ias-38-intangible-assets",
+    "zh": "IAS 38 无形资产",
+    "en": "IAS 38 Intangible assets",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-disclosure-in-the-financial-statements",
+    "zh": "财务报表中的披露",
+    "en": "Disclosure in the financial statements",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-computerised-accounting-systems",
+    "zh": "电脑化会计系统",
+    "en": "Computerised accounting systems ",
+    "group": "p3p4g-computerised-accounting-systems"
+   },
+   {
+    "id": "p3p4-purchase-price",
+    "zh": "收购价值",
+    "en": "Purchase price",
+    "group": "p3p4g-business-acquisition-and-merger"
+   },
+   {
+    "id": "p3p4-company-value-value-of-net-assets",
+    "zh": "公司价值/净资产价值",
+    "en": "Company value / Value of net assets",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-goodwill-2",
+    "zh": "商誉",
+    "en": "Goodwill",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-statement-of-financial-position-after-purchase-or-merger",
+    "zh": "合并资产负债表",
+    "en": "Statement of financial position after purchase or merger",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-realisation-account",
+    "zh": "变现账户",
+    "en": "Realisation account",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-evaluation-on-business-purchase-and-merger",
+    "zh": "收购合并评估",
+    "en": "Evaluation on business purchase and merger",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-integrity",
+    "zh": "诚信",
+    "en": "Integrity",
+    "group": "p3p4g-ethics"
+   },
+   {
+    "id": "p3p4-objectivity",
+    "zh": "客观性",
+    "en": "Objectivity",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-professional-competence-and-due-care",
+    "zh": "专业胜任能力与应有关注",
+    "en": "Professional competence and due care",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-confidentiality",
+    "zh": "保密性",
+    "en": "Confidentiality",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-professional-behaviour",
+    "zh": "职业行为",
+    "en": "Professional behaviour",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-promoting-ethical-behaviour",
+    "zh": "促进道德行为",
+    "en": "Promoting ethical behaviour",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-social-aspects-of-decision-making",
+    "zh": "决策的社会方面",
+    "en": "Social aspects of decision making",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-investment-ratios",
+    "zh": "投资比率",
+    "en": "Investment ratios",
+    "group": "p3p4g-financial-ratios"
+   },
+   {
+    "id": "p3p4-more-solvency-ratios",
+    "zh": "偿债能力比率",
+    "en": "More solvency ratios",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-unit-cost-using-activity-based-costing",
+    "zh": "成本法计算单位成本",
+    "en": "Unit cost using activity-based costing",
+    "group": "p3p4g-activity-based-costing"
+   },
+   {
+    "id": "p3p4-evaluation-of-abc",
+    "zh": "作业成本法的评估",
+    "en": "Evaluation of ABC",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-labour-variances",
+    "zh": "人工差异",
+    "en": "Labour variances",
+    "group": "p3p4g-standard-costing"
+   },
+   {
+    "id": "p3p4-material-variances",
+    "zh": "材料差异",
+    "en": "Material variances",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-reasons-for-variances",
+    "zh": "差异原因分析",
+    "en": "Reasons for variances",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-standard-costing-system",
+    "zh": "标准成本制度",
+    "en": "Standard costing system",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-purpose-of-standard-costing",
+    "zh": "标准成本法的目的",
+    "en": "Purpose of standard costing",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-evaluation-of-standard-costing",
+    "zh": "标准成本法的评价",
+    "en": "Evaluation of standard costing",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-average-rate-of-return-method",
+    "zh": "平均收益率法",
+    "en": "Average Rate of Return Method",
+    "group": "p3p4g-investment-appraisal"
+   },
+   {
+    "id": "p3p4-payback-period-method",
+    "zh": "回收期法",
+    "en": "Payback Period Method",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-net-present-value-method",
+    "zh": "净现值法",
+    "en": "Net Present Value Method",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-internal-rate-of-return-method",
+    "zh": "内部收益率法",
+    "en": "Internal Rate of Return Method",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-weighted-average-cost-of-capital",
+    "zh": "加权平均资本成本",
+    "en": "Weighted Average Cost of Capital",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-profitability-index",
+    "zh": "盈利指数",
+    "en": "Profitability Index",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-evaluation-of-the-project",
+    "zh": "项目评估",
+    "en": "Evaluation of the project",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-sales-revenue-budget",
+    "zh": "销售预算",
+    "en": "Sales / Revenue budget",
+    "group": "p3p4g-budget"
+   },
+   {
+    "id": "p3p4-production-budget",
+    "zh": "生产预算",
+    "en": "Production budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-purchase-budget",
+    "zh": "采购预算",
+    "en": "Purchase budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-capital-budget",
+    "zh": "融资预算",
+    "en": "Capital budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-inventory-budget",
+    "zh": "存货预算",
+    "en": "Inventory budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-trade-receivable-budget",
+    "zh": "应收账款预算",
+    "en": "Trade receivable budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-trade-payable-budget",
+    "zh": "应付账款预算",
+    "en": "Trade payable budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-cash-budget",
+    "zh": "现金预算",
+    "en": "Cash budget",
+    "group": "p3p4g-x"
+   },
+   {
+    "id": "p3p4-flexible-budgets",
+    "zh": "弹性预算",
+    "en": "Flexible budgets",
+    "group": "p3p4g-x"
+   }
+  ]
+ }
+}

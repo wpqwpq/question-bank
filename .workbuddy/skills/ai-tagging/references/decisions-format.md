@@ -44,7 +44,7 @@
   "why": "力矩是主问，力的分解只是手段（多标签：主标签必填）" }
 ```
 
-**打标（拆分，`split_eligible == true`）**　— 每个小问各带一个主标签
+**打标（按小问，`top_labels ≥ 2` 时强制）**　— 每个小问各带一个主标签
 
 ```json
 { "n": 6, "qid": "aqa-a-level-physics-2019-jan-ph01-q06", "marks": 12,
@@ -56,6 +56,7 @@
 ```
 
 > `label` 必须来自 `fetch_paper.py` 给的 `top_labels`，逐字一致。
+> **有小问就必须走这条**：`top_labels ≥ 2` 的题整题提交会被 `apply_tags.py` 拦下。
 
 **跳过（打不了标）**
 
@@ -64,7 +65,17 @@
   "skip_reason": "P4 词表无「数字信号」标签", "skip_kind": "no-tag", "why": "整题两小问都无对应标签" }
 ```
 
-`skip_kind` 取值：`"no-tag"`（无合适标签）/ `"image"`（疑似错图）。缺省按 `no-tag` 计。
+**题目存疑（不打标、不点有误）**
+
+```json
+{ "n": 9, "qid": "…", "marks": 6,
+  "issue": "题图上题号是 10，与元数据 9 不符（疑似错图）",
+  "why": "看图逐字核对，题干内容属第 10 题" }
+```
+
+`issue` 非空即跳过写库，报告里单列「题目存疑」。**永远不要为了这个问题去调 `/flag`。**
+
+`skip_kind` 取值：`"no-tag"`（无合适标签）/ `"issue"`（题目存疑，同 `issue` 字段）。缺省按 `no-tag` 计。
 
 ## 主标签 `primary_tag`
 
@@ -79,6 +90,33 @@
 怎么挑主线考点见 `rules.md` §三。**不要机械取 `tags[0]`** —— 那是 `--auto-primary` 的应急兜底，
 只在你反复看图仍判不出时才用，用了会在报告里标黄提醒人工复看。
 
+## 难度 `difficulty`（默认不写）
+
+**默认情况下 AI 不打难度**：`decisions.json` 里没有 `difficulty`，`apply_tags.py` 会读回原值原样提交。
+
+用户明确要求打难度时：
+
+```json
+{ "n": 5, "qid": "…", "marks": 1,
+  "tags": ["u1-si-unit"], "primary_tag": null,
+  "difficulty": "very-easy", "difficulty_why": "1 分题问单位，属规则①直接极简",
+  "why": "…" }
+
+{ "n": 16, "qid": "…", "marks": 16,
+  "subs": [
+    { "label": "a", "tags": ["u1-moment-and-equilibrium"], "primary_tag": null,
+      "difficulty": "easy", "difficulty_why": "两步套公式，思路一眼可见" },
+    { "label": "c", "tags": ["u1-moment-and-equilibrium","u1-composition-and-resolution-of-forces"],
+      "primary_tag": "u1-moment-and-equilibrium",
+      "difficulty": "hard", "difficulty_why": "要先补画铰链力再取力矩，易漏竖直分量" }
+  ] }
+```
+
+- 拆分题：难度写进**每个** `subs[]`；整题 `difficulty` 留空（后端本就置 null）。
+- 无小问的题：写在 item 上。
+- 提交必须加开关：`python scripts/apply_tags.py dec.json --apply --difficulty`。
+- 判定口径见 `rules.md` §八（1 分题 → very-easy；6 分简答 → medium 起步；其余按「完整思路」）。
+
 ## 字段速查
 
 | 字段 | 适用 | 说明 |
@@ -88,11 +126,14 @@
 | `marks` | 全部 | 分值 |
 | `tags` | 整题 | 标签 id 数组 |
 | `primary_tag` | 整题 / `subs[]` | 主标签 id：**1 个标签留空、≥2 个必填且 ∈ tags**（见上一节） |
-| `subs` | 拆分题 | `[{label, tags, why, low}]` |
+| `subs` | 有小问的题（`top_labels ≥ 2`，强制） | `[{label, tags, why, low, primary_tag}]` |
+| `issue` | 题目存疑 | 一句话说明；非空即跳过写库、不点有误，报告单列 |
 | `why` | 全部 | 判断依据，显示在报告"依据"列；跳过题写在这里 |
+| `difficulty` | 可选（默认**不写**） | 五档之一：`very-easy`/`easy`/`medium`/`hard`/`very-hard`。**只有加 `--difficulty` 才会写库**；不加则忽略并保留原值 |
+| `difficulty_why` | 可选 | 难度的一句话理由（走 `rules.md` §八 的哪一条），供人复核 |
 | `low` | 可选 | `true` = 低置信，报告会标黄并计入统计 |
 | `skip_reason` | 跳过 | 非空即视为跳过，不写库 |
-| `skip_kind` | 跳过 | `no-tag` / `image` |
+| `skip_kind` | 跳过 | `no-tag` / `issue` |
 | `sub_prefix` | 可选 | 小问标签前缀（如写 `"("` 让报告显示 `(a)`） |
 
 ## 常见工作流

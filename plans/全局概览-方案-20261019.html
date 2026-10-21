@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>全局概览 · 实施方案（2026-10-19）</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:0;background:#f6f7f9;color:#111827;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.65;
+  }
+  .page{max-width:960px;margin:0 auto;padding:44px 40px 72px;background:#fff;
+    box-shadow:0 1px 3px rgba(16,24,40,.06);min-height:100vh}
+  h1{font-size:24px;margin:0 0 6px;letter-spacing:-.2px}
+  .meta{font-size:12.5px;color:#9ca3af;margin-bottom:28px}
+  .meta b{color:#6b7280;font-weight:500}
+  h2{font-size:15px;margin:34px 0 10px;padding-bottom:7px;border-bottom:1px solid #eef0f3}
+  h2 .no{color:#9ca3af;font-weight:500;margin-right:8px;font-variant-numeric:tabular-nums}
+  h3{font-size:13.5px;margin:18px 0 7px;color:#374151}
+  p{margin:9px 0;font-size:13.5px;color:#374151}
+  ul,ol{margin:8px 0 8px 20px;padding:0;font-size:13.5px;color:#374151}
+  li{margin:4px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;
+    background:#f3f4f6;border:1px solid #e9ebee;border-radius:4px;padding:1px 5px;color:#1f2937}
+  pre{background:#0f172a;color:#e2e8f0;border-radius:9px;padding:14px 16px;overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;margin:12px 0}
+  pre .c{color:#7c8ba1}
+  pre .k{color:#7dd3fc}
+  pre .s{color:#86efac}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:12px 0}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid #eef0f3;vertical-align:top}
+  th{font-size:11.5px;color:#6b7280;font-weight:500;background:#fafbfc;border-bottom:1px solid #e5e7eb}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:5px;border:1px solid;
+    vertical-align:1px;margin-left:6px;font-weight:500}
+  .p0{background:#eef7f1;border-color:#bfe3cd;color:#1d6b40}
+  .p1{background:#fff8ec;border-color:#f3ddb6;color:#8a5a12}
+  .p2{background:#f4f5f7;border-color:#e0e3e8;color:#6b7280}
+  .box{border:1px solid #e5e7eb;border-radius:10px;padding:13px 16px;margin:14px 0;background:#fafbfc}
+  .box.warn{border-color:#f0d9b5;background:#fffaf1}
+  .box.ok{border-color:#cfe8da;background:#f7fcf9}
+  .box .t{font-size:12px;font-weight:600;color:#374151;margin-bottom:5px}
+  .box p{margin:4px 0;font-size:12.5px}
+  .kv{display:grid;grid-template-columns:112px 1fr;gap:5px 14px;font-size:13px;margin:10px 0}
+  .kv .k{color:#9ca3af;font-size:12.5px}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+  .legend-line{font-size:12.5px;color:#374151;margin:6px 0}
+  .foot{margin-top:44px;padding-top:14px;border-top:1px solid #eef0f3;font-size:11.5px;color:#a0a6b0}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>全局概览 · 实施方案</h1>
+<div class="meta">
+  <b>2026-10-19</b> · 题库审核打标台（cloud） · 仅 admin ·
+  预览：<code>docs/全局概览-预览.html</code><br />
+  状态：<b>已定稿，暂不实施</b>
+</div>
+
+<h2><span class="no">01</span>要做什么</h2>
+<p>打标台顶栏「操作日志」左侧加一个按钮，点进去是整页的<b>试卷地图</b>：按学科分区，每份卷一个 11px 小方块，密密麻麻排开，像老迅雷的下载格子墙。三种颜色一眼看出哪块还没动。</p>
+<div class="legend-line"><span class="sw" style="background:#2f9e5c"></span>深绿 · 全部非有误题已核对完成</div>
+<div class="legend-line"><span class="sw" style="background:#a9dfba"></span>淡绿 · 有≥1 个标签，但还没核完</div>
+<div class="legend-line"><span class="sw" style="background:#e3e6ea"></span>灰 · 一个字都没标</div>
+
+<h3>已定的口径（王培琪 2026-10-19）</h3>
+<table>
+  <tr><th style="width:132px">问题</th><th>结论</th></tr>
+  <tr><td>开工痕迹</td><td><b>只要有任意 1 个标签就算</b>；只点开看过、没存标签 = 没开工。难度不参与判断。</td></tr>
+  <tr><td>审核通过</td><td>与左侧试卷列表那个对钩<b>完全同一判据</b>：标了「有误」的题退出待办，其余全部核对完成。</td></tr>
+  <tr><td>flagged 视觉</td><td><b>不做区分</b>。不加红点、不加红框，颜色只反映上面两条。</td></tr>
+  <tr><td>CIE 化学 280 卷</td><td>已上线，按普通卷显示（当前全灰，就是真实状态）。</td></tr>
+</table>
+
+<h2><span class="no">02</span>判定逻辑（唯一实现，别写第二套）</h2>
+<p>判据直接复用 <code>api.list_papers()</code> 里那段循环（<code>api.py:214-235</code>），抽成一个公共函数，列表页和概览页都调它。这是整份方案最重要的一条约束：<b>不允许为概览页另写一套判定</b>，否则两个页面迟早对不上。</p>
+<pre><span class="c"># api.py 新增，替换 list_papers 内联循环</span>
+<span class="k">def</span> paper_progress(p, conf: set[str], flagged: set[str]) -> dict:
+    qs = p.questions()
+    verified = 0
+    flagged_n = 0
+    tagged_any = <span class="k">False</span>
+    <span class="k">for</span> q <span class="k">in</span> qs:
+        units = _units_of(q[<span class="s">"qid"</span>], q.get(<span class="s">"split"</span>), q.get(<span class="s">"sub_ids"</span>) <span class="k">or</span> [])
+        <span class="k">if</span> q.get(<span class="s">"any_tagged"</span>):
+            tagged_any = <span class="k">True</span>
+        hit = str(q[<span class="s">"qid"</span>]) <span class="k">in</span> flagged <span class="k">or</span> any(u <span class="k">in</span> flagged <span class="k">for</span> u <span class="k">in</span> units)
+        <span class="k">if</span> hit:
+            flagged_n += 1
+        <span class="k">elif</span> _verify_state(units, conf)[0] == <span class="s">"all"</span>:
+            verified += 1
+    active = max(0, len(qs) - flagged_n)
+    <span class="k">if</span> active > 0 <span class="k">and</span> verified >= active:
+        state = <span class="s">"all"</span>
+    <span class="k">elif</span> tagged_any <span class="k">or</span> verified:
+        state = <span class="s">"some"</span>
+    <span class="k">else</span>:
+        state = <span class="s">"none"</span>
+    <span class="k">return</span> {<span class="s">"state"</span>: state, <span class="s">"verified"</span>: verified, <span class="s">"flagged"</span>: flagged_n}
+</pre>
+
+<div class="box warn">
+  <div class="t">三个边界，实现时别漏</div>
+  <p>① <b>整卷全被标「有误」</b>：<code>active = 0</code>，判不了「通过」，落到淡绿（因为标有误前它必然打过标）。不要判成深绿。</p>
+  <p>② <b>切了但没生成任何子题</b>：<code>units</code> 为空，<code>_verify_state</code> 返回 none，既不通过也不算已核对，符合预期。</p>
+  <p>③ <b>0 道题的卷</b>（切坏了）：直接判灰，不要除零。</p>
+</div>
+
+<h2><span class="no">03</span>后端接口</h2>
+<div class="kv">
+  <div class="k">路由</div><div><code>GET /api/overview</code>（<code>api.py</code>，与 <code>/api/papers</code> 同层）</div>
+  <div class="k">权限</div><div><code>ident = auth.current(request)</code>；非 admin 一律 403。不做学科过滤——概览的意义就是全局。</div>
+  <div class="k">返回</div><div><code>{"papers": [...], "summary": {...}, "generated_at": "..."}</code></div>
+  <div class="k">每卷字段</div><div><code>id, board, qualification, subject, paper_code, year, session, state</code></div>
+</div>
+<p>只要 8 个字段，<b>不返回题目明细</b>、不返回 tags、不返回分数。</p>
+
+<h3>取数：一条 SQL，判定仍在 Python</h3>
+<pre><span class="c">-- index_db 里一次拉全量最小列集（10 万行约 60–80ms）</span>
+<span class="k">SELECT</span> q.paper_id, q.qid, q.parent_qid, q.split, q.tags
+<span class="k">FROM</span> questions q <span class="k">ORDER BY</span> q.paper_id
+
+<span class="c">-- 卷级元数据仍读 papers 表（标题/年份/考试局）</span>
+<span class="k">SELECT</span> paper_id, board, qualification, subject, paper_code, year, session <span class="k">FROM</span> papers
+</pre>
+<p>确认集合用 <code>review.confirmed_ids()</code>、有误集合用 <code>flags.flagged_ids()</code>（都已是内存 set，零 IO）。</p>
+
+<div class="box warn">
+  <div class="t">为什么不让 SQL 直接算到卷级</div>
+  <p>索引里切分题的<b>主行和子题行都在表里</b>（主行 <code>split=1, parent_qid IS NULL</code>），要正确聚合必须排除主行、再按「主题题」把子题归组、再处理 flagged 的向上传染。纯 SQL 能写但会变成一个 40 行的嵌套 CTE，一旦理解错就与打钩逻辑漂移。<b>SQL 只负责搬数据，判定复用 Python 那段现成代码</b>——多花 60ms，换「永远不会对不上」，值。</p>
+</div>
+
+<h3>缓存</h3>
+<p>60 秒进程内缓存，键为 <code>(index_db.generation(), state.rev())</code>。任何写操作（保存标注 / 确认 / 标有误 / 切卷）都会改变其中一个值，缓存自动失效，不需要手工清理。</p>
+<ul>
+  <li><code>state.py</code> 加一个 <code>_rev</code> 整数，<code>set_confirmed</code> / <code>set_flag</code> / <code>delete_flag</code> 里 <code>+1</code>，暴露 <code>state.rev()</code>（约 6 行）。</li>
+  <li>缓存未过期直接返回，<b>命中 &lt; 5ms</b>；冷启动一次约 150ms。</li>
+</ul>
+
+<h2><span class="no">04</span>前端改动</h2>
+<table>
+  <tr><th style="width:210px">文件</th><th>改什么</th></tr>
+  <tr><td><code>App.tsx:143</code></td><td><code>view</code> 联合类型加 <code>'overview'</code></td></tr>
+  <tr><td><code>App.tsx:1078</code> 旁</td><td>加一个 <code>if (view === 'overview') return &lt;Overview ... /&gt;</code>，与 audit 同构</td></tr>
+  <tr><td><code>App.tsx:1123</code> 前</td><td>admin 区块里插按钮，样式直接抄「操作日志」那个，图标换成四方格</td></tr>
+  <tr><td><code>components/Overview.tsx</code></td><td>新文件，约 380 行，结构照 <code>AuditLog.tsx</code>（顶栏 + 返回 + 整页）</td></tr>
+  <tr><td><code>api.ts</code></td><td>加 <code>OverviewPaper</code> 类型 + <code>api.overview()</code></td></tr>
+</table>
+
+<h3>交互</h3>
+<ul>
+  <li><b>悬停</b>：浮层显示 <code>WPH11 · 2016 1月 / Edexcel · 物理 / 审核通过</code>，跟随鼠标，贴边自动翻面。</li>
+  <li><b>点击</b>：底部信息条出现「打开这卷」→ 同步 <code>board/qualification/subject</code> 三个下拉 + <code>setPaperId</code> + <code>setView('workbench')</code>。<b>三个下拉必须一起设</b>，否则 Sidebar 的卷列表按选择过滤，会找不到这卷。</li>
+  <li><b>筛选</b>：点 KPI 卡片，非目标状态的格子降到 13% 透明度，<b>不隐藏</b>（保持布局稳定）。再点一次取消。</li>
+  <li><b>密度</b>：紧凑 9px / 标准 11px / 宽松 14px，CSS 变量控制。</li>
+  <li><b>不做</b>：自动轮询、翻页、虚拟滚动、年级切换。</li>
+</ul>
+
+<h2><span class="no">05</span>性能与容量</h2>
+<p>合成数据实测（7500 卷 / 10 万单元，SQLite 结构照抄 <code>index.db</code>，Windows 本机；云端 Linux 约再快 4 成）：</p>
+<table>
+  <tr><th>环节</th><th style="width:130px">耗时</th><th>说明</th></tr>
+  <tr><td>现状式：逐卷 <code>questions()</code> 构造 10 万个 dict</td><td class="num">337 ms</td><td class="p0">概览页<b>不能</b>走这条</td></tr>
+  <tr><td>一条 SQL 拉最小列 + Python 聚合</td><td class="num">≈ 150 ms</td><td>本方案采用的冷路径</td></tr>
+  <tr><td>缓存命中</td><td class="num">&lt; 5 ms</td><td>60s 内的绝大多数请求</td></tr>
+  <tr><td>JSON 1.3 MB → gzip</td><td class="num">23 KB</td><td>传输可忽略</td></tr>
+  <tr><td>前端 7500 格构建 + 布局</td><td class="num">6.4 + 12.5 ms</td><td>3 万格也才 52ms，<b>不需要 canvas</b></td></tr>
+  <tr><td>目录扫描 7500 卷（<code>iter_papers</code>，TTL 5s）</td><td class="num">842 ms</td><td class="p1">与概览无关，但会拖慢全站</td></tr>
+</table>
+
+<div class="box ok">
+  <div class="t">结论</div>
+  <p>10 万题（≈7500 卷）时概览页本身<b>完全不是瓶颈</b>：格子数按卷算、不按题算；后端冷 150ms、热 5ms；前端 20ms。真正该提前修的是 <code>_SCAN_TTL</code>。</p>
+</div>
+
+<h3>容量预算</h3>
+<table>
+  <tr><th>项</th><th style="width:150px">10 万题时</th><th>备注</th></tr>
+  <tr><td><code>var/index.db</code></td><td class="num">30–50 MB</td><td>派生数据，可随时重建，不进备份</td></tr>
+  <tr><td><code>var/state.db</code></td><td class="num">≈ 5 MB</td><td>事实数据，必须备份（<code>VACUUM INTO</code>，&lt;1s）</td></tr>
+  <tr><td>索引全量重建</td><td class="num">≈ 142 s</td><td><b>schema 变更要离线 build</b>，不能靠启动时建</td></tr>
+</table>
+
+<h2><span class="no">06</span>实施顺序</h2>
+<ol>
+  <li><b>P0 · 与概览一起做</b><span class="tag p0">必须</span>：抽 <code>paper_progress()</code> → 改 <code>list_papers</code> 复用它（回归验证列表对钩不变）→ 新增 <code>/api/overview</code> + 缓存 → 前端按钮与页面。</li>
+  <li><b>P1 · 顺手做</b><span class="tag p1">建议</span>：<code>_SCAN_TTL</code> 5s → 60s；上传卷的接口里显式调一次 <code>store.invalidate_scan()</code>。当前 1250 卷实测 110ms，还不痛，但这是唯一会随卷数线性变慢的全局开销。</li>
+  <li><b>P2 · 卷数破 2 万再说</b><span class="tag p2">暂不做</span>：把三个计数物化进 <code>papers</code> 表（读 8.7ms）；前端换 canvas。四个写入口都要维护物化列，一致性风险大于收益。</li>
+</ol>
+
+<h3>验收</h3>
+<ul>
+  <li>概览里深绿的卷数 <b>= 左侧卷列表带 ✓ 的卷数</b>，逐卷人工抽查 10 卷一致。</li>
+  <li>在打标台确认一题后回概览，60 秒内颜色变化（缓存键生效）。</li>
+  <li>非 admin 直接请求 <code>/api/overview</code> 返回 403。</li>
+  <li>点击任意格子能跳到对应卷，且三个下拉都被同步。</li>
+</ul>
+
+<h2><span class="no">07</span>明确不做</h2>
+<ul>
+  <li>flagged 的红点 / 红框 —— 你说了不用，颜色只表达进度。</li>
+  <li>自动刷新、实时推送 —— 60 秒陈旧度足够。</li>
+  <li>学科维度权限（lead 只看本科）—— 当前只给 admin；以后要开，加个 <code>subject</code> 过滤参数即可。</li>
+  <li>导出一张图 / 分享链接 —— 需要再说。</li>
+</ul>
+
+<div class="foot">
+  相关文件：<code>docs/全局概览-预览.html</code>（可交互原型）·
+  <code>_tmp/bench_overview.py</code>、<code>_tmp/bench_overview2.py</code>（压测脚本）·
+  <code>_tmp/bench_dom.html</code>（DOM 压测）<br />
+  压测数据为合成，不含任何真实题库内容。
+</div>
+
+</div>
+</body>
+</html>

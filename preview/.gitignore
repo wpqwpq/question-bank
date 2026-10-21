@@ -1,0 +1,4 @@
+.edge/
+.shot_*.png
+.run.log
+__pycache__/

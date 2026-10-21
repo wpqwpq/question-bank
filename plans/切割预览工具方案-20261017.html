@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>切割预览工具 · 技术方案</title>
+<style>
+  :root{
+    --ink:#1a2330; --ink2:#485566; --ink3:#7b8794;
+    --line:#e3e8ef; --bg:#f6f8fa; --card:#fff;
+    --blue:#1f5fa8; --blue-l:#eaf2fb;
+    --red:#c0392b; --red-l:#fdeeec;
+    --amber:#b57708; --amber-l:#fdf5e4;
+    --green:#1f7a4d; --green-l:#eaf6f0;
+    --mono:Consolas,"Cascadia Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.75 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 32px 96px}
+  header{margin-bottom:40px;padding-bottom:28px;border-bottom:2px solid var(--ink)}
+  h1{font-size:30px;margin:0 0 10px;letter-spacing:-.3px}
+  .sub{color:var(--ink3);font-size:14px;font-family:var(--mono)}
+  h2{font-size:20px;margin:52px 0 16px;padding-left:12px;border-left:4px solid var(--blue)}
+  h3{font-size:16px;margin:28px 0 10px;color:var(--ink)}
+  p{margin:10px 0}
+  code{font-family:var(--mono);font-size:.88em;background:#eef1f5;padding:1px 5px;border-radius:3px;color:#324}
+  pre{background:#1e2530;color:#d8e0ea;padding:16px 18px;border-radius:6px;overflow-x:auto;
+      font-family:var(--mono);font-size:12.5px;line-height:1.65}
+  pre .c{color:#6c7d93}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;
+        table-layout:fixed;background:var(--card);box-shadow:0 1px 3px rgba(20,30,50,.06)}
+  th{background:#eef2f7;text-align:left;font-weight:600;padding:9px 12px;
+     border-bottom:2px solid #d7dee8;white-space:nowrap}
+  td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:#fafbfd}
+  td.n,th.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:20px 24px;margin:20px 0}
+  .tldr{border-left:4px solid var(--blue);background:var(--blue-l)}
+  .warn{border-left:4px solid var(--red);background:var(--red-l)}
+  .note{border-left:4px solid var(--amber);background:var(--amber-l)}
+  .ok{border-left:4px solid var(--green);background:var(--green-l)}
+  .tag{display:inline-block;font-size:11.5px;font-family:var(--mono);padding:1px 7px;
+       border-radius:10px;background:#e8edf4;color:var(--ink2);vertical-align:2px}
+  .tag.hi{background:var(--red-l);color:var(--red)}
+  .tag.mid{background:var(--amber-l);color:var(--amber)}
+  .tag.lo{background:#eef1f5;color:var(--ink3)}
+  .tag.go{background:var(--green-l);color:var(--green)}
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .kpi .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .kpi .l{font-size:12px;color:var(--ink3);margin-top:2px}
+  .kpi .x{font-size:12px;color:var(--red);margin-top:6px;font-family:var(--mono)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+         color:var(--ink3);font-size:12.5px;font-family:var(--mono)}
+  .num{font-family:var(--mono);font-size:11px;color:var(--blue);margin-right:6px}
+  @media print{body{background:#fff}.wrap{max-width:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>切割预览工具 · 技术方案</h1>
+  <div class="sub">questionBank / plans / 2026-10-17 · 单进程 · 10 万题量级 · Windows 本地</div>
+</header>
+
+<div class="card tldr">
+  <strong>一句话结论：</strong>做成 <b>一个 Python 文件 + 一个内嵌 HTML</b>，双击启动、自动开浏览器、不装 npm、不跑构建。
+  真正的难点不是"显示一张图"，而是<b>在 32 万个文件里让首屏 1 秒出来</b>——所以核心是<b>先把元数据抽成 SQLite 索引</b>，
+  运行时只查库、只读图，绝不扫盘。
+</div>
+
+<h2><span class="num">01</span>先说清"不分前后端"这件事</h2>
+
+<p>技术上没法真的没有前端——要显示就得有 HTML/JS。可以做到的是<b>没有"前端工程"</b>：</p>
+
+<table>
+  <colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+  <thead><tr><th>维度</th><th>打标台现在的做法</th><th>本工具的做法</th></tr></thead>
+  <tbody>
+    <tr><td>进程</td><td>uvicorn 单进程 + 前端 dev server</td><td><b>单进程</b>，标准库 <code>http.server</code></td></tr>
+    <tr><td>前端构建</td><td>Vite + React + TS，<code>dist/</code> 打包</td><td><b>无构建</b>，一个 HTML 字符串嵌在 .py 里</td></tr>
+    <tr><td>依赖</td><td>fastapi / uvicorn / react 全家桶</td><td>pymupdf + Pillow（本机已有）</td></tr>
+    <tr><td>启动</td><td><code>start.cmd</code> + 两个终端</td><td>双击 <code>preview.cmd</code> → 自动开浏览器</td></tr>
+    <tr><td>部署</td><td>本地 + 服务器两套</td><td><b>只有本地一份</b>，不上服务器</td></tr>
+  </tbody>
+</table>
+
+<div class="card note">
+  <b>边界声明：</b>这个工具<b>只读</b>。不写 <code>data/</code>、不碰 <code>confirmed.json</code>、不改 <code>cut.json</code>。
+  缓存全部落在工具自己的 <code>.cache/</code> 里。所以随便跑、随时按 Ctrl+C，不会污染题库，也不会和打标台（8642）撞车——
+  端口用 <b>8645</b>。
+</div>
+
+<h2><span class="num">02</span>实测基线：现在这套数据到底多大、多慢</h2>
+
+<p>以下不是估计，是在本机 <code>D:/Tasks/questionBank/data</code> 上跑出来的（7396 题 / 411 卷）。右列按 10 万题等比例外推。</p>
+
+<table>
+  <colgroup><col style="width:34%"><col style="width:22%"><col style="width:22%"><col style="width:22%"></colgroup>
+  <thead><tr><th>指标</th><th class="n">现在（7.4k 题）</th><th class="n">10 万题外推</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td>文件总数</td><td class="n">24,270</td><td class="n">~328,000</td><td>每题 3 个文件 + 卷级 4 个</td></tr>
+    <tr><td>总体积</td><td class="n">1.21 GB</td><td class="n">~16.4 GB</td><td>题图占 83%</td></tr>
+    <tr><td>单卷题数</td><td class="n">21.1</td><td class="n">同</td><td>区间 6–40，max 40</td></tr>
+    <tr><td>全库 <code>os.walk</code> 枚举</td><td class="n">0.60 s</td><td class="n">~8 s</td><td>冷盘 + Defender 估 15–40 s</td></tr>
+    <tr><td>全库读 <code>cut.json</code></td><td class="n">0.18 s</td><td class="n">~2.2 s</td><td>0.4 ms/卷，很便宜</td></tr>
+    <tr><td><b>全库读 <code>layout.json</code></b></td><td class="n">2.58 s</td><td class="n"><b>~35 s</b></td><td>0.35 ms/个 × 10 万个 ← 真瓶颈</td></tr>
+    <tr><td>单卷 4 项 <code>stat</code></td><td class="n">0.08 ms</td><td class="n">2.1 s 全库</td><td>增量扫描的基础，便宜</td></tr>
+    <tr><td>题图解码（Pillow）</td><td class="n">26 ms/张</td><td class="n">43 min 单线程</td><td>平均 1411×1456 px</td></tr>
+    <tr><td>缩略图 260px 生成</td><td class="n">27 ms/张</td><td class="n">45 min 单线程</td><td>≈7 KB/张</td></tr>
+    <tr><td>PDF 单页渲染 110 dpi</td><td class="n">7 ms</td><td class="n">同</td><td>910×1287，够看</td></tr>
+    <tr><td>PDF 单页渲染 200 dpi</td><td class="n">52 ms</td><td class="n">同</td><td>1654×2339</td></tr>
+    <tr><td>整卷 24 页 @110 dpi</td><td class="n">0.12 s</td><td class="n">同</td><td>卷视图完全实时可做</td></tr>
+    <tr><td>最长文件路径</td><td class="n">74 字符</td><td class="n">—</td><td>离 260 上限还有大量余量</td></tr>
+  </tbody>
+</table>
+
+<h3>从这张表能直接读出三条硬结论</h3>
+
+<div class="grid g3">
+  <div class="kpi"><div class="v">0.35 ms</div><div class="l">读一个小 JSON 的固定开销</div><div class="x">×10 万 = 35 s</div></div>
+  <div class="kpi"><div class="v">26 ms</div><div class="l">解码一张题图</div><div class="x">×100 张/屏 = 2.6 s</div></div>
+  <div class="kpi"><div class="v">0.08 ms</div><div class="l">单卷 stat（增量扫描成本）</div><div class="x">×4740 = 2.1 s</div></div>
+</div>
+
+<ol>
+  <li><b>不能在运行时扫盘。</b>"打开工具 → 扫一遍 → 显示"这套在 10 万题下要 40 秒以上。必须<b>持久化索引</b>，启动只做卷级 stat 增量（3 秒）。</li>
+  <li><b>不能让浏览器直接解码原图。</b>100 张/屏 × 26 ms 全部挤在主线程滚动里，必然卡。缩略图必须<b>服务端预生成并缓存</b>，运行时只发 7 KB 小图。</li>
+  <li><b>PDF 页渲染不用怕。</b>7 ms/页，整卷 0.12 秒。卷视图可以实时渲染，仍建议按卷缓存到磁盘避免重复读 PDF。</li>
+</ol>
+
+<h2><span class="num">03</span>现有数据有个质检盲区，工具的价值要落在这</h2>
+
+<p>如果工具只是"按 <code>confidence</code> 从低到高排一下"，那它没用。因为：</p>
+
+<table>
+  <colgroup><col style="width:38%"><col style="width:18%"><col style="width:44%"></colgroup>
+  <thead><tr><th>cut.json 自带信号</th><th class="n">7396 题中</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><code>status = auto</code></td><td class="n">7298 (98.7%)</td><td>只有 98 条 <code>review</code>，0 条 failed</td></tr>
+    <tr><td><code>confidence = 1.0</code></td><td class="n">6732 (<b>91.0%</b>)</td><td>脚本自评满分——但脚本本身可能有系统偏差</td></tr>
+    <tr><td><code>confidence &lt; 0.9</code></td><td class="n">142 (1.9%)</td><td>筛出来也就 142 条，撑不起一个工具</td></tr>
+    <tr><td><code>review_notes</code> 非空</td><td class="n">17 (0.2%)</td><td>几乎等于没有</td></tr>
+    <tr><td><b>跨页拼接题</b>（regions &gt; 1）</td><td class="n"><b>2188 (29.6%)</b></td><td><b>最大风险源</b>：接近三成题是两页拼起来的，但 confidence 照样给 1.0</td></tr>
+  </tbody>
+</table>
+
+<div class="card warn">
+  <b>关键判断：</b>置信度几乎全是 1.0，说明它是"锚点匹配成功"的日志，不是"切割正确"的度量。
+  一个跨页题把下一页的页眉粘进来、或者题图底部被切掉半行字，<code>confidence</code> 一样是 1.0。
+  <br><br>
+  所以本工具必须做<b>内容级复算</b>——用 PDF 文字层和像素，独立判断每一刀切得对不对。<b>这才是"预览切割效果"的真实含义。</b>
+</div>
+
+<p>好消息：三局（edexcel / aqa / cie）的 <code>cut.json</code> 结构已经完全统一（<code>anchors</code> + <code>confidence</code> + <code>status</code> 都有），
+<code>layout.json</code> 里的 <code>src_map.segs[].img</code> 还能精确定位<b>拼接缝在题图上的像素位置</b>——这两点是复算可行的前提。</p>
+
+<h2><span class="num">04</span>三条路线，为什么选中间那条</h2>
+
+<table>
+  <colgroup><col style="width:24%"><col style="width:15%"><col style="width:19%"><col style="width:42%"></colgroup>
+  <thead><tr><th>路线</th><th>首屏</th><th>依赖</th><th>一句话裁决</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>A. 纯静态 HTML</b><br><span class="tag">File System Access API</span></td>
+      <td class="n">2–5 min</td><td>0（Edge 原生）</td>
+      <td><span class="tag hi">否决</span> 目录授权后要用 <code>dirHandle.entries()</code> 遍历 32 万文件，浏览器 API 比 <code>os.walk</code> 慢 5–10 倍；而且没法服务端渲染 PDF 页、没法预生成缩略图。卡死在第一步。</td>
+    </tr>
+    <tr style="background:#eaf6f0">
+      <td><b>B. 单进程 Python</b><br><span class="tag go">推荐</span></td>
+      <td class="n">3 s</td><td>pymupdf + Pillow</td>
+      <td>Python 天然处理 Windows 文件系统；SQLite 做索引；标准库 <code>http.server</code> 起服务；前端一个字符串。<b>零构建、零 npm、双击即用。</b></td>
+    </tr>
+    <tr>
+      <td><b>C. 桌面壳</b><br><span class="tag">pywebview / Tauri</span></td>
+      <td class="n">3 s</td><td>+ GUI 运行时</td>
+      <td><span class="tag mid">备选</span> 好处是像个原生 App（独立窗口、无标签页）。但调试要开独立 devtools、打包体积翻倍。v1 不做，将来想要"图标双击"再套壳，代码不用改。</td>
+    </tr>
+    <tr>
+      <td><b>D. 预生成静态站</b></td>
+      <td class="n">0.1 s</td><td>需先跑生成器</td>
+      <td><span class="tag hi">否决</span> 运行时确实最轻，但数据一改就要全量重生成（45 分钟缩略图），迭代时没法用。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>选 B 的理由可以概括成一句：<b>10 万题下，唯一不能省的是"索引"和"缩略图缓存"，而这两件事都需要一个常驻进程来做。</b>
+只要有了常驻进程，再让它顺手把 HTML 也发出去，成本几乎为零。</p>
+
+<h2><span class="num">05</span>架构</h2>
+
+<svg viewBox="0 0 1040 470" width="100%" style="margin:8px 0 4px">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7b8794"/>
+    </marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/>
+    </marker>
+  </defs>
+
+  <!-- 浏览器 -->
+  <rect x="12" y="60" width="230" height="330" rx="8" fill="#fff" stroke="#c9d3e0"/>
+  <text x="127" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#1a2330">浏览器（Edge，本机）</text>
+  <text x="127" y="104" text-anchor="middle" font-size="11" fill="#7b8794" font-family="Consolas">127.0.0.1:8645</text>
+  <rect x="30" y="120" width="194" height="52" rx="5" fill="#eaf2fb" stroke="#b6cfe8"/>
+  <text x="127" y="141" text-anchor="middle" font-size="12" fill="#1f5fa8" font-weight="600">页视图</text>
+  <text x="127" y="159" text-anchor="middle" font-size="10.5" fill="#485566">PDF 页 + 全部切割框叠加</text>
+  <rect x="30" y="180" width="194" height="52" rx="5" fill="#eaf2fb" stroke="#b6cfe8"/>
+  <text x="127" y="201" text-anchor="middle" font-size="12" fill="#1f5fa8" font-weight="600">题流</text>
+  <text x="127" y="219" text-anchor="middle" font-size="10.5" fill="#485566">一屏 3–8 题大图，键盘翻</text>
+  <rect x="30" y="240" width="194" height="52" rx="5" fill="#eaf2fb" stroke="#b6cfe8"/>
+  <text x="127" y="261" text-anchor="middle" font-size="12" fill="#1f5fa8" font-weight="600">网格</text>
+  <text x="127" y="279" text-anchor="middle" font-size="10.5" fill="#485566">缩略图墙，按可疑度排序</text>
+  <rect x="30" y="300" width="194" height="72" rx="5" fill="#f6f8fa" stroke="#dde3ea"/>
+  <text x="127" y="321" text-anchor="middle" font-size="11.5" fill="#485566">纯 HTML + 原生 JS</text>
+  <text x="127" y="338" text-anchor="middle" font-size="10.5" fill="#7b8794">无构建 / 无 npm / 无框架</text>
+  <text x="127" y="355" text-anchor="middle" font-size="10.5" fill="#7b8794">虚列表 + 图片预取</text>
+
+  <!-- 进程 -->
+  <rect x="300" y="40" width="330" height="380" rx="8" fill="#fbfcfe" stroke="#1f5fa8" stroke-width="1.6"/>
+  <text x="465" y="66" text-anchor="middle" font-size="13" font-weight="600" fill="#1f5fa8">preview.py（单进程，常驻）</text>
+  <text x="465" y="84" text-anchor="middle" font-size="10.5" fill="#7b8794" font-family="Consolas">ThreadingHTTPServer · 8 线程</text>
+
+  <rect x="318" y="98" width="294" height="46" rx="5" fill="#fff" stroke="#dde3ea"/>
+  <text x="465" y="117" text-anchor="middle" font-size="11.5" fill="#1a2330">路由层 · 7 个接口</text>
+  <text x="465" y="134" text-anchor="middle" font-size="10" fill="#7b8794" font-family="Consolas">/ · /api/papers · /api/qs · /api/page · /api/thumb …</text>
+
+  <rect x="318" y="154" width="294" height="58" rx="5" fill="#eaf6f0" stroke="#b7dccb"/>
+  <text x="465" y="174" text-anchor="middle" font-size="11.5" fill="#1f7a4d" font-weight="600">索引层 · SQLite（WAL）</text>
+  <text x="465" y="191" text-anchor="middle" font-size="10" fill="#485566">papers / questions / flags 三张表</text>
+  <text x="465" y="205" text-anchor="middle" font-size="10" fill="#7b8794" font-family="Consolas">10 万行 · 查询 &lt; 10 ms</text>
+
+  <rect x="318" y="222" width="142" height="70" rx="5" fill="#fdf5e4" stroke="#e8d5a8"/>
+  <text x="389" y="241" text-anchor="middle" font-size="11.5" fill="#b57708" font-weight="600">页渲染器</text>
+  <text x="389" y="258" text-anchor="middle" font-size="10" fill="#485566">pymupdf 110 dpi</text>
+  <text x="389" y="274" text-anchor="middle" font-size="10" fill="#485566">7 ms/页，按卷缓存</text>
+
+  <rect x="470" y="222" width="142" height="70" rx="5" fill="#fdeeec" stroke="#eec4bd"/>
+  <text x="541" y="241" text-anchor="middle" font-size="11.5" fill="#c0392b" font-weight="600">缩略图器</text>
+  <text x="541" y="258" text-anchor="middle" font-size="10" fill="#485566">Pillow 260 px</text>
+  <text x="541" y="274" text-anchor="middle" font-size="10" fill="#485566">懒生成 + 落盘</text>
+
+  <rect x="318" y="302" width="294" height="100" rx="5" fill="#fff" stroke="#dde3ea"/>
+  <text x="465" y="321" text-anchor="middle" font-size="11.5" fill="#1a2330" font-weight="600">扫描/质检（后台线程）</text>
+  <text x="465" y="339" text-anchor="middle" font-size="10.5" fill="#485566">① 卷级 stat 增量（4740 卷 2.1 s）</text>
+  <text x="465" y="355" text-anchor="middle" font-size="10.5" fill="#485566">② 变化卷重读 cut.json + layout.json</text>
+  <text x="465" y="371" text-anchor="middle" font-size="10.5" fill="#485566">③ A/B 层质检全量跑，C 层只跑候选</text>
+  <text x="465" y="389" text-anchor="middle" font-size="10" fill="#7b8794">不阻塞服务，进度走 /api/scan/status</text>
+
+  <!-- 数据 -->
+  <rect x="690" y="40" width="336" height="240" rx="8" fill="#fff" stroke="#c9d3e0"/>
+  <text x="858" y="66" text-anchor="middle" font-size="13" font-weight="600" fill="#1a2330">data/ 题库（只读）</text>
+  <text x="858" y="84" text-anchor="middle" font-size="10.5" fill="#7b8794" font-family="Consolas">~16 GB / 32.8 万文件</text>
+  <text x="706" y="110" font-size="11" fill="#485566" font-family="Consolas">source.pdf</text>
+  <text x="812" y="110" font-size="10.5" fill="#7b8794">原卷 · 页图来源</text>
+  <text x="706" y="132" font-size="11" fill="#485566" font-family="Consolas">cut.json</text>
+  <text x="812" y="132" font-size="10.5" fill="#7b8794">每卷 · 题框 pt 坐标</text>
+  <text x="706" y="154" font-size="11" fill="#485566" font-family="Consolas">qNN.md</text>
+  <text x="812" y="154" font-size="10.5" fill="#7b8794">题干文本 + 元数据</text>
+  <text x="706" y="176" font-size="11" fill="#485566" font-family="Consolas">qNN.webp</text>
+  <text x="812" y="176" font-size="10.5" fill="#7b8794">切好的题图 · 1411 px</text>
+  <text x="706" y="198" font-size="11" fill="#485566" font-family="Consolas">qNN.layout.json</text>
+  <text x="812" y="198" font-size="10.5" fill="#7b8794">归一化热区 + 拼接缝</text>
+  <text x="858" y="228" text-anchor="middle" font-size="10.5" fill="#c0392b">⚠ 全程 rb 只读打开，绝不写入</text>
+  <text x="858" y="248" text-anchor="middle" font-size="10.5" fill="#7b8794">文件被占用 → 重试 3 次</text>
+  <text x="858" y="266" text-anchor="middle" font-size="10.5" fill="#7b8794">长路径统一 \\?\ 前缀</text>
+
+  <rect x="690" y="300" width="336" height="120" rx="8" fill="#f6f8fa" stroke="#dde3ea" stroke-dasharray="4 3"/>
+  <text x="858" y="324" text-anchor="middle" font-size="12" font-weight="600" fill="#485566">工具自建缓存（可随时删）</text>
+  <text x="706" y="348" font-size="11" fill="#485566" font-family="Consolas">.cache/index.db</text>
+  <text x="812" y="348" font-size="10.5" fill="#7b8794">SQLite · ~150 MB</text>
+  <text x="706" y="370" font-size="11" fill="#485566" font-family="Consolas">.cache/thumbs/</text>
+  <text x="812" y="370" font-size="10.5" fill="#7b8794">260 px · 按需 · ~7 KB/张</text>
+  <text x="706" y="392" font-size="11" fill="#485566" font-family="Consolas">.cache/pages/</text>
+  <text x="812" y="392" font-size="10.5" fill="#7b8794">110 dpi 页图 · 按卷</text>
+  <text x="706" y="412" font-size="11" fill="#485566" font-family="Consolas">.cache/reviewed.json</text>
+  <text x="812" y="412" font-size="10.5" fill="#7b8794">已看标记（不碰 confirmed）</text>
+
+  <!-- 箭头 -->
+  <line x1="244" y1="200" x2="296" y2="200" stroke="#1f5fa8" stroke-width="1.8" marker-end="url(#ahb)"/>
+  <text x="270" y="192" text-anchor="middle" font-size="10" fill="#1f5fa8">HTTP</text>
+  <line x1="632" y1="180" x2="686" y2="180" stroke="#7b8794" stroke-width="1.4" marker-end="url(#ah)"/>
+  <text x="659" y="172" text-anchor="middle" font-size="10" fill="#7b8794">读</text>
+  <line x1="632" y1="352" x2="686" y2="352" stroke="#7b8794" stroke-width="1.4" marker-end="url(#ah)"/>
+  <text x="659" y="344" text-anchor="middle" font-size="10" fill="#7b8794">写</text>
+</svg>
+
+<h2><span class="num">06</span>索引模型（这是整件事的地基）</h2>
+
+<p>三张表就够。关键是<b>把 10 万个 layout.json 里的必要字段抽出来存成行</b>，让"筛选 / 排序 / 统计"全部变成 SQL，不再碰文件系统。</p>
+
+<pre><span class="c">-- 卷：4740 行</span>
+<b>papers</b>(
+  id            TEXT PRIMARY KEY,  <span class="c">-- edexcel/a-level/physics/2020-jan-wph11</span>
+  board, qual, subject TEXT,
+  year INT, session TEXT, paper_code TEXT,
+  page_count INT, dpi INT,
+  n_questions INT, n_flags INT, flag_max INT,
+  src_sha TEXT,                    <span class="c">-- 和 cut.json 里的 source.sha256 对齐</span>
+  dir_mtime_ns INTEGER,            <span class="c">-- 增量扫描的判据（配合 size）</span>
+  scanned_at INTEGER
+);
+
+<span class="c">-- 题：10 万行</span>
+<b>questions</b>(
+  qid           TEXT PRIMARY KEY,  <span class="c">-- ...2020-jan-wph11-q01</span>
+  paper_id TEXT, number TEXT, idx INT,
+  total_marks INT, qtype TEXT, section TEXT,
+  status TEXT, confidence REAL,
+  regions_json TEXT,               <span class="c">-- [[page,x0,y0,x1,y1], ...]</span>
+  anchors_json TEXT, subs_json TEXT, opts_json TEXT,
+  img_rel TEXT, layout_rel TEXT,
+  px_w INT, px_h INT,              <span class="c">-- 切片像素尺寸（判定高矮异常）</span>
+  n_segs INT,                      <span class="c">-- &gt;1 即跨页</span>
+  flags TEXT,                      <span class="c">-- "A2,B1,C1"</span>
+  severity INT                     <span class="c">-- 0–100，排序用</span>
+);
+
+<span class="c">-- 已看标记：和打标台的 confirmed.json 完全隔离</span>
+<b>reviewed</b>(qid TEXT PRIMARY KEY, ts INTEGER, note TEXT);
+
+<span class="c">-- 索引</span>
+CREATE INDEX ix_q_paper  ON questions(paper_id, idx);
+CREATE INDEX ix_q_sev    ON questions(severity DESC);
+CREATE INDEX ix_q_flags  ON questions(flags);
+</pre>
+
+<p><b>为什么不直接用一个大 JSON？</b>10 万条 × 1.5 KB ≈ 150 MB，每次启动都要全量 load 进内存，再在 JS 里筛——首屏直接 2 秒起。
+SQLite 只读需要的 200 行，进程内存稳在 400 MB 以内。</p>
+
+<h2><span class="num">07</span>三个视图，各自解决一个具体问题</h2>
+
+<table>
+  <colgroup><col style="width:14%"><col style="width:26%"><col style="width:30%"><col style="width:30%"></colgroup>
+  <thead><tr><th>视图</th><th>看到什么</th><th>回答什么问题</th><th>技术要点</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>页视图</b><br><span class="tag">叠框</span></td>
+      <td>PDF 原页 110 dpi（可切 200），全部题框用 SVG 叠加，每题一色、左上角标题号；当前题高亮，其余半透明 40%。</td>
+      <td><b>"这刀切在哪儿？"</b><br>框有没有压到隔壁题、有没有吃页眉、跨页题第一段是不是切在句中、题框之间的空隙对不对。</td>
+      <td>框坐标是 pt，页图是 px，换算 <code>px = pt × dpi / 72</code>；<code>page_size</code> 从 cut.json 拿，不用问 PDF。</td>
+    </tr>
+    <tr>
+      <td><b>题流</b><br><span class="tag go">主力</span></td>
+      <td>竖向卡片，一屏 3–8 题，按 <code>↑↓ / J K</code> 走。卡片上叠：切割框轮廓、拼接缝虚线、异常徽章、分值/题型。</td>
+      <td><b>"这一刀切出来的东西对不对？"</b><br>这才是通检的主界面——看图本身，不是看坐标。</td>
+      <td>题图按需 <code>&lt;img&gt;</code> 加载 + 预取前后 20 张缩略，翻页无白屏。</td>
+    </tr>
+    <tr>
+      <td><b>网格</b><br><span class="tag">扫异常</span></td>
+      <td>260 px 缩略图墙，一屏 60–100 个，默认按 <code>severity</code> 降序，异常题加红/黄描边。</td>
+      <td><b>"10 万题里哪 200 个要先看？"</b><br>人不可能全看，网格负责把最可疑的挑出来。</td>
+      <td>缩略图服务端生成（7 KB），虚列表只渲染可见 ±10 个。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>两个细节值得单独说</h3>
+
+<div class="card ok">
+  <b>① 拼接缝可视化。</b><code>layout.json</code> 的 <code>src_map.segs[].img</code> 给出每段在题图内的像素区间，
+  所以跨页题（29.6%！）可以在题图上精确画出那条 1395 px 的接缝虚线。
+  接缝上下是否有多余空白、内容是否错位、页眉是不是被粘进来——一眼能看见。
+  这是本工具比"看原图"强的地方。
+</div>
+
+<div class="card ok">
+  <b>② 题图 ↔ 原页双向映射。</b>鼠标点在题图任意位置，用 <code>src_map</code> 反算出"这是第 6 页 y=669 pt"，
+  页视图立刻跳过去并高亮同一点。反之悬停原页上的框，题流滚到对应题。
+  查"这一半是从哪来的"不用再人肉比对两幅图。
+</div>
+
+<h2><span class="num">08</span>自动质检：工具的核心价值</h2>
+
+<p>分三层跑，成本从 0 到高，只让候选题往下走。目标：<b>用 200 条待查队列覆盖大部分真问题。</b></p>
+
+<h3>L1 结构层 · 纯数据，全量 10 万题 ≈ 0 成本</h3>
+<table>
+  <colgroup><col style="width:8%"><col style="width:30%"><col style="width:38%"><col style="width:12%"><col style="width:12%"></colgroup>
+  <thead><tr><th>码</th><th>检测</th><th>判据</th><th>误报</th><th>严重度</th></tr></thead>
+  <tbody>
+    <tr><td class="n">A1</td><td>题框越出页边</td><td>bbox 超出 <code>page_size</code>，或距页边 &lt; 12 pt</td><td>低</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">A2</td><td>相邻题叠框</td><td>本题与下一题 bbox 垂直重叠 &gt; 2 pt</td><td>低</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">A3</td><td>切片高矮异常</td><td>px_h &lt; 80 或 &gt; 2600（实测 max 6877，跨三页）</td><td>低</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">A4</td><td>题号断裂</td><td>卷内题号序列缺号 / 重号 / 非递增</td><td>无</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">A5</td><td>分分之和不符</td><td>Σ<code>total_marks</code> ≠ <code>paper.md</code> 卷总分</td><td>中</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">A6</td><td>跨页无分隔</td><td><code>n_segs</code> &gt; 1 且 <code>sep_h = 0</code></td><td>低</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">A7</td><td>小问锚点缺失</td><td><code>subquestions</code> 有 n 个，<code>anchors</code> 覆盖少于 n 个</td><td>中</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">A8</td><td>MCQ 热区不全</td><td><code>qtype = mcq</code> 但 <code>option_hotzones</code> ≠ 4</td><td>低</td><td><span class="tag mid">中</span></td></tr>
+  </tbody>
+</table>
+
+<h3>L2 文本层 · 用 PDF 文字层独立验算，10 万题 ≈ 4 min（一次性入库）</h3>
+<table>
+  <colgroup><col style="width:8%"><col style="width:30%"><col style="width:38%"><col style="width:12%"><col style="width:12%"></colgroup>
+  <thead><tr><th>码</th><th>检测</th><th>判据</th><th>误报</th><th>严重度</th></tr></thead>
+  <tbody>
+    <tr><td class="n">B1</td><td><b>框内混入他题题号</b></td><td>题框内出现匹配 <code>^\d{1,2}\s</code> 的行，且编号 ≠ 本题</td><td>低</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">B2</td><td><b>框外漏切本题文字</b></td><td>框下缘 12 pt 内有文字行，字号/缩进与本题一致</td><td>中</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">B3</td><td>框吃到页眉页脚</td><td>框内 y &lt; 40 pt 或 y &gt; page_h − 30 pt 存在文字</td><td>低</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">B4</td><td>起始锚点不在框内</td><td><code>anchors.start</code> 的 bbox 未被 <code>regions</code> 包含</td><td>无</td><td><span class="tag hi">高</span></td></tr>
+  </tbody>
+</table>
+
+<div class="card note">
+  <b>为什么 L2 是关键：</b>L1 只能发现"几何上不对劲"，L2 能发现"几何正常但语义错了"——
+  比如框整体下移 30 pt，高度还是对的，A1–A8 全过，但 B1 立刻报"框内出现下一题的题号 7"。
+  <br>成本：每卷开 PDF 一次 15 ms + 取文字层约 50 ms，4740 卷 ≈ 5 分钟，一次性写入索引。
+</div>
+
+<h3>L3 像素层 · 解码昂贵，只跑候选（L1/L2 命中 + 10% 抽样）</h3>
+<table>
+  <colgroup><col style="width:8%"><col style="width:30%"><col style="width:38%"><col style="width:12%"><col style="width:12%"></colgroup>
+  <thead><tr><th>码</th><th>检测</th><th>判据</th><th>误报</th><th>严重度</th></tr></thead>
+  <tbody>
+    <tr><td class="n">C1</td><td><b>图被切断</b></td><td>题框边界 ±4 px 内存在连续 &gt; 30 px 的非白像素群</td><td>中</td><td><span class="tag hi">高</span></td></tr>
+    <tr><td class="n">C2</td><td>切空</td><td>非白像素占比 &lt; 0.3%</td><td>低</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">C3</td><td>拼接缝错位</td><td>接缝上下 40 px 的行投影峰谷不连续</td><td>中</td><td><span class="tag mid">中</span></td></tr>
+    <tr><td class="n">C4</td><td>与相邻题重复</td><td>相邻两题图 perceptual hash 距离 &lt; 5</td><td>低</td><td><span class="tag hi">高</span></td></tr>
+  </tbody>
+</table>
+
+<p><b>排序公式</b>（只是个起点，跑起来再调）：<code>severity = Σ(规则权重) × (1 + 是否跨页) × (1 + 是否 review 状态)</code>，
+同一卷内累加一点卷级风险，让问题卷整体往前排。</p>
+
+<h2><span class="num">09</span>Windows 文件系统的九个坑</h2>
+
+<table>
+  <colgroup><col style="width:22%"><col style="width:44%"><col style="width:34%"></colgroup>
+  <thead><tr><th>坑</th><th>现实表现</th><th>对策</th></tr></thead>
+  <tbody>
+    <tr><td>260 字符路径上限</td><td>现在最长 74 字符，余量很大；但换个更深的根目录（比如 OneDrive 同步盘）会爆</td><td>所有路径读写统一走 <code>\\?\</code> 前缀包装，从第一天就上，别等到出错</td></tr>
+    <tr><td><b>Defender 实时扫描</b></td><td>首个读 10 万个小文件时，每个都要过一遍扫描 → 冷启动慢 3–10 倍</td><td>建议把 <code>data\</code> 和工具缓存目录加排除项（给一条 PowerShell 命令，问他愿不愿意加）</td></tr>
+    <tr><td>文件被占用</td><td>切割脚本 / 打标台正在读 <code>source.pdf</code>，这边打开失败</td><td>一律 <code>open(..., 'rb')</code>；失败重试 3 次 × 80 ms；仍失败则该卷标记 <code>locked</code> 跳过，不中断整库扫描</td></tr>
+    <tr><td>大小写不敏感</td><td><code>Q01.webp</code> 与 <code>q01.webp</code> 在同一目录会冲突；换个系统就炸</td><td>入库时检测同目录重复（忽略大小写），冲突直接报 A4 类问题</td></tr>
+    <tr><td>路径分隔符混杂</td><td>Python 给 <code>\</code>，JSON 里是 <code>/</code>，前端拼 URL 时容易双斜杠</td><td>库里<b>一律存 <code>/</code> 相对路径</b>，<code>Path()</code> 只在真正读盘那一刻用</td></tr>
+    <tr><td>中文 / Unicode 文件名</td><td>某些老工具按 ANSI 代码页读会乱码</td><td>全程 UTF-8；HTML 显式 <code>&lt;meta charset&gt;</code>；不调用任何 <code>cmd /c dir</code> 之类的外部命令</td></tr>
+    <tr><td>mtime 精度</td><td>FAT 是 2 秒精度；跨盘复制会改 mtime</td><td>增量判据用 <b>(size, mtime_ns) 双键</b>，任一变化就重扫该卷</td></tr>
+    <tr><td>硬链接备份</td><td><code>backup.sh</code> 用硬链接快照，缓存文件放 <code>data/</code> 下会被算进去</td><td>缓存目录放工具目录 <code>.cache/</code>，不进 <code>data/</code></td></tr>
+    <tr><td>枚举顺序不稳定</td><td><code>os.walk</code> 顺序不保证，索引主键若用序号会导致 id 漂移</td><td>主键一律用路径派生的稳定字符串，序号只做展示排序</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="num">10</span>性能预算（按 10 万题验收）</h2>
+
+<table>
+  <colgroup><col style="width:30%"><col style="width:18%"><col style="width:52%"></colgroup>
+  <thead><tr><th>场景</th><th class="n">目标</th><th>怎么做到</th></tr></thead>
+  <tbody>
+    <tr><td>首次建库</td><td class="n">&lt; 90 s</td><td>后台线程跑，前端先出一个带进度的骨架页，不让人干等</td></tr>
+    <tr><td>热启动（无变化）</td><td class="n">&lt; 3 s</td><td>4740 卷 × 4 次 stat = 2.1 s，其余走索引</td></tr>
+    <tr><td>热启动（个别卷改动）</td><td class="n">&lt; 5 s</td><td>只重读变化卷的 cut.json + layout.json</td></tr>
+    <tr><td>切卷（含页图渲染）</td><td class="n">&lt; 200 ms</td><td>24 页 @110 dpi 共 0.12 s，首屏只渲前 3 页</td></tr>
+    <tr><td>题流翻一题</td><td class="n">&lt; 120 ms</td><td>预取 ±20；已缓存时就是一次本地 HTTP</td></tr>
+    <tr><td>网格滚动</td><td class="n">60 fps</td><td>100 个 7 KB 缩略 + 虚列表，DOM 常驻 &lt; 120 节点</td></tr>
+    <tr><td>筛选 / 排序 10 万行</td><td class="n">&lt; 10 ms</td><td>SQLite 索引查询，只取 200 条一页</td></tr>
+    <tr><td>进程内存</td><td class="n">&lt; 400 MB</td><td>不缓存原图，只缓存页图(按卷)和缩略(按需)</td></tr>
+    <tr><td>磁盘缓存</td><td class="n">&lt; 1.5 GB</td><td>缩略 700 MB 上限 + 页图 300 MB，超了按 LRU 清</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="num">11</span>分期落地</h2>
+
+<table>
+  <colgroup><col style="width:10%"><col style="width:26%"><col style="width:38%"><col style="width:26%"></colgroup>
+  <thead><tr><th>阶段</th><th>交付</th><th>内容</th><th>验收</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>v0</b><br><span class="tag">地基</span></td>
+      <td>索引 + 服务骨架</td>
+      <td>扫描入库、SQLite schema、7 个接口、最朴素的题流视图（纯列表+图）</td>
+      <td>411 卷 30 秒内建完库；能上下翻题</td>
+    </tr>
+    <tr>
+      <td><b>v1</b><br><span class="tag go">可用</span></td>
+      <td>三视图 + 叠框</td>
+      <td>页视图叠框、题流叠框与拼接缝、网格缩略墙、键盘流、已看标记、卷列表</td>
+      <td>看完一卷 20 题不超过 3 分钟</td>
+    </tr>
+    <tr>
+      <td><b>v2</b><br><span class="tag mid">有价值</span></td>
+      <td>自动质检</td>
+      <td>A/B/C 三层规则、severity 排序、待查队列、异常筛选 chips</td>
+      <td>现有 411 卷里挑出前 100 条，人工判断 &gt; 70% 是真问题</td>
+    </tr>
+    <tr>
+      <td><b>v3</b><br><span class="tag lo">闭环</span></td>
+      <td>标问题 → 重切</td>
+      <td>在页视图拖框改 bbox → 写一个 <code>.cache/fixes.json</code>（<b>不动 cut.json</b>）→ 导出待重切清单给脚本</td>
+      <td>改过的卷能被批量重切，且不污染原数据</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="card note">
+  <b>为什么 v3 不直接改 cut.json：</b>按你定的规矩，改任何已在云端产生过数据的卷都要先 rsync 拉回、改完再传回去。
+  预览工具如果直接写 <code>cut.json</code>，就会绕过这条链路。做成"只产差异清单"，重切仍由脚本 + 人工确认执行，安全得多。
+</div>
+
+<h2><span class="num">12</span>三件需要你定的事</h2>
+
+<table>
+  <colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+  <thead><tr><th>问题</th><th>选项 A</th><th>选项 B</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>1. 只管看，还是要能改框？</b></td>
+      <td><b>只读预览 + 标问题</b>（推荐）<br>工作量 ≈ 1×，v1 就能天天用；发现问题记进清单，重切走脚本</td>
+      <td><b>带拖框编辑器</b><br>工作量 ≈ 3×（撤销、吸附、实时重渲、防误覆盖），v3 再说</td>
+    </tr>
+    <tr>
+      <td><b>2. 自动质检做到哪一层？</b></td>
+      <td><b>L1 + L2</b>（推荐）<br>结构 + 文字层，10 万题一次性 5 分钟，零误差成本</td>
+      <td><b>加 L3 像素层</b><br>多抓"图被切断"这类，但每张 26 ms，全量 45 分钟，只适合抽样</td>
+    </tr>
+    <tr>
+      <td><b>3. Defender 排除项加不加？</b></td>
+      <td><b>加</b><br>冷启动快 3–10 倍，代价是 <code>data\</code> 不再被实时扫描（题库是稀缺资料，风险你判断）</td>
+      <td><b>不加</b><br>首次建库 90 秒 → 可能 3–5 分钟，之后靠索引就不再扫盘了</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2><span class="num">13</span>明确不做的事</h2>
+
+<ul>
+  <li><b>不做打标</b>。标签、难度、primary_tag 全归打标台，这个工具一个都不碰。</li>
+  <li><b>不做小问级切割预览</b>（v1）。子图是云端切的，本地没有产物；等云端那套稳定了再考虑拉回来预览。</li>
+  <li><b>不做多人协作 / 权限 / 登录</b>。本地 127.0.0.1，只有你自己用。</li>
+  <li><b>不做小屏适配</b>。沿用 1080p 及以上好用的原则，固定左栏 240 + 右栏 300。</li>
+  <li><b>不上服务器</b>。云端只有 <code>data/</code> 的一份拷贝，预览工具留在本机。</li>
+  <li><b>不做 PDF 全文搜索</b>。要搜题干时用现成的 <code>grep</code> 或 md 文件，不在这里造。</li>
+</ul>
+
+<footer>
+  数据来源：本机 D:/Tasks/questionBank/data 实测（2026-10-17，7396 题 / 411 卷）<br>
+  脚本：scripts/cut_paper.py · render_questions.py　│　schema：schema/question.schema.json
+</footer>
+
+</div>
+</body>
+</html>

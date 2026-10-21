@@ -19,6 +19,31 @@
         "paper_ref": { "type": "string", "description": "考试局内部卷号，如 P79335RA" }
       }
     },
+    "booklet_pages": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "可选。source.pdf 前 N 页是资料册（Source Booklet）合并进来的；卷面 region/题区页码 = 原卷页号 + N。缺省 0。"
+    },
+    "sources": {
+      "type": "array",
+      "description": "可选。合并卷的各来源（资料册 / 原卷），便于溯源；不影响渲染。",
+      "items": {
+        "type": "object",
+        "required": ["role", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "type": "string", "enum": ["booklet", "qp", "answer"] },
+          "file": { "type": "string" },
+          "sha256": { "type": "string" },
+          "pages": { "type": "integer" },
+          "used_pages": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "0 基页号，指明只用了资料册的哪些页"
+          }
+        }
+      }
+    },
     "page_size": {
       "type": "object",
       "description": "pt；仅作参考，跨卷可能不同页不同尺寸",
@@ -44,6 +69,17 @@
         "pages": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
       }
     },
+    "blocks": {
+      "type": "array",
+      "description": "卷面分块（文档序），会计卷用。普通卷=e.g. [\"qp\",\"material\"]（QP 含题面与点线作答区）；01A 中国区卷=[\"qp\",\"material\",\"answer\"]（紧凑题卷 + 资料册 + 答题册）。渲染顺序由 material_order 决定",
+      "items": { "type": "string", "enum": ["qp", "material", "answer"] }
+    },
+    "material_order": {
+      "type": "string",
+      "enum": ["before", "after"],
+      "default": "before",
+      "description": "资料块相对题面的拼接位置。before=资料 → 题面 → 作答区（会计/理化，默认）；after=题面 → 资料 → 作答区（经济卷，2026-10-19 定）"
+    },
     "questions": { "type": "array", "items": { "$ref": "#/$defs/question" } }
   },
   "$defs": {
@@ -63,6 +99,16 @@
         "shared": {
           "type": "boolean",
           "description": "共用题干块 region（MCQ \"Questions N and M refer\" 式）：同一块会复制进多个题的 regions，重叠属预期，校验跳过"
+        },
+        "rotate": {
+          "type": "integer",
+          "enum": [90, -90, 180],
+          "description": "渲染前把该段图像旋转的角度（逆时针为正）。D1 作答册里有整页横排印刷的网络图/网格页，不转就裁不出完整内容"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["content", "rules", "tail", "blank_canvas", "rotated"],
+          "description": "段落类型（仅作答册压缩用）：content=素材（表格/图）、rules=保留下来的横线块、tail=页尾（Total 行等）、blank_canvas=纯空白作图页。渲染层不读，供人工核查"
         }
       }
     },
@@ -95,6 +141,10 @@
             "additionalProperties": false,
             "properties": {
               "label": { "type": "string", "description": "A / B / C / D" },
+              "part": {
+                "type": "string",
+                "description": "所属小问标签（化学 2 分选择题 (a)/(b) 各一套选项时才有；单套选项时缺省）"
+              },
               "bbox": {
                 "type": "array",
                 "minItems": 4,
@@ -107,7 +157,12 @@
         "regions": {
           "type": "array",
           "items": { "$ref": "#/$defs/region" },
-          "description": "有序数组：渲染时按顺序纵向拼接，跨页题即多个 region"
+          "description": "有序数组：渲染时按顺序纵向拼接，跨页题即多个 region。语义 = **题目**（理化=题干，会计=题面+点线作答区）"
+        },
+        "material_regions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/region" },
+          "description": "资料块（会计卷 Source Booklet 中该题的全页）。渲染时拼在 regions **之前**，顺序：material → regions → answer_block（2026-10-19 定）"
         },
         "answer_regions": {
           "type": "array",

@@ -203,8 +203,8 @@
       },
       {
         "id": "u1-deformation-behaviour-graph",
-        "zh": "形变特性图像",
-        "en": "deformation behaviour graph",
+        "zh": "形变行为",
+        "en": "deformation behaviour",
         "group": "u1g-material-science"
       },
       {
@@ -220,15 +220,15 @@
         "group": "u1g-nuclear-physics"
       },
       {
-        "id": "u1-calculating-half-life",
-        "zh": "半衰期计算",
-        "en": "calculating half-life",
+        "id": "u1-background-radiation",
+        "zh": "背景辐射",
+        "en": "background radiation",
         "group": "u1g-nuclear-physics"
       },
       {
-        "id": "u1-inverse-square-law",
-        "zh": "平方反比定律",
-        "en": "inverse square law",
+        "id": "u1-calculating-half-life",
+        "zh": "半衰期",
+        "en": "half-life",
         "group": "u1g-nuclear-physics"
       },
       {
@@ -268,9 +268,9 @@
         "group": "u1g-material-science"
       },
       {
-        "id": "u1-radiation-safety",
-        "zh": "辐射安全",
-        "en": "radiation safety",
+        "id": "u1-inverse-square-law",
+        "zh": "平方反比定律",
+        "en": "inverse square law",
         "group": "u1g-nuclear-physics"
       },
       {
@@ -298,15 +298,15 @@
         "group": "u1g-mechanics"
       },
       {
-        "id": "u1-measuring-decay",
-        "zh": "测量核衰变",
-        "en": "measuring decay",
+        "id": "u1-radiation-safety",
+        "zh": "辐射安全",
+        "en": "radiation safety",
         "group": "u1g-nuclear-physics"
       },
       {
-        "id": "u1-production-of-nuclear-decay",
-        "zh": "核衰变的产生",
-        "en": "production of nuclear decay",
+        "id": "u1-measuring-decay",
+        "zh": "测量核衰变",
+        "en": "measuring decay",
         "group": "u1g-nuclear-physics"
       },
       {
@@ -317,9 +317,15 @@
       },
       {
         "id": "u1-terminal-velocity",
-        "zh": "终端速度",
-        "en": "terminal velocity",
+        "zh": "阻力与终端速度",
+        "en": "drag and terminal velocity",
         "group": "u1g-mechanics"
+      },
+      {
+        "id": "u1-production-of-nuclear-decay",
+        "zh": "核衰变的产生",
+        "en": "production of nuclear decay",
+        "group": "u1g-nuclear-physics"
       }
     ]
   },
@@ -359,6 +365,11 @@
         "id": "u2g-quantum-physics",
         "zh": "量子物理基础",
         "en": "quantum physics"
+      },
+      {
+        "id": "u2g-practical-skills",
+        "zh": "实验技能",
+        "en": "practical skills"
       }
     ],
     "tags": [
@@ -442,8 +453,8 @@
       },
       {
         "id": "u2-applications-of-damping",
-        "zh": "阻尼应用",
-        "en": "applications of damping",
+        "zh": "阻尼",
+        "en": "damping",
         "group": "u2g-oscillation"
       },
       {
@@ -484,8 +495,8 @@
       },
       {
         "id": "u2-formation-of-stationary-waves",
-        "zh": "驻波成因",
-        "en": "formation of stationary waves",
+        "zh": "驻波形成与性质",
+        "en": "formation and properties of stationary waves",
         "group": "u2g-wave-superposition"
       },
       {
@@ -508,14 +519,14 @@
       },
       {
         "id": "u2-double-slit-interference-calculation",
-        "zh": "双缝干涉计算",
-        "en": "double-slit interference calculation",
+        "zh": "干涉计算",
+        "en": "interference calculation",
         "group": "u2g-wave-superposition"
       },
       {
         "id": "u2-double-slit-interference-analysis",
-        "zh": "双缝干涉分析",
-        "en": "double-slit interference analysis",
+        "zh": "干涉分析与相干性",
+        "en": "interference analysis and coherence",
         "group": "u2g-wave-superposition"
       },
       {
@@ -526,8 +537,8 @@
       },
       {
         "id": "u2-snells-law",
-        "zh": "折射定律",
-        "en": "snell's law",
+        "zh": "折射与折射率",
+        "en": "refraction and refractive index",
         "group": "u2g-reflection-and-refraction"
       },
       {
@@ -574,14 +585,14 @@
       },
       {
         "id": "u2-stopping-potential-graphs",
-        "zh": "遏止电压图像",
-        "en": "stopping-potential graphs",
+        "zh": "光电效应图像",
+        "en": "photoelectric effect graphs (Ek-f / Vs-f)",
         "group": "u2g-quantum-physics"
       },
       {
         "id": "u2-electronvolt",
         "zh": "电子伏",
-        "en": "electronvolt",
+        "en": "electronvolt (eV) and kinetic energy gained from an accelerating p.d.",
         "group": "u2g-quantum-physics"
       },
       {
@@ -613,6 +624,66 @@
         "zh": "示波器",
         "en": "oscilloscope",
         "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-measurement-uncertainty",
+        "zh": "不确定度与误差处理",
+        "en": "uncertainty and error propagation",
+        "group": "u2g-practical-skills"
+      },
+      {
+        "id": "u2-x-ray-spectra",
+        "zh": "X 射线谱与产生",
+        "en": "X-ray spectra and production",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-potential-divider",
+        "zh": "分压器",
+        "en": "potential divider",
+        "group": "u2g-circuit-principles"
+      },
+      {
+        "id": "u2-optical-fibres",
+        "zh": "光导纤维",
+        "en": "optical fibres",
+        "group": "u2g-reflection-and-refraction"
+      },
+      {
+        "id": "u2-special-conductors",
+        "zh": "特殊导体",
+        "en": "special conductors",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-reflection-of-waves",
+        "zh": "波的反射与回波",
+        "en": "reflection of waves and echoes",
+        "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-photon-energy",
+        "zh": "光子能量",
+        "en": "photon energy",
+        "group": "u2g-quantum-physics"
+      },
+      {
+        "id": "u2-units-and-dimensions",
+        "zh": "单位与量纲",
+        "en": "units and dimensions",
+        "group": "u2g-basics-of-electricity"
+      },
+      {
+        "id": "u2-particle-oscillation",
+        "zh": "质点振动",
+        "en": "particle oscillation",
+        "group": "u2g-wave-fundamentals"
+      },
+      {
+        "id": "u2-practical-safety",
+        "zh": "实验安全",
+        "en": "practical safety",
+        "group": "u2g-practical-skills"
       }
     ]
   },

@@ -1,0 +1,1622 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的生物表（tbl39cCEOFgTkwxA）视图 vewRrsDFTd，取 考试局=EDX / 考试阶段=AL 的 228 行（2026-10-19 导出）。单元键 U1–U6，对应卷号 WBI11–WBI16；源表单元列写作 Unit1–Unit6。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot",
+    "zh": "分子极性判断，水，糖类，脂质，蛋白质分子",
+    "en": "Chemistry for biologists: water, carbohydrates, lipids and proteins"
+   },
+   {
+    "id": "u1g-enzymes",
+    "zh": "酶",
+    "en": "Enzymes"
+   },
+   {
+    "id": "u1g-membrane-and-transport-cell-membrane-structure-diffusion-osm",
+    "zh": "膜上运输：细胞膜结构，扩散，渗透，主动运输，胞吞，胞吐，菲克定律",
+    "en": "Membrane and transport: cell membrane structure, diffusion, osmosis, active transport, endocytosis, exocytosis and Fick's law"
+   },
+   {
+    "id": "u1g-mammalian-transport-system",
+    "zh": "哺乳动物的循环系统：心脏，血管，血细胞，血红蛋白氧解离曲线和凝血过程",
+    "en": "Mammalian transport system"
+   },
+   {
+    "id": "u1g-cardiovascular-health-and-risk",
+    "zh": "心血管疾病的发生，治疗，风险因素和预测指标",
+    "en": "Cardiovascular health and risk"
+   },
+   {
+    "id": "u1g-respiratory-system",
+    "zh": "呼吸系统",
+    "en": "Respiratory system"
+   },
+   {
+    "id": "u1g-dna-replication-and-gene-expression",
+    "zh": "核酸的结构，DNA 的复制和基因表达，突变",
+    "en": "DNA replication and gene expression"
+   },
+   {
+    "id": "u1g-genetics",
+    "zh": "遗传学：单杂交遗传（常染色体遗传和伴性遗传），囊性纤维化，遗传筛查",
+    "en": "Genetics"
+   },
+   {
+    "id": "u1g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-molecular-polarity",
+    "zh": "分子极性",
+    "en": "Molecular polarity",
+    "group": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot"
+   },
+   {
+    "id": "u1-water",
+    "zh": "水",
+    "en": "Water",
+    "group": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot"
+   },
+   {
+    "id": "u1-carbohydrates",
+    "zh": "糖类",
+    "en": "Carbohydrates",
+    "group": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot"
+   },
+   {
+    "id": "u1-lipids",
+    "zh": "脂质",
+    "en": "Lipids",
+    "group": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot"
+   },
+   {
+    "id": "u1-proteins",
+    "zh": "蛋白质",
+    "en": "Proteins",
+    "group": "u1g-chemistry-for-biologists-water-carbohydrates-lipids-and-prot"
+   },
+   {
+    "id": "u1-activation-energy",
+    "zh": "活化能",
+    "en": "Activation energy",
+    "group": "u1g-enzymes"
+   },
+   {
+    "id": "u1-lock-and-key-model",
+    "zh": "酶的锁钥模型",
+    "en": "Lock-and-key model",
+    "group": "u1g-enzymes"
+   },
+   {
+    "id": "u1-factors-affecting-reaction-rate",
+    "zh": "影响反应速率",
+    "en": "Factors affecting reaction rate",
+    "group": "u1g-enzymes"
+   },
+   {
+    "id": "u1-cell-membrane-structure",
+    "zh": "细胞膜的结构",
+    "en": "Cell membrane structure",
+    "group": "u1g-membrane-and-transport-cell-membrane-structure-diffusion-osm"
+   },
+   {
+    "id": "u1-membrane-fluidity",
+    "zh": "膜的流动性",
+    "en": "Membrane fluidity",
+    "group": "u1g-membrane-and-transport-cell-membrane-structure-diffusion-osm"
+   },
+   {
+    "id": "u1-selective-permeability",
+    "zh": "膜的选择透过性",
+    "en": "Selective permeability",
+    "group": "u1g-membrane-and-transport-cell-membrane-structure-diffusion-osm"
+   },
+   {
+    "id": "u1-modes-of-membrane-transport",
+    "zh": "膜上运输的方式",
+    "en": "Modes of membrane transport",
+    "group": "u1g-membrane-and-transport-cell-membrane-structure-diffusion-osm"
+   },
+   {
+    "id": "u1-types-of-circulatory-system",
+    "zh": "循环系统类型",
+    "en": "Types of circulatory system",
+    "group": "u1g-mammalian-transport-system"
+   },
+   {
+    "id": "u1-heart-structure-and-cardiac-cycle",
+    "zh": "心脏与心动周期",
+    "en": "Heart structure and cardiac cycle",
+    "group": "u1g-mammalian-transport-system"
+   },
+   {
+    "id": "u1-blood-vessel-structure",
+    "zh": "血管结构",
+    "en": "Blood vessel structure",
+    "group": "u1g-mammalian-transport-system"
+   },
+   {
+    "id": "u1-platelets-and-blood-clotting",
+    "zh": "血小板的凝血过程",
+    "en": "Platelets and blood clotting",
+    "group": "u1g-mammalian-transport-system"
+   },
+   {
+    "id": "u1-haemoglobin-dissociation-curve",
+    "zh": "血红蛋白解离曲线",
+    "en": "Haemoglobin dissociation curve",
+    "group": "u1g-mammalian-transport-system"
+   },
+   {
+    "id": "u1-atherosclerosis",
+    "zh": "动脉粥样硬化",
+    "en": "Atherosclerosis",
+    "group": "u1g-cardiovascular-health-and-risk"
+   },
+   {
+    "id": "u1-cvd-risk-factors",
+    "zh": "CVD 相关风险因素",
+    "en": "CVD risk factors",
+    "group": "u1g-cardiovascular-health-and-risk"
+   },
+   {
+    "id": "u1-cvd-body-measurements",
+    "zh": "CVD 相关身体指标",
+    "en": "CVD body measurements",
+    "group": "u1g-cardiovascular-health-and-risk"
+   },
+   {
+    "id": "u1-cvd-drugs-and-vitamin-c",
+    "zh": "CVD药物与VC",
+    "en": "CVD drugs and vitamin C",
+    "group": "u1g-cardiovascular-health-and-risk"
+   },
+   {
+    "id": "u1-respiratory-system-and-alveoli",
+    "zh": "呼吸系统与肺泡",
+    "en": "Respiratory system and alveoli",
+    "group": "u1g-respiratory-system"
+   },
+   {
+    "id": "u1-dna-and-rna-structure",
+    "zh": "DNA与RNA结构",
+    "en": "DNA and RNA structure",
+    "group": "u1g-dna-replication-and-gene-expression"
+   },
+   {
+    "id": "u1-dna-replication",
+    "zh": "DNA 复制",
+    "en": "DNA replication",
+    "group": "u1g-dna-replication-and-gene-expression"
+   },
+   {
+    "id": "u1-transcription",
+    "zh": "转录",
+    "en": "Transcription",
+    "group": "u1g-dna-replication-and-gene-expression"
+   },
+   {
+    "id": "u1-genetic-code-and-translation",
+    "zh": "遗传密码与翻译",
+    "en": "Genetic code and translation",
+    "group": "u1g-dna-replication-and-gene-expression"
+   },
+   {
+    "id": "u1-mutation",
+    "zh": "突变",
+    "en": "Mutation",
+    "group": "u1g-dna-replication-and-gene-expression"
+   },
+   {
+    "id": "u1-basic-genetic-concepts",
+    "zh": "遗传基本概念",
+    "en": "Basic genetic concepts",
+    "group": "u1g-genetics"
+   },
+   {
+    "id": "u1-monohybrid-inheritance",
+    "zh": "单杂交遗传",
+    "en": "Monohybrid inheritance",
+    "group": "u1g-genetics"
+   },
+   {
+    "id": "u1-sex-linked-inheritance",
+    "zh": "伴性遗传",
+    "en": "Sex-linked inheritance",
+    "group": "u1g-genetics"
+   },
+   {
+    "id": "u1-cystic-fibrosis",
+    "zh": "囊性纤维化",
+    "en": "Cystic fibrosis",
+    "group": "u1g-genetics"
+   },
+   {
+    "id": "u1-genetic-screening",
+    "zh": "遗传筛查",
+    "en": "Genetic screening",
+    "group": "u1g-genetics"
+   },
+   {
+    "id": "u1-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u1g-practicals"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-cell-structure-and-microscopy",
+    "zh": "原核细胞结构，真核细胞结构（植物，动物细胞都要包括），显微镜",
+    "en": "Cell structure and microscopy"
+   },
+   {
+    "id": "u2g-mitosis-and-the-cell-cycle",
+    "zh": "细胞有丝分裂",
+    "en": "Mitosis and the cell cycle"
+   },
+   {
+    "id": "u2g-meiosis-gametes-and-fertilisation",
+    "zh": "有性生殖：减数分裂和受精",
+    "en": "Meiosis, gametes and fertilisation"
+   },
+   {
+    "id": "u2g-cell-differentiation-stem-cells-and-epigenetics",
+    "zh": "细胞分化与干细胞",
+    "en": "Cell differentiation, stem cells and epigenetics"
+   },
+   {
+    "id": "u2g-plant-structure-and-function",
+    "zh": "植物组织和功能（以维管组织为主）",
+    "en": "Plant structure and function"
+   },
+   {
+    "id": "u2g-uses-of-plant-products",
+    "zh": "植物组织的应用，例如生物塑料，生物燃料，纤维，药物。",
+    "en": "Uses of plant products"
+   },
+   {
+    "id": "u2g-classification-and-the-species-concept",
+    "zh": "分类方法，物种定义和三域六界分类系统",
+    "en": "Classification and the species concept"
+   },
+   {
+    "id": "u2g-evolution-adaptation-and-speciation",
+    "zh": "进化：包括适应性的产生和物种形成",
+    "en": "Evolution: adaptation and speciation"
+   },
+   {
+    "id": "u2g-biodiversity-definition-measurement-and-conservation",
+    "zh": "生物多样性的定义，衡量和保护",
+    "en": "Biodiversity: definition, measurement and conservation"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-common-features-of-cells",
+    "zh": "细胞的共同特征",
+    "en": "Common features of cells",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-plant-cell-structure",
+    "zh": "植物细胞结构",
+    "en": "Plant cell structure",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-animal-cell-structure",
+    "zh": "动物细胞结构",
+    "en": "Animal cell structure",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-secreted-protein-transport",
+    "zh": "分泌蛋白运输",
+    "en": "Secreted protein transport",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-prokaryotic-cell-structure",
+    "zh": "原核细胞结构",
+    "en": "Prokaryotic cell structure",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-using-the-microscope",
+    "zh": "显微镜使用",
+    "en": "Using the microscope",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-cells-tissues-organs-and-systems",
+    "zh": "细胞到器官系统",
+    "en": "Cells, tissues, organs and systems",
+    "group": "u2g-cell-structure-and-microscopy"
+   },
+   {
+    "id": "u2-mitosis-and-the-cell-cycle",
+    "zh": "有丝分裂与周期",
+    "en": "Mitosis and the cell cycle",
+    "group": "u2g-mitosis-and-the-cell-cycle"
+   },
+   {
+    "id": "u2-interphase",
+    "zh": "细胞周期间期",
+    "en": "Interphase",
+    "group": "u2g-mitosis-and-the-cell-cycle"
+   },
+   {
+    "id": "u2-stages-of-mitosis",
+    "zh": "有丝分裂各阶段",
+    "en": "Stages of mitosis",
+    "group": "u2g-mitosis-and-the-cell-cycle"
+   },
+   {
+    "id": "u2-mitotic-index",
+    "zh": "有丝分裂指数的计算",
+    "en": "Mitotic index",
+    "group": "u2g-mitosis-and-the-cell-cycle"
+   },
+   {
+    "id": "u2-locus-and-gene-linkage",
+    "zh": "基因位点与基因连锁",
+    "en": "Locus and gene linkage",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-meiosis",
+    "zh": "减数分裂过程",
+    "en": "Meiosis",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-meiosis-and-genetic-variation",
+    "zh": "减数分裂与遗传变异",
+    "en": "Meiosis and genetic variation",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-mammalian-gamete-specialisation",
+    "zh": "哺乳动物配子的特化",
+    "en": "Mammalian gamete specialisation",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-fertilisation-in-mammals",
+    "zh": "哺乳动物受精过程",
+    "en": "Fertilisation in mammals",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-fertilisation-in-plants",
+    "zh": "植物受精过程",
+    "en": "Fertilisation in plants",
+    "group": "u2g-meiosis-gametes-and-fertilisation"
+   },
+   {
+    "id": "u2-cell-differentiation",
+    "zh": "细胞分化",
+    "en": "Cell differentiation",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-mrna-processing",
+    "zh": "mRNA加工",
+    "en": "mRNA processing",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-genotype-and-environment",
+    "zh": "基因型与环境",
+    "en": "Genotype and environment",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-epigenetic-transmission",
+    "zh": "表观遗传传递",
+    "en": "Epigenetic transmission",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-polygenic-inheritance-and-continuous-variation",
+    "zh": "多基因遗传与连续变异",
+    "en": "Polygenic inheritance and continuous variation",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-stem-cells-and-totipotency",
+    "zh": "干细胞与全能性",
+    "en": "Stem cells and totipotency",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-stem-cell-therapy-debate",
+    "zh": "干细胞治疗争议",
+    "en": "Stem cell therapy debate",
+    "group": "u2g-cell-differentiation-stem-cells-and-epigenetics"
+   },
+   {
+    "id": "u2-cellulose",
+    "zh": "纤维素",
+    "en": "Cellulose",
+    "group": "u2g-plant-structure-and-function"
+   },
+   {
+    "id": "u2-microfibril-arrangement",
+    "zh": "微纤丝排列",
+    "en": "Microfibril arrangement",
+    "group": "u2g-plant-structure-and-function"
+   },
+   {
+    "id": "u2-comparing-vascular-tissues",
+    "zh": "维管组织比较",
+    "en": "Comparing vascular tissues",
+    "group": "u2g-plant-structure-and-function"
+   },
+   {
+    "id": "u2-transverse-section-plan-diagram",
+    "zh": "横切面平面图",
+    "en": "Transverse section plan diagram",
+    "group": "u2g-plant-structure-and-function"
+   },
+   {
+    "id": "u2-uses-of-plant-fibres",
+    "zh": "植物纤维利用",
+    "en": "Uses of plant fibres",
+    "group": "u2g-uses-of-plant-products"
+   },
+   {
+    "id": "u2-water-and-inorganic-ions",
+    "zh": "水与无机离子",
+    "en": "Water and inorganic ions",
+    "group": "u2g-uses-of-plant-products"
+   },
+   {
+    "id": "u2-bacterial-culture-and-aseptic-technique",
+    "zh": "细菌培养与无菌",
+    "en": "Bacterial culture and aseptic technique",
+    "group": "u2g-uses-of-plant-products"
+   },
+   {
+    "id": "u2-testing-plant-antimicrobials",
+    "zh": "植物抗菌性测定",
+    "en": "Testing plant antimicrobials",
+    "group": "u2g-uses-of-plant-products"
+   },
+   {
+    "id": "u2-development-of-drug-testing",
+    "zh": "药物测试的发展",
+    "en": "Development of drug testing",
+    "group": "u2g-uses-of-plant-products"
+   },
+   {
+    "id": "u2-classification-and-the-species-concept",
+    "zh": "分类与物种概念",
+    "en": "Classification and the species concept",
+    "group": "u2g-classification-and-the-species-concept"
+   },
+   {
+    "id": "u2-methods-of-classification",
+    "zh": "分类方法",
+    "en": "Methods of classification",
+    "group": "u2g-classification-and-the-species-concept"
+   },
+   {
+    "id": "u2-evaluating-new-taxonomic-evidence",
+    "zh": "新分类证据评价",
+    "en": "Evaluating new taxonomic evidence",
+    "group": "u2g-classification-and-the-species-concept"
+   },
+   {
+    "id": "u2-three-domain-system",
+    "zh": "三域系统",
+    "en": "Three-domain system",
+    "group": "u2g-classification-and-the-species-concept"
+   },
+   {
+    "id": "u2-environmental-adaptations",
+    "zh": "环境适应",
+    "en": "Environmental adaptations",
+    "group": "u2g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u2-hardy-weinberg-equilibrium",
+    "zh": "哈代-温伯格平衡",
+    "en": "Hardy-Weinberg equilibrium",
+    "group": "u2g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u2-mutation-and-natural-selection",
+    "zh": "突变与自然选择",
+    "en": "Mutation and natural selection",
+    "group": "u2g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u2-reproductive-isolation-and-speciation",
+    "zh": "生殖隔离与物种形成",
+    "en": "Reproductive isolation and speciation",
+    "group": "u2g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u2-definitions-of-biodiversity",
+    "zh": "多样性定义",
+    "en": "Definitions of biodiversity",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   },
+   {
+    "id": "u2-species-diversity",
+    "zh": "物种多样性",
+    "en": "Species diversity",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   },
+   {
+    "id": "u2-heterozygosity-and-genetic-diversity",
+    "zh": "杂合度与遗传多样性",
+    "en": "Heterozygosity and genetic diversity",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   },
+   {
+    "id": "u2-threats-from-human-activity",
+    "zh": "人类活动威胁",
+    "en": "Threats from human activity",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   },
+   {
+    "id": "u2-zoo-conservation",
+    "zh": "动物园保护",
+    "en": "Zoo conservation",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   },
+   {
+    "id": "u2-seed-bank-conservation",
+    "zh": "种子库保护",
+    "en": "Seed bank conservation",
+    "group": "u2g-biodiversity-definition-measurement-and-conservation"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-semi-quantitative-reducing-sugar-test",
+    "zh": "半定量法检测还原性糖",
+    "en": "Semi-quantitative reducing sugar test",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-semi-quantitative-protein-test",
+    "zh": "半定量法检测蛋白质",
+    "en": "Semi-quantitative protein test",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-semi-quantitative-starch-test",
+    "zh": "半定量法检测淀粉",
+    "en": "Semi-quantitative starch test",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-vitamin-c-concentration",
+    "zh": "VC浓度测定",
+    "en": "Vitamin C concentration",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-heart-dissection",
+    "zh": "心脏解剖",
+    "en": "Heart dissection",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-initial-rate-measurement",
+    "zh": "初始速率测定",
+    "en": "Initial rate measurement",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-membrane-permeability",
+    "zh": "衡量细胞膜的通透性",
+    "en": "Membrane permeability",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-cell-water-potential",
+    "zh": "细胞水势测定",
+    "en": "Cell water potential",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-observing-plant-tissues",
+    "zh": "利用显微镜观察植物",
+    "en": "Observing plant tissues",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-observing-animal-cells",
+    "zh": "显微镜观察动物细胞",
+    "en": "Observing animal cells",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-root-tip-squash",
+    "zh": "根尖压片观察",
+    "en": "Root tip squash",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-pollen-tube-growth",
+    "zh": "观察花粉管生长",
+    "en": "Pollen tube growth",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-mineral-deficiency",
+    "zh": "矿质缺乏影响",
+    "en": "Mineral deficiency",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-tensile-strength-of-fibres",
+    "zh": "纤维拉伸强度",
+    "en": "Tensile strength of fibres",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-antimicrobial-properties-of-plants",
+    "zh": "植物的抗菌性",
+    "en": "Antimicrobial properties of plants",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u3g-practicals"
+   },
+   {
+    "id": "u3-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u3g-practicals"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-photosynthesis-and-chromatography",
+    "zh": "光合作用，色谱",
+    "en": "Photosynthesis and chromatography"
+   },
+   {
+    "id": "u4g-ecosystems-succession-and-energy-flow",
+    "zh": "生态系统的构成，演替的过程和能量流动",
+    "en": "Ecosystems, succession and energy flow"
+   },
+   {
+    "id": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m",
+    "zh": "气候变化: 碳循环，温室效应的产生，气候变化的影响，证据和应对措施",
+    "en": "Climate change: carbon cycle, greenhouse effect, evidence and mitigation"
+   },
+   {
+    "id": "u4g-evolution-adaptation-and-speciation",
+    "zh": "进化：包括适应性的产生和物种形成",
+    "en": "Evolution: adaptation and speciation"
+   },
+   {
+    "id": "u4g-pathogens-viruses-and-viral-disease",
+    "zh": "病原体：病毒的类型和繁殖，病毒引起的疾病",
+    "en": "Pathogens: viruses and viral disease"
+   },
+   {
+    "id": "u4g-pathogens-bacteria-culture-and-growth-curve",
+    "zh": "病原体：细菌结构，繁殖，培养和生长曲线",
+    "en": "Pathogens: bacteria, culture and growth curve"
+   },
+   {
+    "id": "u4g-immunity-barriers-non-specific-and-specific-responses",
+    "zh": "免疫：屏障，非特异性免疫反应和特异性免疫反应，被动免疫和主动免疫",
+    "en": "Immunity: barriers, non-specific and specific responses"
+   },
+   {
+    "id": "u4g-forensics-decomposition-and-time-of-death",
+    "zh": "法医学：尸体的分解，死亡时间推定",
+    "en": "Forensics: decomposition and time of death"
+   },
+   {
+    "id": "u4g-dna-profiling",
+    "zh": "DNA 分子指纹技术",
+    "en": "DNA profiling"
+   },
+   {
+    "id": "u4g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-overall-photosynthesis",
+    "zh": "光合总反应",
+    "en": "Overall photosynthesis",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-atp-and-phosphorylation",
+    "zh": "ATP与磷酸化",
+    "en": "ATP and phosphorylation",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-light-dependent-reaction",
+    "zh": "光反应",
+    "en": "Light-dependent reaction",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-calvin-cycle",
+    "zh": "卡尔文循环",
+    "en": "Calvin cycle",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-uses-of-photosynthetic-products",
+    "zh": "光合产物利用",
+    "en": "Uses of photosynthetic products",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-chloroplast-adaptations",
+    "zh": "叶绿体与适应",
+    "en": "Chloroplast adaptations",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-absorption-and-action-spectra",
+    "zh": "吸收光谱与作用光谱",
+    "en": "Absorption and action spectra",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-chromatography-and-rf-values",
+    "zh": "色谱与Rf值",
+    "en": "Chromatography and Rf values",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-limiting-factors",
+    "zh": "限速因子",
+    "en": "Limiting factors",
+    "group": "u4g-photosynthesis-and-chromatography"
+   },
+   {
+    "id": "u4-ecosystem-definitions",
+    "zh": "生态系统定义",
+    "en": "Ecosystem definitions",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-abiotic-and-biotic-factors",
+    "zh": "非生物与生物因素",
+    "en": "Abiotic and biotic factors",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-niche-and-distribution",
+    "zh": "生态位与分布",
+    "en": "Niche and distribution",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-producers-and-decomposers",
+    "zh": "生产者与分解者",
+    "en": "Producers and decomposers",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-gpp-and-npp",
+    "zh": "GPP与NPP",
+    "en": "GPP and NPP",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-energy-transfer-efficiency",
+    "zh": "能量传递效率",
+    "en": "Energy transfer efficiency",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-succession",
+    "zh": "演替",
+    "en": "Succession",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-quadrats-and-transects",
+    "zh": "样方与样带",
+    "en": "Quadrats and transects",
+    "group": "u4g-ecosystems-succession-and-energy-flow"
+   },
+   {
+    "id": "u4-evidence-for-climate-change",
+    "zh": "气候变化证据",
+    "en": "Evidence for climate change",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-greenhouse-gases-and-effect",
+    "zh": "温室气体与效应",
+    "en": "Greenhouse gases and effect",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-carbon-cycle",
+    "zh": "碳循环",
+    "en": "Carbon cycle",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-climate-models",
+    "zh": "气候模型",
+    "en": "Climate models",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-effects-of-climate-change",
+    "zh": "气候变化影响",
+    "en": "Effects of climate change",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-reducing-emissions-and-biofuels",
+    "zh": "减排与生物燃料",
+    "en": "Reducing emissions and biofuels",
+    "group": "u4g-climate-change-carbon-cycle-greenhouse-effect-evidence-and-m"
+   },
+   {
+    "id": "u4-mutation-and-natural-selection",
+    "zh": "突变与自然选择",
+    "en": "Mutation and natural selection",
+    "group": "u4g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u4-speciation",
+    "zh": "物种形成",
+    "en": "Speciation",
+    "group": "u4g-evolution-adaptation-and-speciation"
+   },
+   {
+    "id": "u4-virus-structure-and-function",
+    "zh": "病毒结构功能",
+    "en": "Virus structure and function",
+    "group": "u4g-pathogens-viruses-and-viral-disease"
+   },
+   {
+    "id": "u4-viral-replication",
+    "zh": "病毒复制",
+    "en": "Viral replication",
+    "group": "u4g-pathogens-viruses-and-viral-disease"
+   },
+   {
+    "id": "u4-hiv-and-aids",
+    "zh": "HIV和AIDS",
+    "en": "HIV and AIDS",
+    "group": "u4g-pathogens-viruses-and-viral-disease"
+   },
+   {
+    "id": "u4-tuberculosis",
+    "zh": "结核分枝杆菌和结核病",
+    "en": "Tuberculosis",
+    "group": "u4g-pathogens-viruses-and-viral-disease"
+   },
+   {
+    "id": "u4-culturing-microorganisms",
+    "zh": "微生物培养",
+    "en": "Culturing microorganisms",
+    "group": "u4g-pathogens-bacteria-culture-and-growth-curve"
+   },
+   {
+    "id": "u4-measuring-microbial-growth",
+    "zh": "生长量测定",
+    "en": "Measuring microbial growth",
+    "group": "u4g-pathogens-bacteria-culture-and-growth-curve"
+   },
+   {
+    "id": "u4-growth-curve",
+    "zh": "生长曲线",
+    "en": "Growth curve",
+    "group": "u4g-pathogens-bacteria-culture-and-growth-curve"
+   },
+   {
+    "id": "u4-antibiotic-action",
+    "zh": "抗生素的作用机理",
+    "en": "Antibiotic action",
+    "group": "u4g-pathogens-bacteria-culture-and-growth-curve"
+   },
+   {
+    "id": "u4-antibiotic-resistance",
+    "zh": "抗生素耐药性",
+    "en": "Antibiotic resistance",
+    "group": "u4g-pathogens-bacteria-culture-and-growth-curve"
+   },
+   {
+    "id": "u4-routes-of-pathogen-entry",
+    "zh": "病原体入侵途径",
+    "en": "Routes of pathogen entry",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-body-defence-barriers",
+    "zh": "人体防御屏障",
+    "en": "Body defence barriers",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-non-specific-immunity",
+    "zh": "非特异性免疫",
+    "en": "Non-specific immunity",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-specific-immunity-humoral",
+    "zh": "特异性免疫：体液免疫",
+    "en": "Specific immunity: humoral",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-specific-immunity-cell-mediated",
+    "zh": "特异性免疫：细胞免疫",
+    "en": "Specific immunity: cell-mediated",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-types-of-immunity",
+    "zh": "免疫类型",
+    "en": "Types of immunity",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-pathogens-and-immune-evasion",
+    "zh": "病原体与免疫逃逸",
+    "en": "Pathogens and immune evasion",
+    "group": "u4g-immunity-barriers-non-specific-and-specific-responses"
+   },
+   {
+    "id": "u4-decomposition-stage",
+    "zh": "分解程度",
+    "en": "Decomposition stage",
+    "group": "u4g-forensics-decomposition-and-time-of-death"
+   },
+   {
+    "id": "u4-succession-and-forensic-entomology",
+    "zh": "演替与昆虫",
+    "en": "Succession and forensic entomology",
+    "group": "u4g-forensics-decomposition-and-time-of-death"
+   },
+   {
+    "id": "u4-body-temperature",
+    "zh": "体温推断",
+    "en": "Body temperature",
+    "group": "u4g-forensics-decomposition-and-time-of-death"
+   },
+   {
+    "id": "u4-muscle-contraction",
+    "zh": "肌肉收缩",
+    "en": "Muscle contraction",
+    "group": "u4g-forensics-decomposition-and-time-of-death"
+   },
+   {
+    "id": "u4-pcr-amplification",
+    "zh": "PCR扩增",
+    "en": "PCR amplification",
+    "group": "u4g-dna-profiling"
+   },
+   {
+    "id": "u4-gel-electrophoresis",
+    "zh": "凝胶电泳",
+    "en": "Gel electrophoresis",
+    "group": "u4g-dna-profiling"
+   },
+   {
+    "id": "u4-dna-profiling-and-kinship",
+    "zh": "指纹与亲缘鉴定",
+    "en": "DNA profiling and kinship",
+    "group": "u4g-dna-profiling"
+   },
+   {
+    "id": "u4-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u4g-practicals"
+   },
+   {
+    "id": "u4-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u4g-practicals"
+   },
+   {
+    "id": "u4-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u4g-practicals"
+   },
+   {
+    "id": "u4-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u4g-practicals"
+   }
+  ]
+ },
+ "U5": {
+  "groups": [
+   {
+    "id": "u5g-respiration-aerobic-anaerobic-and-the-rq",
+    "zh": "呼吸作用：有氧呼吸，无氧呼吸，呼吸底物和RQ",
+    "en": "Respiration: aerobic, anaerobic and the RQ"
+   },
+   {
+    "id": "u5g-joints-skeletal-muscle-and-movement",
+    "zh": "关节结构，骨骼肌和运动",
+    "en": "Joints, skeletal muscle and movement"
+   },
+   {
+    "id": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses",
+    "zh": "内稳态：心肌，心率控制，心血管系统和呼吸系统的反应",
+    "en": "Homeostasis: cardiac muscle, heart rate and responses"
+   },
+   {
+    "id": "u5g-homeostasis-excretion-and-osmoregulation",
+    "zh": "内稳态：排泄和渗透调节",
+    "en": "Homeostasis: excretion and osmoregulation"
+   },
+   {
+    "id": "u5g-thermoregulation",
+    "zh": "体温调控",
+    "en": "Thermoregulation"
+   },
+   {
+    "id": "u5g-hormonal-control",
+    "zh": "激素调节",
+    "en": "Hormonal control"
+   },
+   {
+    "id": "u5g-neurones-nerve-impulses-and-conduction",
+    "zh": "神经元的分类，冲动的产生和传导",
+    "en": "Neurones, nerve impulses and conduction"
+   },
+   {
+    "id": "u5g-synapses-habituation-drugs-and-disorders",
+    "zh": "突触，习惯化，药物对于神经系统的影响，帕金森综合症和抑郁症",
+    "en": "Synapses, habituation, drugs and disorders"
+   },
+   {
+    "id": "u5g-sensory-systems-and-photoreception-in-the-eye",
+    "zh": "感觉系统与眼的感光",
+    "en": "Sensory systems and photoreception in the eye"
+   },
+   {
+    "id": "u5g-cns-pns-reflexes-and-brain-imaging",
+    "zh": "中枢神经系统，外周神经系统和反射，成像技术",
+    "en": "CNS, PNS, reflexes and brain imaging"
+   },
+   {
+    "id": "u5g-plant-coordination-auxin-gibberellin-and-phytochrome",
+    "zh": "植物调节：生长素，赤霉素和光敏色素的作用",
+    "en": "Plant coordination: auxin, gibberellin and phytochrome"
+   },
+   {
+    "id": "u5g-gene-technology-gm-microarrays-and-bioinformatics",
+    "zh": "基因技术：转基因技术，微阵列与生物信息学",
+    "en": "Gene technology: GM, microarrays and bioinformatics"
+   },
+   {
+    "id": "u5g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u5-overall-aerobic-respiration",
+    "zh": "有氧呼吸总反应",
+    "en": "Overall aerobic respiration",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-glycolysis",
+    "zh": "糖酵解",
+    "en": "Glycolysis",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-link-reaction-and-krebs-cycle",
+    "zh": "链接反应与克氏循环",
+    "en": "Link reaction and Krebs cycle",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-oxidative-phosphorylation",
+    "zh": "氧化磷酸化",
+    "en": "Oxidative phosphorylation",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-anaerobic-respiration-in-animals",
+    "zh": "动物无氧呼吸",
+    "en": "Anaerobic respiration in animals",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-respiratory-substrates-and-rq",
+    "zh": "呼吸底物与RQ",
+    "en": "Respiratory substrates and RQ",
+    "group": "u5g-respiration-aerobic-anaerobic-and-the-rq"
+   },
+   {
+    "id": "u5-muscles-skeleton-and-movement",
+    "zh": "肌肉与骨骼运动",
+    "en": "Muscles, skeleton and movement",
+    "group": "u5g-joints-skeletal-muscle-and-movement"
+   },
+   {
+    "id": "u5-skeletal-muscle-fibre-structure",
+    "zh": "骨骼肌纤维结构",
+    "en": "Skeletal muscle fibre structure",
+    "group": "u5g-joints-skeletal-muscle-and-movement"
+   },
+   {
+    "id": "u5-fast-and-slow-muscle-fibres",
+    "zh": "快肌与慢肌",
+    "en": "Fast and slow muscle fibres",
+    "group": "u5g-joints-skeletal-muscle-and-movement"
+   },
+   {
+    "id": "u5-sliding-filament-theory",
+    "zh": "滑动丝理论",
+    "en": "Sliding filament theory",
+    "group": "u5g-joints-skeletal-muscle-and-movement"
+   },
+   {
+    "id": "u5-myogenic-heart",
+    "zh": "心肌起源性",
+    "en": "Myogenic heart",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-electrical-conduction-in-the-heart",
+    "zh": "心脏电传导",
+    "en": "Electrical conduction in the heart",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-electrocardiogram-ecg",
+    "zh": "心电图",
+    "en": "Electrocardiogram (ECG)",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-cardiac-output",
+    "zh": "心输出量的计算",
+    "en": "Cardiac output",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-breathing-and-spirometer",
+    "zh": "呼吸与肺量计",
+    "en": "Breathing and spirometer",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-control-of-heart-rate-and-ventilation",
+    "zh": "心率与通气控制",
+    "en": "Control of heart rate and ventilation",
+    "group": "u5g-homeostasis-cardiac-muscle-heart-rate-and-responses"
+   },
+   {
+    "id": "u5-kidney-structure",
+    "zh": "肾脏结构",
+    "en": "Kidney structure",
+    "group": "u5g-homeostasis-excretion-and-osmoregulation"
+   },
+   {
+    "id": "u5-urea-and-ultrafiltration",
+    "zh": "尿素与超滤",
+    "en": "Urea and ultrafiltration",
+    "group": "u5g-homeostasis-excretion-and-osmoregulation"
+   },
+   {
+    "id": "u5-proximal-tubule-reabsorption",
+    "zh": "近曲小管重吸收",
+    "en": "Proximal tubule reabsorption",
+    "group": "u5g-homeostasis-excretion-and-osmoregulation"
+   },
+   {
+    "id": "u5-countercurrent-multiplier",
+    "zh": "逆流倍增器",
+    "en": "Countercurrent multiplier",
+    "group": "u5g-homeostasis-excretion-and-osmoregulation"
+   },
+   {
+    "id": "u5-osmoregulation",
+    "zh": "渗透调节",
+    "en": "Osmoregulation",
+    "group": "u5g-homeostasis-excretion-and-osmoregulation"
+   },
+   {
+    "id": "u5-homeostasis-and-feedback",
+    "zh": "稳态与反馈",
+    "en": "Homeostasis and feedback",
+    "group": "u5g-thermoregulation"
+   },
+   {
+    "id": "u5-thermoregulation",
+    "zh": "体温调节",
+    "en": "Thermoregulation",
+    "group": "u5g-thermoregulation"
+   },
+   {
+    "id": "u5-intracellular-steroid-hormone-action",
+    "zh": "类固醇激素的胞内作用",
+    "en": "Intracellular steroid hormone action",
+    "group": "u5g-hormonal-control"
+   },
+   {
+    "id": "u5-extracellular-peptide-hormone-action",
+    "zh": "肽类激素的胞外作用",
+    "en": "Extracellular peptide hormone action",
+    "group": "u5g-hormonal-control"
+   },
+   {
+    "id": "u5-adrenaline-and-fight-or-flight",
+    "zh": "肾上腺素与应激",
+    "en": "Adrenaline and fight-or-flight",
+    "group": "u5g-hormonal-control"
+   },
+   {
+    "id": "u5-sensory-relay-and-motor-neurones",
+    "zh": "三类神经元",
+    "en": "Sensory, relay and motor neurones",
+    "group": "u5g-neurones-nerve-impulses-and-conduction"
+   },
+   {
+    "id": "u5-resting-potential",
+    "zh": "静息电位",
+    "en": "Resting potential",
+    "group": "u5g-neurones-nerve-impulses-and-conduction"
+   },
+   {
+    "id": "u5-action-potential-conduction",
+    "zh": "动作电位传导",
+    "en": "Action potential conduction",
+    "group": "u5g-neurones-nerve-impulses-and-conduction"
+   },
+   {
+    "id": "u5-myelination-and-saltatory-conduction",
+    "zh": "髓鞘与跳跃传导",
+    "en": "Myelination and saltatory conduction",
+    "group": "u5g-neurones-nerve-impulses-and-conduction"
+   },
+   {
+    "id": "u5-synapse-and-neurotransmitters",
+    "zh": "突触与递质",
+    "en": "Synapse and neurotransmitters",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-pupil-dilation-and-constriction",
+    "zh": "瞳孔的扩大与收缩",
+    "en": "Pupil dilation and constriction",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-effects-of-drugs",
+    "zh": "药物作用",
+    "en": "Effects of drugs",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-dopamine-and-parkinson-s-disease",
+    "zh": "多巴胺与帕金森病",
+    "en": "Dopamine and Parkinson's disease",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-habituation",
+    "zh": "习惯化",
+    "en": "Habituation",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-serotonin-and-depression",
+    "zh": "血清素与抑郁症",
+    "en": "Serotonin and depression",
+    "group": "u5g-synapses-habituation-drugs-and-disorders"
+   },
+   {
+    "id": "u5-eye-structure",
+    "zh": "眼的结构",
+    "en": "Eye structure",
+    "group": "u5g-sensory-systems-and-photoreception-in-the-eye"
+   },
+   {
+    "id": "u5-rod-cell-receptor-potential",
+    "zh": "视杆细胞电位",
+    "en": "Rod cell receptor potential",
+    "group": "u5g-sensory-systems-and-photoreception-in-the-eye"
+   },
+   {
+    "id": "u5-cns-and-pns",
+    "zh": "中枢与外周神经",
+    "en": "CNS and PNS",
+    "group": "u5g-cns-pns-reflexes-and-brain-imaging"
+   },
+   {
+    "id": "u5-spinal-reflex-arc",
+    "zh": "脊髓反射弧",
+    "en": "Spinal reflex arc",
+    "group": "u5g-cns-pns-reflexes-and-brain-imaging"
+   },
+   {
+    "id": "u5-pupil-light-reflex",
+    "zh": "瞳孔对光反射",
+    "en": "Pupil light reflex",
+    "group": "u5g-cns-pns-reflexes-and-brain-imaging"
+   },
+   {
+    "id": "u5-brain-regions-and-functions",
+    "zh": "脑的分区功能",
+    "en": "Brain regions and functions",
+    "group": "u5g-cns-pns-reflexes-and-brain-imaging"
+   },
+   {
+    "id": "u5-brain-imaging",
+    "zh": "脑成像技术",
+    "en": "Brain imaging",
+    "group": "u5g-cns-pns-reflexes-and-brain-imaging"
+   },
+   {
+    "id": "u5-plant-growth-substances",
+    "zh": "植物生长物质",
+    "en": "Plant growth substances",
+    "group": "u5g-plant-coordination-auxin-gibberellin-and-phytochrome"
+   },
+   {
+    "id": "u5-auxin-iaa",
+    "zh": "生长素IAA",
+    "en": "Auxin (IAA)",
+    "group": "u5g-plant-coordination-auxin-gibberellin-and-phytochrome"
+   },
+   {
+    "id": "u5-gibberellin-and-germination",
+    "zh": "赤霉素与萌发",
+    "en": "Gibberellin and germination",
+    "group": "u5g-plant-coordination-auxin-gibberellin-and-phytochrome"
+   },
+   {
+    "id": "u5-phytochrome",
+    "zh": "光敏色素",
+    "en": "Phytochrome",
+    "group": "u5g-plant-coordination-auxin-gibberellin-and-phytochrome"
+   },
+   {
+    "id": "u5-recombinant-dna-technology",
+    "zh": "转基因技术",
+    "en": "Recombinant DNA technology",
+    "group": "u5g-gene-technology-gm-microarrays-and-bioinformatics"
+   },
+   {
+    "id": "u5-drugs-from-gm-organisms",
+    "zh": "转基因生产药物",
+    "en": "Drugs from GM organisms",
+    "group": "u5g-gene-technology-gm-microarrays-and-bioinformatics"
+   },
+   {
+    "id": "u5-microarrays",
+    "zh": "微阵列",
+    "en": "Microarrays",
+    "group": "u5g-gene-technology-gm-microarrays-and-bioinformatics"
+   },
+   {
+    "id": "u5-bioinformatics",
+    "zh": "生物信息学的含义",
+    "en": "Bioinformatics",
+    "group": "u5g-gene-technology-gm-microarrays-and-bioinformatics"
+   },
+   {
+    "id": "u5-risks-of-gm-organisms",
+    "zh": "转基因风险",
+    "en": "Risks of GM organisms",
+    "group": "u5g-gene-technology-gm-microarrays-and-bioinformatics"
+   },
+   {
+    "id": "u5-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u5g-practicals"
+   },
+   {
+    "id": "u5-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u5g-practicals"
+   },
+   {
+    "id": "u5-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u5g-practicals"
+   },
+   {
+    "id": "u5-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u5g-practicals"
+   }
+  ]
+ },
+ "U6": {
+  "groups": [
+   {
+    "id": "u6g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u6-measuring-photosynthesis",
+    "zh": "光合速率测定",
+    "en": "Measuring photosynthesis",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-quadrats-and-transects",
+    "zh": "样方与样带",
+    "en": "Quadrats and transects",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-animal-population-survey",
+    "zh": "动物种群调查",
+    "en": "Animal population survey",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-environment-and-growth",
+    "zh": "环境与生长",
+    "en": "Environment and growth",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-liquid-culture-and-antibiotic-testing",
+    "zh": "液体培养与药敏",
+    "en": "Liquid culture and antibiotic testing",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-respirometer-and-rq",
+    "zh": "呼吸计量仪与RQ",
+    "en": "Respirometer and RQ",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-redox-indicator",
+    "zh": "氧化还原指示剂",
+    "en": "Redox indicator",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-spirometer-measurements",
+    "zh": "肺量计测量",
+    "en": "Spirometer measurements",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-habituation-practical",
+    "zh": "习惯化实验",
+    "en": "Habituation practical",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-germination-and-amylase",
+    "zh": "萌发与淀粉酶",
+    "en": "Germination and amylase",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-spearman-s-rank-correlation",
+    "zh": "Spearman相关",
+    "en": "Spearman's rank correlation",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-t-test",
+    "zh": "t检验",
+    "en": "t-test",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-chi-squared-test",
+    "zh": "卡方检验",
+    "en": "Chi-squared test",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-choosing-a-statistical-test",
+    "zh": "统计检验方法的选择",
+    "en": "Choosing a statistical test",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u6g-practicals"
+   },
+   {
+    "id": "u6-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u6g-practicals"
+   }
+  ]
+ }
+}

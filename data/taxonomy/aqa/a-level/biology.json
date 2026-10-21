@@ -1,0 +1,995 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的生物表（tbl39cCEOFgTkwxA / 视图 vewRrsDFTd），取 考试局=AQA 且 考试阶段不含 IG 的记录（2026-10-20 导出，2026-10-21 复核：源表无变化）。单元键 U1–U4，对应卷号 BL01–BL04；源表「单元」列写作 Unit1+5 / Unit1-4+5，按前段取。**U5 故意留空**：BL05（Synoptic paper）打标时由后端 _CROSS_UNIT_SELECTABLE[(\"aqa\",\"U5\")] 把 U1–U4 的标签整单元放开，效果等同「U5 = 前四单元的组合」；不要复制 U1–U4 的标签进来（会撞 id、且要维护两份）。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-biological-molecules",
+    "zh": "生物分子",
+    "en": "Biological molecules"
+   },
+   {
+    "id": "u1g-cells-and-cell-structure",
+    "zh": "细胞结构",
+    "en": "Cells and cell structure"
+   },
+   {
+    "id": "u1g-biochemical-reactions-in-cells-are-controlled-by-enzymes",
+    "zh": "酶调控细胞内的生化反应",
+    "en": "Biochemical reactions in cells are controlled by enzymes"
+   },
+   {
+    "id": "u1g-transport-across-cell-membranes",
+    "zh": "膜上运输",
+    "en": "Transport across cell membranes"
+   },
+   {
+    "id": "u1g-gas-exchange-and-the-transport-of-oxygen",
+    "zh": "气体交换与氧的运输",
+    "en": "Gas exchange and the transport of oxygen"
+   },
+   {
+    "id": "u1g-living-organisms-vary",
+    "zh": "生物的变异",
+    "en": "Living organisms vary"
+   },
+   {
+    "id": "u1g-dna-genes-and-chromosome",
+    "zh": "基因与染色体",
+    "en": "DNA, genes and chromosome"
+   },
+   {
+    "id": "u1g-genetic-diversity-may-arise-by-meiosis",
+    "zh": "减数分裂产生遗传多样性",
+    "en": "Genetic diversity may arise by meiosis"
+   },
+   {
+    "id": "u1g-species-and-taxonomy",
+    "zh": "物种和分类",
+    "en": "Species and taxonomy"
+   },
+   {
+    "id": "u1g-biodiversity-within-a-community",
+    "zh": "群落中的生物多样性",
+    "en": "Biodiversity within a community"
+   },
+   {
+    "id": "u1g-practicals",
+    "zh": "实验",
+    "en": "Practicals"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-carbohydrates",
+    "zh": "碳水化合物",
+    "en": "Carbohydrates",
+    "group": "u1g-biological-molecules"
+   },
+   {
+    "id": "u1-lipids",
+    "zh": "脂质",
+    "en": "Lipids",
+    "group": "u1g-biological-molecules"
+   },
+   {
+    "id": "u1-proteins",
+    "zh": "蛋白质",
+    "en": "Proteins",
+    "group": "u1g-biological-molecules"
+   },
+   {
+    "id": "u1-water",
+    "zh": "水",
+    "en": "Water",
+    "group": "u1g-biological-molecules"
+   },
+   {
+    "id": "u1-microscopy-and-centrifugation",
+    "zh": "显微技术与离心",
+    "en": "Microscopy and centrifugation",
+    "group": "u1g-cells-and-cell-structure"
+   },
+   {
+    "id": "u1-prokaryotic-cell-structure",
+    "zh": "原核细胞结构",
+    "en": "Prokaryotic cell structure",
+    "group": "u1g-cells-and-cell-structure"
+   },
+   {
+    "id": "u1-eukaryotic-cell-structure",
+    "zh": "真核细胞结构",
+    "en": "Eukaryotic cell structure",
+    "group": "u1g-cells-and-cell-structure"
+   },
+   {
+    "id": "u1-enzyme-action",
+    "zh": "酶的作用",
+    "en": "Enzyme action",
+    "group": "u1g-biochemical-reactions-in-cells-are-controlled-by-enzymes"
+   },
+   {
+    "id": "u1-factors-affecting-enzyme-controlled-reactions",
+    "zh": "影响酶促反应因素",
+    "en": "Factors affecting enzyme-controlled reactions",
+    "group": "u1g-biochemical-reactions-in-cells-are-controlled-by-enzymes"
+   },
+   {
+    "id": "u1-enzyme-controlled-reaction-practical",
+    "zh": "酶催化反应实验",
+    "en": "Enzyme-controlled reaction practical",
+    "group": "u1g-biochemical-reactions-in-cells-are-controlled-by-enzymes"
+   },
+   {
+    "id": "u1-membrane-structure",
+    "zh": "膜的结构",
+    "en": "Membrane structure",
+    "group": "u1g-transport-across-cell-membranes"
+   },
+   {
+    "id": "u1-membrane-fluidity",
+    "zh": "膜的流动性",
+    "en": "Membrane fluidity",
+    "group": "u1g-transport-across-cell-membranes"
+   },
+   {
+    "id": "u1-selective-permeability",
+    "zh": "膜的选择透过性",
+    "en": "Selective permeability",
+    "group": "u1g-transport-across-cell-membranes"
+   },
+   {
+    "id": "u1-modes-of-membrane-transport",
+    "zh": "膜上运输方式",
+    "en": "Modes of membrane transport",
+    "group": "u1g-transport-across-cell-membranes"
+   },
+   {
+    "id": "u1-gas-exchange-in-small-organisms-and-plants",
+    "zh": "小型生物与植物",
+    "en": "Gas exchange in small organisms and plants",
+    "group": "u1g-gas-exchange-and-the-transport-of-oxygen"
+   },
+   {
+    "id": "u1-gas-exchange-in-insects-and-fish",
+    "zh": "昆虫与鱼的呼吸",
+    "en": "Gas exchange in insects and fish",
+    "group": "u1g-gas-exchange-and-the-transport-of-oxygen"
+   },
+   {
+    "id": "u1-mammalian-respiratory-system",
+    "zh": "哺乳动物呼吸系统",
+    "en": "Mammalian respiratory system",
+    "group": "u1g-gas-exchange-and-the-transport-of-oxygen"
+   },
+   {
+    "id": "u1-circulatory-systems-and-vessel",
+    "zh": "循环系统与血管",
+    "en": "Circulatory systems and vessel",
+    "group": "u1g-gas-exchange-and-the-transport-of-oxygen"
+   },
+   {
+    "id": "u1-haemoglobin-dissociation-curve",
+    "zh": "血红蛋白解离曲线",
+    "en": "Haemoglobin dissociation curve",
+    "group": "u1g-gas-exchange-and-the-transport-of-oxygen"
+   },
+   {
+    "id": "u1-intraspecific-and-interspecific-variation",
+    "zh": "种内变异和种间变异",
+    "en": "Intraspecific and interspecific variation",
+    "group": "u1g-living-organisms-vary"
+   },
+   {
+    "id": "u1-dna-and-rna-structure",
+    "zh": "DNA RNA 结构",
+    "en": "DNA and RNA structure",
+    "group": "u1g-dna-genes-and-chromosome"
+   },
+   {
+    "id": "u1-dna-replication",
+    "zh": "DNA 复制",
+    "en": "DNA replication",
+    "group": "u1g-dna-genes-and-chromosome"
+   },
+   {
+    "id": "u1-transcription",
+    "zh": "转录",
+    "en": " transcription",
+    "group": "u1g-dna-genes-and-chromosome"
+   },
+   {
+    "id": "u1-genetic-code-and-translation",
+    "zh": "遗传密码与翻译",
+    "en": "genetic code and translation",
+    "group": "u1g-dna-genes-and-chromosome"
+   },
+   {
+    "id": "u1-sexual-reproduction-and-variation",
+    "zh": "有性生殖与变异",
+    "en": "Sexual reproduction and variation",
+    "group": "u1g-genetic-diversity-may-arise-by-meiosis"
+   },
+   {
+    "id": "u1-classification-and-the-species-concept",
+    "zh": "分类法和物种定义",
+    "en": "Classification and the species concept",
+    "group": "u1g-species-and-taxonomy"
+   },
+   {
+    "id": "u1-measuring-biodiversity",
+    "zh": "生物多样性测量",
+    "en": "Measuring biodiversity",
+    "group": "u1g-biodiversity-within-a-community"
+   },
+   {
+    "id": "u1-calculations",
+    "zh": "计算",
+    "en": "Calculations",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-graphs-charts-and-tables",
+    "zh": "图像与表格分析",
+    "en": "Graphs, charts and tables",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-statistical-tests",
+    "zh": "统计检验",
+    "en": "Statistical tests",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-experimental-design-and-evaluation",
+    "zh": "实验设计技巧",
+    "en": "Experimental design and evaluation",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-root-tip-squash-and-mitotic-index",
+    "zh": "根尖压片与指数",
+    "en": "Root tip squash and mitotic index",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-potometer",
+    "zh": "蒸腾计",
+    "en": "Potometer",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-heart-rate-and-pulse-rate",
+    "zh": "心率和脉搏变化",
+    "en": "Heart rate and pulse rate",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-measuring-photosynthesis-with-algae",
+    "zh": "藻类测定光合速率",
+    "en": "Measuring photosynthesis with algae",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-floating-leaf-disc-method",
+    "zh": "浮叶法测定光合速率",
+    "en": "Floating leaf disc method",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-respirometer-and-rq",
+    "zh": "呼吸计量仪与RQ",
+    "en": "Respirometer and RQ",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-competition-and-seedling-growth",
+    "zh": "竞争对种苗生长的影响",
+    "en": "Competition and seedling growth",
+    "group": "u1g-practicals"
+   },
+   {
+    "id": "u1-tropism-practical",
+    "zh": "向性生长实验",
+    "en": "Tropism practical",
+    "group": "u1g-practicals"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-the-causes-of-disease-pathogens-lifestyle-and-genes",
+    "zh": "疾病成因：病原体、生活方式与基因",
+    "en": "The causes of disease: pathogens, lifestyle and genes"
+   },
+   {
+    "id": "u2g-digestion-and-absorption",
+    "zh": "消化与吸收",
+    "en": "Digestion and absorption"
+   },
+   {
+    "id": "u2g-hiv-as-an-example-of-a-human-disease-caused-by-a-virus",
+    "zh": "HIV 与艾滋病",
+    "en": "HIV as an example of a human disease caused by a virus"
+   },
+   {
+    "id": "u2g-the-defensive-functions-of-mammalian-blood",
+    "zh": "哺乳动物血液的防御功能",
+    "en": "The defensive functions of mammalian blood"
+   },
+   {
+    "id": "u2g-the-circulation-of-blood-and-the-structure-of-the-mammalian-heart",
+    "zh": "血液循环与哺乳动物心脏",
+    "en": "The circulation of blood and the structure of the mammalian heart"
+   },
+   {
+    "id": "u2g-heart-disease-may-be-associated-with-specific-risk-factors",
+    "zh": "心脏病的危险因素",
+    "en": "Heart disease may be associated with specific risk factors"
+   },
+   {
+    "id": "u2g-mass-transport-systems-in-plants",
+    "zh": "植物的物质运输系统",
+    "en": "Mass transport systems in plants"
+   },
+   {
+    "id": "u2g-cells-divide-by-binary-fission-and-mitosis",
+    "zh": "二分裂与有丝分裂",
+    "en": "Cells divide by binary fission and mitosis"
+   },
+   {
+    "id": "u2g-mutation-and-cancer",
+    "zh": "突变与癌症",
+    "en": "Mutation and cancer"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-pathogens-and-transmission",
+    "zh": "病原体和传播",
+    "en": "Pathogens and transmission",
+    "group": "u2g-the-causes-of-disease-pathogens-lifestyle-and-genes"
+   },
+   {
+    "id": "u2-digestive-system",
+    "zh": "消化系统与消化",
+    "en": "Digestive system ",
+    "group": "u2g-digestion-and-absorption"
+   },
+   {
+    "id": "u2-digestion",
+    "zh": "有机物消化",
+    "en": "Digestion",
+    "group": "u2g-digestion-and-absorption"
+   },
+   {
+    "id": "u2-absorption",
+    "zh": "吸收",
+    "en": "Absorption",
+    "group": "u2g-digestion-and-absorption"
+   },
+   {
+    "id": "u2-cholera",
+    "zh": "霍乱",
+    "en": "Cholera",
+    "group": "u2g-digestion-and-absorption"
+   },
+   {
+    "id": "u2-hiv-structure-and-replication",
+    "zh": "HIV 结构和繁殖",
+    "en": "HIV structure and replication",
+    "group": "u2g-hiv-as-an-example-of-a-human-disease-caused-by-a-virus"
+   },
+   {
+    "id": "u2-hiv-transmission-symptoms-and-treatment",
+    "zh": "HIV 传播与治疗",
+    "en": "HIV transmission, symptoms and treatment",
+    "group": "u2g-hiv-as-an-example-of-a-human-disease-caused-by-a-virus"
+   },
+   {
+    "id": "u2-non-specific-immunity",
+    "zh": "非特异性免疫",
+    "en": "Non-specific immunity",
+    "group": "u2g-the-defensive-functions-of-mammalian-blood"
+   },
+   {
+    "id": "u2-humoral-response",
+    "zh": "特异性免疫：体液免疫",
+    "en": "Humoral response",
+    "group": "u2g-the-defensive-functions-of-mammalian-blood"
+   },
+   {
+    "id": "u2-cell-mediated-response",
+    "zh": "特异性免疫：细胞免疫",
+    "en": "Cell mediated response",
+    "group": "u2g-the-defensive-functions-of-mammalian-blood"
+   },
+   {
+    "id": "u2-passive-and-active-immunity",
+    "zh": "被动免疫和主动免疫",
+    "en": "Passive and active immunity",
+    "group": "u2g-the-defensive-functions-of-mammalian-blood"
+   },
+   {
+    "id": "u2-arteries-and-veins",
+    "zh": "动脉与静脉",
+    "en": "Arteries and veins",
+    "group": "u2g-the-circulation-of-blood-and-the-structure-of-the-mammalian-heart"
+   },
+   {
+    "id": "u2-capillaries-and-tissue-fluid",
+    "zh": "毛细血管与组织液",
+    "en": "Capillaries and tissue fluid",
+    "group": "u2g-the-circulation-of-blood-and-the-structure-of-the-mammalian-heart"
+   },
+   {
+    "id": "u2-heart-structure-and-cardiac-cycle",
+    "zh": "心脏结构，心脏周期",
+    "en": "Heart structure and cardiac cycle",
+    "group": "u2g-the-circulation-of-blood-and-the-structure-of-the-mammalian-heart"
+   },
+   {
+    "id": "u2-types-and-development-of-heart-disease",
+    "zh": "心脏病类型与形成",
+    "en": "Types and development of heart disease",
+    "group": "u2g-heart-disease-may-be-associated-with-specific-risk-factors"
+   },
+   {
+    "id": "u2-risk-factors",
+    "zh": "风险因素",
+    "en": "Risk factors",
+    "group": "u2g-heart-disease-may-be-associated-with-specific-risk-factors"
+   },
+   {
+    "id": "u2-water-uptake-by-roots",
+    "zh": "根部吸水",
+    "en": "Water uptake by roots",
+    "group": "u2g-mass-transport-systems-in-plants"
+   },
+   {
+    "id": "u2-transpiration",
+    "zh": "蒸腾作用",
+    "en": "Transpiration",
+    "group": "u2g-mass-transport-systems-in-plants"
+   },
+   {
+    "id": "u2-translocation-in-plants",
+    "zh": "植物的有机物运输",
+    "en": "Translocation in plants",
+    "group": "u2g-mass-transport-systems-in-plants"
+   },
+   {
+    "id": "u2-plant-viruses-and-aphids",
+    "zh": "植物病毒与蚜虫",
+    "en": "Plant viruses and aphids",
+    "group": "u2g-mass-transport-systems-in-plants"
+   },
+   {
+    "id": "u2-cell-cycle-and-its-significance",
+    "zh": "细胞周期和意义",
+    "en": "Cell cycle and its significance",
+    "group": "u2g-cells-divide-by-binary-fission-and-mitosis"
+   },
+   {
+    "id": "u2-mitosis",
+    "zh": "有丝分裂",
+    "en": "Mitosis",
+    "group": "u2g-cells-divide-by-binary-fission-and-mitosis"
+   },
+   {
+    "id": "u2-binary-fission-and-horizontal-gene-transfer",
+    "zh": "二分裂和横向基因转移",
+    "en": "Binary fission and horizontal gene transfer",
+    "group": "u2g-cells-divide-by-binary-fission-and-mitosis"
+   },
+   {
+    "id": "u2-types-of-mutation",
+    "zh": "突变类型",
+    "en": "Types of mutation",
+    "group": "u2g-mutation-and-cancer"
+   },
+   {
+    "id": "u2-cancer-and-mutation",
+    "zh": "癌症和突变",
+    "en": "Cancer and mutation",
+    "group": "u2g-mutation-and-cancer"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations",
+    "zh": "生物与非生物因素对种群的影响",
+    "en": "The effect of biotic and abiotic factors on populations"
+   },
+   {
+    "id": "u3g-photosynthesis",
+    "zh": "光合作用",
+    "en": "Photosynthesis"
+   },
+   {
+    "id": "u3g-respiration",
+    "zh": "呼吸作用",
+    "en": "Respiration"
+   },
+   {
+    "id": "u3g-energy-transfer-through-ecosystems",
+    "zh": "生态系统中的能量流动",
+    "en": "Energy transfer through ecosystems"
+   },
+   {
+    "id": "u3g-nutrients-cycle",
+    "zh": "物质循环",
+    "en": "nutrients cycle"
+   },
+   {
+    "id": "u3g-inheritance",
+    "zh": "遗传",
+    "en": "inheritance"
+   },
+   {
+    "id": "u3g-allele-frequency-in-population",
+    "zh": "群体等位基因频率",
+    "en": "allele frequency in population"
+   },
+   {
+    "id": "u3g-evolution",
+    "zh": "进化",
+    "en": "evolution"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-basic-ecological-definitions",
+    "zh": "生态系统的基本定义",
+    "en": "Basic ecological definitions",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-abiotic-factors",
+    "zh": "非生物因素",
+    "en": "Abiotic factors",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-biotic-factors",
+    "zh": "生物因素",
+    "en": "Biotic factors",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-succession",
+    "zh": "演替",
+    "en": "Succession",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-ecological-research-methods",
+    "zh": "生态学研究方法",
+    "en": "Ecological research methods",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-human-impact-and-conservation",
+    "zh": "人类影响与保护",
+    "en": "Human impact and conservation",
+    "group": "u3g-the-effect-of-biotic-and-abiotic-factors-on-populations"
+   },
+   {
+    "id": "u3-light-dependent-reaction",
+    "zh": "光反应过程",
+    "en": "Light-dependent reaction",
+    "group": "u3g-photosynthesis"
+   },
+   {
+    "id": "u3-light-independent-reaction",
+    "zh": "暗反应过程",
+    "en": "Light-independent reaction",
+    "group": "u3g-photosynthesis"
+   },
+   {
+    "id": "u3-leaf-and-chloroplast-structure",
+    "zh": "叶片与叶绿体结构",
+    "en": "Leaf and chloroplast structure",
+    "group": "u3g-photosynthesis"
+   },
+   {
+    "id": "u3-limiting-factors-of-photosynthesis",
+    "zh": "光合作用限速因子",
+    "en": "Limiting factors of photosynthesis",
+    "group": "u3g-photosynthesis"
+   },
+   {
+    "id": "u3-glycolysis-and-fermentation",
+    "zh": "糖酵解与发酵",
+    "en": "Glycolysis and fermentation",
+    "group": "u3g-respiration"
+   },
+   {
+    "id": "u3-link-reaction-and-krebs-cycle",
+    "zh": "链接反应与克氏循环",
+    "en": "Link reaction and Krebs cycle",
+    "group": "u3g-respiration"
+   },
+   {
+    "id": "u3-oxidative-phosphorylation",
+    "zh": "氧化磷酸化",
+    "en": "Oxidative phosphorylation",
+    "group": "u3g-respiration"
+   },
+   {
+    "id": "u3-respiratory-substrates-and-rq",
+    "zh": "呼吸底物与RQ",
+    "en": "Respiratory substrates and RQ",
+    "group": "u3g-respiration"
+   },
+   {
+    "id": "u3-producers-and-npp",
+    "zh": "生产者与NPP",
+    "en": "Producers and NPP",
+    "group": "u3g-energy-transfer-through-ecosystems"
+   },
+   {
+    "id": "u3-energy-losses-and-pyramids",
+    "zh": "能量损失与金字塔",
+    "en": "Energy losses and pyramids",
+    "group": "u3g-energy-transfer-through-ecosystems"
+   },
+   {
+    "id": "u3-agriculture-and-energy-loss",
+    "zh": "农业与能量损失",
+    "en": "Agriculture and energy loss",
+    "group": "u3g-energy-transfer-through-ecosystems"
+   },
+   {
+    "id": "u3-carbon-cycle",
+    "zh": "碳循环",
+    "en": "Carbon cycle",
+    "group": "u3g-nutrients-cycle"
+   },
+   {
+    "id": "u3-greenhouse-gases",
+    "zh": "温室气体",
+    "en": "Greenhouse gases",
+    "group": "u3g-nutrients-cycle"
+   },
+   {
+    "id": "u3-nitrogen-cycle",
+    "zh": "氮循环",
+    "en": "Nitrogen cycle",
+    "group": "u3g-nutrients-cycle"
+   },
+   {
+    "id": "u3-agriculture-and-nitrogen-loss",
+    "zh": "农业与氮流失",
+    "en": "Agriculture and nitrogen loss",
+    "group": "u3g-nutrients-cycle"
+   },
+   {
+    "id": "u3-basic-genetic-concepts",
+    "zh": "遗传基本概念",
+    "en": "Basic genetic concepts",
+    "group": "u3g-inheritance"
+   },
+   {
+    "id": "u3-monohybrid-inheritance",
+    "zh": "单杂交遗传",
+    "en": "Monohybrid inheritance",
+    "group": "u3g-inheritance"
+   },
+   {
+    "id": "u3-sex-linked-inheritance",
+    "zh": "伴性遗传",
+    "en": "Sex-linked inheritance",
+    "group": "u3g-inheritance"
+   },
+   {
+    "id": "u3-dihybrid-inheritance-and-chi-squared",
+    "zh": "双杂交与卡方",
+    "en": "Dihybrid inheritance and chi-squared",
+    "group": "u3g-inheritance"
+   },
+   {
+    "id": "u3-hardy-weinberg",
+    "zh": "哈代-温伯格",
+    "en": "Hardy-Weinberg",
+    "group": "u3g-allele-frequency-in-population"
+   },
+   {
+    "id": "u3-natural-selection-and-genetic-drift",
+    "zh": "自然选择与漂变",
+    "en": "Natural selection and genetic drift",
+    "group": "u3g-evolution"
+   },
+   {
+    "id": "u3-speciation",
+    "zh": "物种形成",
+    "en": "Speciation",
+    "group": "u3g-evolution"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-control-systems-involve-stimulus-and-response",
+    "zh": "控制系统与刺激-反应",
+    "en": "Control systems involve stimulus and response"
+   },
+   {
+    "id": "u4g-receptors",
+    "zh": "感受器",
+    "en": "Receptors"
+   },
+   {
+    "id": "u4g-nerve-impulses-and-synaptic-transmission",
+    "zh": "神经冲动与突触传递",
+    "en": "Nerve impulses and synaptic transmission"
+   },
+   {
+    "id": "u4g-skeletal-muscles-as-effectors",
+    "zh": "骨骼肌作为效应器",
+    "en": "Skeletal muscles as effectors"
+   },
+   {
+    "id": "u4g-control-systems-in-plants",
+    "zh": "植物的控制系统",
+    "en": "Control systems in plants"
+   },
+   {
+    "id": "u4g-homeostasis-and-negative-feedback",
+    "zh": "稳态与负反馈",
+    "en": "Homeostasis and negative feedback"
+   },
+   {
+    "id": "u4g-hormones-and-the-control-of-blood-glucose-concentration",
+    "zh": "激素与血糖浓度的控制",
+    "en": "Hormones and the control of blood glucose concentration"
+   },
+   {
+    "id": "u4g-control-of-heart-rate",
+    "zh": "心率的控制",
+    "en": "Control of heart rate"
+   },
+   {
+    "id": "u4g-regulation-of-transcription-and-translation",
+    "zh": "转录与翻译的调控",
+    "en": "Regulation of transcription and translation"
+   },
+   {
+    "id": "u4g-recombinant-dna-technology",
+    "zh": "重组 DNA 技术",
+    "en": "Recombinant DNA technology"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-reflex-arc",
+    "zh": "反射弧",
+    "en": "Reflex arc",
+    "group": "u4g-control-systems-involve-stimulus-and-response"
+   },
+   {
+    "id": "u4-protective-role-of-reflexes",
+    "zh": "反射的保护作用",
+    "en": "Protective role of reflexes",
+    "group": "u4g-control-systems-involve-stimulus-and-response"
+   },
+   {
+    "id": "u4-taxes-and-kineses",
+    "zh": "趋性与动性",
+    "en": "Taxes and kineses",
+    "group": "u4g-control-systems-involve-stimulus-and-response"
+   },
+   {
+    "id": "u4-receptors-and-generator-potential",
+    "zh": "感受器与发生器电位",
+    "en": "Receptors and generator potential",
+    "group": "u4g-receptors"
+   },
+   {
+    "id": "u4-pacinian-corpuscle",
+    "zh": "环层小体",
+    "en": "Pacinian corpuscle",
+    "group": "u4g-receptors"
+   },
+   {
+    "id": "u4-rods-and-cones",
+    "zh": "视杆与视锥细胞",
+    "en": "Rods and cones",
+    "group": "u4g-receptors"
+   },
+   {
+    "id": "u4-myelinated-motor-neurone",
+    "zh": "有髓运动神经元",
+    "en": "Myelinated motor neurone",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-resting-potential",
+    "zh": "静息电位",
+    "en": "Resting potential",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-action-potential-and-all-or-nothing-law",
+    "zh": "动作电位与全或无",
+    "en": "Action potential and all-or-nothing law",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-refractory-period",
+    "zh": "不应期及其作用",
+    "en": "Refractory period",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-factors-affecting-conduction-speed",
+    "zh": "传导速度影响因素",
+    "en": "Factors affecting conduction speed",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-synapse-and-neuromuscular-junction",
+    "zh": "突触与神经肌接头",
+    "en": "Synapse and neuromuscular junction",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-features-of-synaptic-transmission",
+    "zh": "突触传递特点",
+    "en": "Features of synaptic transmission",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-drugs-and-toxins",
+    "zh": "药物与毒素",
+    "en": "Drugs and toxins",
+    "group": "u4g-nerve-impulses-and-synaptic-transmission"
+   },
+   {
+    "id": "u4-skeletal-muscle-and-sarcomere",
+    "zh": "骨骼肌与肌节结构",
+    "en": "Skeletal muscle and sarcomere",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-sliding-filament-theory",
+    "zh": "滑动丝理论",
+    "en": "Sliding filament theory",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-interpreting-sarcomere-images",
+    "zh": "肌节图像判读",
+    "en": "Interpreting sarcomere images",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-antagonistic-muscle-pairs",
+    "zh": "拮抗肌对",
+    "en": "Antagonistic muscle pairs",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-energy-supply-for-muscle-contraction",
+    "zh": "肌肉收缩供能",
+    "en": "Energy supply for muscle contraction",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-fast-and-slow-muscle-fibres",
+    "zh": "快肌与慢肌",
+    "en": "Fast and slow muscle fibres",
+    "group": "u4g-skeletal-muscles-as-effectors"
+   },
+   {
+    "id": "u4-plant-growth-substances",
+    "zh": "植物生长物质",
+    "en": "Plant growth substances",
+    "group": "u4g-control-systems-in-plants"
+   },
+   {
+    "id": "u4-tropisms-and-iaa",
+    "zh": "向性与IAA",
+    "en": "Tropisms and IAA",
+    "group": "u4g-control-systems-in-plants"
+   },
+   {
+    "id": "u4-ethene-and-fruit-ripening",
+    "zh": "乙烯与果实成熟",
+    "en": "Ethene and fruit ripening",
+    "group": "u4g-control-systems-in-plants"
+   },
+   {
+    "id": "u4-abscisic-acid-and-stomatal-closure",
+    "zh": "脱落酸与气孔关闭",
+    "en": "Abscisic acid and stomatal closure",
+    "group": "u4g-control-systems-in-plants"
+   },
+   {
+    "id": "u4-principles-of-homeostasis",
+    "zh": "稳态原理",
+    "en": "Principles of homeostasis",
+    "group": "u4g-homeostasis-and-negative-feedback"
+   },
+   {
+    "id": "u4-negative-and-positive-feedback",
+    "zh": "负反馈与正反馈",
+    "en": "Negative and positive feedback",
+    "group": "u4g-homeostasis-and-negative-feedback"
+   },
+   {
+    "id": "u4-blood-glucose-and-homeostasis",
+    "zh": "血糖浓度与稳态",
+    "en": "Blood glucose and homeostasis",
+    "group": "u4g-hormones-and-the-control-of-blood-glucose-concentration"
+   },
+   {
+    "id": "u4-liver-and-carbohydrate-metabolism",
+    "zh": "肝脏与糖代谢",
+    "en": "Liver and carbohydrate metabolism",
+    "group": "u4g-hormones-and-the-control-of-blood-glucose-concentration"
+   },
+   {
+    "id": "u4-type-1-and-type-2-diabetes",
+    "zh": "1型与2型糖尿病",
+    "en": "Type 1 and Type 2 diabetes",
+    "group": "u4g-hormones-and-the-control-of-blood-glucose-concentration"
+   },
+   {
+    "id": "u4-hormones-on-target-cells",
+    "zh": "激素作用于靶细胞",
+    "en": "Hormones on target cells",
+    "group": "u4g-hormones-and-the-control-of-blood-glucose-concentration"
+   },
+   {
+    "id": "u4-myogenic-heart",
+    "zh": "心肌起源性",
+    "en": "Myogenic heart",
+    "group": "u4g-control-of-heart-rate"
+   },
+   {
+    "id": "u4-control-of-heart-rate",
+    "zh": "心率调控",
+    "en": "Control of heart rate",
+    "group": "u4g-control-of-heart-rate"
+   },
+   {
+    "id": "u4-epigenetics",
+    "zh": "表观遗传",
+    "en": "Epigenetics",
+    "group": "u4g-regulation-of-transcription-and-translation"
+   },
+   {
+    "id": "u4-rna-interference",
+    "zh": "RNA干扰",
+    "en": "RNA interference",
+    "group": "u4g-regulation-of-transcription-and-translation"
+   },
+   {
+    "id": "u4-cell-differentiation-and-stem-cells",
+    "zh": "细胞分化与干细胞",
+    "en": "Cell differentiation and stem cells",
+    "group": "u4g-regulation-of-transcription-and-translation"
+   },
+   {
+    "id": "u4-recombinant-dna-technology",
+    "zh": "转基因技术",
+    "en": "Recombinant DNA technology",
+    "group": "u4g-recombinant-dna-technology"
+   },
+   {
+    "id": "u4-pcr-amplification",
+    "zh": "PCR扩增",
+    "en": "PCR amplification",
+    "group": "u4g-recombinant-dna-technology"
+   }
+  ]
+ },
+ "U5": {
+  "groups": [],
+  "tags": []
+ }
+}

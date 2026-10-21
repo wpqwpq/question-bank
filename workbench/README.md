@@ -2,36 +2,26 @@
 
 题库 Web 工作台。一期只有**审核打标台**：给已切割的题目逐题打知识点标签 + 难度。
 
-## 启动（生产形态，本机单人）
+## 启动（本地单机后端）
 
-双击 `start.cmd`，或命令行运行后打开 <http://127.0.0.1:8642>。
+双击 `start.cmd`，或命令行运行。启动后**只有 API**（<http://127.0.0.1:8642/docs>），不再提供页面。
 
-要求：前端已构建（`frontend/dist/` 存在，已随仓库提交）；Python 依赖 fastapi/uvicorn/pyyaml 已装在
-WorkBuddy 托管 venv（`envs/default`）。
+要求：Python 依赖 fastapi/uvicorn/pyyaml 已装在 WorkBuddy 托管 venv（`envs/default`）。
 
-## 开发模式（改前端时用）
+## 前端在哪
 
-```bash
-# 终端 1：后端
-cd workbench/backend
-PYTHONPATH="C:/Users/jnwpq/.workbuddy/binaries/python/envs/default/Lib/site-packages" \
-  "C:/Users/jnwpq/.workbuddy/binaries/python/versions/3.13.12/python.exe" \
-  -m uvicorn main:app --host 127.0.0.1 --port 8642
+> **唯一前端源码 = `cloud/workbench/frontend/`**，在这里 `npm run dev` / `npm run build`。
 
-# 终端 2：前端热更新（Vite 代理 /api、/files 到 8642）
-cd workbench/frontend
-npm run dev   # 需先补 PATH coreutils，npm 用管理版 node 的 npm.cmd
-```
-
-改完前端要重新 `npm run build` 并把 `dist/` 提交（约定：dist 纳入仓库，两台电脑免构建直接起服务）。
+2026-10-20 删除了原来的单机版前端 `workbench/frontend/`。理由：它停在 10-16、落后 4 天，
+而且 `node_modules` 是空目录（装不了依赖、跑不起来），长期造成「本地前端落后线上」的误判。
+git 里仍保留其历史，需要时 `git checkout HEAD -- workbench/frontend` 可完整恢复。
 
 npm install 注意：本机 esbuild postinstall 会 EBUSY，用 `npm install --ignore-scripts`。
 
 ## 结构
 
-- `backend/` — FastAPI。`store.py`（data/ 扫描 + front-matter 外科手术式写回）、`api.py`（路由 + 校验）、`main.py`（入口 + 托管 dist）、`taxonomy.py`（标签词表）。
-- `frontend/` — Vite + React 19 + TS(strict) + Tailwind v4。无 UI 组件库，样式手写。
-- `start.cmd` — 一键启动。
+- `backend/` — FastAPI。`store.py`（data/ 扫描 + front-matter 外科手术式写回）、`api.py`（路由 + 校验）、`main.py`（入口，`frontend/dist` 存在时顺带托管静态页）、`taxonomy.py`（标签词表）。
+- `start.cmd` — 一键启动后端。
 
 ## API 一览
 
@@ -42,7 +32,9 @@ npm install 注意：本机 esbuild postinstall 会 EBUSY，用 `npm install --i
 | GET | `/api/questions/{qid}` | 单题详情 + 本单元可选标签 |
 | PUT | `/api/questions/{qid}/annotation` | 写盘（≥1 标签且难度必选，标签限本卷单元） |
 | GET | `/api/taxonomy` | 标签词表 |
-| 静态 | `/files/*` → `data/`、`/` → frontend/dist | |
+| 静态 | `/files/*` | 题图（→ `data/`） |
+
+> `/` 的 SPA 兜底只在 `frontend/dist/` 存在时挂载；目录已删，本地只剩 API。
 
 ## 约定（重要）
 

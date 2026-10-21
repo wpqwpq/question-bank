@@ -1,0 +1,2641 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「化学」表 AL/AS 行（2026-10-18 导出），不含 IG/GCSE。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-atomic-structure",
+    "zh": "原子结构",
+    "en": "Atomic structure"
+   },
+   {
+    "id": "u1g-amount-of-substance",
+    "zh": "物质的量（摩尔计算）",
+    "en": "Amount of substance"
+   },
+   {
+    "id": "u1g-bonding",
+    "zh": "化学键与物质结构",
+    "en": "Bonding"
+   },
+   {
+    "id": "u1g-energetics",
+    "zh": "热化学（焓变）",
+    "en": "Energetics"
+   },
+   {
+    "id": "u1g-kinetics",
+    "zh": "反应速率",
+    "en": "Kinetics"
+   },
+   {
+    "id": "u1g-chemical-equilibria-le-chatelier-and-kc",
+    "zh": "化学平衡与勒夏特列原理",
+    "en": "Chemical equilibria, Le Chatelier & Kc"
+   },
+   {
+    "id": "u1g-oxidation-reduction-and-redox-equations",
+    "zh": "氧化还原反应",
+    "en": "Oxidation, reduction and redox equations"
+   },
+   {
+    "id": "u1g-periodicity",
+    "zh": "元素周期律",
+    "en": "Periodicity"
+   },
+   {
+    "id": "u1g-group-2-alkaline-earth-metals",
+    "zh": "第2族（碱土金属）",
+    "en": "Group 2, alkaline earth metals"
+   },
+   {
+    "id": "u1g-group-7-17-the-halogens",
+    "zh": "第7族（卤素）",
+    "en": "Group 7(17), the halogens"
+   },
+   {
+    "id": "u1g-introduction-to-organic-chemistry",
+    "zh": "有机化学基础",
+    "en": "Introduction to organic chemistry"
+   },
+   {
+    "id": "u1g-alkanes",
+    "zh": "烷烃",
+    "en": "Alkanes"
+   },
+   {
+    "id": "u1g-halogenoalkanes",
+    "zh": "卤代烷",
+    "en": "Halogenoalkanes"
+   },
+   {
+    "id": "u1g-alkenes",
+    "zh": "烯烃",
+    "en": "Alkenes"
+   },
+   {
+    "id": "u1g-alcohols",
+    "zh": "醇",
+    "en": "Alcohols"
+   },
+   {
+    "id": "u1g-organic-analysis",
+    "zh": "有机分析（质谱与红外）",
+    "en": "Organic analysis"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-fundamental-particles",
+    "zh": "基本粒子（质子、中子、电子）",
+    "en": "fundamental particles",
+    "group": "u1g-atomic-structure"
+   },
+   {
+    "id": "u1-mass-number-and-isotopes",
+    "zh": "质量数与同位素",
+    "en": "mass number and isotopes",
+    "group": "u1g-atomic-structure"
+   },
+   {
+    "id": "u1-electron-configuration",
+    "zh": "电子构型（能级、轨道与离子）",
+    "en": "electron configuration",
+    "group": "u1g-atomic-structure"
+   },
+   {
+    "id": "u1-time-of-flight-mass-spectrometry-and-relative-atomic-mass",
+    "zh": "飞行时间质谱与相对原子质量",
+    "en": "time of flight mass spectrometry and relative atomic mass",
+    "group": "u1g-atomic-structure"
+   },
+   {
+    "id": "u1-relative-atomic-mass-and-relative-molecular-mass",
+    "zh": "相对原子质量与相对分子质量",
+    "en": "relative atomic mass and relative molecular mass",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-the-mole-and-the-avogadro-constant",
+    "zh": "摩尔与阿伏加德罗常数",
+    "en": "the mole and the Avogadro constant",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-the-ideal-gas-equation",
+    "zh": "理想气体方程 pV=nRT",
+    "en": "the ideal gas equation",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-empirical-and-molecular-formula",
+    "zh": "实验式与分子式",
+    "en": "empirical and molecular formula",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-balanced-equations-and-associated-calculations",
+    "zh": "配平方程式与相关计算",
+    "en": "balanced equations and associated calculations",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-percentage-yield-and-atom-economy",
+    "zh": "百分产率与原子经济性",
+    "en": "percentage yield and atom economy",
+    "group": "u1g-amount-of-substance"
+   },
+   {
+    "id": "u1-ionic-bonding",
+    "zh": "离子键",
+    "en": "ionic bonding",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-nature-of-covalent-and-dative-covalent-bonds",
+    "zh": "共价键与配位共价键",
+    "en": "nature of covalent and dative covalent bonds",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-metallic-bonding",
+    "zh": "金属键",
+    "en": "metallic bonding",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-bonding-and-physical-properties",
+    "zh": "成键与物理性质",
+    "en": "bonding and physical properties",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-shapes-of-simple-molecules-and-ions",
+    "zh": "简单分子与离子的形状与键角",
+    "en": "shapes of simple molecules and ions",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-bond-polarity",
+    "zh": "键的极性",
+    "en": "bond polarity",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-forces-between-molecules",
+    "zh": "分子间作用力（氢键、范德华力）",
+    "en": "forces between molecules",
+    "group": "u1g-bonding"
+   },
+   {
+    "id": "u1-enthalpy-change-and-standard-conditions",
+    "zh": "焓变的定义与标准条件",
+    "en": "enthalpy change and standard conditions",
+    "group": "u1g-energetics"
+   },
+   {
+    "id": "u1-calorimetry",
+    "zh": "量热测定",
+    "en": "calorimetry",
+    "group": "u1g-energetics"
+   },
+   {
+    "id": "u1-applications-of-hess-s-law",
+    "zh": "盖斯定律的应用",
+    "en": "applications of Hess's law",
+    "group": "u1g-energetics"
+   },
+   {
+    "id": "u1-bond-enthalpies",
+    "zh": "平均键焓",
+    "en": "bond enthalpies",
+    "group": "u1g-energetics"
+   },
+   {
+    "id": "u1-collision-theory",
+    "zh": "碰撞理论",
+    "en": "collision theory",
+    "group": "u1g-kinetics"
+   },
+   {
+    "id": "u1-maxwell-boltzmann-distribution",
+    "zh": "麦克斯韦-玻尔兹曼分布",
+    "en": "Maxwell-Boltzmann distribution",
+    "group": "u1g-kinetics"
+   },
+   {
+    "id": "u1-effect-of-temperature-on-reaction-rate",
+    "zh": "温度对反应速率的影响",
+    "en": "effect of temperature on reaction rate",
+    "group": "u1g-kinetics"
+   },
+   {
+    "id": "u1-effect-of-concentration-and-pressure",
+    "zh": "浓度与压强的影响",
+    "en": "effect of concentration and pressure",
+    "group": "u1g-kinetics"
+   },
+   {
+    "id": "u1-catalysts",
+    "zh": "催化剂",
+    "en": "catalysts",
+    "group": "u1g-kinetics"
+   },
+   {
+    "id": "u1-chemical-equilibria-and-le-chatelier-s-principle",
+    "zh": "化学平衡与勒夏特列原理",
+    "en": "chemical equilibria and Le Chatelier's principle",
+    "group": "u1g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u1-equilibrium-constant-kc-for-homogeneous-systems",
+    "zh": "均相体系的平衡常数 Kc",
+    "en": "equilibrium constant Kc for homogeneous systems",
+    "group": "u1g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u1-calculation-and-units-of-kc",
+    "zh": "Kc 的计算与单位",
+    "en": "calculation and units of Kc",
+    "group": "u1g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u1-effect-of-changing-conditions-on-kc-and-equilibrium-position",
+    "zh": "条件改变对 Kc 与平衡位置的影响",
+    "en": "effect of changing conditions on Kc and equilibrium position",
+    "group": "u1g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u1-oxidation-number-and-identifying-redox",
+    "zh": "氧化数与氧化还原的判定",
+    "en": "oxidation number and identifying redox",
+    "group": "u1g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u1-half-equations",
+    "zh": "半反应方程式",
+    "en": "half-equations",
+    "group": "u1g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u1-balancing-redox-equations",
+    "zh": "配平氧化还原方程式",
+    "en": "balancing redox equations",
+    "group": "u1g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u1-common-oxidising-and-reducing-agents",
+    "zh": "常见氧化剂与还原剂",
+    "en": "common oxidising and reducing agents",
+    "group": "u1g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u1-classification",
+    "zh": "s、p、d 区的分类",
+    "en": "classification",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-physical-properties-of-period-3-elements",
+    "zh": "第三周期元素的物理性质（原子半径、熔点、第一电离能）",
+    "en": "physical properties of Period 3 elements",
+    "group": "u1g-periodicity"
+   },
+   {
+    "id": "u1-trends-in-properties-of-group-2",
+    "zh": "第2族性质趋势（原子半径、第一电离能、熔点）",
+    "en": "trends in properties of Group 2",
+    "group": "u1g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u1-reactions-with-water-oxygen-and-dilute-acids",
+    "zh": "与水、氧气、稀酸的反应",
+    "en": "reactions with water, oxygen and dilute acids",
+    "group": "u1g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u1-basicity-and-solubility-of-oxides-and-hydroxides",
+    "zh": "氧化物与氢氧化物的碱性及溶解度",
+    "en": "basicity and solubility of oxides and hydroxides",
+    "group": "u1g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u1-thermal-stability-of-carbonates-and-nitrates",
+    "zh": "碳酸盐与硝酸盐的热稳定性",
+    "en": "thermal stability of carbonates and nitrates",
+    "group": "u1g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u1-trends-in-properties-of-the-halogens",
+    "zh": "卤素性质趋势（沸点、氧化性）",
+    "en": "trends in properties of the halogens",
+    "group": "u1g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u1-displacement-reactions-of-halogens",
+    "zh": "卤素的置换反应",
+    "en": "displacement reactions of halogens",
+    "group": "u1g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u1-tests-for-halide-ions",
+    "zh": "卤离子的检验（硝酸银）",
+    "en": "tests for halide ions",
+    "group": "u1g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u1-uses-of-chlorine-and-chlorate-i",
+    "zh": "氯与氯酸(I)的用途（水处理）",
+    "en": "uses of chlorine and chlorate(I)",
+    "group": "u1g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u1-nomenclature",
+    "zh": "命名法",
+    "en": "nomenclature",
+    "group": "u1g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u1-reaction-mechanisms",
+    "zh": "反应机理（亲电试剂、亲核试剂、自由基与弯箭头）",
+    "en": "reaction mechanisms",
+    "group": "u1g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u1-isomerism",
+    "zh": "异构（结构异构与 E/Z 几何异构）",
+    "en": "isomerism",
+    "group": "u1g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u1-fractional-distillation-of-crude-oil",
+    "zh": "原油的分馏",
+    "en": "fractional distillation of crude oil",
+    "group": "u1g-alkanes"
+   },
+   {
+    "id": "u1-modification-of-alkanes-by-cracking",
+    "zh": "裂化改性",
+    "en": "modification of alkanes by cracking",
+    "group": "u1g-alkanes"
+   },
+   {
+    "id": "u1-combustion-of-alkanes",
+    "zh": "烷烃的燃烧",
+    "en": "combustion of alkanes",
+    "group": "u1g-alkanes"
+   },
+   {
+    "id": "u1-chlorination-of-alkanes",
+    "zh": "烷烃的氯化（自由基取代）",
+    "en": "chlorination of alkanes",
+    "group": "u1g-alkanes"
+   },
+   {
+    "id": "u1-nucleophilic-substitution",
+    "zh": "亲核取代",
+    "en": "nucleophilic substitution",
+    "group": "u1g-halogenoalkanes"
+   },
+   {
+    "id": "u1-elimination",
+    "zh": "消除",
+    "en": "elimination",
+    "group": "u1g-halogenoalkanes"
+   },
+   {
+    "id": "u1-ozone-depletion",
+    "zh": "臭氧层破坏（氟氯烃）",
+    "en": "ozone depletion",
+    "group": "u1g-halogenoalkanes"
+   },
+   {
+    "id": "u1-structure-bonding-and-reactivity",
+    "zh": "结构、成键与活性",
+    "en": "structure, bonding and reactivity",
+    "group": "u1g-alkenes"
+   },
+   {
+    "id": "u1-addition-reactions-of-alkenes",
+    "zh": "烯烃的加成反应",
+    "en": "addition reactions of alkenes",
+    "group": "u1g-alkenes"
+   },
+   {
+    "id": "u1-addition-polymers",
+    "zh": "加成聚合物",
+    "en": "addition polymers",
+    "group": "u1g-alkenes"
+   },
+   {
+    "id": "u1-alcohol-production",
+    "zh": "醇的制备",
+    "en": "alcohol production",
+    "group": "u1g-alcohols"
+   },
+   {
+    "id": "u1-oxidation-of-alcohols",
+    "zh": "醇的氧化",
+    "en": "oxidation of alcohols",
+    "group": "u1g-alcohols"
+   },
+   {
+    "id": "u1-elimination-2",
+    "zh": "醇的消除",
+    "en": "elimination",
+    "group": "u1g-alcohols"
+   },
+   {
+    "id": "u1-identification-of-functional-groups-by-test-tube-reactions",
+    "zh": "试管反应鉴别官能团",
+    "en": "identification of functional groups by test-tube reactions",
+    "group": "u1g-organic-analysis"
+   },
+   {
+    "id": "u1-mass-spectrometry",
+    "zh": "质谱（分子离子峰与碎片峰）",
+    "en": "mass spectrometry",
+    "group": "u1g-organic-analysis"
+   },
+   {
+    "id": "u1-infrared-spectroscopy",
+    "zh": "红外光谱",
+    "en": "infrared spectroscopy",
+    "group": "u1g-organic-analysis"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-atomic-structure",
+    "zh": "原子结构",
+    "en": "Atomic structure"
+   },
+   {
+    "id": "u2g-amount-of-substance",
+    "zh": "物质的量（摩尔计算）",
+    "en": "Amount of substance"
+   },
+   {
+    "id": "u2g-bonding",
+    "zh": "化学键与物质结构",
+    "en": "Bonding"
+   },
+   {
+    "id": "u2g-energetics",
+    "zh": "热化学（焓变）",
+    "en": "Energetics"
+   },
+   {
+    "id": "u2g-kinetics",
+    "zh": "反应速率",
+    "en": "Kinetics"
+   },
+   {
+    "id": "u2g-chemical-equilibria-le-chatelier-and-kc",
+    "zh": "化学平衡与勒夏特列原理",
+    "en": "Chemical equilibria, Le Chatelier & Kc"
+   },
+   {
+    "id": "u2g-oxidation-reduction-and-redox-equations",
+    "zh": "氧化还原反应",
+    "en": "Oxidation, reduction and redox equations"
+   },
+   {
+    "id": "u2g-periodicity",
+    "zh": "元素周期律",
+    "en": "Periodicity"
+   },
+   {
+    "id": "u2g-group-2-alkaline-earth-metals",
+    "zh": "第2族（碱土金属）",
+    "en": "Group 2, alkaline earth metals"
+   },
+   {
+    "id": "u2g-group-7-17-the-halogens",
+    "zh": "第7族（卤素）",
+    "en": "Group 7(17), the halogens"
+   },
+   {
+    "id": "u2g-introduction-to-organic-chemistry",
+    "zh": "有机化学基础",
+    "en": "Introduction to organic chemistry"
+   },
+   {
+    "id": "u2g-alkanes",
+    "zh": "烷烃",
+    "en": "Alkanes"
+   },
+   {
+    "id": "u2g-halogenoalkanes",
+    "zh": "卤代烷",
+    "en": "Halogenoalkanes"
+   },
+   {
+    "id": "u2g-alkenes",
+    "zh": "烯烃",
+    "en": "Alkenes"
+   },
+   {
+    "id": "u2g-alcohols",
+    "zh": "醇",
+    "en": "Alcohols"
+   },
+   {
+    "id": "u2g-organic-analysis",
+    "zh": "有机分析（质谱与红外）",
+    "en": "Organic analysis"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-fundamental-particles",
+    "zh": "基本粒子（质子、中子、电子）",
+    "en": "fundamental particles",
+    "group": "u2g-atomic-structure"
+   },
+   {
+    "id": "u2-mass-number-and-isotopes",
+    "zh": "质量数与同位素",
+    "en": "mass number and isotopes",
+    "group": "u2g-atomic-structure"
+   },
+   {
+    "id": "u2-electron-configuration",
+    "zh": "电子构型（能级、轨道与离子）",
+    "en": "electron configuration",
+    "group": "u2g-atomic-structure"
+   },
+   {
+    "id": "u2-time-of-flight-mass-spectrometry-and-relative-atomic-mass",
+    "zh": "飞行时间质谱与相对原子质量",
+    "en": "time of flight mass spectrometry and relative atomic mass",
+    "group": "u2g-atomic-structure"
+   },
+   {
+    "id": "u2-relative-atomic-mass-and-relative-molecular-mass",
+    "zh": "相对原子质量与相对分子质量",
+    "en": "relative atomic mass and relative molecular mass",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-the-mole-and-the-avogadro-constant",
+    "zh": "摩尔与阿伏加德罗常数",
+    "en": "the mole and the Avogadro constant",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-the-ideal-gas-equation",
+    "zh": "理想气体方程 pV=nRT",
+    "en": "the ideal gas equation",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-empirical-and-molecular-formula",
+    "zh": "实验式与分子式",
+    "en": "empirical and molecular formula",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-balanced-equations-and-associated-calculations",
+    "zh": "配平方程式与相关计算",
+    "en": "balanced equations and associated calculations",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-percentage-yield-and-atom-economy",
+    "zh": "百分产率与原子经济性",
+    "en": "percentage yield and atom economy",
+    "group": "u2g-amount-of-substance"
+   },
+   {
+    "id": "u2-ionic-bonding",
+    "zh": "离子键",
+    "en": "ionic bonding",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-nature-of-covalent-and-dative-covalent-bonds",
+    "zh": "共价键与配位共价键",
+    "en": "nature of covalent and dative covalent bonds",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-metallic-bonding",
+    "zh": "金属键",
+    "en": "metallic bonding",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-bonding-and-physical-properties",
+    "zh": "成键与物理性质",
+    "en": "bonding and physical properties",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-shapes-of-simple-molecules-and-ions",
+    "zh": "简单分子与离子的形状与键角",
+    "en": "shapes of simple molecules and ions",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-bond-polarity",
+    "zh": "键的极性",
+    "en": "bond polarity",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-forces-between-molecules",
+    "zh": "分子间作用力（氢键、范德华力）",
+    "en": "forces between molecules",
+    "group": "u2g-bonding"
+   },
+   {
+    "id": "u2-enthalpy-change-and-standard-conditions",
+    "zh": "焓变的定义与标准条件",
+    "en": "enthalpy change and standard conditions",
+    "group": "u2g-energetics"
+   },
+   {
+    "id": "u2-calorimetry",
+    "zh": "量热测定",
+    "en": "calorimetry",
+    "group": "u2g-energetics"
+   },
+   {
+    "id": "u2-applications-of-hess-s-law",
+    "zh": "盖斯定律的应用",
+    "en": "applications of Hess's law",
+    "group": "u2g-energetics"
+   },
+   {
+    "id": "u2-bond-enthalpies",
+    "zh": "平均键焓",
+    "en": "bond enthalpies",
+    "group": "u2g-energetics"
+   },
+   {
+    "id": "u2-collision-theory",
+    "zh": "碰撞理论",
+    "en": "collision theory",
+    "group": "u2g-kinetics"
+   },
+   {
+    "id": "u2-maxwell-boltzmann-distribution",
+    "zh": "麦克斯韦-玻尔兹曼分布",
+    "en": "Maxwell-Boltzmann distribution",
+    "group": "u2g-kinetics"
+   },
+   {
+    "id": "u2-effect-of-temperature-on-reaction-rate",
+    "zh": "温度对反应速率的影响",
+    "en": "effect of temperature on reaction rate",
+    "group": "u2g-kinetics"
+   },
+   {
+    "id": "u2-effect-of-concentration-and-pressure",
+    "zh": "浓度与压强的影响",
+    "en": "effect of concentration and pressure",
+    "group": "u2g-kinetics"
+   },
+   {
+    "id": "u2-catalysts",
+    "zh": "催化剂",
+    "en": "catalysts",
+    "group": "u2g-kinetics"
+   },
+   {
+    "id": "u2-chemical-equilibria-and-le-chatelier-s-principle",
+    "zh": "化学平衡与勒夏特列原理",
+    "en": "chemical equilibria and Le Chatelier's principle",
+    "group": "u2g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u2-equilibrium-constant-kc-for-homogeneous-systems",
+    "zh": "均相体系的平衡常数 Kc",
+    "en": "equilibrium constant Kc for homogeneous systems",
+    "group": "u2g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u2-calculation-and-units-of-kc",
+    "zh": "Kc 的计算与单位",
+    "en": "calculation and units of Kc",
+    "group": "u2g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u2-effect-of-changing-conditions-on-kc-and-equilibrium-position",
+    "zh": "条件改变对 Kc 与平衡位置的影响",
+    "en": "effect of changing conditions on Kc and equilibrium position",
+    "group": "u2g-chemical-equilibria-le-chatelier-and-kc"
+   },
+   {
+    "id": "u2-oxidation-number-and-identifying-redox",
+    "zh": "氧化数与氧化还原的判定",
+    "en": "oxidation number and identifying redox",
+    "group": "u2g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u2-half-equations",
+    "zh": "半反应方程式",
+    "en": "half-equations",
+    "group": "u2g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u2-balancing-redox-equations",
+    "zh": "配平氧化还原方程式",
+    "en": "balancing redox equations",
+    "group": "u2g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u2-common-oxidising-and-reducing-agents",
+    "zh": "常见氧化剂与还原剂",
+    "en": "common oxidising and reducing agents",
+    "group": "u2g-oxidation-reduction-and-redox-equations"
+   },
+   {
+    "id": "u2-classification",
+    "zh": "s、p、d 区的分类",
+    "en": "classification",
+    "group": "u2g-periodicity"
+   },
+   {
+    "id": "u2-physical-properties-of-period-3-elements",
+    "zh": "第三周期元素的物理性质（原子半径、熔点、第一电离能）",
+    "en": "physical properties of Period 3 elements",
+    "group": "u2g-periodicity"
+   },
+   {
+    "id": "u2-trends-in-properties-of-group-2",
+    "zh": "第2族性质趋势（原子半径、第一电离能、熔点）",
+    "en": "trends in properties of Group 2",
+    "group": "u2g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u2-reactions-with-water-oxygen-and-dilute-acids",
+    "zh": "与水、氧气、稀酸的反应",
+    "en": "reactions with water, oxygen and dilute acids",
+    "group": "u2g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u2-basicity-and-solubility-of-oxides-and-hydroxides",
+    "zh": "氧化物与氢氧化物的碱性及溶解度",
+    "en": "basicity and solubility of oxides and hydroxides",
+    "group": "u2g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u2-thermal-stability-of-carbonates-and-nitrates",
+    "zh": "碳酸盐与硝酸盐的热稳定性",
+    "en": "thermal stability of carbonates and nitrates",
+    "group": "u2g-group-2-alkaline-earth-metals"
+   },
+   {
+    "id": "u2-trends-in-properties-of-the-halogens",
+    "zh": "卤素性质趋势（沸点、氧化性）",
+    "en": "trends in properties of the halogens",
+    "group": "u2g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u2-displacement-reactions-of-halogens",
+    "zh": "卤素的置换反应",
+    "en": "displacement reactions of halogens",
+    "group": "u2g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u2-tests-for-halide-ions",
+    "zh": "卤离子的检验（硝酸银）",
+    "en": "tests for halide ions",
+    "group": "u2g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u2-uses-of-chlorine-and-chlorate-i",
+    "zh": "氯与氯酸(I)的用途（水处理）",
+    "en": "uses of chlorine and chlorate(I)",
+    "group": "u2g-group-7-17-the-halogens"
+   },
+   {
+    "id": "u2-nomenclature",
+    "zh": "命名法",
+    "en": "nomenclature",
+    "group": "u2g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u2-reaction-mechanisms",
+    "zh": "反应机理（亲电试剂、亲核试剂、自由基与弯箭头）",
+    "en": "reaction mechanisms",
+    "group": "u2g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u2-isomerism",
+    "zh": "异构（结构异构与 E/Z 几何异构）",
+    "en": "isomerism",
+    "group": "u2g-introduction-to-organic-chemistry"
+   },
+   {
+    "id": "u2-fractional-distillation-of-crude-oil",
+    "zh": "原油的分馏",
+    "en": "fractional distillation of crude oil",
+    "group": "u2g-alkanes"
+   },
+   {
+    "id": "u2-modification-of-alkanes-by-cracking",
+    "zh": "裂化改性",
+    "en": "modification of alkanes by cracking",
+    "group": "u2g-alkanes"
+   },
+   {
+    "id": "u2-combustion-of-alkanes",
+    "zh": "烷烃的燃烧",
+    "en": "combustion of alkanes",
+    "group": "u2g-alkanes"
+   },
+   {
+    "id": "u2-chlorination-of-alkanes",
+    "zh": "烷烃的氯化（自由基取代）",
+    "en": "chlorination of alkanes",
+    "group": "u2g-alkanes"
+   },
+   {
+    "id": "u2-nucleophilic-substitution",
+    "zh": "亲核取代",
+    "en": "nucleophilic substitution",
+    "group": "u2g-halogenoalkanes"
+   },
+   {
+    "id": "u2-elimination",
+    "zh": "消除",
+    "en": "elimination",
+    "group": "u2g-halogenoalkanes"
+   },
+   {
+    "id": "u2-ozone-depletion",
+    "zh": "臭氧层破坏（氟氯烃）",
+    "en": "ozone depletion",
+    "group": "u2g-halogenoalkanes"
+   },
+   {
+    "id": "u2-structure-bonding-and-reactivity",
+    "zh": "结构、成键与活性",
+    "en": "structure, bonding and reactivity",
+    "group": "u2g-alkenes"
+   },
+   {
+    "id": "u2-addition-reactions-of-alkenes",
+    "zh": "烯烃的加成反应",
+    "en": "addition reactions of alkenes",
+    "group": "u2g-alkenes"
+   },
+   {
+    "id": "u2-addition-polymers",
+    "zh": "加成聚合物",
+    "en": "addition polymers",
+    "group": "u2g-alkenes"
+   },
+   {
+    "id": "u2-alcohol-production",
+    "zh": "醇的制备",
+    "en": "alcohol production",
+    "group": "u2g-alcohols"
+   },
+   {
+    "id": "u2-oxidation-of-alcohols",
+    "zh": "醇的氧化",
+    "en": "oxidation of alcohols",
+    "group": "u2g-alcohols"
+   },
+   {
+    "id": "u2-elimination-2",
+    "zh": "醇的消除",
+    "en": "elimination",
+    "group": "u2g-alcohols"
+   },
+   {
+    "id": "u2-identification-of-functional-groups-by-test-tube-reactions",
+    "zh": "试管反应鉴别官能团",
+    "en": "identification of functional groups by test-tube reactions",
+    "group": "u2g-organic-analysis"
+   },
+   {
+    "id": "u2-mass-spectrometry",
+    "zh": "质谱（分子离子峰与碎片峰）",
+    "en": "mass spectrometry",
+    "group": "u2g-organic-analysis"
+   },
+   {
+    "id": "u2-infrared-spectroscopy",
+    "zh": "红外光谱",
+    "en": "infrared spectroscopy",
+    "group": "u2g-organic-analysis"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-thermodynamics",
+    "zh": "热力学（熵与吉布斯自由能）",
+    "en": "Thermodynamics"
+   },
+   {
+    "id": "u3g-rate-equations",
+    "zh": "速率方程",
+    "en": "Rate equations"
+   },
+   {
+    "id": "u3g-equilibrium-constant-kp",
+    "zh": "平衡常数 Kp",
+    "en": "Equilibrium constant Kp"
+   },
+   {
+    "id": "u3g-electrode-potentials-and-electrochemical-cells",
+    "zh": "电极电势与电化学电池",
+    "en": "Electrode potentials and electrochemical cells"
+   },
+   {
+    "id": "u3g-acids-and-bases",
+    "zh": "酸碱平衡（pH 与缓冲）",
+    "en": "Acids and bases"
+   },
+   {
+    "id": "u3g-properties-of-period-3-elements-and-oxides",
+    "zh": "第三周期元素及其氧化物",
+    "en": "Properties of Period 3 elements & oxides"
+   },
+   {
+    "id": "u3g-transition-metals",
+    "zh": "过渡金属",
+    "en": "Transition metals"
+   },
+   {
+    "id": "u3g-reactions-of-ions-in-aqueous-solution",
+    "zh": "水溶液中离子反应（鉴别）",
+    "en": "Reactions of ions in aqueous solution"
+   },
+   {
+    "id": "u3g-optical-isomerism",
+    "zh": "光学异构（手性）",
+    "en": "Optical isomerism"
+   },
+   {
+    "id": "u3g-aldehydes-and-ketones",
+    "zh": "醛与酮",
+    "en": "Aldehydes and ketones"
+   },
+   {
+    "id": "u3g-carboxylic-acids-and-derivatives",
+    "zh": "羧酸及其衍生物",
+    "en": "Carboxylic acids and derivatives"
+   },
+   {
+    "id": "u3g-aromatic-chemistry",
+    "zh": "芳香烃化学",
+    "en": "Aromatic chemistry"
+   },
+   {
+    "id": "u3g-amines",
+    "zh": "胺",
+    "en": "Amines"
+   },
+   {
+    "id": "u3g-polymers",
+    "zh": "高分子聚合物",
+    "en": "Polymers"
+   },
+   {
+    "id": "u3g-amino-acids-proteins-and-dna",
+    "zh": "氨基酸、蛋白质与 DNA",
+    "en": "Amino acids, proteins and DNA"
+   },
+   {
+    "id": "u3g-organic-synthesis",
+    "zh": "有机合成",
+    "en": "Organic synthesis"
+   },
+   {
+    "id": "u3g-nuclear-magnetic-resonance-spectroscopy",
+    "zh": "核磁共振",
+    "en": "Nuclear magnetic resonance spectroscopy"
+   },
+   {
+    "id": "u3g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-born-haber-cycles",
+    "zh": "伯恩-哈珀循环与晶格焓",
+    "en": "Born-Haber cycles",
+    "group": "u3g-thermodynamics"
+   },
+   {
+    "id": "u3-enthalpies-of-solution-and-hydration",
+    "zh": "溶解焓与水化焓",
+    "en": "enthalpies of solution and hydration",
+    "group": "u3g-thermodynamics"
+   },
+   {
+    "id": "u3-entropy-change",
+    "zh": "熵变 ΔS 的计算",
+    "en": "entropy change",
+    "group": "u3g-thermodynamics"
+   },
+   {
+    "id": "u3-gibbs-free-energy-change",
+    "zh": "吉布斯自由能变 ΔG",
+    "en": "Gibbs free-energy change",
+    "group": "u3g-thermodynamics"
+   },
+   {
+    "id": "u3-effect-of-temperature-on-feasibility",
+    "zh": "温度对反应自发性的影响",
+    "en": "effect of temperature on feasibility",
+    "group": "u3g-thermodynamics"
+   },
+   {
+    "id": "u3-rate-equations-orders-of-reaction-and-rate-constants",
+    "zh": "速率方程、反应级数与速率常数",
+    "en": "rate equations, orders of reaction and rate constants",
+    "group": "u3g-rate-equations"
+   },
+   {
+    "id": "u3-determination-of-the-rate-equation",
+    "zh": "由初速法测定速率方程",
+    "en": "determination of the rate equation",
+    "group": "u3g-rate-equations"
+   },
+   {
+    "id": "u3-deducing-order-from-concentration-time-graphs-and-half-life",
+    "zh": "由浓度-时间图判断级数与半衰期",
+    "en": "deducing order from concentration-time graphs and half-life",
+    "group": "u3g-rate-equations"
+   },
+   {
+    "id": "u3-rate-determining-step-and-mechanism",
+    "zh": "决速步与反应机理",
+    "en": "rate-determining step and mechanism",
+    "group": "u3g-rate-equations"
+   },
+   {
+    "id": "u3-the-arrhenius-equation-and-activation-energy",
+    "zh": "阿伦尼乌斯方程与活化能",
+    "en": "the Arrhenius equation and activation energy",
+    "group": "u3g-rate-equations"
+   },
+   {
+    "id": "u3-partial-pressure-and-mole-fraction",
+    "zh": "分压与摩尔分数",
+    "en": "partial pressure and mole fraction",
+    "group": "u3g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u3-expression-and-calculation-of-kp",
+    "zh": "Kp 的表达式与计算",
+    "en": "expression and calculation of Kp",
+    "group": "u3g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u3-effect-of-changing-conditions-on-kp-and-equilibrium",
+    "zh": "条件改变对 Kp 与平衡位置的影响",
+    "en": "effect of changing conditions on Kp and equilibrium",
+    "group": "u3g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u3-electrode-potentials-and-cells",
+    "zh": "电极电势与电池",
+    "en": "electrode potentials and cells",
+    "group": "u3g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u3-standard-hydrogen-electrode",
+    "zh": "标准氢电极与标准电极电势",
+    "en": "standard hydrogen electrode",
+    "group": "u3g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u3-calculating-cell-potential-and-predicting-feasibility",
+    "zh": "电池电动势计算与反应可行性预测",
+    "en": "calculating cell potential and predicting feasibility",
+    "group": "u3g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u3-commercial-applications-of-electrochemical-cells",
+    "zh": "电池的商业应用（原电池、燃料电池、蓄电池）",
+    "en": "commercial applications of electrochemical cells",
+    "group": "u3g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u3-bronsted-lowry-acid-base-equilibria-in-aqueous-solution",
+    "zh": "布朗斯特-劳里酸碱平衡",
+    "en": "Bronsted-Lowry acid-base equilibria in aqueous solution",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-definition-and-determination-of-ph",
+    "zh": "pH 的定义与测定",
+    "en": "definition and determination of pH",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-the-ionic-product-of-water",
+    "zh": "水的离子积 Kw",
+    "en": "the ionic product of water",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-ka-for-weak-acids",
+    "zh": "弱酸的 Ka 与 pKa",
+    "en": "Ka for weak acids",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-ph-curves-titrations-and-indicators",
+    "zh": "pH 曲线、滴定与指示剂",
+    "en": "pH curves, titrations and indicators",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-buffer-action",
+    "zh": "缓冲作用与缓冲溶液 pH 计算",
+    "en": "buffer action",
+    "group": "u3g-acids-and-bases"
+   },
+   {
+    "id": "u3-reactions-of-period-3-elements-with-oxygen-water-and-chlorin",
+    "zh": "第三周期元素与氧气、水、氯的反应",
+    "en": "reactions of Period 3 elements with oxygen, water and chlorine",
+    "group": "u3g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u3-reactions-of-period-3-oxides-with-water",
+    "zh": "氧化物与水反应的产物及 pH",
+    "en": "reactions of Period 3 oxides with water",
+    "group": "u3g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u3-trends-in-acid-base-behaviour-of-oxides-explained-by-bonding",
+    "zh": "氧化物酸碱性的趋势与成键解释",
+    "en": "trends in acid-base behaviour of oxides explained by bonding",
+    "group": "u3g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u3-general-properties-of-transition-metals",
+    "zh": "过渡金属的通性",
+    "en": "general properties of transition metals",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-substitution-reactions",
+    "zh": "配体取代反应",
+    "en": "substitution reactions",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-shapes-of-complex-ions",
+    "zh": "配离子的形状（配位数与几何构型）",
+    "en": "shapes of complex ions",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-formation-of-coloured-ions",
+    "zh": "有色离子的形成（d 轨道分裂）",
+    "en": "formation of coloured ions",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-variable-oxidation-states",
+    "zh": "可变氧化态",
+    "en": "variable oxidation states",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-catalysts",
+    "zh": "催化剂（均相与异相）",
+    "en": "catalysts",
+    "group": "u3g-transition-metals"
+   },
+   {
+    "id": "u3-reactions-of-metal-aqua-ions-with-hydroxide-and-ammonia",
+    "zh": "金属水合离子与氢氧化钠、氨水的反应",
+    "en": "reactions of metal aqua ions with hydroxide and ammonia",
+    "group": "u3g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u3-amphoteric-hydroxides",
+    "zh": "两性氢氧化物",
+    "en": "amphoteric hydroxides",
+    "group": "u3g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u3-tests-for-anions",
+    "zh": "碳酸根、硫酸根与卤离子的检验",
+    "en": "tests for anions",
+    "group": "u3g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u3-colour-changes-on-ligand-substitution",
+    "zh": "配体取代引起的颜色变化",
+    "en": "colour changes on ligand substitution",
+    "group": "u3g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u3-chiral-centre-and-optical-isomers",
+    "zh": "手性中心与光学异构体",
+    "en": "chiral centre and optical isomers",
+    "group": "u3g-optical-isomerism"
+   },
+   {
+    "id": "u3-rotation-of-plane-polarised-light",
+    "zh": "平面偏振光的旋转",
+    "en": "rotation of plane-polarised light",
+    "group": "u3g-optical-isomerism"
+   },
+   {
+    "id": "u3-racemic-mixtures",
+    "zh": "外消旋混合物",
+    "en": "racemic mixtures",
+    "group": "u3g-optical-isomerism"
+   },
+   {
+    "id": "u3-optically-active-products-from-nucleophilic-addition",
+    "zh": "亲核加成中光学活性产物的形成",
+    "en": "optically active products from nucleophilic addition",
+    "group": "u3g-optical-isomerism"
+   },
+   {
+    "id": "u3-structure-and-nomenclature-of-aldehydes-and-ketones",
+    "zh": "醛与酮的结构与命名",
+    "en": "structure and nomenclature of aldehydes and ketones",
+    "group": "u3g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u3-oxidation-of-aldehydes",
+    "zh": "醛的氧化（斐林试剂、土伦试剂、酸化重铬酸钾）",
+    "en": "oxidation of aldehydes",
+    "group": "u3g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u3-reduction-of-aldehydes-and-ketones",
+    "zh": "醛与酮的还原（NaBH4）",
+    "en": "reduction of aldehydes and ketones",
+    "group": "u3g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u3-2-4-dnph-and-the-iodoform-reaction",
+    "zh": "2,4-DNPH 与碘仿反应",
+    "en": "2,4-DNPH and the iodoform reaction",
+    "group": "u3g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u3-mechanism-of-nucleophilic-addition",
+    "zh": "亲核加成机理（HCN）",
+    "en": "mechanism of nucleophilic addition",
+    "group": "u3g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u3-carboxylic-acids-and-esters",
+    "zh": "羧酸与酯",
+    "en": "carboxylic acids and esters",
+    "group": "u3g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u3-acidity-of-carboxylic-acids",
+    "zh": "羧酸的酸性",
+    "en": "acidity of carboxylic acids",
+    "group": "u3g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u3-esterification-and-hydrolysis",
+    "zh": "酯化与水解",
+    "en": "esterification and hydrolysis",
+    "group": "u3g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u3-acylation",
+    "zh": "酰化反应（酰氯与酸酐）",
+    "en": "acylation",
+    "group": "u3g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u3-reactions-of-acyl-chlorides",
+    "zh": "酰氯的反应与加成-消除机理",
+    "en": "reactions of acyl chlorides",
+    "group": "u3g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u3-bonding-in-benzene",
+    "zh": "苯的成键与离域模型",
+    "en": "bonding in benzene",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-evidence-for-the-stability-of-benzene",
+    "zh": "苯稳定性的证据（加氢焓、键长）",
+    "en": "evidence for the stability of benzene",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-nitration-and-halogenation-of-benzene",
+    "zh": "苯的硝化与卤代",
+    "en": "nitration and halogenation of benzene",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-friedel-crafts-reactions",
+    "zh": "傅-克反应",
+    "en": "Friedel-Crafts reactions",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-phenol-and-phenylamine",
+    "zh": "苯酚与苯胺",
+    "en": "phenol and phenylamine",
+    "group": "u3g-aromatic-chemistry"
+   },
+   {
+    "id": "u3-preparation-of-amines",
+    "zh": "胺的制备",
+    "en": "preparation of amines",
+    "group": "u3g-amines"
+   },
+   {
+    "id": "u3-base-properties-of-amines",
+    "zh": "胺的碱性",
+    "en": "base properties of amines",
+    "group": "u3g-amines"
+   },
+   {
+    "id": "u3-nucleophilic-properties-of-amines",
+    "zh": "胺的亲核性",
+    "en": "nucleophilic properties of amines",
+    "group": "u3g-amines"
+   },
+   {
+    "id": "u3-condensation-polymers",
+    "zh": "缩聚物（聚酯与聚酰胺）",
+    "en": "condensation polymers",
+    "group": "u3g-polymers"
+   },
+   {
+    "id": "u3-deducing-repeat-units-from-monomers-and-vice-versa",
+    "zh": "由单体推断重复单元及反向",
+    "en": "deducing repeat units from monomers and vice versa",
+    "group": "u3g-polymers"
+   },
+   {
+    "id": "u3-biodegradability-and-disposal-of-polymers",
+    "zh": "聚合物的可降解性与废弃处理",
+    "en": "biodegradability and disposal of polymers",
+    "group": "u3g-polymers"
+   },
+   {
+    "id": "u3-amino-acids",
+    "zh": "氨基酸（两性离子与等电点）",
+    "en": "amino acids",
+    "group": "u3g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u3-proteins",
+    "zh": "蛋白质（肽键、结构与水解）",
+    "en": "proteins",
+    "group": "u3g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u3-enzymes",
+    "zh": "酶",
+    "en": "enzymes",
+    "group": "u3g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u3-dna",
+    "zh": "DNA（核苷酸与碱基配对）",
+    "en": "DNA",
+    "group": "u3g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u3-action-of-anticancer-drugs",
+    "zh": "抗癌药物的作用",
+    "en": "action of anticancer drugs",
+    "group": "u3g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u3-designing-a-multi-step-synthesis",
+    "zh": "多步合成路线的设计",
+    "en": "designing a multi-step synthesis",
+    "group": "u3g-organic-synthesis"
+   },
+   {
+    "id": "u3-functional-group-interconversion-and-choice-of-reagents",
+    "zh": "官能团转化与试剂选择",
+    "en": "functional group interconversion and choice of reagents",
+    "group": "u3g-organic-synthesis"
+   },
+   {
+    "id": "u3-applying-reaction-types-and-mechanisms",
+    "zh": "反应类型与机理的综合应用",
+    "en": "applying reaction types and mechanisms",
+    "group": "u3g-organic-synthesis"
+   },
+   {
+    "id": "u3-formation-and-separation-of-chiral-products",
+    "zh": "手性产物的形成与分离",
+    "en": "formation and separation of chiral products",
+    "group": "u3g-organic-synthesis"
+   },
+   {
+    "id": "u3-chemical-shift-and-integration-in-proton-nmr",
+    "zh": "氢谱的化学位移与积分",
+    "en": "chemical shift and integration in proton NMR",
+    "group": "u3g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u3-spin-spin-splitting-and-the-n-plus-1-rule",
+    "zh": "自旋-自旋裂分与 n+1 规律",
+    "en": "spin-spin splitting and the n+1 rule",
+    "group": "u3g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u3-deuterated-solvents-and-tms",
+    "zh": "氘代溶剂与 TMS 基准",
+    "en": "deuterated solvents and TMS",
+    "group": "u3g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u3-deducing-structure-from-proton-nmr",
+    "zh": "由氢谱推断结构",
+    "en": "deducing structure from proton NMR",
+    "group": "u3g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u3-carbon-13-nmr",
+    "zh": "碳-13 谱",
+    "en": "carbon-13 NMR",
+    "group": "u3g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u3-thin-layer-chromatography-and-rf-values",
+    "zh": "薄层色谱与 Rf 值",
+    "en": "thin-layer chromatography and Rf values",
+    "group": "u3g-chromatography"
+   },
+   {
+    "id": "u3-gas-chromatography-and-retention-time",
+    "zh": "气相色谱与保留时间",
+    "en": "gas chromatography and retention time",
+    "group": "u3g-chromatography"
+   },
+   {
+    "id": "u3-gc-ms",
+    "zh": "气相色谱-质谱联用",
+    "en": "GC-MS",
+    "group": "u3g-chromatography"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-thermodynamics",
+    "zh": "热力学（熵与吉布斯自由能）",
+    "en": "Thermodynamics"
+   },
+   {
+    "id": "u4g-rate-equations",
+    "zh": "速率方程",
+    "en": "Rate equations"
+   },
+   {
+    "id": "u4g-equilibrium-constant-kp",
+    "zh": "平衡常数 Kp",
+    "en": "Equilibrium constant Kp"
+   },
+   {
+    "id": "u4g-electrode-potentials-and-electrochemical-cells",
+    "zh": "电极电势与电化学电池",
+    "en": "Electrode potentials and electrochemical cells"
+   },
+   {
+    "id": "u4g-acids-and-bases",
+    "zh": "酸碱平衡（pH 与缓冲）",
+    "en": "Acids and bases"
+   },
+   {
+    "id": "u4g-properties-of-period-3-elements-and-oxides",
+    "zh": "第三周期元素及其氧化物",
+    "en": "Properties of Period 3 elements & oxides"
+   },
+   {
+    "id": "u4g-transition-metals",
+    "zh": "过渡金属",
+    "en": "Transition metals"
+   },
+   {
+    "id": "u4g-reactions-of-ions-in-aqueous-solution",
+    "zh": "水溶液中离子反应（鉴别）",
+    "en": "Reactions of ions in aqueous solution"
+   },
+   {
+    "id": "u4g-optical-isomerism",
+    "zh": "光学异构（手性）",
+    "en": "Optical isomerism"
+   },
+   {
+    "id": "u4g-aldehydes-and-ketones",
+    "zh": "醛与酮",
+    "en": "Aldehydes and ketones"
+   },
+   {
+    "id": "u4g-carboxylic-acids-and-derivatives",
+    "zh": "羧酸及其衍生物",
+    "en": "Carboxylic acids and derivatives"
+   },
+   {
+    "id": "u4g-aromatic-chemistry",
+    "zh": "芳香烃化学",
+    "en": "Aromatic chemistry"
+   },
+   {
+    "id": "u4g-amines",
+    "zh": "胺",
+    "en": "Amines"
+   },
+   {
+    "id": "u4g-polymers",
+    "zh": "高分子聚合物",
+    "en": "Polymers"
+   },
+   {
+    "id": "u4g-amino-acids-proteins-and-dna",
+    "zh": "氨基酸、蛋白质与 DNA",
+    "en": "Amino acids, proteins and DNA"
+   },
+   {
+    "id": "u4g-organic-synthesis",
+    "zh": "有机合成",
+    "en": "Organic synthesis"
+   },
+   {
+    "id": "u4g-nuclear-magnetic-resonance-spectroscopy",
+    "zh": "核磁共振",
+    "en": "Nuclear magnetic resonance spectroscopy"
+   },
+   {
+    "id": "u4g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-born-haber-cycles",
+    "zh": "伯恩-哈珀循环与晶格焓",
+    "en": "Born-Haber cycles",
+    "group": "u4g-thermodynamics"
+   },
+   {
+    "id": "u4-enthalpies-of-solution-and-hydration",
+    "zh": "溶解焓与水化焓",
+    "en": "enthalpies of solution and hydration",
+    "group": "u4g-thermodynamics"
+   },
+   {
+    "id": "u4-entropy-change",
+    "zh": "熵变 ΔS 的计算",
+    "en": "entropy change",
+    "group": "u4g-thermodynamics"
+   },
+   {
+    "id": "u4-gibbs-free-energy-change",
+    "zh": "吉布斯自由能变 ΔG",
+    "en": "Gibbs free-energy change",
+    "group": "u4g-thermodynamics"
+   },
+   {
+    "id": "u4-effect-of-temperature-on-feasibility",
+    "zh": "温度对反应自发性的影响",
+    "en": "effect of temperature on feasibility",
+    "group": "u4g-thermodynamics"
+   },
+   {
+    "id": "u4-rate-equations-orders-of-reaction-and-rate-constants",
+    "zh": "速率方程、反应级数与速率常数",
+    "en": "rate equations, orders of reaction and rate constants",
+    "group": "u4g-rate-equations"
+   },
+   {
+    "id": "u4-determination-of-the-rate-equation",
+    "zh": "由初速法测定速率方程",
+    "en": "determination of the rate equation",
+    "group": "u4g-rate-equations"
+   },
+   {
+    "id": "u4-deducing-order-from-concentration-time-graphs-and-half-life",
+    "zh": "由浓度-时间图判断级数与半衰期",
+    "en": "deducing order from concentration-time graphs and half-life",
+    "group": "u4g-rate-equations"
+   },
+   {
+    "id": "u4-rate-determining-step-and-mechanism",
+    "zh": "决速步与反应机理",
+    "en": "rate-determining step and mechanism",
+    "group": "u4g-rate-equations"
+   },
+   {
+    "id": "u4-the-arrhenius-equation-and-activation-energy",
+    "zh": "阿伦尼乌斯方程与活化能",
+    "en": "the Arrhenius equation and activation energy",
+    "group": "u4g-rate-equations"
+   },
+   {
+    "id": "u4-partial-pressure-and-mole-fraction",
+    "zh": "分压与摩尔分数",
+    "en": "partial pressure and mole fraction",
+    "group": "u4g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u4-expression-and-calculation-of-kp",
+    "zh": "Kp 的表达式与计算",
+    "en": "expression and calculation of Kp",
+    "group": "u4g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u4-effect-of-changing-conditions-on-kp-and-equilibrium",
+    "zh": "条件改变对 Kp 与平衡位置的影响",
+    "en": "effect of changing conditions on Kp and equilibrium",
+    "group": "u4g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u4-electrode-potentials-and-cells",
+    "zh": "电极电势与电池",
+    "en": "electrode potentials and cells",
+    "group": "u4g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u4-standard-hydrogen-electrode",
+    "zh": "标准氢电极与标准电极电势",
+    "en": "standard hydrogen electrode",
+    "group": "u4g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u4-calculating-cell-potential-and-predicting-feasibility",
+    "zh": "电池电动势计算与反应可行性预测",
+    "en": "calculating cell potential and predicting feasibility",
+    "group": "u4g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u4-commercial-applications-of-electrochemical-cells",
+    "zh": "电池的商业应用（原电池、燃料电池、蓄电池）",
+    "en": "commercial applications of electrochemical cells",
+    "group": "u4g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u4-bronsted-lowry-acid-base-equilibria-in-aqueous-solution",
+    "zh": "布朗斯特-劳里酸碱平衡",
+    "en": "Bronsted-Lowry acid-base equilibria in aqueous solution",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-definition-and-determination-of-ph",
+    "zh": "pH 的定义与测定",
+    "en": "definition and determination of pH",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-the-ionic-product-of-water",
+    "zh": "水的离子积 Kw",
+    "en": "the ionic product of water",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-ka-for-weak-acids",
+    "zh": "弱酸的 Ka 与 pKa",
+    "en": "Ka for weak acids",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-ph-curves-titrations-and-indicators",
+    "zh": "pH 曲线、滴定与指示剂",
+    "en": "pH curves, titrations and indicators",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-buffer-action",
+    "zh": "缓冲作用与缓冲溶液 pH 计算",
+    "en": "buffer action",
+    "group": "u4g-acids-and-bases"
+   },
+   {
+    "id": "u4-reactions-of-period-3-elements-with-oxygen-water-and-chlorin",
+    "zh": "第三周期元素与氧气、水、氯的反应",
+    "en": "reactions of Period 3 elements with oxygen, water and chlorine",
+    "group": "u4g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u4-reactions-of-period-3-oxides-with-water",
+    "zh": "氧化物与水反应的产物及 pH",
+    "en": "reactions of Period 3 oxides with water",
+    "group": "u4g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u4-trends-in-acid-base-behaviour-of-oxides-explained-by-bonding",
+    "zh": "氧化物酸碱性的趋势与成键解释",
+    "en": "trends in acid-base behaviour of oxides explained by bonding",
+    "group": "u4g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u4-general-properties-of-transition-metals",
+    "zh": "过渡金属的通性",
+    "en": "general properties of transition metals",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-substitution-reactions",
+    "zh": "配体取代反应",
+    "en": "substitution reactions",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-shapes-of-complex-ions",
+    "zh": "配离子的形状（配位数与几何构型）",
+    "en": "shapes of complex ions",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-formation-of-coloured-ions",
+    "zh": "有色离子的形成（d 轨道分裂）",
+    "en": "formation of coloured ions",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-variable-oxidation-states",
+    "zh": "可变氧化态",
+    "en": "variable oxidation states",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-catalysts",
+    "zh": "催化剂（均相与异相）",
+    "en": "catalysts",
+    "group": "u4g-transition-metals"
+   },
+   {
+    "id": "u4-reactions-of-metal-aqua-ions-with-hydroxide-and-ammonia",
+    "zh": "金属水合离子与氢氧化钠、氨水的反应",
+    "en": "reactions of metal aqua ions with hydroxide and ammonia",
+    "group": "u4g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u4-amphoteric-hydroxides",
+    "zh": "两性氢氧化物",
+    "en": "amphoteric hydroxides",
+    "group": "u4g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u4-tests-for-anions",
+    "zh": "碳酸根、硫酸根与卤离子的检验",
+    "en": "tests for anions",
+    "group": "u4g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u4-colour-changes-on-ligand-substitution",
+    "zh": "配体取代引起的颜色变化",
+    "en": "colour changes on ligand substitution",
+    "group": "u4g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u4-chiral-centre-and-optical-isomers",
+    "zh": "手性中心与光学异构体",
+    "en": "chiral centre and optical isomers",
+    "group": "u4g-optical-isomerism"
+   },
+   {
+    "id": "u4-rotation-of-plane-polarised-light",
+    "zh": "平面偏振光的旋转",
+    "en": "rotation of plane-polarised light",
+    "group": "u4g-optical-isomerism"
+   },
+   {
+    "id": "u4-racemic-mixtures",
+    "zh": "外消旋混合物",
+    "en": "racemic mixtures",
+    "group": "u4g-optical-isomerism"
+   },
+   {
+    "id": "u4-optically-active-products-from-nucleophilic-addition",
+    "zh": "亲核加成中光学活性产物的形成",
+    "en": "optically active products from nucleophilic addition",
+    "group": "u4g-optical-isomerism"
+   },
+   {
+    "id": "u4-structure-and-nomenclature-of-aldehydes-and-ketones",
+    "zh": "醛与酮的结构与命名",
+    "en": "structure and nomenclature of aldehydes and ketones",
+    "group": "u4g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u4-oxidation-of-aldehydes",
+    "zh": "醛的氧化（斐林试剂、土伦试剂、酸化重铬酸钾）",
+    "en": "oxidation of aldehydes",
+    "group": "u4g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u4-reduction-of-aldehydes-and-ketones",
+    "zh": "醛与酮的还原（NaBH4）",
+    "en": "reduction of aldehydes and ketones",
+    "group": "u4g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u4-2-4-dnph-and-the-iodoform-reaction",
+    "zh": "2,4-DNPH 与碘仿反应",
+    "en": "2,4-DNPH and the iodoform reaction",
+    "group": "u4g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u4-mechanism-of-nucleophilic-addition",
+    "zh": "亲核加成机理（HCN）",
+    "en": "mechanism of nucleophilic addition",
+    "group": "u4g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u4-carboxylic-acids-and-esters",
+    "zh": "羧酸与酯",
+    "en": "carboxylic acids and esters",
+    "group": "u4g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u4-acidity-of-carboxylic-acids",
+    "zh": "羧酸的酸性",
+    "en": "acidity of carboxylic acids",
+    "group": "u4g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u4-esterification-and-hydrolysis",
+    "zh": "酯化与水解",
+    "en": "esterification and hydrolysis",
+    "group": "u4g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u4-acylation",
+    "zh": "酰化反应（酰氯与酸酐）",
+    "en": "acylation",
+    "group": "u4g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u4-reactions-of-acyl-chlorides",
+    "zh": "酰氯的反应与加成-消除机理",
+    "en": "reactions of acyl chlorides",
+    "group": "u4g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u4-bonding-in-benzene",
+    "zh": "苯的成键与离域模型",
+    "en": "bonding in benzene",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-evidence-for-the-stability-of-benzene",
+    "zh": "苯稳定性的证据（加氢焓、键长）",
+    "en": "evidence for the stability of benzene",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-nitration-and-halogenation-of-benzene",
+    "zh": "苯的硝化与卤代",
+    "en": "nitration and halogenation of benzene",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-friedel-crafts-reactions",
+    "zh": "傅-克反应",
+    "en": "Friedel-Crafts reactions",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-phenol-and-phenylamine",
+    "zh": "苯酚与苯胺",
+    "en": "phenol and phenylamine",
+    "group": "u4g-aromatic-chemistry"
+   },
+   {
+    "id": "u4-preparation-of-amines",
+    "zh": "胺的制备",
+    "en": "preparation of amines",
+    "group": "u4g-amines"
+   },
+   {
+    "id": "u4-base-properties-of-amines",
+    "zh": "胺的碱性",
+    "en": "base properties of amines",
+    "group": "u4g-amines"
+   },
+   {
+    "id": "u4-nucleophilic-properties-of-amines",
+    "zh": "胺的亲核性",
+    "en": "nucleophilic properties of amines",
+    "group": "u4g-amines"
+   },
+   {
+    "id": "u4-condensation-polymers",
+    "zh": "缩聚物（聚酯与聚酰胺）",
+    "en": "condensation polymers",
+    "group": "u4g-polymers"
+   },
+   {
+    "id": "u4-deducing-repeat-units-from-monomers-and-vice-versa",
+    "zh": "由单体推断重复单元及反向",
+    "en": "deducing repeat units from monomers and vice versa",
+    "group": "u4g-polymers"
+   },
+   {
+    "id": "u4-biodegradability-and-disposal-of-polymers",
+    "zh": "聚合物的可降解性与废弃处理",
+    "en": "biodegradability and disposal of polymers",
+    "group": "u4g-polymers"
+   },
+   {
+    "id": "u4-amino-acids",
+    "zh": "氨基酸（两性离子与等电点）",
+    "en": "amino acids",
+    "group": "u4g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u4-proteins",
+    "zh": "蛋白质（肽键、结构与水解）",
+    "en": "proteins",
+    "group": "u4g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u4-enzymes",
+    "zh": "酶",
+    "en": "enzymes",
+    "group": "u4g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u4-dna",
+    "zh": "DNA（核苷酸与碱基配对）",
+    "en": "DNA",
+    "group": "u4g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u4-action-of-anticancer-drugs",
+    "zh": "抗癌药物的作用",
+    "en": "action of anticancer drugs",
+    "group": "u4g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u4-designing-a-multi-step-synthesis",
+    "zh": "多步合成路线的设计",
+    "en": "designing a multi-step synthesis",
+    "group": "u4g-organic-synthesis"
+   },
+   {
+    "id": "u4-functional-group-interconversion-and-choice-of-reagents",
+    "zh": "官能团转化与试剂选择",
+    "en": "functional group interconversion and choice of reagents",
+    "group": "u4g-organic-synthesis"
+   },
+   {
+    "id": "u4-applying-reaction-types-and-mechanisms",
+    "zh": "反应类型与机理的综合应用",
+    "en": "applying reaction types and mechanisms",
+    "group": "u4g-organic-synthesis"
+   },
+   {
+    "id": "u4-formation-and-separation-of-chiral-products",
+    "zh": "手性产物的形成与分离",
+    "en": "formation and separation of chiral products",
+    "group": "u4g-organic-synthesis"
+   },
+   {
+    "id": "u4-chemical-shift-and-integration-in-proton-nmr",
+    "zh": "氢谱的化学位移与积分",
+    "en": "chemical shift and integration in proton NMR",
+    "group": "u4g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u4-spin-spin-splitting-and-the-n-plus-1-rule",
+    "zh": "自旋-自旋裂分与 n+1 规律",
+    "en": "spin-spin splitting and the n+1 rule",
+    "group": "u4g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u4-deuterated-solvents-and-tms",
+    "zh": "氘代溶剂与 TMS 基准",
+    "en": "deuterated solvents and TMS",
+    "group": "u4g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u4-deducing-structure-from-proton-nmr",
+    "zh": "由氢谱推断结构",
+    "en": "deducing structure from proton NMR",
+    "group": "u4g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u4-carbon-13-nmr",
+    "zh": "碳-13 谱",
+    "en": "carbon-13 NMR",
+    "group": "u4g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u4-thin-layer-chromatography-and-rf-values",
+    "zh": "薄层色谱与 Rf 值",
+    "en": "thin-layer chromatography and Rf values",
+    "group": "u4g-chromatography"
+   },
+   {
+    "id": "u4-gas-chromatography-and-retention-time",
+    "zh": "气相色谱与保留时间",
+    "en": "gas chromatography and retention time",
+    "group": "u4g-chromatography"
+   },
+   {
+    "id": "u4-gc-ms",
+    "zh": "气相色谱-质谱联用",
+    "en": "GC-MS",
+    "group": "u4g-chromatography"
+   }
+  ]
+ },
+ "U5": {
+  "groups": [
+   {
+    "id": "u5g-thermodynamics",
+    "zh": "热力学（熵与吉布斯自由能）",
+    "en": "Thermodynamics"
+   },
+   {
+    "id": "u5g-rate-equations",
+    "zh": "速率方程",
+    "en": "Rate equations"
+   },
+   {
+    "id": "u5g-equilibrium-constant-kp",
+    "zh": "平衡常数 Kp",
+    "en": "Equilibrium constant Kp"
+   },
+   {
+    "id": "u5g-electrode-potentials-and-electrochemical-cells",
+    "zh": "电极电势与电化学电池",
+    "en": "Electrode potentials and electrochemical cells"
+   },
+   {
+    "id": "u5g-acids-and-bases",
+    "zh": "酸碱平衡（pH 与缓冲）",
+    "en": "Acids and bases"
+   },
+   {
+    "id": "u5g-properties-of-period-3-elements-and-oxides",
+    "zh": "第三周期元素及其氧化物",
+    "en": "Properties of Period 3 elements & oxides"
+   },
+   {
+    "id": "u5g-transition-metals",
+    "zh": "过渡金属",
+    "en": "Transition metals"
+   },
+   {
+    "id": "u5g-reactions-of-ions-in-aqueous-solution",
+    "zh": "水溶液中离子反应（鉴别）",
+    "en": "Reactions of ions in aqueous solution"
+   },
+   {
+    "id": "u5g-optical-isomerism",
+    "zh": "光学异构（手性）",
+    "en": "Optical isomerism"
+   },
+   {
+    "id": "u5g-aldehydes-and-ketones",
+    "zh": "醛与酮",
+    "en": "Aldehydes and ketones"
+   },
+   {
+    "id": "u5g-carboxylic-acids-and-derivatives",
+    "zh": "羧酸及其衍生物",
+    "en": "Carboxylic acids and derivatives"
+   },
+   {
+    "id": "u5g-aromatic-chemistry",
+    "zh": "芳香烃化学",
+    "en": "Aromatic chemistry"
+   },
+   {
+    "id": "u5g-amines",
+    "zh": "胺",
+    "en": "Amines"
+   },
+   {
+    "id": "u5g-polymers",
+    "zh": "高分子聚合物",
+    "en": "Polymers"
+   },
+   {
+    "id": "u5g-amino-acids-proteins-and-dna",
+    "zh": "氨基酸、蛋白质与 DNA",
+    "en": "Amino acids, proteins and DNA"
+   },
+   {
+    "id": "u5g-organic-synthesis",
+    "zh": "有机合成",
+    "en": "Organic synthesis"
+   },
+   {
+    "id": "u5g-nuclear-magnetic-resonance-spectroscopy",
+    "zh": "核磁共振",
+    "en": "Nuclear magnetic resonance spectroscopy"
+   },
+   {
+    "id": "u5g-chromatography",
+    "zh": "色谱",
+    "en": "Chromatography"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u5-born-haber-cycles",
+    "zh": "伯恩-哈珀循环与晶格焓",
+    "en": "Born-Haber cycles",
+    "group": "u5g-thermodynamics"
+   },
+   {
+    "id": "u5-enthalpies-of-solution-and-hydration",
+    "zh": "溶解焓与水化焓",
+    "en": "enthalpies of solution and hydration",
+    "group": "u5g-thermodynamics"
+   },
+   {
+    "id": "u5-entropy-change",
+    "zh": "熵变 ΔS 的计算",
+    "en": "entropy change",
+    "group": "u5g-thermodynamics"
+   },
+   {
+    "id": "u5-gibbs-free-energy-change",
+    "zh": "吉布斯自由能变 ΔG",
+    "en": "Gibbs free-energy change",
+    "group": "u5g-thermodynamics"
+   },
+   {
+    "id": "u5-effect-of-temperature-on-feasibility",
+    "zh": "温度对反应自发性的影响",
+    "en": "effect of temperature on feasibility",
+    "group": "u5g-thermodynamics"
+   },
+   {
+    "id": "u5-rate-equations-orders-of-reaction-and-rate-constants",
+    "zh": "速率方程、反应级数与速率常数",
+    "en": "rate equations, orders of reaction and rate constants",
+    "group": "u5g-rate-equations"
+   },
+   {
+    "id": "u5-determination-of-the-rate-equation",
+    "zh": "由初速法测定速率方程",
+    "en": "determination of the rate equation",
+    "group": "u5g-rate-equations"
+   },
+   {
+    "id": "u5-deducing-order-from-concentration-time-graphs-and-half-life",
+    "zh": "由浓度-时间图判断级数与半衰期",
+    "en": "deducing order from concentration-time graphs and half-life",
+    "group": "u5g-rate-equations"
+   },
+   {
+    "id": "u5-rate-determining-step-and-mechanism",
+    "zh": "决速步与反应机理",
+    "en": "rate-determining step and mechanism",
+    "group": "u5g-rate-equations"
+   },
+   {
+    "id": "u5-the-arrhenius-equation-and-activation-energy",
+    "zh": "阿伦尼乌斯方程与活化能",
+    "en": "the Arrhenius equation and activation energy",
+    "group": "u5g-rate-equations"
+   },
+   {
+    "id": "u5-partial-pressure-and-mole-fraction",
+    "zh": "分压与摩尔分数",
+    "en": "partial pressure and mole fraction",
+    "group": "u5g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u5-expression-and-calculation-of-kp",
+    "zh": "Kp 的表达式与计算",
+    "en": "expression and calculation of Kp",
+    "group": "u5g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u5-effect-of-changing-conditions-on-kp-and-equilibrium",
+    "zh": "条件改变对 Kp 与平衡位置的影响",
+    "en": "effect of changing conditions on Kp and equilibrium",
+    "group": "u5g-equilibrium-constant-kp"
+   },
+   {
+    "id": "u5-electrode-potentials-and-cells",
+    "zh": "电极电势与电池",
+    "en": "electrode potentials and cells",
+    "group": "u5g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u5-standard-hydrogen-electrode",
+    "zh": "标准氢电极与标准电极电势",
+    "en": "standard hydrogen electrode",
+    "group": "u5g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u5-calculating-cell-potential-and-predicting-feasibility",
+    "zh": "电池电动势计算与反应可行性预测",
+    "en": "calculating cell potential and predicting feasibility",
+    "group": "u5g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u5-commercial-applications-of-electrochemical-cells",
+    "zh": "电池的商业应用（原电池、燃料电池、蓄电池）",
+    "en": "commercial applications of electrochemical cells",
+    "group": "u5g-electrode-potentials-and-electrochemical-cells"
+   },
+   {
+    "id": "u5-bronsted-lowry-acid-base-equilibria-in-aqueous-solution",
+    "zh": "布朗斯特-劳里酸碱平衡",
+    "en": "Bronsted-Lowry acid-base equilibria in aqueous solution",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-definition-and-determination-of-ph",
+    "zh": "pH 的定义与测定",
+    "en": "definition and determination of pH",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-the-ionic-product-of-water",
+    "zh": "水的离子积 Kw",
+    "en": "the ionic product of water",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-ka-for-weak-acids",
+    "zh": "弱酸的 Ka 与 pKa",
+    "en": "Ka for weak acids",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-ph-curves-titrations-and-indicators",
+    "zh": "pH 曲线、滴定与指示剂",
+    "en": "pH curves, titrations and indicators",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-buffer-action",
+    "zh": "缓冲作用与缓冲溶液 pH 计算",
+    "en": "buffer action",
+    "group": "u5g-acids-and-bases"
+   },
+   {
+    "id": "u5-reactions-of-period-3-elements-with-oxygen-water-and-chlorin",
+    "zh": "第三周期元素与氧气、水、氯的反应",
+    "en": "reactions of Period 3 elements with oxygen, water and chlorine",
+    "group": "u5g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u5-reactions-of-period-3-oxides-with-water",
+    "zh": "氧化物与水反应的产物及 pH",
+    "en": "reactions of Period 3 oxides with water",
+    "group": "u5g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u5-trends-in-acid-base-behaviour-of-oxides-explained-by-bonding",
+    "zh": "氧化物酸碱性的趋势与成键解释",
+    "en": "trends in acid-base behaviour of oxides explained by bonding",
+    "group": "u5g-properties-of-period-3-elements-and-oxides"
+   },
+   {
+    "id": "u5-general-properties-of-transition-metals",
+    "zh": "过渡金属的通性",
+    "en": "general properties of transition metals",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-substitution-reactions",
+    "zh": "配体取代反应",
+    "en": "substitution reactions",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-shapes-of-complex-ions",
+    "zh": "配离子的形状（配位数与几何构型）",
+    "en": "shapes of complex ions",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-formation-of-coloured-ions",
+    "zh": "有色离子的形成（d 轨道分裂）",
+    "en": "formation of coloured ions",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-variable-oxidation-states",
+    "zh": "可变氧化态",
+    "en": "variable oxidation states",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-catalysts",
+    "zh": "催化剂（均相与异相）",
+    "en": "catalysts",
+    "group": "u5g-transition-metals"
+   },
+   {
+    "id": "u5-reactions-of-metal-aqua-ions-with-hydroxide-and-ammonia",
+    "zh": "金属水合离子与氢氧化钠、氨水的反应",
+    "en": "reactions of metal aqua ions with hydroxide and ammonia",
+    "group": "u5g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u5-amphoteric-hydroxides",
+    "zh": "两性氢氧化物",
+    "en": "amphoteric hydroxides",
+    "group": "u5g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u5-tests-for-anions",
+    "zh": "碳酸根、硫酸根与卤离子的检验",
+    "en": "tests for anions",
+    "group": "u5g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u5-colour-changes-on-ligand-substitution",
+    "zh": "配体取代引起的颜色变化",
+    "en": "colour changes on ligand substitution",
+    "group": "u5g-reactions-of-ions-in-aqueous-solution"
+   },
+   {
+    "id": "u5-chiral-centre-and-optical-isomers",
+    "zh": "手性中心与光学异构体",
+    "en": "chiral centre and optical isomers",
+    "group": "u5g-optical-isomerism"
+   },
+   {
+    "id": "u5-rotation-of-plane-polarised-light",
+    "zh": "平面偏振光的旋转",
+    "en": "rotation of plane-polarised light",
+    "group": "u5g-optical-isomerism"
+   },
+   {
+    "id": "u5-racemic-mixtures",
+    "zh": "外消旋混合物",
+    "en": "racemic mixtures",
+    "group": "u5g-optical-isomerism"
+   },
+   {
+    "id": "u5-optically-active-products-from-nucleophilic-addition",
+    "zh": "亲核加成中光学活性产物的形成",
+    "en": "optically active products from nucleophilic addition",
+    "group": "u5g-optical-isomerism"
+   },
+   {
+    "id": "u5-structure-and-nomenclature-of-aldehydes-and-ketones",
+    "zh": "醛与酮的结构与命名",
+    "en": "structure and nomenclature of aldehydes and ketones",
+    "group": "u5g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u5-oxidation-of-aldehydes",
+    "zh": "醛的氧化（斐林试剂、土伦试剂、酸化重铬酸钾）",
+    "en": "oxidation of aldehydes",
+    "group": "u5g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u5-reduction-of-aldehydes-and-ketones",
+    "zh": "醛与酮的还原（NaBH4）",
+    "en": "reduction of aldehydes and ketones",
+    "group": "u5g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u5-2-4-dnph-and-the-iodoform-reaction",
+    "zh": "2,4-DNPH 与碘仿反应",
+    "en": "2,4-DNPH and the iodoform reaction",
+    "group": "u5g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u5-mechanism-of-nucleophilic-addition",
+    "zh": "亲核加成机理（HCN）",
+    "en": "mechanism of nucleophilic addition",
+    "group": "u5g-aldehydes-and-ketones"
+   },
+   {
+    "id": "u5-carboxylic-acids-and-esters",
+    "zh": "羧酸与酯",
+    "en": "carboxylic acids and esters",
+    "group": "u5g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u5-acidity-of-carboxylic-acids",
+    "zh": "羧酸的酸性",
+    "en": "acidity of carboxylic acids",
+    "group": "u5g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u5-esterification-and-hydrolysis",
+    "zh": "酯化与水解",
+    "en": "esterification and hydrolysis",
+    "group": "u5g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u5-acylation",
+    "zh": "酰化反应（酰氯与酸酐）",
+    "en": "acylation",
+    "group": "u5g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u5-reactions-of-acyl-chlorides",
+    "zh": "酰氯的反应与加成-消除机理",
+    "en": "reactions of acyl chlorides",
+    "group": "u5g-carboxylic-acids-and-derivatives"
+   },
+   {
+    "id": "u5-bonding-in-benzene",
+    "zh": "苯的成键与离域模型",
+    "en": "bonding in benzene",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-evidence-for-the-stability-of-benzene",
+    "zh": "苯稳定性的证据（加氢焓、键长）",
+    "en": "evidence for the stability of benzene",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-mechanism-of-electrophilic-substitution",
+    "zh": "亲电取代机理",
+    "en": "mechanism of electrophilic substitution",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-nitration-and-halogenation-of-benzene",
+    "zh": "苯的硝化与卤代",
+    "en": "nitration and halogenation of benzene",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-friedel-crafts-reactions",
+    "zh": "傅-克反应",
+    "en": "Friedel-Crafts reactions",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-phenol-and-phenylamine",
+    "zh": "苯酚与苯胺",
+    "en": "phenol and phenylamine",
+    "group": "u5g-aromatic-chemistry"
+   },
+   {
+    "id": "u5-preparation-of-amines",
+    "zh": "胺的制备",
+    "en": "preparation of amines",
+    "group": "u5g-amines"
+   },
+   {
+    "id": "u5-base-properties-of-amines",
+    "zh": "胺的碱性",
+    "en": "base properties of amines",
+    "group": "u5g-amines"
+   },
+   {
+    "id": "u5-nucleophilic-properties-of-amines",
+    "zh": "胺的亲核性",
+    "en": "nucleophilic properties of amines",
+    "group": "u5g-amines"
+   },
+   {
+    "id": "u5-condensation-polymers",
+    "zh": "缩聚物（聚酯与聚酰胺）",
+    "en": "condensation polymers",
+    "group": "u5g-polymers"
+   },
+   {
+    "id": "u5-deducing-repeat-units-from-monomers-and-vice-versa",
+    "zh": "由单体推断重复单元及反向",
+    "en": "deducing repeat units from monomers and vice versa",
+    "group": "u5g-polymers"
+   },
+   {
+    "id": "u5-biodegradability-and-disposal-of-polymers",
+    "zh": "聚合物的可降解性与废弃处理",
+    "en": "biodegradability and disposal of polymers",
+    "group": "u5g-polymers"
+   },
+   {
+    "id": "u5-amino-acids",
+    "zh": "氨基酸（两性离子与等电点）",
+    "en": "amino acids",
+    "group": "u5g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u5-proteins",
+    "zh": "蛋白质（肽键、结构与水解）",
+    "en": "proteins",
+    "group": "u5g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u5-enzymes",
+    "zh": "酶",
+    "en": "enzymes",
+    "group": "u5g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u5-dna",
+    "zh": "DNA（核苷酸与碱基配对）",
+    "en": "DNA",
+    "group": "u5g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u5-action-of-anticancer-drugs",
+    "zh": "抗癌药物的作用",
+    "en": "action of anticancer drugs",
+    "group": "u5g-amino-acids-proteins-and-dna"
+   },
+   {
+    "id": "u5-designing-a-multi-step-synthesis",
+    "zh": "多步合成路线的设计",
+    "en": "designing a multi-step synthesis",
+    "group": "u5g-organic-synthesis"
+   },
+   {
+    "id": "u5-functional-group-interconversion-and-choice-of-reagents",
+    "zh": "官能团转化与试剂选择",
+    "en": "functional group interconversion and choice of reagents",
+    "group": "u5g-organic-synthesis"
+   },
+   {
+    "id": "u5-applying-reaction-types-and-mechanisms",
+    "zh": "反应类型与机理的综合应用",
+    "en": "applying reaction types and mechanisms",
+    "group": "u5g-organic-synthesis"
+   },
+   {
+    "id": "u5-formation-and-separation-of-chiral-products",
+    "zh": "手性产物的形成与分离",
+    "en": "formation and separation of chiral products",
+    "group": "u5g-organic-synthesis"
+   },
+   {
+    "id": "u5-chemical-shift-and-integration-in-proton-nmr",
+    "zh": "氢谱的化学位移与积分",
+    "en": "chemical shift and integration in proton NMR",
+    "group": "u5g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u5-spin-spin-splitting-and-the-n-plus-1-rule",
+    "zh": "自旋-自旋裂分与 n+1 规律",
+    "en": "spin-spin splitting and the n+1 rule",
+    "group": "u5g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u5-deuterated-solvents-and-tms",
+    "zh": "氘代溶剂与 TMS 基准",
+    "en": "deuterated solvents and TMS",
+    "group": "u5g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u5-deducing-structure-from-proton-nmr",
+    "zh": "由氢谱推断结构",
+    "en": "deducing structure from proton NMR",
+    "group": "u5g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u5-carbon-13-nmr",
+    "zh": "碳-13 谱",
+    "en": "carbon-13 NMR",
+    "group": "u5g-nuclear-magnetic-resonance-spectroscopy"
+   },
+   {
+    "id": "u5-thin-layer-chromatography-and-rf-values",
+    "zh": "薄层色谱与 Rf 值",
+    "en": "thin-layer chromatography and Rf values",
+    "group": "u5g-chromatography"
+   },
+   {
+    "id": "u5-gas-chromatography-and-retention-time",
+    "zh": "气相色谱与保留时间",
+    "en": "gas chromatography and retention time",
+    "group": "u5g-chromatography"
+   },
+   {
+    "id": "u5-gc-ms",
+    "zh": "气相色谱-质谱联用",
+    "en": "GC-MS",
+    "group": "u5g-chromatography"
+   }
+  ]
+ }
+}

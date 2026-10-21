@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>题库打标平台 · 一期部署报告（2026-10-17）</title>
+<style>
+  :root{
+    --ink:#111827; --ink2:#374151; --ink3:#6b7280; --line:#e5e7eb;
+    --bg:#ffffff; --soft:#f9fafb; --blue:#1d4ed8; --blue-bg:#eff6ff;
+    --ok:#047857; --ok-bg:#ecfdf5; --warn:#b45309; --warn-bg:#fffbeb;
+    --bad:#b91c1c; --bad-bg:#fef2f2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:40px 24px 80px; background:var(--soft); color:var(--ink);
+    font:15px/1.75 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  }
+  .page{max-width:960px; margin:0 auto; background:var(--bg); border:1px solid var(--line);
+    border-radius:14px; padding:44px 48px 56px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  header{border-bottom:1px solid var(--line); padding-bottom:22px; margin-bottom:32px}
+  h1{margin:0 0 10px; font-size:25px; letter-spacing:-.01em}
+  .sub{color:var(--ink3); font-size:13.5px}
+  .sub b{color:var(--ink2); font-weight:600}
+  h2{font-size:17.5px; margin:38px 0 14px; padding-left:11px; border-left:4px solid var(--blue);
+     line-height:1.3}
+  h2 .n{color:var(--blue); font-weight:700; margin-right:7px; font-variant-numeric:tabular-nums}
+  h3{font-size:14.5px; margin:22px 0 8px; color:var(--ink2)}
+  p{margin:9px 0}
+  table{width:100%; border-collapse:collapse; margin:14px 0 6px; font-size:13.5px}
+  th,td{border:1px solid var(--line); padding:8px 11px; text-align:left; vertical-align:top}
+  th{background:#f3f4f6; font-weight:600; color:var(--ink2); white-space:nowrap}
+  tbody tr:nth-child(even){background:#fcfcfd}
+  td.num,th.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+  code{background:#f3f4f6; border:1px solid #eceef1; border-radius:4px; padding:1px 5px;
+       font:12.5px/1.5 "Cascadia Mono",Consolas,Menlo,monospace; color:#0f172a}
+  pre{background:#0f172a; color:#e5e7eb; border-radius:9px; padding:15px 17px; overflow-x:auto;
+      font:12.5px/1.65 "Cascadia Mono",Consolas,Menlo,monospace; margin:12px 0}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:inherit}
+  .card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:16px 0;
+        background:#fff}
+  .hero{display:flex; gap:14px; align-items:flex-start; border-radius:10px; padding:16px 18px;
+        background:var(--ok-bg); border:1px solid #a7f3d0; margin:0 0 26px}
+  .hero .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);margin-top:8px;flex:0 0 auto}
+  .hero b{color:var(--ok)}
+  .callout{border-radius:10px; padding:15px 18px; margin:16px 0; border:1px solid}
+  .callout.warn{background:var(--warn-bg); border-color:#fde68a}
+  .callout.warn .t{color:var(--warn); font-weight:700; margin-bottom:6px}
+  .callout.info{background:var(--blue-bg); border-color:#bfdbfe}
+  .callout.info .t{color:var(--blue); font-weight:700; margin-bottom:6px}
+  .callout.bad{background:var(--bad-bg); border-color:#fecaca}
+  .callout.bad .t{color:var(--bad); font-weight:700; margin-bottom:6px}
+  .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0}
+  .kpi{border:1px solid var(--line); border-radius:10px; padding:14px 15px; background:#fff}
+  .kpi .v{font-size:22px; font-weight:700; letter-spacing:-.02em; line-height:1.2}
+  .kpi .k{font-size:12px; color:var(--ink3); margin-top:5px}
+  .pill{display:inline-block; border-radius:999px; padding:1px 9px; font-size:11.5px;
+        font-weight:600; border:1px solid; line-height:1.7}
+  .pill.ok{background:var(--ok-bg); color:var(--ok); border-color:#a7f3d0}
+  .pill.warn{background:var(--warn-bg); color:var(--warn); border-color:#fde68a}
+  .pill.no{background:var(--bad-bg); color:var(--bad); border-color:#fecaca}
+  .pill.mid{background:var(--blue-bg); color:var(--blue); border-color:#bfdbfe}
+  ul,ol{margin:9px 0; padding-left:22px}
+  li{margin:5px 0}
+  .muted{color:var(--ink3); font-size:12.5px}
+  .lead{font-size:14.5px; color:var(--ink2)}
+  footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+         color:var(--ink3); font-size:12px}
+  @media (max-width:760px){ .grid{grid-template-columns:repeat(2,1fr)} .page{padding:26px 20px} }
+  @media print{ body{background:#fff;padding:0} .page{border:0;box-shadow:none;padding:0} pre{background:#f3f4f6;color:#111} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>题库打标平台 · 一期部署报告</h1>
+  <div class="sub">
+    执行 <b>2026-10-17 18:44–19:05</b> ·
+    目标机 <b>140.143.229.85</b>（腾讯云轻量 · Ubuntu 24.04 · 2 核 / 3.7 G / 59 G） ·
+    范围 <b>物理 410 卷 / 7396 题</b> · 账号 <b>83 个</b>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="dot"></div>
+  <div>
+    <b>一期功能全部就位，从数据库到登录到备份都已跑通，服务正在运行。</b><br />
+    只剩一件事需要你在控制台点一下：<b>把 80 端口放通</b>。这一步只有控制台能做，我没有云账号权限。
+    放通之后，老师在浏览器里打开 <code>http://140.143.229.85</code> 就能用。
+  </div>
+</div>
+
+<div class="grid">
+  <div class="kpi"><div class="v">83</div><div class="k">账号（含 1 个 AI）</div></div>
+  <div class="kpi"><div class="v">410</div><div class="k">试卷 · 8209 题</div></div>
+  <div class="kpi"><div class="v">37%</div><div class="k">磁盘占用（剩 36 G）</div></div>
+  <div class="kpi"><div class="v">98 MB</div><div class="k">服务常驻内存</div></div>
+</div>
+
+<h2><span class="n">1</span>唯一待办：放通 80 端口</h2>
+
+<p class="lead">已在机器内部验证过链路完整：<code>nginx → 127.0.0.1:8642</code> 返回 200，登录接口返回 200。
+但从外网连 <code>140.143.229.85:80</code> 超时。定位结论如下：</p>
+
+<table>
+  <thead><tr><th>检查项</th><th>结果</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>nginx 是否在监听 80</td><td><span class="pill ok">是</span></td><td><code>ss -lnt</code> 显示 <code>0.0.0.0:80</code></td></tr>
+    <tr><td>本机访问 <code>127.0.0.1</code></td><td><span class="pill ok">200</span></td><td>登录页与接口都正常</td></tr>
+    <tr><td>主机 ufw</td><td><span class="pill mid">未启用</span></td><td>规则由云平台下发</td></tr>
+    <tr><td>iptables <code>YJ-FIREWALL-INPUT</code></td><td><span class="pill ok">未拦 80</span></td><td>只对若干 IP 拒了 22 端口</td></tr>
+    <tr><td>外网连 22</td><td><span class="pill ok">通</span></td><td>说明不是整机不通，是端口策略</td></tr>
+    <tr><td><b>外网连 80 / 443 / 3000 / 8080 / 8642</b></td><td><span class="pill no">全不通</span></td><td>→ 拦截发生在腾讯云「防火墙」层</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <div class="t">要做的操作（约 30 秒）</div>
+  腾讯云控制台 → 轻量应用服务器 → 实例 <code>OpenClaw(龙虾)-pOY6</code> → <b>防火墙</b> 页 →
+  添加规则：<b>应用类型 HTTP(80)</b>，协议 <code>TCP</code>，端口 <code>80</code>，来源 <code>0.0.0.0/0</code> → 确定。
+  <br /><span class="muted">22 端口的现有规则不要动。</span>
+</div>
+
+<h3>放通之前想先用起来：SSH 隧道</h3>
+<p>在你本机执行下面这条，然后浏览器打开 <code>http://127.0.0.1:8080</code>，体验和公网访问完全一样：</p>
+<pre><code>ssh -N -L 8080:127.0.0.1:80 -i ~/.ssh/wpq.pem ubuntu@140.143.229.85</code></pre>
+
+<h2><span class="n">2</span>部署结果实测</h2>
+
+<table>
+  <thead><tr><th>项目</th><th>实测值</th><th>与方案预估对照</th></tr></thead>
+  <tbody>
+    <tr><td>部署根</td><td><code>/opt/qbank</code></td><td>一致</td></tr>
+    <tr><td>题库数据</td><td>685 MB · 7396 webp · 8619 md</td><td>预估 618 MB，实际略大（含 taxonomy/审查记录）</td></tr>
+    <tr><td>PDF</td><td><b>0 张</b></td><td>按要求不传</td></tr>
+    <tr><td>Python 环境</td><td>venv / Python 3.12 / fastapi 0.143 / uvicorn 0.54</td><td>一致；<b>确认没装 pymupdf、Pillow</b></td></tr>
+    <tr><td>服务</td><td>systemd <code>qbank.service</code>，<code>workers=1</code></td><td>一致（单进程是硬约束）</td></tr>
+    <tr><td>常驻内存</td><td>97.5 MB（上限 1200 MB）</td><td>比预估低，与 OpenClaw 共存无压力</td></tr>
+    <tr><td>索引预热</td><td><b>13.2 s</b> / 410 卷 8209 题</td><td>方案估 2.7 s —— 实测偏慢，但只在启动时付一次</td></tr>
+    <tr><td>浏览器可达</td><td>SPA 200、资源带 30 天 immutable 缓存、题图 <code>no-cache</code></td><td>一致</td></tr>
+    <tr><td>备份</td><td>首跑 <b>6.8 s</b> → 685 MB 快照 / 8619 md，crontab 每天 03:00</td><td>一致（硬链接，第 2 天起每天约 10 MB）</td></tr>
+    <tr><td>磁盘</td><td>21 G 已用 / 36 G 可用（37%）</td><td>比预估好 3 G</td></tr>
+    <tr><td>操作日志</td><td><code>data/_audit/2026-10-17.jsonl</code> 已落 9 条</td><td>新增（方案里的「待确认 B」，我确定做）</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="n">3</span>账号体系</h2>
+
+<p>共 <b>83 个</b>，按你的补充把商务加了进去：</p>
+
+<table>
+  <thead><tr><th>学科</th><th class="num">账号数</th><th>命名</th><th>角色分配</th></tr></thead>
+  <tbody>
+    <tr><td>物理</td><td class="num">10</td><td><code>phy01</code>–<code>phy10</code></td><td>01 = 学科负责人，02–10 打标员</td></tr>
+    <tr><td>化学</td><td class="num">10</td><td><code>che01</code>–<code>che10</code></td><td>同上</td></tr>
+    <tr><td>生物</td><td class="num">10</td><td><code>bio01</code>–<code>bio10</code></td><td>同上</td></tr>
+    <tr><td>经济</td><td class="num">10</td><td><code>eco01</code>–<code>eco10</code></td><td>同上</td></tr>
+    <tr><td>会计</td><td class="num">10</td><td><code>acc01</code>–<code>acc10</code></td><td>同上</td></tr>
+    <tr><td><b>商务</b></td><td class="num">10</td><td><code>bus01</code>–<code>bus10</code></td><td><span class="pill mid">本次新增</span></td></tr>
+    <tr><td>数学</td><td class="num">20</td><td><code>mat01</code>–<code>mat20</code></td><td>同上</td></tr>
+    <tr><td>管理员</td><td class="num">2</td><td><code>admin</code> / <code>admin2</code></td><td>全部学科 + 词表 + 审计</td></tr>
+    <tr><td>AI 服务</td><td class="num">1</td><td><code>ai-tagger</code></td><td>Bearer Key，可跨学科</td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <div class="t">初始密码在哪</div>
+  服务器 <code>/opt/qbank/config/users-initial.csv</code>（权限 0600，85 行，含全部初始密码）。
+  <b>所有人类账号首次登录都会被强制改密</b>（改完才能进打标台），所以这张表发完就该删：
+  <code>rm -f /opt/qbank/config/users-initial.csv</code>。
+  <br />管理员初始密码见本次对话回复，不写进本报告。
+</div>
+
+<h3>四种角色的能力边界</h3>
+<table>
+  <thead><tr><th>角色</th><th>能看</th><th>能写标注 / 确认</th><th>能改标签词表</th></tr></thead>
+  <tbody>
+    <tr><td><code>admin</code></td><td>全部学科</td><td>是</td><td>是</td></tr>
+    <tr><td><code>lead</code></td><td>本学科</td><td>是</td><td>是</td></tr>
+    <tr><td><code>tagger</code></td><td>本学科</td><td>是</td><td>否（403）</td></tr>
+    <tr><td><code>viewer</code></td><td>本学科</td><td>否（403）</td><td>否</td></tr>
+    <tr><td><code>service</code></td><td>全部学科</td><td>是</td><td>否</td></tr>
+  </tbody>
+</table>
+
+<p class="muted">学科隔离做了三个检查点：卷列表按学科过滤；<code>GET /questions/{qid}</code> 跨科返回 <b>404 而不是 403</b>（403 等于告诉对方「这东西存在，只是你不能看」）；写接口再校验一次。<code>/files/</code> 静态题图同样按学科段拦，只放行 <code>&lt;board&gt;/&lt;qual&gt;/&lt;subject&gt;/&lt;paper&gt;/assets/&lt;file&gt;</code> 这一种形状——<code>cut.json</code>、<code>taxonomy/*.json</code>、<code>_review/confirmed.json</code> 都拿不到。</p>
+
+<h2><span class="n">4</span>你不在时我替你定的四件事</h2>
+
+<table>
+  <thead><tr><th class="num">#</th><th>原问题</th><th>我的决定</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="num">A</td><td>其他学科数据现在没有，先上物理还是等齐？</td>
+      <td><b>先上物理</b></td>
+      <td>库里实测只有物理（410 卷）。目录结构本来就支持多学科，补数据不需要改一行代码，等只会白等。</td>
+    </tr>
+    <tr>
+      <td class="num">B</td><td>心理、商务要不要预留账号？</td>
+      <td><b>商务 10 个已建，心理不建</b></td>
+      <td>你点名加了商务。心理没点名、也没数据，先不占位；要加的时候一条命令。</td>
+    </tr>
+    <tr>
+      <td class="num">C</td><td>要不要「谁在什么时候改了哪道题」的操作日志？</td>
+      <td><b>做</b></td>
+      <td>83 个账号下出了问题必须能查人。代价只有约 60 行，且写失败绝不影响打标。</td>
+    </tr>
+    <tr>
+      <td class="num">D</td><td>老师忘记密码怎么办？</td>
+      <td><b>走命令行重置</b></td>
+      <td>零开发、零新界面：<code>manage_users.py passwd phy03</code> 直接给新密码，首次登录强制改。做「重置按钮」等于多一条可被滥用的提权路径，一期不值得。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2><span class="n">5</span>这一期改了哪些代码</h2>
+
+<p class="lead">全部落在新目录 <code>cloud/</code>。<b>本地 <code>workbench/</code>、<code>scripts/</code>、<code>schema/</code> 一字未动</b>（<code>git diff</code> 为空），你现在这套照旧能用。以后新需求只改云端这一份。</p>
+
+<table>
+  <thead><tr><th>文件</th><th>改动</th><th>为什么</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>backend/auth.py</code><br /><span class="muted">新增 ~520 行</span></td>
+      <td>密码 pbkdf2 哈希 / API Key sha256 / HMAC 签名 cookie（12 小时，无状态）/ 纯 ASGI 认证中间件 / 学科隔离 / 登录限流 / JSONL 审计</td>
+      <td>云端必须认人，但不想引入数据库和 session 表</td>
+    </tr>
+    <tr>
+      <td><code>backend/manage_users.py</code><br /><span class="muted">新增 ~290 行</span></td>
+      <td><code>init / list / passwd / disable / enable / add / newkey / csv</code></td>
+      <td>83 个账号不能靠手改文件；改密、停用、重签 Key 都要一条命令</td>
+    </tr>
+    <tr>
+      <td><code>backend/main.py</code><br /><span class="muted">重写</span></td>
+      <td>挂中间件；新增 <code>/api/login</code>、<code>/api/logout</code>、<code>/api/auth/me</code>、<code>/api/auth/password</code>、<code>/api/auth/audit</code></td>
+      <td>登录页要有接口可用</td>
+    </tr>
+    <tr>
+      <td><code>backend/api.py</code></td>
+      <td>每个端点加身份与学科校验；写接口记审计；<b>切分保存改为复用已有子图，不再重渲</b></td>
+      <td>旧逻辑每次保存都重切一遍图（0.3–1 s/题），云端既没 Pillow 也完全没必要</td>
+    </tr>
+    <tr>
+      <td><code>scripts/render_*.py</code></td>
+      <td><code>pymupdf</code>、<code>PIL</code> 改成「有就导入、没有就置空」，渲染时给一句人话报错</td>
+      <td>后端 <code>import render_subsplit</code> 只为读 <code>cut.json</code> 的小问结构，不该被图片库绑架</td>
+    </tr>
+    <tr>
+      <td><code>frontend/LoginPage.tsx</code><br /><span class="muted">新增</span></td>
+      <td>登录页 + 强制改密页（两种状态）</td>
+      <td>没有登录界面，老师根本进不来</td>
+    </tr>
+    <tr>
+      <td><code>frontend/api.ts</code> / <code>App.tsx</code></td>
+      <td><code>AuthError</code> + 401 全局退登 + 身份闸门 + 右上角身份胶囊（改密/退出）+ 非负责人隐藏「标签管理」+ 隐藏「按小问分别打标」</td>
+      <td>一致性：任何接口 401 都要立刻回登录页，而不是弹一个看不懂的报错</td>
+    </tr>
+    <tr>
+      <td><code>ops/</code></td>
+      <td><code>qbank.service</code> / <code>nginx-qbank.conf</code> / <code>backup.sh</code> / logrotate</td>
+      <td>可复现的部署配置，不是一堆手敲命令</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <div class="t">关于「按小问分别打标」被隐藏</div>
+  不是权限问题，是能力问题：切新子图要 Pillow，服务器按设计不装。
+  <b>已经切好的题照旧能逐问打标</b>（保存时直接沿用已有子图路径，图一个像素都不动）。
+  要让新的一卷支持逐问，在本地切好、连图带 md 一起传上来即可。
+</div>
+
+<h2><span class="n">6</span>验收记录</h2>
+
+<p>本地与服务器各跑一套自动化脚本，覆盖到「拒绝」而不只是「能用」：</p>
+
+<table>
+  <thead><tr><th>批次</th><th class="num">用例</th><th class="num">通过</th><th>重点覆盖</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>本地（8644，用真实题库只读）</td><td class="num">40</td><td class="num"><span class="pill ok">40</span></td>
+      <td>未登录 401、物理/化学双向隔离、跨科 404、首登 428、AI Bearer、只读角色 403、<code>_review</code>/<code>cut.json</code>/词表直链 404</td>
+    </tr>
+    <tr>
+      <td>服务器（127.0.0.1:8642 + nginx）</td><td class="num">35</td><td class="num"><span class="pill ok">35</span></td>
+      <td>上述全部 + <b>真实 AQA 切分题逐问写库</b>（标签与难度落盘、split 状态保持）+ 审计 before/after 落盘 + 写后<b>字节级还原</b>（md5 与本地完全一致）</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="muted">写库测试只对 1 道题做了原样重写，跑完把 <code>q01.md</code> 与 3 个子题文件按字节还原，
+并与本地 md5 逐一比对通过；临时验收账号 3 个也已从 <code>users.yaml</code> 移除（现为 83 个，无残留）。</p>
+
+<h2><span class="n">7</span>日常运维速查</h2>
+
+<h3>上传新切好的一卷（不用重启）</h3>
+<pre><code>rsync -av -e "ssh -i ~/.ssh/wpq.pem" \
+  data/edexcel/a-level/physics/2024-june/ \
+  ubuntu@140.143.229.85:/opt/qbank/data/edexcel/a-level/physics/2024-june/</code></pre>
+<p class="muted">整个 session 目录一起传，别只传 webp —— 图和 md/layout 是配套的。后端比对目录 mtime，下一个请求自动出现。</p>
+
+<h3>只在这三种情况下重启</h3>
+<table>
+  <thead><tr><th>操作</th><th>是否重启</th></tr></thead>
+  <tbody>
+    <tr><td>新增/替换试卷、覆盖题图</td><td><span class="pill ok">否</span></td></tr>
+    <tr><td>改标签词表 <code>taxonomy/*.json</code></td><td><span class="pill ok">否</span>（按文件签名热加载）</td></tr>
+    <tr><td>改后端 <code>.py</code></td><td><span class="pill warn">是</span> <code>sudo systemctl restart qbank</code></td></tr>
+    <tr><td>改前端</td><td><span class="pill ok">否</span>，重传 <code>dist/</code> 即可</td></tr>
+  </tbody>
+</table>
+
+<h3>账号与审计</h3>
+<pre><code>cd /opt/qbank/workbench/backend &amp;&amp; export PYTHONPATH=.
+V=/opt/qbank/venv/bin/python
+$V manage_users.py list
+$V manage_users.py passwd phy03      # 重置密码（打印新密码，首登强制改）
+$V manage_users.py disable phy03     # 停用，下一次请求立即 401
+$V manage_users.py newkey ai-tagger  # 重签 AI Key，旧的立刻失效
+
+tail -n 30 /opt/qbank/data/_audit/$(date +%F).jsonl</code></pre>
+
+<h3>恢复某一天的备份</h3>
+<pre><code>sudo systemctl stop qbank
+sudo rsync -a --delete /opt/qbank/backup/2026-10-20/ /opt/qbank/data/
+sudo cp /opt/qbank/backup/users-2026-10-20.yaml /opt/qbank/config/users.yaml
+sudo systemctl start qbank</code></pre>
+
+<h2><span class="n">8</span>风险与下一步</h2>
+
+<table>
+  <thead><tr><th>风险 / 待办</th><th>等级</th><th>说明与应对</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>80 端口未放通</b></td><td><span class="pill no">阻断</span></td>
+      <td>控制台加一条 TCP:80 规则即解决，见第 1 节</td>
+    </tr>
+    <tr>
+      <td>无 HTTPS</td><td><span class="pill warn">中</span></td>
+      <td>密码走明文 HTTP。内部教学场景可接受；有域名后立刻上证书，同时把 cookie 的 <code>secure</code> 打开</td>
+    </tr>
+    <tr>
+      <td>备份与原件同盘</td><td><span class="pill warn">中</span></td>
+      <td>防误删、防改错，不防磁盘/整机故障。真要灾备得再推一份到对象存储</td>
+    </tr>
+    <tr>
+      <td><b>本地那份 data/ 是最后一道保险</b></td><td><span class="pill warn">中</span></td>
+      <td>机器挂了只有本地能救，<b>不要删</b></td>
+    </tr>
+    <tr>
+      <td>两边同时改同一卷</td><td><span class="pill warn">中</span></td>
+      <td>铁律：本地只加新卷、云端只写标注。文件级同步没有任何提示，会静默覆盖</td>
+    </tr>
+    <tr>
+      <td>磁盘 85%</td><td><span class="pill mid">低</span></td>
+      <td>现在 37%。<code>backup.sh</code> 每天自检，过 85% 会在 <code>logs/backup.log</code> 里喊</td>
+    </tr>
+    <tr>
+      <td>题库到 2 万题</td><td><span class="pill mid">二期</span></td>
+      <td>列表页会明显变慢，届时加 <code>index.db</code>（约 350 行，不改数据）。<b>不要提前做</b></td>
+    </tr>
+    <tr>
+      <td>其余 6 科数据</td><td><span class="pill mid">待办</span></td>
+      <td>要从零切，是工作量问题不是技术问题。切好按上面 rsync 传，账号已经建好了</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <div class="t">下一件事只有两件</div>
+  ① 控制台放通 80；② 用 <code>admin</code> 登录、改密、把 <code>users-initial.csv</code> 发给各科负责人后删掉。
+  之后这个平台就进入「每天用」的状态，我不需要再动它。
+</div>
+
+<footer>
+  题库打标平台 · 一期部署报告 · 2026-10-17 · 代码在 <code>cloud/</code>，服务器在 <code>/opt/qbank</code>，
+  运维手册见 <code>cloud/README.md</code>。本报告不含任何密码或密钥。
+</footer>
+
+</div>
+</body>
+</html>

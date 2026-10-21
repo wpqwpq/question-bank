@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>index.db 方案：到 10 万题时题库该怎么存 · 2026-10-18</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1a1d21; --muted:#5b6572;
+    --line:#e2e6eb; --line2:#eef1f4;
+    --accent:#2563eb; --accent-soft:#eef3fe;
+    --ok:#15803d; --ok-soft:#edf7f0;
+    --warn:#b45309; --warn-soft:#fdf6ec;
+    --bad:#b91c1c; --bad-soft:#fdf0f0;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 28px 80px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:34px}
+  header h1{margin:0 0 8px;font-size:27px;letter-spacing:-.3px}
+  header .sub{color:var(--muted);font-size:14px}
+  header .meta{margin-top:10px;font-size:12.5px;color:var(--muted)}
+  header .meta span{display:inline-block;margin-right:16px}
+  h2{font-size:20px;margin:44px 0 14px;padding-left:12px;border-left:4px solid var(--accent);line-height:1.3}
+  h3{font-size:16px;margin:26px 0 10px}
+  p{margin:10px 0}
+  .lead{font-size:16px}
+  code{font-family:var(--mono);font-size:.9em;background:#eef1f5;padding:1px 5px;border-radius:3px}
+  pre{background:#1e2229;color:#e6e9ee;padding:15px 17px;border-radius:8px;overflow-x:auto;
+      font-family:var(--mono);font-size:12.5px;line-height:1.62;margin:14px 0}
+  pre code{background:none;padding:0;color:inherit;font-size:inherit}
+  pre .c{color:#8b95a5}
+  pre .k{color:#7cb7ff}
+  pre .s{color:#a8d08d}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:var(--card)}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#f0f3f7;font-weight:600;white-space:nowrap}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px;white-space:nowrap}
+  tbody tr:nth-child(even){background:#fafbfc}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .card h3{margin-top:0}
+  .box{border-radius:8px;padding:14px 16px;margin:14px 0;font-size:14px}
+  .box .t{font-weight:700;display:block;margin-bottom:4px}
+  .box.info{background:var(--accent-soft);border-left:3px solid var(--accent)}
+  .box.ok{background:var(--ok-soft);border-left:3px solid var(--ok)}
+  .box.warn{background:var(--warn-soft);border-left:3px solid var(--warn)}
+  .box.bad{background:var(--bad-soft);border-left:3px solid var(--bad)}
+  .tag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:20px;border:1px solid;margin-left:6px;vertical-align:1px;font-weight:600;white-space:nowrap}
+  .tag.do{color:var(--ok);border-color:#b9dfc6;background:var(--ok-soft)}
+  .tag.no{color:var(--bad);border-color:#eab8b8;background:var(--bad-soft)}
+  .tag.opt{color:var(--warn);border-color:#e8cfaa;background:var(--warn-soft)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.grid2{grid-template-columns:1fr}}
+  ol,ul{margin:10px 0;padding-left:24px}
+  li{margin:6px 0}
+  .q{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ink);border-radius:6px;padding:13px 16px;margin:12px 0}
+  .q b{display:block;margin-bottom:4px}
+  .small{font-size:13px;color:var(--muted)}
+  hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+  .flow{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin:16px 0;font-family:var(--mono);font-size:12.5px;line-height:2;white-space:pre;overflow-x:auto}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  @media (max-width:820px){.kpi{grid-template-columns:repeat(2,1fr)}}
+  .kpi div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .kpi .v{font-size:21px;font-weight:700;font-family:var(--mono);letter-spacing:-.5px}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
+  .v.bad{color:var(--bad)} .v.ok{color:var(--ok)} .v.warn{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>index.db 方案</h1>
+  <div class="sub">到 10 万题时，题库的索引该怎么加、加在哪、会动到什么</div>
+  <div class="meta">
+    <span>2026-10-18</span>
+    <span>面向：王培琪</span>
+    <span>状态：待拍板（本机实测数据来自当前 9176 题）</span>
+  </div>
+</header>
+
+<div class="box info">
+  <span class="t">先看这一句</span>
+  你现在这套系统把「每个题的信息」全存在一个个 md 文件里，每次要用就现场翻文件。<b>题少的时候这是最省事的做法，题多的时候就是灾难</b>。index.db 的做法是：抄一本目录册出来，查路用目录册，正文还回原文件找。<b>原文件一个字不改，目录册随时可扔可重抄。</b>
+</div>
+
+<div class="kpi">
+  <div><div class="v">9176</div><div class="l">当前题文件数</div></div>
+  <div><div class="v warn">13.1s</div><div class="l">全库解析一次（实测）</div></div>
+  <div><div class="v bad">143s</div><div class="l">外推 10 万题</div></div>
+  <div><div class="v ok">84MB</div><div class="l">10 万题的 index.db（实测外推）</div></div>
+</div>
+
+<h2>1. 先用一个比喻把话说清</h2>
+
+<p class="lead">把题库想成一个图书馆。</p>
+
+<ul>
+  <li><b>md 文件</b> = 书架上的书。每本书第一页写着「书名、年份、科目、分类标签」。这些是<b>唯一真货</b>，改一个字都得改这儿。</li>
+  <li><b>现在的程序</b> = 一个没有目录的图书管理员。你想知道「2019 年有哪些物理卷、各自打完标签没」，他就得一排一排走、一本一本翻开第一页看。走完 9176 本要 13 秒。走完 10 万本要 143 秒。</li>
+  <li><b>index.db</b> = 前台那个卡片盒。每本书抄一张卡片：书名、年份、科目、标签打完没、书在哪个架子。查「2019 物理」时翻卡片盒，0.4 毫秒出结果。</li>
+</ul>
+
+<p><b>关键在于</b>：卡片盒不是书。卡片丢了、抄错了、撕了重抄，书一本都不会少。这就是这套方案的核心原则——<b>index.db 永远是「派生品」，删掉就能重新长出来</b>。</p>
+
+<div class="box warn">
+  <span class="t">一个必须先讲清的名词：SQLite</span>
+  你听到「数据库」可能会想到 MySQL、PostgreSQL 那种要装服务、要开端口、要连账号的东西。<b>SQLite 不是。</b>整个数据库就是一个磁盘文件（<code>index.db</code>），Python 标准库自带，<code>import sqlite3</code> 就能用，不用装任何软件、不用开任何端口。你可以把它理解成「一个能用 SQL 语句查询的 Excel 文件」。
+</div>
+
+<h2>2. 现在这套系统到底怎么跑的</h2>
+
+<p>我把代码里的真实链路抽出来了（<code>cloud/workbench/backend/</code>）。一次打开列表页，后端做的事是：</p>
+
+<div class="flow">浏览器 GET /api/papers
+   │
+   ├─ ① _scan_papers()          走一遍 data/ 目录树，记下每个目录的修改时间，
+   │                            得到 486 个「卷」对象            ← 实测 0.10s
+   │
+   ├─ ② 对每一卷 Paper.summary()  读这卷第一题 q01.md 的第一页
+   │                            拿 paper_code / year / session
+   │
+   ├─ ③ 对每一卷 Paper.questions() 遍历这卷每个 qNN.md，读第一页
+   │                            （read_meta 有缓存：文件没变就不用重读）
+   │                            算每题状态 done / none
+   │
+   └─ ④ 再读 confirmed.json、flagged.json
+                               数出「已确认几题」「标了几题」</div>
+
+<p>其中 <code>read_meta()</code> 就是「翻开书看第一页」：读文件 → 用 YAML 解析第一页那段 <code>--- ... ---</code> → 过一遍 JSON Schema 校验 → 存进内存字典 <code>_meta_cache</code>，键是文件的「最后修改时间 + 大小」。文件没动过，下次直接拿内存里的。</p>
+
+<p>另外还有一份 <code>_qid_index</code>：题号 → 这道题在哪个文件。开机时全量建一遍（<code>store.warm()</code>）。</p>
+
+<div class="box bad">
+  <span class="t">这套设计有一个隐藏的脆弱点</span>
+  缓存判断「文件变没变」靠的是<b>文件的最后修改时间</b>（mtime）。问题是：<b>rsync、备份恢复、git checkout 都会把整库文件的修改时间刷成「现在」</b>。也就是说，只要你做一次恢复或同步，10 万个文件的缓存全部作废，下一次有人点开列表页，后端就要现场重新解析 10 万遍——<b>143 秒的白屏</b>。这不是假设，10-17 的方案评估里「列表页会到十几秒」就是这么来的。
+</div>
+
+<h2>3. 会疼在哪：四个坎，全部实测</h2>
+
+<p>下面每个数字都是我在你本机用当前 9176 个题文件跑出来的，不是拍脑袋估的。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:19%">坎</th><th style="width:31%">现在（9176 题）</th><th style="width:19%">10 万题</th><th>为什么会这样</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>① 冷启动</b><br><span class="small">开机 / 缓存全失效时</span></td>
+      <td>13.07s（纯解析实测）<br><span class="small">≈ 1.42ms/题</span></td>
+      <td class="n" style="color:#b91c1c">143s</td>
+      <td>每道题都要读盘 + 解析 YAML。YAML 解析器慢，这是主要成本，不是读盘。</td>
+    </tr>
+    <tr>
+      <td><b>② 常驻内存</b></td>
+      <td>约 26MB（2830 字节/题）</td>
+      <td class="n" style="color:#b91c1c">270MB</td>
+      <td>解析出来的字典全留在内存里当缓存。加上题号索引、确认名单，总量 350–400MB。</td>
+    </tr>
+    <tr>
+      <td><b>③ 每次请求重算</b></td>
+      <td>列表页几十 ms</td>
+      <td class="n" style="color:#b45309">1.5–3s</td>
+      <td><code>/api/papers</code> 每次请求都要走目录、逐卷算状态，不算完不返回。</td>
+    </tr>
+    <tr>
+      <td><b>④ 确认名单</b><br><span class="small">confirmed.json</span></td>
+      <td>10KB / 每请求 0.41ms</td>
+      <td class="n" style="color:#b45309">8–10MB / 每次 300–400ms</td>
+      <td>所有题号塞在一个 JSON 文件里，每次请求都整个读一遍。10 万条时这会变成新的瓶颈。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><b>注意 ② 最要命。</b>服务器 3.7G 内存、<code>qbank.service</code> 设了 <code>MemoryMax 1200M</code>。10 万题光缓存就吃掉 270MB，再加 FastAPI 自身、图片流、并发请求的临时内存——<b>一旦超限，systemd 直接把服务杀掉</b>，表现是「打标台突然打不开，过一会儿又好了」。这种故障最难查。</p>
+
+<div class="box info">
+  <span class="t">所以真正卡住的不是「查得慢」</span>
+  是<b>「开机慢」+「内存贵」</b>。这两点恰好是 SQLite 最擅长的：它把「全部装进内存」换成「存在磁盘上，用到哪页读哪页」。内存占用从 270MB 掉到几十 MB，冷启动从 143 秒掉到 30 秒左右。
+</div>
+
+<h2>4. index.db 里到底存什么</h2>
+
+<p>原则：<b>只抄「查询时要用到的字段」</b>，正文、题图、坐标一律不抄。因为正文和坐标只在你打开某一题时才需要，直接读那个 md 就行，快得很（几毫秒）。</p>
+
+<p>实测我今天真的把现有 9176 题灌了一遍，两张表，<b>整个文件 7.4MB</b>。表结构如下：</p>
+
+<pre><code><span class="c">-- 表一：卷（486 行 → 10 万题时约 1430 行）</span>
+<span class="k">CREATE TABLE</span> papers (
+  paper_id        TEXT PRIMARY KEY,   <span class="c">-- 目录名，如 2019-jan-ph01</span>
+  board           TEXT,              <span class="c">-- aqa / cie / edexcel</span>
+  qualification   TEXT,              <span class="c">-- a-level</span>
+  subject         TEXT,              <span class="c">-- physics / chemistry …（学科隔离靠它）</span>
+  unit            TEXT,              <span class="c">-- U1–U4，从卷号推出来</span>
+  paper_code      TEXT,
+  year            INTEGER,
+  session         TEXT,
+  question_count  INTEGER,           <span class="c">-- 这卷几题</span>
+  annotated_count INTEGER,           <span class="c">-- 打完标签几题（由 questions 表聚合得出）</span>
+  source          TEXT
+);
+
+<span class="c">-- 表二：题（9176 行 → 10 万行）</span>
+<span class="k">CREATE TABLE</span> questions (
+  qid             TEXT PRIMARY KEY,  <span class="c">-- 那道题的 id，全库唯一</span>
+  paper_id        TEXT,              <span class="c">-- 属于哪卷</span>
+  parent_qid      TEXT,              <span class="c">-- 是某题的小问就填父题 id</span>
+  question_number TEXT,
+  sub_label       TEXT,              <span class="c">-- 小问标号 1/2/3</span>
+  total_marks     INTEGER,
+  question_type   TEXT,
+  split           INTEGER,           <span class="c">-- 是否被切分过</span>
+  status          TEXT,              <span class="c">-- done / none（列表页最常用的筛选项）</span>
+  difficulty      TEXT,
+  primary_tag     TEXT,
+  tags            TEXT,              <span class="c">-- JSON 数组文本，如 ["u1-neutrino"]</span>
+  image           TEXT,              <span class="c">-- 相对路径，找图用</span>
+  file_name       TEXT               <span class="c">-- 要读原文时去哪个文件</span>
+);
+
+<span class="k">CREATE INDEX</span> idx_q_paper  <span class="k">ON</span> questions(paper_id);
+<span class="k">CREATE INDEX</span> idx_q_status <span class="k">ON</span> questions(status);</code></pre>
+
+<h3>实测出来的查询速度（9176 题的真实库）</h3>
+
+<table>
+  <thead><tr><th>查询</th><th style="width:20%">耗时</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>列出全部卷（列表页主体）</td><td class="n">0.375 ms</td><td>只扫 papers 表 486 行，<b>完全不碰 questions 表</b></td></tr>
+    <tr><td>某卷的全部题</td><td class="n">0.044 ms</td><td>走 paper_id 索引</td></tr>
+    <tr><td>按题号定位一个文件</td><td class="n">0.0045 ms</td><td>主键索引，比现在快 1000 倍量级</td></tr>
+    <tr><td>全库按卷统计「打完了几题」</td><td class="n">0.24 ms</td><td>10 万题约 2.6ms，仍然可忽略</td></tr>
+  </tbody>
+</table>
+
+<p class="small">对照：现在每请求光是走目录就要 0.1 秒（10 万题 1 秒），解析 YAML 更是 13 秒。差了 3–4 个数量级。</p>
+
+<div class="box ok">
+  <span class="t">顺手消掉一处冗余</span>
+  现在 paper_code / year / session / subject 这些「卷级」信息，在<b>每一道题的 md 里都重复写了一遍</b>——9176 道题里重复了同样的内容。index.db 把它们提到 papers 表，一份就够了。这是白捡的好处，不算额外改造。
+</div>
+
+<h2>5. 最难的部分：怎么保证目录册不是旧的</h2>
+
+<p>这是整个方案唯一的真难点，也是我要你重点看的一段。</p>
+
+<p>md 是「事实」，index.db 是「抄件」。抄件什么时候该更新？<b>文件系统不会主动通知你「有人改了」</b>，只能靠你自己记着。三种触发方式，我的建议是三个都用一点：</p>
+
+<table>
+  <thead>
+    <tr><th style="width:17%">触发方式</th><th style="width:33%">怎么做</th><th style="width:25%">管什么</th><th>代价</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>A 写时同步</b><span class="tag do">必做</span></td>
+      <td>打标台的 PUT 接口写完 md，紧跟着一句 <code>UPDATE questions SET ...</code></td>
+      <td>用户在界面上改的题</td>
+      <td>每次写多 1–2ms</td>
+    </tr>
+    <tr>
+      <td><b>B 启动校验</b><span class="tag do">必做</span></td>
+      <td>启动时拿 <code>file_stamp</code> 表（路径+mtime+大小）跟磁盘比一遍，不一致的重新灌</td>
+      <td>停机期间被别人手改的、被脚本改的</td>
+      <td>一次 1–2 秒（10 万题），只在启动时</td>
+    </tr>
+    <tr>
+      <td><b>C 低频巡检</b><span class="tag opt">建议</span></td>
+      <td>后台每 10 分钟跑一次 B，或提供 <code>build_index.py --check</code> 手动跑</td>
+      <td>绕过 API 直接改文件（比如我重传题包）</td>
+      <td>一次 1–2 秒的 IO，可忽略</td>
+    </tr>
+    <tr>
+      <td><b>D 每请求比对</b><span class="tag no">不做</span></td>
+      <td>每次请求都 stat 全库</td>
+      <td>—</td>
+      <td>又回到「每次翻一遍书架」，白折腾</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="t">写操作的顺序有讲究，不能反</span>
+  <b>先写 md，再更新索引。</b>顺序反了会出现「索引里有、文件里没有」——用户点进去 404。而「文件是新的、索引还是旧的」只是列表页数字慢一拍，下一分钟巡检就修正了。<b>永远让抄件落后于原件，不能让抄件超前。</b>
+</div>
+
+<p>另外 10-17 定过一条纪律叫「二期只加读路径，不改写入路径」，这里的准确表述应该是：<b>写入逻辑一个字不改，只在函数末尾加一句「索引失效」</b>。定这条纪律的本意是防止改动打架，不是禁止一行 UPDATE。</p>
+
+<h2>6. 高频写入：切题、批量上传，扛得住吗</h2>
+
+<p class="lead">你问的这两个场景，恰好是这套设计最不担心的地方。原因一句话：<b>图片根本不经过数据库</b>。index.db 里只有字符串——路径、标签、状态，一张图都没有。</p>
+
+<h3>6.1 切一卷到底发生了多少事</h3>
+
+<p>Edexcel 切题（含答题册 <code>*a</code> 卷生成 <code>answer_regions</code>）时，一卷实际产生：约 90 个子题 md、90 张小问图、1 版 cut.json，外加若干 qNN.md 被原地改写。</p>
+
+<table>
+  <thead><tr><th style="width:44%">动作</th><th style="width:20%">实测耗时（本机）</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>Pillow 裁一小问 + WebP 编码 ×90</td><td class="n">5.7 s<br><span class="small">63.7ms/张</span></td><td>纯 CPU，<b>这才是切题的真瓶颈</b></td></tr>
+    <tr><td>写 90 个子题 md</td><td class="n">105 ms</td><td>小文件 IO</td></tr>
+    <tr><td><b>写索引 90 行</b></td><td class="n" style="color:#15803d">约 2 ms</td><td>实测 0.02ms/行</td></tr>
+  </tbody>
+</table>
+
+<div class="box ok">
+  <span class="t">切一卷 6 秒，数据库只花 2 毫秒 —— 占 0.03%</span>
+  加了索引之后，切题速度不会有任何可感知的变化。<b>切的快慢只取决于 Pillow 编码速度。</b>
+</div>
+
+<div class="box bad">
+  <span class="t">但有个真风险，不是数据库 —— 是内存</span>
+  切图进程（Pillow 打开 PDF 页面再裁）可能吃几百 MB。服务器总共 3.7G，而 <code>qbank.service</code> 设了 <code>MemoryMax 1200M</code>。如果切割进程和服务同时吃内存，<b>内核的 OOM killer 会挑服务下手</b>（因为服务有明确上限）。<br>
+  → 切割保持串行、一次一卷（现在的 <code>batch_run.py</code> 就是串行，别改成并发）。这不是沿用现状，是必须守住。
+</div>
+
+<h3>6.2 「换图」对索引完全透明</h3>
+
+<p>换一张题图 = 只改 <code>assets/qNN.webp</code>，md 里那行 <code>image: assets/qNN.webp</code> 一个字不变 → 索引里存的路径也没变 → <b>索引不需要任何更新</b>。</p>
+
+<p>反过来的坑要记住：换了图，<b>nginx 的 <code>/files/</code> 不能设长缓存</b>，否则浏览器还显示旧的（10-17 踩过，已改 <code>no-cache</code>）。换图这件事对数据库和索引都是零成本，真正需要操心的是浏览器缓存这一层。</p>
+
+<h3>6.3 某局某科批量上传 100 卷</h3>
+
+<p>100 卷 ≈ 9000 张图（约 700MB）+ 9000 个 md（约 13MB）。走 scp/tar 直接丢目录：</p>
+
+<table>
+  <thead><tr><th style="width:30%">项目</th><th style="width:22%">量</th><th>对数据库的影响</th></tr></thead>
+  <tbody>
+    <tr><td>图片字节</td><td class="n">700 MB</td><td><b>0 行，完全不经过 SQLite</b></td></tr>
+    <tr><td>子题元数据</td><td class="n">9000 行</td><td>实测单事务 190 ms</td></tr>
+    <tr><td>真正瓶颈</td><td class="n">磁盘 + 网络</td><td>700MB 在 100MB/s 的盘上要 7 秒；网络看上行带宽</td></tr>
+  </tbody>
+</table>
+
+<p>实测「一边写 300 张 80KB 图、一边读索引」：读延迟 <b>0.53ms</b>（空闲时 0.044ms）。也就是说图片狂写的时候，查索引还是亚毫秒级。<b>两者争的是磁盘带宽，不是数据库的锁。</b></p>
+
+<h3>6.4 边导入边有人打标（并发）</h3>
+
+<p>这是最该关心的组合：我在传 100 卷，同时 10 个老师在打标。实测三段：</p>
+
+<table>
+  <thead>
+    <tr><th style="width:48%">场景</th><th style="width:12%">平均</th><th style="width:12%">P95</th><th style="width:12%">最大</th><th>结论</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>空闲（只读，无写）</td><td class="n">0.38 ms</td><td class="n">—</td><td class="n">—</td><td>基准</td></tr>
+    <tr><td>一边写 9000 行（60 批事务）一边读列表 237 次</td><td class="n">3.39 ms</td><td class="n">6.00 ms</td><td class="n">16.2 ms</td><td>快一个量级，但仍在毫秒级</td></tr>
+    <tr><td>一个持有写锁 2 秒的长事务期间读</td><td class="n">0.50 ms</td><td class="n">—</td><td class="n">34.0 ms</td><td><b>没有被阻塞</b></td></tr>
+  </tbody>
+</table>
+
+<ul>
+  <li><b>读永远不等写。</b>WAL 模式下读者看的是「事务开始前的快照」，所以有人在批量导入时，打标台不会卡住。<b>这条是整个方案能落地的关键。</b></li>
+  <li><b>但写和写会排队。</b>SQLite 是「一写多读」，两个批量导入同时跑，后一个要等前一个提交。这是它的设计，不是 bug。</li>
+  <li>平均 3.39ms 比空闲高一个量级，<b>不是因为锁等待</b>，而是测试里卷表从 486 涨到 1000+ 行、查询本身变大了。</li>
+</ul>
+
+<h3>6.5 三种「新数据进库」的路径，代价差 100 倍</h3>
+
+<p>这是实操里最要紧的一张表。同样是「有新题了」，索引怎么知道，完全取决于数据是怎么进去的：</p>
+
+<table>
+  <thead>
+    <tr><th style="width:30%">数据怎么进来的</th><th style="width:26%">索引怎么知道</th><th style="width:16%">要重扫多少</th><th>代价</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>走打标台 API 改标注</td><td>写时同步（同一请求内）</td><td class="n">1 行</td><td class="n" style="color:#15803d">1–2 ms</td></tr>
+    <tr><td>scp 传整卷（本地切好）</td><td>卷目录 mtime 变了</td><td class="n">该卷 90 个文件</td><td class="n" style="color:#15803d">0.13 s / 卷</td></tr>
+    <tr><td>原地改 qNN.md 内容<br><span class="small">比如只补 answer_regions</span></td><td>目录 mtime <b>不变</b></td><td class="n">全量比 stamp</td><td class="n" style="color:#b45309">10 万题 1–2 s</td></tr>
+    <tr><td>绕过一切直接 vim 改</td><td>只能靠定时巡检</td><td class="n">全量</td><td class="n">同上，每 10 分钟一次</td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="t">关键设计：失效粒度定在「卷」，不是「题」</span>
+  实测 stat 1430 个<b>卷目录</b> = 57ms（Windows，Linux 上约 10ms）；stat 10 万个<b>题文件</b> = 1 秒以上。<b>差 100 倍。</b><br>
+  所以巡检只看目录：哪卷的目录时间变了，才进去细看那 90 个文件。切题、传卷这类「一次加一卷」的操作，正好落在这个粒度上，最便宜。
+</div>
+
+<div class="box warn">
+  <span class="t">但别赌 mtime —— 这是最容易翻车的一点</span>
+  「原地改文件内容」<b>不会改目录 mtime</b>（只有新增/删除/重命名文件才会）。Edexcel 切题里「给已存在的 qNN.md 补 <code>answer_regions</code>」正好是这种情况，卷级 mtime 检测不到。<br><br>
+  <b>所以我的建议：切割脚本、批量导入脚本、题包上传脚本的收尾，固定加一句</b><br>
+  <code>python scripts/build_index.py --paper &lt;卷名&gt;</code><br>
+  单卷 0.13 秒，跑完立刻一致。这比任何自动检测都可靠，而且便宜到不值得省。
+</div>
+
+<h3>6.6 批量写入的两条纪律</h3>
+
+<ol>
+  <li><b>小批提交，别用一个事务包 9000 行。</b>实测：500 行逐条 commit = 133ms，5000 行单事务 = 107ms（每行差 13 倍）。但一个事务跑 3 秒会挡住其他写。<b>→ 每 200–500 行提交一次</b>，既能享受批量速度，又不长时间占锁。</li>
+  <li><b>只让服务进程写 index.db。</b>切割脚本跑完不要自己开 SQLite 写——两个写者会让「谁在什么时候改的」彻底混乱，出问题无法定位。<b>→ 走 <code>--paper</code> 参数由脚本调用，或调一次刷新接口。</b></li>
+</ol>
+
+<p class="small">本节实测（本机 Windows，2026-10-18）：Pillow 裁图+WebP 编码 63.7ms/张（1450×402 源图）；写 90 个 md 105ms；索引写 0.02ms/行；stat 486 个卷目录 19.4ms；单卷 listdir+stat 0.55ms；WAL 峰值 4.4MB。脚本：<code>cloud/.tmp/index_stress2.py</code>。Windows 的文件操作通常比 Linux 慢，服务器上的数字只会更好。</p>
+
+<h2>7. 对「数据」的影响</h2>
+
+<div class="grid2">
+  <div class="card">
+    <h3>不会变的<span class="tag do">零影响</span></h3>
+    <ul>
+      <li>md 文件格式：front-matter 一个字段不加</li>
+      <li>切割坐标、题图、layout.json：完全不碰</li>
+      <li>目录结构、命名规范：不变</li>
+      <li>Git 里的内容：不变（index.db 进 .gitignore）</li>
+      <li>前端拿到的 JSON 结构：字段一个不改</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>会新增的<span class="tag opt">要盯住</span></h3>
+    <ul>
+      <li><b>多了一份可能过期的副本</b>——这是新增的风险，靠上面 A/B/C 三层兜住</li>
+      <li><b>备份边界要划清</b>：index.db 不进备份（详见第 10 节）</li>
+      <li><b>恢复流程多一步</b>：从备份恢复完必须重建索引，否则显示的是恢复前的状态</li>
+      <li><b>schema 版本号</b>：表结构一改就整库重建，不写迁移脚本（重建只要 30 秒）</li>
+    </ul>
+  </div>
+</div>
+
+<div class="box bad">
+  <span class="t">绝对不能做的事</span>
+  不要往 index.db 里存「重新生成不出来的东西」。比如确认状态（confirmed.json）、标黄标记（flagged.json）、谁在什么时候改了什么（审计日志）。这些东西一旦进了索引库，下次重建索引就等于<b>亲手抹掉人工成果</b>。<br>
+  这条 10-14 的讨论里已经踩到过边：<b>「能随时重建」和「能承载写入」是互斥的</b>。index.db 一旦开始存真数据，它就不再是索引了。
+</div>
+
+<h2>8. 对「后端」的影响</h2>
+
+<p>改动集中在 4 个文件，总增量约 <b>380–420 行</b>（其中 300 行是新模块，其余是在旧函数里替换几行）。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:26%">文件 / 函数</th><th style="width:14%">改动量</th><th>具体改法</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>backend/index.py</code><br><span class="small">新建</span></td>
+      <td class="n">约 300 行</td>
+      <td>连库、建表、查询封装、单条 upsert/delete、全量重建、stamp 校验。<b>所有 SQL 只在这一次出现</b>，别散到 api.py 里。</td>
+    </tr>
+    <tr>
+      <td><code>store.iter_papers()</code></td>
+      <td class="n">改 20 行</td>
+      <td>从「扫目录」变成「查 papers 表」。加一条兜底：index.db 不存在就现场建（保证永远能启动）。</td>
+    </tr>
+    <tr>
+      <td><code>store.find_question()</code></td>
+      <td class="n">改 30 行</td>
+      <td>从「全库重建 qid 索引」变成一条主键查询。<b>这一处改动收益最大</b>：外部增删文件时不用再触发 30–60 秒的全量重建。</td>
+    </tr>
+    <tr>
+      <td><code>api.list_papers()</code></td>
+      <td class="n">改 40 行</td>
+      <td>annotated_count 用一句 <code>GROUP BY paper_id</code> 聚合算，<b>不要维护计数器字段</b>（计数器一定会跑偏，聚合永远对）。</td>
+    </tr>
+    <tr>
+      <td><code>store.write_annotation()</code><br><code>write_difficulty()</code><br><code>save_split()</code><br><code>cleanup_subs()</code></td>
+      <td class="n">各加 1–3 行</td>
+      <td>写完 md 后调用 <code>index.upsert_q(...)</code> 或 <code>index.delete_q(...)</code>。<b>原有写文件逻辑不动。</b></td>
+    </tr>
+    <tr>
+      <td><code>main.py</code> 启动</td>
+      <td class="n">改 15 行</td>
+      <td><code>warm()</code> 换成「打开索引 + 后台线程做一次 stamp 校验」，不阻塞启动。</td>
+    </tr>
+    <tr>
+      <td><code>scripts/build_index.py</code><br><span class="small">新建</span></td>
+      <td class="n">约 90 行</td>
+      <td>独立命令：全量重建 / <code>--check</code> 只校验 / <code>--paper</code> 只重灌某卷 / <code>--bench</code> 对比耗时。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>并发与进程的硬约束（这条别忘）</h3>
+
+<ul>
+  <li><b>还是单进程。</b>"有了数据库"很容易让人想「那上多 worker 吧」——不行。SQLite 允许多进程，但你的服务里还有进程内缓存和 <code>RLock</code>，多 worker 会各算各的、互相看不见对方的改动。<b>要上多 worker 得先把缓存和锁全部移出去，那是三期的事。</b></li>
+  <li><b>开 WAL 模式</b>：读写不互相堵。代价是磁盘上多出 <code>index.db-wal</code> 文件，定期自动合并。</li>
+  <li><b>SQLite 文件必须放本机磁盘。</b>放 NFS / 网络盘 / 共享目录，锁机制不可靠，早晚写坏。这一条 10-14 已经记过。</li>
+  <li>写操作加 5 秒忙等超时（<code>busy_timeout=5000</code>），避免偶发「database is locked」直接报错给用户。</li>
+</ul>
+
+<h2>9. 对「前端」的影响</h2>
+
+<div class="box ok">
+  <span class="t">前端零改动</span>
+  <code>/api/papers</code>、<code>/api/papers/{id}/questions</code>、<code>/api/questions/{qid}</code> 的返回结构一个字段都不变。React 那边不用动一行代码，连 build 都不用重跑。
+</div>
+
+<p>唯一的行为变化是「数据新鲜的时机」：改完一题 → 后端写完 md 顺手更新索引 → 前端刷新立刻看到新数字。仍然是即时的，感觉不出差别。</p>
+
+<h3>顺带能做、但现在不急着做的事</h3>
+<ul>
+  <li><b>服务端筛选</b>：<code>/api/papers?board=aqa&amp;subject=physics&amp;status=none</code>。现在前端是全量拉下来自己筛，1430 卷时数据量约 300KB，还能扛，但筛选逻辑在前端会越来越重。</li>
+  <li><b>按标签查题</b>：有了 questions 表的 tags 列，可以做到「点一个标签，列出全库用过这个标签的题」。这个功能现在完全做不到（要现场翻 9176 个文件）。</li>
+  <li><b>分页</b>：卷列表 1430 条其实不需要分页，先不做。</li>
+</ul>
+<p class="small">这些都<b>不是</b>本次必做项。先上索引，功能以后再说——别为了「用上索引」去改前端。</p>
+
+<h2>10. 对「存储空间」的影响</h2>
+
+<p>这是最容易想多的一块。实测数字如下（9176 题的真实库，外推到 10 万题）：</p>
+
+<table>
+  <thead>
+    <tr><th style="width:30%">项目</th><th style="width:17%">现在（9176 题）</th><th style="width:17%">10 万题</th><th>备注</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>题文件 md（全部）</td><td class="n">12.9 MB</td><td class="n">约 140 MB</td><td>平均 1469 字节/题（正文只有题干文字，图是单独文件）</td></tr>
+    <tr><td><b>index.db</b></td><td class="n">7.4 MB</td><td class="n" style="font-weight:700">约 84 MB</td><td>实测 842 字节/题，含索引开销</td></tr>
+    <tr><td>index.db-wal 临时峰值</td><td class="n">≈ 8 MB</td><td class="n">≈ 90 MB</td><td>写入时临时出现，合并后回落</td></tr>
+    <tr><td>题图 webp</td><td class="n">591 MB</td><td class="n">约 7.8 GB</td><td><b>真正吃盘的在这儿</b></td></tr>
+    <tr><td>PDF 原件（云端不上传）</td><td class="n">0</td><td class="n">0</td><td>一期已定不传</td></tr>
+  </tbody>
+</table>
+
+<div class="box ok">
+  <span class="t">结论：空间上完全不用担心</span>
+  10 万题时 index.db 占 <b>84MB</b>，对比整盘 59G 是 <b>0.14%</b>，对比题库本身 9.9G 是 <b>0.85%</b>。86 兆换掉 143 秒启动和 270MB 内存，怎么算都划算。<b>真正要盯的还是题图那 7.8G</b>，85% 磁盘红线不变。
+</div>
+
+<h3>两个空间相关的坑</h3>
+<ul>
+  <li><b>别把 index.db 放进 <code>data/</code></b>。现在 <code>backup.sh</code> 是 <code>rsync --delete --link-dest</code> 整个 <code>/opt/qbank/data</code>。放进去的话，每天重建一次索引就等于每天多一份 84MB 的新文件（硬链接复用不了），7 天多占 588MB。→ 放 <code>/opt/qbank/var/index.db</code>。</li>
+  <li><b>inode 也要看</b>：10 万个 md + 10 万张图 + 7 天硬链接快照，inode 用量不小。<code>df -h</code> 之外顺手看 <code>df -i</code>。</li>
+</ul>
+
+<h3>反而省下的时间</h3>
+<table>
+  <thead><tr><th style="width:34%">操作</th><th style="width:22%">现在</th><th style="width:22%">有 index.db 后</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>全库重建一次索引</td><td class="n">143 s（10 万题外推）</td><td class="n" style="color:#15803d">约 35 s</td><td>实测灌库 3.23s/9176 题，跳过 schema 校验、只读 front-matter，比现有路径快 4 倍</td></tr>
+    <tr><td>按题号找一道题</td><td class="n">命中缓存时 ~0.1ms<br>缓存失效时 30–60s</td><td class="n" style="color:#15803d">0.005ms</td><td>不再有「外部改动触发全量重建」这个雷</td></tr>
+    <tr><td>备份恢复后首次可用</td><td class="n">143 s</td><td class="n" style="color:#15803d">约 35 s</td><td>恢复脚本末尾加一行重建命令</td></tr>
+  </tbody>
+</table>
+
+<h2>11. 什么时候动手：别看「10 万题」这个数</h2>
+
+<p>「10 万题」是个好记的整数，但它不是合适的触发条件。<b>按症状触发，不按题数触发。</b></p>
+
+<table>
+  <thead>
+    <tr><th style="width:32%">指标</th><th style="width:24%">当前</th><th style="width:22%">建议触发线</th><th>怎么测</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>启动预热耗时</td><td class="n">13.1 s</td><td class="n">> 60 s</td><td>看日志里 <code>[warmup] 预热完成</code> 那一行</td></tr>
+    <tr><td>列表页 P95 响应</td><td class="n">几十 ms</td><td class="n">> 1000 ms</td><td>浏览器 F12 → Network，连点 10 次看</td></tr>
+    <tr><td>服务进程内存 RSS</td><td class="n">约 120 MB</td><td class="n">> 600 MB</td><td><code>systemctl status qbank</code> 里的 Memory 行</td></tr>
+    <tr><td>题文件总数</td><td class="n">9 176</td><td class="n">> 20 000</td><td><code>find data -name "q*.md" | wc -l</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="t">我的判断</span>
+  改造量是固定的（约 400 行，不会因为题多就变多）。<b>所以做的时机应该选「没压力的时候」，不是「出事的时候」。</b>建议在 <b>2 万题左右、8 个学科开始铺量的那个节点</b>做——那时候你有余量慢慢验收、对比、回滚；等到 10 万题列表页卡成 3 秒，你是在救火，还得一边救火一边改存储层。<br><br>
+  另外提醒一句：按现在 486 卷 / 9176 题（平均 19 个文件/卷）的速度，<b>10 万题大约是 1400–2000 卷</b>（8 学科全量 + 小问切分）。这不远了，但要几个月。
+</div>
+
+<h2>12. 落地路线：四步，每步都能单独回滚</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:9%">步骤</th><th style="width:24%">做什么</th><th style="width:30%">验收标准</th><th>回滚方式</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Step 0</b><br><span class="small">只读原型</span><br><span class="tag do">已完成 10-18</span></td>
+      <td>写 <code>scripts/build_index.py</code>，生成 <code>index.db</code>，加 <code>--bench</code> 对比现状接口耗时。<b>不动任何线上代码</b>，产物可以随时删。</td>
+      <td>题数、卷数、每卷 annotated_count 与现有 API 返回<b>逐项一致</b>（写个脚本对比，不靠眼看）</td>
+      <td>删文件即可</td>
+    </tr>
+    <tr>
+      <td><b>Step 1</b><br><span class="small">读路径切换</span><br><span class="tag do">已完成 10-18</span></td>
+      <td><code>iter_papers</code> / <code>find_question</code> / <code>list_papers</code> 改走 db，目录扫描降级成兜底。</td>
+      <td>现有 smoke 脚本 40 项全绿；列表页逐卷对截图，数字一模一样</td>
+      <td>git revert + 删 index.db</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="background:var(--ok-soft);border-left:3px solid var(--ok)">
+        <b>Step 0 / 1 实测（2026-10-18，410 卷 / 8220 题）</b><br>
+        · 建索引 12.26s（与现状 cold warm 11.99s 持平 —— 都要解析同一批 YAML），但这是<b>一次性</b>成本；<br>
+        · 之后启动 <b>12.0s → 0.04s</b>；<code>/api/papers</code> <b>0.23s → 0.12s</b>；单卷题目 <b>0.086s → 0.0034s</b>；<br>
+        · index.db <b>1.7 MB（215 字节/题）</b>，10 万题约 21MB；<br>
+        · 「写 md → 标 stale → 下次读重灌该卷（0.15s）」端到端验证通过；<code>--check</code> 全库 410 卷 0 差异。<br>
+        <b>踩到的坑</b>：<code>write_annotation</code> 内联了一份写盘逻辑、绕开了 <code>_atomic_write</code>，导致「改了标注列表不刷新」——已改为统一走 <code>_atomic_write</code>（它负责通知索引失效）。<b>以后新增写盘代码不要绕开它。</b>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Step 2</b><br><span class="small">写路径失效</span><br><span class="tag do">随 Step 1 完成</span></td>
+      <td>原计划四处写 md 的函数各加失效。实际实现更省：统一放在 <code>_atomic_write()</code> 里标记该卷 stale（一处覆盖全部写路径），<code>cleanup_subs</code> 单独补一处。</td>
+      <td>改一题 → 刷新列表数字立刻变（已验）；重启后仍然对</td>
+      <td>git revert（索引变旧，但 <code>--check</code>/重建修得回来）</td>
+    </tr>
+    <tr>
+      <td><b>Step 3</b><br><span class="small">自愈兜底</span><br><span class="tag do">已完成 10-18</span></td>
+      <td>启动 stamp 校验 + <code>--check</code> 手动巡检 + 恢复脚本里加一行重建。</td>
+      <td>拿一份测试卷，绕过 API 直接改一个 md → 跑 check → 索引修正</td>
+      <td colspan="1">—</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="background:var(--ok-soft);border-left:3px solid var(--ok)">
+        <b>Step 3 实际实现（比原计划更省）</b><br>
+        原计划是「启动时全量 stamp 校验」，实际做成<b>随目录扫描顺带对账</b>（默认每 5 秒一次，只比 stat，几毫秒）：
+        <code>papers</code> 表新增 <code>dir_mtime</code>，扫描时比对三件事——<br>
+        ① 目录 mtime 变了 → 标 stale，下次读只重灌这一卷（题包重传/切、增删子题文件都走这条）；<br>
+        ② 磁盘上没了的卷 → <code>drop_paper()</code> 删掉（不再有幽灵卷）；<br>
+        ③ 磁盘上有、索引里没有的新卷 → 读到时自动重建（无需人工）。<br>
+        另加 <code>build_index.py --verify</code>（0.1 秒快速对账）与 schema 版本不符时**自动删库重建**；
+        全量重建期间 <code>is_building()</code> 为真，读路径回退文件扫描，避免与服务抢写锁。<br>
+        <b>实测</b>：造一个假卷 → 5 秒内自动入索引（410→411）；删掉 → 5 秒内自动消失（411→410）；
+        卷内加一个 <code>q02.md</code> → 目录 mtime 变 → 下次请求该卷题数从 1 变 2。<br>
+        <b>仍然覆盖不到的</b>：原地改已有 md 的 tags/difficulty（目录 mtime 不变）→ 靠脚本收尾 <code>--paper</code> 或 <code>--check</code>。
+        但这只发生在「绕过 API 直接改文件」，本来就不是常规路径。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="small">顺序不能乱：<b>先证明「抄出来的和原件一致」（Step 0/1），再让抄件开始跟着变（Step 2），最后才上自动纠错（Step 3）</b>。反过来做，出了问题你分不清是抄错还是同步错。</p>
+
+<h2>13. 已知的坑（都是要踩的，提前写好）</h2>
+
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:26%">坑</th><th>表征与对策</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><b>mtime 不可信</b></td><td>rsync / 备份恢复 / git checkout 都会刷新 mtime。→ 用（mtime + 文件大小）双字段判断，写时同步<b>完全不依赖</b> mtime。</td></tr>
+    <tr><td>2</td><td><b>SQLite 放网络盘写坏</b></td><td>锁不可靠，会静默损坏。→ 只放本机 ext4。</td></tr>
+    <tr><td>3</td><td><b>WAL 文件被漏掉</b></td><td><code>index.db-wal</code> 可能比主库还大。备份/复制时要么带上，要么先 checkpoint 再操作。</td></tr>
+    <tr><td>4</td><td><b>双写顺序反了</b></td><td>先 db 后 md → 用户点进去 404。→ 永远 md 优先。</td></tr>
+    <tr><td>5</td><td><b>恢复后忘了重建</b></td><td>从备份恢复 data/ 后，index.db 还是恢复前的旧状态。→ 写进恢复脚本，别靠记性。</td></tr>
+    <tr><td>6</td><td><b>想趁机上多 worker</b></td><td>进程内缓存和锁没移出去，多 worker 会互相看不见改动。→ 三期再说。</td></tr>
+    <tr><td>7</td><td><b>改表结构想写迁移</b></td><td>不值得。→ 版本号不符就整库重建（30 秒）。</td></tr>
+    <tr><td>8</td><td><b>往索引里存真数据</b></td><td>确认状态、标黄、审计日志都不许进。→ 一进就失去「可重建」这个护身符。</td></tr>
+    <tr><td>9</td><td><b>把 index.db 传进 Git</b></td><td>84MB 二进制，diff 无意义。→ 加 .gitignore，和现在 <code>/data/*</code> 一个道理。</td></tr>
+    <tr><td>10</td><td><b>目录 mtime 只认「增删改名」</b></td><td>原地改文件内容（补 answer_regions）不会改目录时间。<b>→ 别赌自动检测，脚本收尾显式跑 <code>--paper</code>（见 6.5）。</b></td></tr>
+    <tr><td>11</td><td><b>切图把自己撑爆</b></td><td>Pillow 进程吃内存 + 服务 1200M 上限 → 被 OOM 杀的是服务。→ 切割串行，别并发跑多卷。</td></tr>
+  </tbody>
+</table>
+
+<h2>14. 和其他几条路的对比</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:20%">方案</th><th style="width:22%">能做到什么</th><th style="width:26%">代价</th><th style="width:12%">结论</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>A 保持现状</b><br><span class="small">内存缓存 + 现场解析</span></td>
+      <td>2 万题以内完全够用</td>
+      <td>10 万题：143s 启动 / 270MB 内存 / 列表 1.5–3s</td>
+      <td>现在就这样</td>
+    </tr>
+    <tr>
+      <td><b>B 加内存 / 换大机器</b></td>
+      <td>能把「内存坎」往后推一点</td>
+      <td>要花钱；而且启动慢、每请求重算这两条<b>一点没解决</b></td>
+      <td class="tag no">不做</td>
+    </tr>
+    <tr>
+      <td><b>C index.db</b><br><span class="small">（本方案）</span></td>
+      <td>查询 0.005–3ms；内存 270MB → 50MB；启动 143s → 35s</td>
+      <td>约 400 行代码 + 一条同步纪律；多一份要维护的副本</td>
+      <td class="tag do">推荐</td>
+    </tr>
+    <tr>
+      <td><b>D 全搬 PostgreSQL</b></td>
+      <td>多人并发最强，事务最正规</td>
+      <td>要装服务、要运维、要备份；<b>失去 Git diff 和手改能力</b>；2557 行读写点全要重写</td>
+      <td class="tag opt">三期再议</td>
+    </tr>
+    <tr>
+      <td><b>E 所有题塞一个 JSON</b></td>
+      <td>实现最简单</td>
+      <td>10 万题一个 140MB 文件；改一个字要重写整个文件；内存照样吃满</td>
+      <td class="tag no">不做</td>
+    </tr>
+    <tr>
+      <td><b>F 内存映射（mmap）</b></td>
+      <td>理论上最快</td>
+      <td>Python 上很难用好；数据格式要重设计；调试困难</td>
+      <td class="tag no">不做</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="t">为什么是 SQLite 而不是「自己写个索引文件」</span>
+  你要的功能其实就三件：<b>按题号取一条、按卷取一组、按条件筛一批</b>。自己写就要处理「文件格式、并发读写、崩溃后不损坏、按范围查」——SQLite 这四件事都替你做了，而且整个库就是一个文件，删了就是删了。<b>它是这个规模（10 万行、10 个用户）最合适的工具，不多不少。</b>
+</div>
+
+<h2>15. 需要你拍板的四件事</h2>
+
+<div class="q"><b>1. 触发线定在哪？</b>
+我的建议是「2 万题 / 列表 P95 &gt; 1s / 启动 &gt; 60s，哪个先到算哪个」。你也可以说「不管多少题，先把 Step 0 原型做出来看看」——原型不动线上代码，产物随时可扔，成本很低。</div>
+
+<div class="q"><b>2. 现在要不要先做 Step 0？</b>
+我倾向做。理由：① 只加一个脚本，零风险；② 能拿到你这台机器上真实的「现状 vs 索引」耗时对比，而不是我这份外推；③ 顺便把「现有 API 数字 vs 索引数字」逐项核对一遍，等于给数据做了一次体检。</div>
+
+<div class="q"><b>3. index.db 放哪？</b>
+建议 <code>/opt/qbank/var/index.db</code>（data/ 外面）。另一个选项是 <code>data/_index/index.db</code>，好处是「数据都在一起」直观，坏处是必须改 <code>backup.sh</code> 加排除规则，忘了就每天多 84MB。</div>
+
+<div class="q"><b>4. 要不要顺手把 confirmed / flagged 也搬进 db？</b>
+现在这两个是单个 JSON 文件，10 万题时会涨到 8–10MB，<b>每个请求解析 300–400ms</b>——这会变成比列表页更明显的卡顿。搬进 db 能降到微秒级，但它们是「事实」不是「派生」，不能重建。<br>
+折中做法：<b>文件仍是事实源，db 里存一份只读副本</b>，写文件时同步更新副本，启动时校验。这样既保住可手改，又不吃那个 300ms。<br>
+<b>2026-10-18 补充</b>：已单独出方案 <code>plans/确认与标记存储方案-20261018.md</code>，结论修正为——<b>直接以独立的 <code>state.db</code> 为事实源</b>（<b>不要</b>混进 index.db，否则重建索引会抹掉人工成果），同时把 flags 的指纹校验移出请求路径。要不要一起做，你定。</div>
+
+<hr>
+
+<p class="small">本机实测数据（2026-10-18）：9176 个 md / 486 卷（aqa 146、cie 210、edexcel 130）/ 8363 主题 + 813 子题 / 已打标 1265 个文件（13.8%）。<br>
+实测项：全库 YAML 解析 13.07s（1.42ms/题）；目录遍历 0.10s；元数据字典内存 2830 字节/题；灌库耗时 3.23s；index.db 体积 7.4MB（842 字节/题）；查询 0.375 / 0.044 / 0.0045 / 0.24 ms。<br>
+探针脚本：<code>cloud/.tmp/index_probe.py</code>，产物 <code>cloud/.tmp/index_probe.db</code>（两者都在 .tmp 下，不参与仓库）。</p>
+
+</div>
+</body>
+</html>

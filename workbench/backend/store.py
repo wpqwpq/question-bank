@@ -21,11 +21,48 @@ FM_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*\r?\n", re.DOTALL)
 _DONE_DIFFICULTIES = {"very-easy", "easy", "medium", "hard", "very-hard"}
 MAIN_Q_RE = re.compile(r"^q\d+\.md$")       # 主题文件 q04.md
 # 子题文件（split 产物）：标签可为字母（Edexcel a/b/c）或数字（AQA/CIE 1..9）
-SUB_Q_RE = re.compile(r"^q\d+-[a-z0-9]+\.md$")
+SUB_Q_RE = re.compile(r"^q\d+(-[a-z0-9]+)+\.md$")
 
 # 按小问打标时「不切子图」的考试局：仍写子题文件（qNN-<label>.md）保留小问级标注，
 # 但不产 qNN-<label>.webp 子图——预览统一回退整题图。见 api._save_split。
 SUB_NO_IMAGE_BOARDS = {"aqa", "cie"}
+
+# 学科级豁免（2026-10-19）：这些学科无论哪个考试局都不切子图。
+# 会计题是表格与分录，把「题干 + 本问」连题区切出来没有阅读价值，
+# 且子题图反而要多维护一份；小问级标签照旧落子题文件，只是不产图。
+# 数学同理（2026-10-19 王培琪定，edexcel mathematics 282 卷）：题图本来就窄
+# （纯数学一题一页、D1 还带作答册），按小问裁出来的碎片没有阅读价值。
+SUB_NO_IMAGE_SUBJECTS = {"accounting", "mathematics"}
+
+
+# 打标粒度（2026-10-19）：默认按顶层字母（a/b/c）打标；下列学科展开到罗马子问。
+# 会计 IAL 的评分与知识点都落在 (a)(i)(ii) 这一层，一个 (a) 下常有 3–5 个分项，
+# 按顶层字母打标签会粗到分不开。走 leaf 粒度后 c 问只有 "c i"/"c ii"，不再有 c。
+SUB_DEEP_LABEL_SUBJECTS = {"accounting"}
+
+
+def sub_label_mode(board: str, subject: str) -> str:
+    """按小问打标时的粒度：'top' = 顶层字母，'leaf' = 展开罗马子问。"""
+    return "leaf" if subject.lower() in SUB_DEEP_LABEL_SUBJECTS else "top"
+
+
+def sub_slug(label: str) -> str:
+    """子题 label → 文件名 / id 后缀："c i" → "c-i"。
+
+    schema 的 id 模式 `^[a-z0-9]+(-[a-z0-9]+)+$` 不允许空格，而 leaf 粒度的
+    label 天然带空格；sub_label 字段本身仍存原文（"c i"），只有落盘标识 slug 化。
+    """
+    return "-".join(label.split())
+
+
+def sub_images_enabled(board: str, subject: str) -> bool:
+    """按小问打标时是否真的要裁子图。
+
+    False = 只写子题文件、预览回退整题图（与 AQA/CIE 同语义）。
+    新增考试局/学科默认 True（黑名单制），不想切图就往上面两个集合里加。
+    """
+    return (board.lower() not in SUB_NO_IMAGE_BOARDS
+            and subject.lower() not in SUB_NO_IMAGE_SUBJECTS)
 
 _schema_validator: Draft202012Validator | None = None
 
@@ -40,15 +77,28 @@ def _validator() -> Draft202012Validator:
 
 def unit_from_paper_code(code: str) -> str:
     """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）；
-    CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4（对齐 taxonomy/cie 物理词表的单元键，不走 U1–U6）。
+    CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4、QP51–QP54 -> P5（对齐 taxonomy/cie 词表的单元键）。
 
     Edexcel 取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
     没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到返回 'unknown'——
     卷列表不因个别坏卷号崩溃；unknown 单元无词表，保存时会被标签校验拒绝。
+
+    CIE 化学有 QP5x（Paper 5 planning，70 卷），2026-10-18 起按 P5 认；
+    QP3x（Paper 3 practical）库里暂时没有数据，按 P3 兜底、无词表即不可打标。
     """
-    m = re.match(r"(?i)QP([124])\d", code.strip())
+    m = re.match(r"(?i)QP([1-5])\d", code.strip())
     if m:
-        return "P4" if m.group(1) == "4" else "P1P2"
+        return {"1": "P1P2", "2": "P1P2", "4": "P4", "5": "P5"}.get(
+            m.group(1), f"P{m.group(1)}")
+    m = re.match(r"(?i)^W(MA|ST|ME|FM|DM)(\d)(\d)[A-Z]?$", code.strip())
+    if m:
+        # Edexcel IAL 数学（2026-10-19）：WMA1x→P1–P4 / WST0x→S1–S3 / WME0x→M1–M3 /
+        # WFM0x→F1–F3 / WDM11→D1。必须先于下面的通用 Edexcel 规则——否则 WMA11 会被
+        # 误判成 U1，WST01/WME01/WFM01 直接落到 unknown（整科无法打标）。
+        fam, series = m.group(1).upper(), m.group(3)
+        if fam == "DM":
+            return "D1"
+        return {"MA": "P", "ST": "S", "ME": "M", "FM": "F"}[fam] + series
     m = re.search(r"1(\d)", code) or re.search(r"[PC]H0?(\d)", code, re.I)
     if m:
         return f"U{m.group(1)}"
@@ -212,13 +262,23 @@ def _scan_papers() -> tuple[list[Paper], tuple[tuple[str, int], ...]]:
     return papers, tuple(stamp)
 
 
+def paper_id_for(path: Path, board: str, qualification: str, subject: str) -> str:
+    """卷的唯一 ID = `<board>-<qual>-<subject>-<会话目录名>`。
+
+    原先直接用会话目录名，CIE 物理（qp11–qp43）与化学（qp11–qp54）共用卷号命名，
+    189 卷同名 → 索引主键冲突、find_paper 取错科、学科隔离失效（2026-10-18 实测）。
+    格式与 qid（board-qual-subject-session-qNN）对齐，只是少了末尾题号。
+    """
+    return f"{board}-{qualification}-{subject}-{path.name}"
+
+
 class Paper:
     def __init__(self, path: Path, board: str, qualification: str, subject: str):
         self.path = path
         self.board = board
         self.qualification = qualification
         self.subject = subject
-        self.id = path.name
+        self.id = paper_id_for(path, board, qualification, subject)
         self.qfiles = sorted(
             (p for p in path.glob("q*.md") if MAIN_Q_RE.match(p.name)), key=lambda p: p.name
         )
@@ -401,7 +461,12 @@ def question_image_url(paper: Paper, meta: dict[str, Any]) -> str | None:
     image = meta.get("image")
     if not image:
         return None
-    return f"/files/{paper.board}/{paper.qualification}/{paper.subject}/{paper.id}/{image}"
+    # URL 里的卷目录段必须是磁盘真实目录名（paper.path.name），不能用 paper.id
+    # （索引主键带 board-qual-subject- 前缀）。/files 按 URL 原样找文件，带前缀会 404。
+    return (
+        f"/files/{paper.board}/{paper.qualification}/{paper.subject}"
+        f"/{paper.path.name}/{image}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -559,7 +624,8 @@ def build_sub_meta(main_meta: dict[str, Any], label: str,
                    image: str | None, layout: str | None) -> dict[str, Any]:
     """子题元数据。image/layout 为 None 时（AQA/CIE 不切子图）随后的过滤会省略这两键。"""
     m = {
-        "id": f"{main_meta['id']}-{label}",
+        # id 用 slug：leaf 粒度的 label 带空格（"c i"），schema 不允许
+        "id": f"{main_meta['id']}-{sub_slug(label)}",
         "parent": main_meta["id"],
         "board": main_meta["board"],
         "qualification": main_meta["qualification"],
@@ -631,7 +697,7 @@ def save_split(paper: Paper, qpath: Path, subs: list[dict[str, Any]],
             errors = _schema_errors(sub_meta) - _schema_errors(meta)
             if errors:
                 raise ValueError(f"子题 {s['label']} schema 错误: " + "; ".join(sorted(errors)[:3]))
-            spath = qpath.parent / f"{qpath.stem}-{s['label']}.md"
+            spath = qpath.parent / f"{qpath.stem}-{sub_slug(s['label'])}.md"
             _atomic_write(spath, _yaml_dump_meta(sub_meta) + "\n")
             _drop_meta(spath)
             _index_put(sub_meta["id"], paper.id, spath.name)
