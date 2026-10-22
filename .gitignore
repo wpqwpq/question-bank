@@ -66,3 +66,5 @@ dist-new.tar
 # lark 导出直落根目录的临时表数据
 /tbl*.ndjson
 /tbl*.manifest.json
+# 本地删除/重切前的整卷备份（体积大，不进仓库）
+/_backup/
