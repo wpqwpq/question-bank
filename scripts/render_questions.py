@@ -238,6 +238,8 @@ def main():
     ap.add_argument("session_dir")
     ap.add_argument("--dpi", type=int, default=None)
     ap.add_argument("--quality", type=int, default=None)
+    ap.add_argument("--no-notice", action="store_true",
+                    help="不画「上方为资料」的提示行（会计 P3/P4 的 INSERT 用）")
     ap.add_argument("--notice-font", default=None,
                     help="作答提示文字所用的中文字体文件路径。缺省按平台自动探测"
                          "（Windows / macOS / Linux 候选表 + 字体目录扫描）；"
@@ -348,7 +350,7 @@ def main():
         if n_kind > 1:
             font, fs_px = _notice_font(q_dpi, _resolve_notice_font_path(args.notice_font))
             pad = max(int(round(5 * q_dpi / 72.0)), 4)
-            notice_h = fs_px + 2 * pad if font is not None else 0
+            notice_h = fs_px + 2 * pad if (font is not None and not args.no_notice) else 0
             sep_h = max(int(round(18 * q_dpi / 72.0)), 10)
         # 点线压缩接缝：同页两段之间被删掉了一截，交界处画一条浅灰虚线提示
         seam_idx = set()
@@ -383,7 +385,6 @@ def main():
                 block_pieces.append((rg, y_cursor, im))
             imgs.append(im)
             y_cursor += im.height
-
         if n_kind > 1:
             # 分区式合成：提示带 → 资料 → 分隔 → 题目 → 分隔 → 答题区
             W = max(i.width for i in imgs)
@@ -413,7 +414,10 @@ def main():
                     # 点线压缩接缝：画一条**实线**（虚线会跟作答点线混淆，看着像多了一行）
                     h = max(int(round(1.0 * q_dpi / 72.0)), 2)
                     draw.rectangle([0, y, W, y + h - 1], fill=(226, 226, 226))
-                canvas.paste(imgs[i], (0, y))
+                # align="right"：窄条（CIE 印在点线尾巴上的 [n] 分值条）贴右沿，
+                # 跟真卷位置一致；默认左对齐，不影响任何现有卷
+                _x = (W - imgs[i].width) if pieces[i][2].get("align") == "right" else 0
+                canvas.paste(imgs[i], (_x, y))
             out = canvas
         else:
             out = imgs[0]

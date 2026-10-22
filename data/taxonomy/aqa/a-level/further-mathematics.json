@@ -1,0 +1,1341 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <unit>-<英文slug>，组 <unit>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base（D28lbXMsyasWyas8iWhch1KXnB5）数学表 tblIZGjYO4y3TCkw，视图 vewRrsDFTd，筛 考试局=AQA 且 考试阶段=AL 且 单元∈{FP1,FPSM1,FP2,FS2,FM2}，共 183 条；2026-10-22 导出。",
+ "FP1": {
+  "groups": [
+   {
+    "id": "fp1g-algebra-and-graphs",
+    "zh": "代数与图像",
+    "en": "Algebra and graphs"
+   },
+   {
+    "id": "fp1g-coordinate-geometry",
+    "zh": "解析几何",
+    "en": "Coordinate geometry"
+   },
+   {
+    "id": "fp1g-complex-numbers",
+    "zh": "复数",
+    "en": "Complex numbers"
+   },
+   {
+    "id": "fp1g-roots-and-coefficients-of-a-quadratic-equation",
+    "zh": "二次方程的根与系数",
+    "en": "Roots and coefficients of a quadratic equation"
+   },
+   {
+    "id": "fp1g-series",
+    "zh": "级数",
+    "en": "Series"
+   },
+   {
+    "id": "fp1g-trigonometry",
+    "zh": "三角函数",
+    "en": "Trigonometry"
+   },
+   {
+    "id": "fp1g-calculus",
+    "zh": "微积分",
+    "en": "Calculus"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fp1-loci-and-conic-foundations",
+    "zh": "轨迹与圆锥曲线基础",
+    "en": "Loci & conic foundations",
+    "group": "fp1g-algebra-and-graphs"
+   },
+   {
+    "id": "fp1-rational-functions-asymptotes-and-inequalities",
+    "zh": "有理函数与渐近线",
+    "en": "Rational functions, asymptotes & inequalities",
+    "group": "fp1g-algebra-and-graphs"
+   },
+   {
+    "id": "fp1-graph-transformations-and-ellipses",
+    "zh": "图像变换与椭圆",
+    "en": "Graph transformations & ellipses",
+    "group": "fp1g-algebra-and-graphs"
+   },
+   {
+    "id": "fp1-hyperbolas-and-rectangular-hyperbolas",
+    "zh": "双曲线与等轴双曲线",
+    "en": "Hyperbolas & rectangular hyperbolas",
+    "group": "fp1g-algebra-and-graphs"
+   },
+   {
+    "id": "fp1-conic-sections-from-planes",
+    "zh": "平面截圆锥曲线",
+    "en": "Conic sections from planes",
+    "group": "fp1g-coordinate-geometry"
+   },
+   {
+    "id": "fp1-standard-equations-of-parabolas-and-ellipses",
+    "zh": "抛物线与椭圆方程",
+    "en": "Standard equations of parabolas & ellipses",
+    "group": "fp1g-coordinate-geometry"
+   },
+   {
+    "id": "fp1-ellipse-equations-sketches-and-tangents",
+    "zh": "椭圆方程与切线",
+    "en": "Ellipse equations, sketches & tangents",
+    "group": "fp1g-coordinate-geometry"
+   },
+   {
+    "id": "fp1-hyperbola-equations-and-asymptotes",
+    "zh": "双曲线与渐近线",
+    "en": "Hyperbola equations & asymptotes",
+    "group": "fp1g-coordinate-geometry"
+   },
+   {
+    "id": "fp1-complex-numbers-and-calculating-with-them",
+    "zh": "复数概念与运算",
+    "en": "Complex numbers & calculating with them",
+    "group": "fp1g-complex-numbers"
+   },
+   {
+    "id": "fp1-complex-roots-and-complex-conjugates",
+    "zh": "复根与复共轭",
+    "en": "Complex roots & complex conjugates",
+    "group": "fp1g-complex-numbers"
+   },
+   {
+    "id": "fp1-argand-diagrams-and-polar-form",
+    "zh": "阿根图与极形式",
+    "en": "Argand diagrams & polar form",
+    "group": "fp1g-complex-numbers"
+   },
+   {
+    "id": "fp1-loci-in-the-complex-plane",
+    "zh": "复平面轨迹",
+    "en": "Loci in the complex plane",
+    "group": "fp1g-complex-numbers"
+   },
+   {
+    "id": "fp1-cartesian-and-polar-forms-of-complex-numbers",
+    "zh": "直角与极形式综合",
+    "en": "Cartesian & polar forms of complex numbers",
+    "group": "fp1g-complex-numbers"
+   },
+   {
+    "id": "fp1-roots-of-a-quadratic-equation",
+    "zh": "二次方程的根",
+    "en": "Roots of a quadratic equation",
+    "group": "fp1g-roots-and-coefficients-of-a-quadratic-equation"
+   },
+   {
+    "id": "fp1-algebraic-identities-for-roots-and-coefficients",
+    "zh": "根与系数恒等式",
+    "en": "Algebraic identities for roots & coefficients",
+    "group": "fp1g-roots-and-coefficients-of-a-quadratic-equation"
+   },
+   {
+    "id": "fp1-finding-equations-with-related-roots",
+    "zh": "构造新根方程",
+    "en": "Finding equations with related roots",
+    "group": "fp1g-roots-and-coefficients-of-a-quadratic-equation"
+   },
+   {
+    "id": "fp1-summation-formulae",
+    "zh": "求和公式",
+    "en": "Summation formulae",
+    "group": "fp1g-series"
+   },
+   {
+    "id": "fp1-method-of-differences-for-sums",
+    "zh": "差分法求和",
+    "en": "Method of differences for sums",
+    "group": "fp1g-series"
+   },
+   {
+    "id": "fp1-infinite-series-and-partial-sums",
+    "zh": "无穷级数",
+    "en": "Infinite series & partial sums",
+    "group": "fp1g-series"
+   },
+   {
+    "id": "fp1-trigonometry-recap-and-exact-values",
+    "zh": "三角复习与精确值",
+    "en": "Trigonometry recap & exact values",
+    "group": "fp1g-trigonometry"
+   },
+   {
+    "id": "fp1-general-solutions-of-sine-and-cosine-equations",
+    "zh": "正弦与余弦通解",
+    "en": "General solutions of sine & cosine equations",
+    "group": "fp1g-trigonometry"
+   },
+   {
+    "id": "fp1-general-solutions-of-tangent-and-trig-equations",
+    "zh": "正切与三角通解",
+    "en": "General solutions of tangent & trig equations",
+    "group": "fp1g-trigonometry"
+   },
+   {
+    "id": "fp1-equations-involving-compound-trig-terms",
+    "zh": "复杂三角项方程",
+    "en": "Equations involving compound trig terms",
+    "group": "fp1g-trigonometry"
+   },
+   {
+    "id": "fp1-trig-equations-with-powers-and-identities",
+    "zh": "含幂与恒等式方程",
+    "en": "Trig equations with powers & identities",
+    "group": "fp1g-trigonometry"
+   },
+   {
+    "id": "fp1-gradient-of-a-tangent-and-rates-of-change",
+    "zh": "切线斜率与变化率",
+    "en": "Gradient of a tangent & rates of change",
+    "group": "fp1g-calculus"
+   },
+   {
+    "id": "fp1-related-rates-of-change",
+    "zh": "相关变化率",
+    "en": "Related rates of change",
+    "group": "fp1g-calculus"
+   },
+   {
+    "id": "fp1-small-changes-and-approximations",
+    "zh": "微小变化与近似",
+    "en": "Small changes & approximations",
+    "group": "fp1g-calculus"
+   },
+   {
+    "id": "fp1-improper-integrals",
+    "zh": "广义积分",
+    "en": "Improper integrals",
+    "group": "fp1g-calculus"
+   }
+  ]
+ },
+ "FPSM1": {
+  "groups": [
+   {
+    "id": "fpsm1g-matrices-and-transformations",
+    "zh": "矩阵与变换",
+    "en": "Matrices and transformations"
+   },
+   {
+    "id": "fpsm1g-linear-graphs",
+    "zh": "线性关系与图像",
+    "en": "Linear graphs"
+   },
+   {
+    "id": "fpsm1g-numerical-methods",
+    "zh": "数值方法",
+    "en": "Numerical methods"
+   },
+   {
+    "id": "fpsm1g-bayes-theorem",
+    "zh": "贝叶斯定理",
+    "en": "Bayes’ Theorem"
+   },
+   {
+    "id": "fpsm1g-uniform-distribution",
+    "zh": "均匀分布",
+    "en": "Uniform distribution"
+   },
+   {
+    "id": "fpsm1g-geometric-distribution",
+    "zh": "几何分布",
+    "en": "Geometric distribution"
+   },
+   {
+    "id": "fpsm1g-probability-generating-functions",
+    "zh": "概率母函数",
+    "en": "Probability generating functions"
+   },
+   {
+    "id": "fpsm1g-linear-combinations-of-discrete-random-variables",
+    "zh": "离散型随机变量的线性组合",
+    "en": "Linear combinations of discrete random variables"
+   },
+   {
+    "id": "fpsm1g-constant-velocity-in-two-dimensions",
+    "zh": "二维匀速运动",
+    "en": "Constant velocity in two dimensions"
+   },
+   {
+    "id": "fpsm1g-dimensional-analysis",
+    "zh": "量纲分析",
+    "en": "Dimensional analysis"
+   },
+   {
+    "id": "fpsm1g-collisions-in-one-dimension",
+    "zh": "一维碰撞",
+    "en": "Collisions in one dimension"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fpsm1-matrix-notation-order-and-operations",
+    "zh": "矩阵表示与运算",
+    "en": "Matrix notation, order & operations",
+    "group": "fpsm1g-matrices-and-transformations"
+   },
+   {
+    "id": "fpsm1-determinants-identity-and-inverse-matrices",
+    "zh": "行列式与逆矩阵",
+    "en": "Determinants, identity & inverse matrices",
+    "group": "fpsm1g-matrices-and-transformations"
+   },
+   {
+    "id": "fpsm1-matrices-representing-linear-transformations",
+    "zh": "矩阵表示线性变换",
+    "en": "Matrices representing linear transformations",
+    "group": "fpsm1g-matrices-and-transformations"
+   },
+   {
+    "id": "fpsm1-common-2d-transformation-matrices",
+    "zh": "二维变换矩阵",
+    "en": "Common 2D transformation matrices",
+    "group": "fpsm1g-matrices-and-transformations"
+   },
+   {
+    "id": "fpsm1-invariant-points-and-invariant-lines",
+    "zh": "不变点与不变直线",
+    "en": "Invariant points & invariant lines",
+    "group": "fpsm1g-matrices-and-transformations"
+   },
+   {
+    "id": "fpsm1-data-relationships-linear-and-power-models",
+    "zh": "线性模型与幂关系",
+    "en": "Data relationships, linear & power models",
+    "group": "fpsm1g-linear-graphs"
+   },
+   {
+    "id": "fpsm1-log-linearising-power-law-models",
+    "zh": "幂律对数线性化",
+    "en": "Log-linearising power-law models",
+    "group": "fpsm1g-linear-graphs"
+   },
+   {
+    "id": "fpsm1-log-linearising-exponential-models",
+    "zh": "指数模型对数线性化",
+    "en": "Log-linearising exponential models",
+    "group": "fpsm1g-linear-graphs"
+   },
+   {
+    "id": "fpsm1-numerical-solutions-of-polynomial-equations",
+    "zh": "多项式方程数值解",
+    "en": "Numerical solutions of polynomial equations",
+    "group": "fpsm1g-numerical-methods"
+   },
+   {
+    "id": "fpsm1-interval-bisection-and-linear-interpolation",
+    "zh": "二分法与线性插值",
+    "en": "Interval bisection & linear interpolation",
+    "group": "fpsm1g-numerical-methods"
+   },
+   {
+    "id": "fpsm1-newton-raphson-method",
+    "zh": "牛顿拉弗森法",
+    "en": "Newton-Raphson method",
+    "group": "fpsm1g-numerical-methods"
+   },
+   {
+    "id": "fpsm1-eulers-step-by-step-method",
+    "zh": "欧拉逐步法",
+    "en": "Euler's step-by-step method",
+    "group": "fpsm1g-numerical-methods"
+   },
+   {
+    "id": "fpsm1-probability-and-trees-for-independent-events",
+    "zh": "概率基础与独立树图",
+    "en": "Probability & trees for independent events",
+    "group": "fpsm1g-bayes-theorem"
+   },
+   {
+    "id": "fpsm1-tree-diagrams-for-dependent-events",
+    "zh": "相依事件树形图",
+    "en": "Tree diagrams for dependent events",
+    "group": "fpsm1g-bayes-theorem"
+   },
+   {
+    "id": "fpsm1-applying-bayes-theorem",
+    "zh": "贝叶斯定理应用",
+    "en": "Applying Bayes theorem",
+    "group": "fpsm1g-bayes-theorem"
+   },
+   {
+    "id": "fpsm1-bayes-theorem-from-conditional-probability",
+    "zh": "条件概率推导",
+    "en": "Bayes theorem from conditional probability",
+    "group": "fpsm1g-bayes-theorem"
+   },
+   {
+    "id": "fpsm1-tree-diagrams-for-multi-stage-probabilities",
+    "zh": "多阶段树形图",
+    "en": "Tree diagrams for multi-stage probabilities",
+    "group": "fpsm1g-bayes-theorem"
+   },
+   {
+    "id": "fpsm1-discrete-uniform-distribution",
+    "zh": "离散均匀分布",
+    "en": "Discrete uniform distribution",
+    "group": "fpsm1g-uniform-distribution"
+   },
+   {
+    "id": "fpsm1-mean-and-variance-of-a-discrete-variable",
+    "zh": "离散变量均值方差",
+    "en": "Mean & variance of a discrete variable",
+    "group": "fpsm1g-uniform-distribution"
+   },
+   {
+    "id": "fpsm1-deriving-the-variance-of-the-uniform-distn",
+    "zh": "均匀分布的方差推导",
+    "en": "Deriving the variance of the uniform distn",
+    "group": "fpsm1g-uniform-distribution"
+   },
+   {
+    "id": "fpsm1-probability-generating-fn-for-uniform-distn",
+    "zh": "均匀分布概率母函数",
+    "en": "Probability generating fn for uniform distn",
+    "group": "fpsm1g-uniform-distribution"
+   },
+   {
+    "id": "fpsm1-geometric-modelling-and-conditions",
+    "zh": "几何分布模型与条件",
+    "en": "Geometric modelling & conditions",
+    "group": "fpsm1g-geometric-distribution"
+   },
+   {
+    "id": "fpsm1-geometric-distribution-mean-and-variance",
+    "zh": "几何分布均值方差",
+    "en": "Geometric distribution: mean & variance",
+    "group": "fpsm1g-geometric-distribution"
+   },
+   {
+    "id": "fpsm1-tail-probabilities-of-the-geometric",
+    "zh": "几何分布尾概率",
+    "en": "Tail probabilities of the geometric",
+    "group": "fpsm1g-geometric-distribution"
+   },
+   {
+    "id": "fpsm1-geometric-distn-modelling-applications",
+    "zh": "几何分布应用建模",
+    "en": "Geometric distn: modelling applications",
+    "group": "fpsm1g-geometric-distribution"
+   },
+   {
+    "id": "fpsm1-probability-generating-function-geometric",
+    "zh": "几何分布概率母函数",
+    "en": "Probability generating function: geometric",
+    "group": "fpsm1g-geometric-distribution"
+   },
+   {
+    "id": "fpsm1-pgf-definition-and-reading-probabilities",
+    "zh": "概率母函数定义",
+    "en": "PGF definition & reading probabilities",
+    "group": "fpsm1g-probability-generating-functions"
+   },
+   {
+    "id": "fpsm1-constructing-pgfs-and-finding-moments",
+    "zh": "母函数构造与求矩",
+    "en": "Constructing PGFs & finding moments",
+    "group": "fpsm1g-probability-generating-functions"
+   },
+   {
+    "id": "fpsm1-pgfs-of-standard-distns-and-sums",
+    "zh": "常见分布母函数与和",
+    "en": "PGFs of standard distns & sums",
+    "group": "fpsm1g-probability-generating-functions"
+   },
+   {
+    "id": "fpsm1-sums-of-independent-random-variables-via-pgfs",
+    "zh": "独立随机变量之和",
+    "en": "Sums of independent random variables via PGFs",
+    "group": "fpsm1g-linear-combinations-of-discrete-random-variables"
+   },
+   {
+    "id": "fpsm1-linear-combinations-and-their-distributions",
+    "zh": "线性组合与分布",
+    "en": "Linear combinations & their distributions",
+    "group": "fpsm1g-linear-combinations-of-discrete-random-variables"
+   },
+   {
+    "id": "fpsm1-variance-covariance-and-correlation",
+    "zh": "方差协方差相关",
+    "en": "Variance, covariance & correlation",
+    "group": "fpsm1g-linear-combinations-of-discrete-random-variables"
+   },
+   {
+    "id": "fpsm1-product-moment-correlation-coefficient",
+    "zh": "积矩相关系数",
+    "en": "Product-moment correlation coefficient",
+    "group": "fpsm1g-linear-combinations-of-discrete-random-variables"
+   },
+   {
+    "id": "fpsm1-independent-discrete-random-variables",
+    "zh": "独立离散变量综合",
+    "en": "Independent discrete random variables",
+    "group": "fpsm1g-linear-combinations-of-discrete-random-variables"
+   },
+   {
+    "id": "fpsm1-vectors-in-component-form-and-velocities",
+    "zh": "向量分量与速度",
+    "en": "Vectors in component form & velocities",
+    "group": "fpsm1g-constant-velocity-in-two-dimensions"
+   },
+   {
+    "id": "fpsm1-position-displacement-distance-and-speed",
+    "zh": "位置位移与距离",
+    "en": "Position, displacement, distance & speed",
+    "group": "fpsm1g-constant-velocity-in-two-dimensions"
+   },
+   {
+    "id": "fpsm1-resultant-and-relative-velocity-in-2d",
+    "zh": "速度合成与相对速度",
+    "en": "Resultant & relative velocity in 2D",
+    "group": "fpsm1g-constant-velocity-in-two-dimensions"
+   },
+   {
+    "id": "fpsm1-closest-approach-and-interception-courses",
+    "zh": "最近距离与拦截",
+    "en": "Closest approach & interception courses",
+    "group": "fpsm1g-constant-velocity-in-two-dimensions"
+   },
+   {
+    "id": "fpsm1-setting-a-closest-approach-course",
+    "zh": "最近接近航向确定",
+    "en": "Setting a closest-approach course",
+    "group": "fpsm1g-constant-velocity-in-two-dimensions"
+   },
+   {
+    "id": "fpsm1-dimensions-and-dimensional-consistency",
+    "zh": "量纲与一致性",
+    "en": "Dimensions & dimensional consistency",
+    "group": "fpsm1g-dimensional-analysis"
+   },
+   {
+    "id": "fpsm1-dimensions-and-dimensional-notation",
+    "zh": "量纲记号",
+    "en": "Dimensions & dimensional notation",
+    "group": "fpsm1g-dimensional-analysis"
+   },
+   {
+    "id": "fpsm1-common-dimensions-and-dimensionless-quantities",
+    "zh": "常见量纲与无量纲量",
+    "en": "Common dimensions & dimensionless quantities",
+    "group": "fpsm1g-dimensional-analysis"
+   },
+   {
+    "id": "fpsm1-finding-formulae-using-dimensional-analysis",
+    "zh": "用量纲找公式",
+    "en": "Finding formulae using dimensional analysis",
+    "group": "fpsm1g-dimensional-analysis"
+   },
+   {
+    "id": "fpsm1-impulse-and-momentum-foundations",
+    "zh": "冲量与动量基础",
+    "en": "Impulse & momentum foundations",
+    "group": "fpsm1g-collisions-in-one-dimension"
+   },
+   {
+    "id": "fpsm1-conservation-of-linear-momentum",
+    "zh": "线动量守恒定律",
+    "en": "Conservation of linear momentum",
+    "group": "fpsm1g-collisions-in-one-dimension"
+   },
+   {
+    "id": "fpsm1-restitution-elastic-and-coalescing-collisions",
+    "zh": "恢复定律与碰撞类型",
+    "en": "Restitution, elastic & coalescing collisions",
+    "group": "fpsm1g-collisions-in-one-dimension"
+   },
+   {
+    "id": "fpsm1-direct-and-successive-multiple-collisions",
+    "zh": "直接与多次碰撞",
+    "en": "Direct & successive multiple collisions",
+    "group": "fpsm1g-collisions-in-one-dimension"
+   }
+  ]
+ },
+ "FP2": {
+  "groups": [
+   {
+    "id": "fp2g-roots-and-polynomials",
+    "zh": "方程的根与多项式",
+    "en": "Roots and polynomials"
+   },
+   {
+    "id": "fp2g-de-moivres-theorem",
+    "zh": "棣莫弗定理",
+    "en": "De Moivre’s Theorem"
+   },
+   {
+    "id": "fp2g-polar-coordinates",
+    "zh": "极坐标",
+    "en": "Polar coordinates"
+   },
+   {
+    "id": "fp2g-proof-by-induction",
+    "zh": "数学归纳法证明",
+    "en": "Proof by induction"
+   },
+   {
+    "id": "fp2g-finite-series",
+    "zh": "有限级数",
+    "en": "Finite series"
+   },
+   {
+    "id": "fp2g-series-and-limits",
+    "zh": "级数与极限",
+    "en": "Series and limits"
+   },
+   {
+    "id": "fp2g-the-calculus-of-inverse-trigonometrical-functions",
+    "zh": "反三角函数的微积分",
+    "en": "The calculus of inverse trigonometrical functions"
+   },
+   {
+    "id": "fp2g-arc-length-and-area-of-surface-of-revolution-about-the-x-axi",
+    "zh": "弧长及旋转体表面积",
+    "en": "Arc length and area of surface of revolution about the x-axis"
+   },
+   {
+    "id": "fp2g-hyperbolic-functions",
+    "zh": "双曲函数",
+    "en": "Hyperbolic functions"
+   },
+   {
+    "id": "fp2g-differential-equations-first-order",
+    "zh": "一阶微分方程",
+    "en": "Differential equations - first order"
+   },
+   {
+    "id": "fp2g-differential-equations-second-order",
+    "zh": "二阶微分方程",
+    "en": "Differential equations - second order"
+   },
+   {
+    "id": "fp2g-vectors-and-three-dimensional-coordinate-geometry",
+    "zh": "向量与三维解析几何",
+    "en": "Vectors and three-dimensional coordinate geometry"
+   },
+   {
+    "id": "fp2g-matrix-algebra",
+    "zh": "矩阵代数",
+    "en": "Matrix algebra"
+   },
+   {
+    "id": "fp2g-solution-of-linear-equations",
+    "zh": "线性方程组的求解",
+    "en": "Solution of linear equations"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fp2-roots-of-higher-order-and-cubic-equations",
+    "zh": "高阶与三次方程的根",
+    "en": "Roots of higher-order & cubic equations",
+    "group": "fp2g-roots-and-polynomials"
+   },
+   {
+    "id": "fp2-complex-roots-of-polynomial-equations",
+    "zh": "多项式方程的复根",
+    "en": "Complex roots of polynomial equations",
+    "group": "fp2g-roots-and-polynomials"
+   },
+   {
+    "id": "fp2-cubic-equations-nature-of-real-roots",
+    "zh": "三次方程实根判定",
+    "en": "Cubic equations: nature of real roots",
+    "group": "fp2g-roots-and-polynomials"
+   },
+   {
+    "id": "fp2-symmetric-sums-and-conjugate-roots",
+    "zh": "根的对称和与共轭",
+    "en": "Symmetric sums & conjugate roots",
+    "group": "fp2g-roots-and-polynomials"
+   },
+   {
+    "id": "fp2-vieta-relations-for-polynomial-roots",
+    "zh": "多项式根的韦达关系",
+    "en": "Vieta relations for polynomial roots",
+    "group": "fp2g-roots-and-polynomials"
+   },
+   {
+    "id": "fp2-de-moivres-theorem-and-induction-proof",
+    "zh": "棣莫弗定理与归纳证明",
+    "en": "De Moivre's theorem & induction proof",
+    "group": "fp2g-de-moivres-theorem"
+   },
+   {
+    "id": "fp2-complex-powers-and-roots-using-exponential-form",
+    "zh": "指数式的复数幂与根",
+    "en": "Complex powers & roots using exponential form",
+    "group": "fp2g-de-moivres-theorem"
+   },
+   {
+    "id": "fp2-exponential-form-and-trigonometric-integrals",
+    "zh": "指数形式与三角积分",
+    "en": "Exponential form & trigonometric integrals",
+    "group": "fp2g-de-moivres-theorem"
+   },
+   {
+    "id": "fp2-trig-identities-polynomial-roots-and-values",
+    "zh": "三角恒等式与多项式根",
+    "en": "Trig identities, polynomial roots & values",
+    "group": "fp2g-de-moivres-theorem"
+   },
+   {
+    "id": "fp2-polar-coordinates-and-conversion-formulae",
+    "zh": "极坐标位置与转换",
+    "en": "Polar coordinates & conversion formulae",
+    "group": "fp2g-polar-coordinates"
+   },
+   {
+    "id": "fp2-sketching-curves-given-in-polar-form",
+    "zh": "极坐标曲线作图",
+    "en": "Sketching curves given in polar form",
+    "group": "fp2g-polar-coordinates"
+   },
+   {
+    "id": "fp2-polar-cartesian-conversion-and-intersections",
+    "zh": "极坐标与笛卡尔转换",
+    "en": "Polar-Cartesian conversion & intersections",
+    "group": "fp2g-polar-coordinates"
+   },
+   {
+    "id": "fp2-area-of-a-sector-of-a-polar-curve",
+    "zh": "极曲线扇形面积",
+    "en": "Area of a sector of a polar curve",
+    "group": "fp2g-polar-coordinates"
+   },
+   {
+    "id": "fp2-area-between-two-polar-curves",
+    "zh": "两极曲线间面积",
+    "en": "Area between two polar curves",
+    "group": "fp2g-polar-coordinates"
+   },
+   {
+    "id": "fp2-proof-by-induction-structure",
+    "zh": "归纳证明结构",
+    "en": "Proof by induction structure",
+    "group": "fp2g-proof-by-induction"
+   },
+   {
+    "id": "fp2-induction-for-recurrence-relations",
+    "zh": "递推关系归纳",
+    "en": "Induction for recurrence relations",
+    "group": "fp2g-proof-by-induction"
+   },
+   {
+    "id": "fp2-induction-in-calculus-and-matrix-powers",
+    "zh": "微积分与矩阵幂归纳",
+    "en": "Induction in calculus & matrix powers",
+    "group": "fp2g-proof-by-induction"
+   },
+   {
+    "id": "fp2-divisibility-proofs-by-induction",
+    "zh": "整除性归纳证明",
+    "en": "Divisibility proofs by induction",
+    "group": "fp2g-proof-by-induction"
+   },
+   {
+    "id": "fp2-proving-series-sums-by-induction",
+    "zh": "归纳法证明级数和",
+    "en": "Proving series sums by induction",
+    "group": "fp2g-finite-series"
+   },
+   {
+    "id": "fp2-finite-series-by-cancellation",
+    "zh": "消项法求有限级数",
+    "en": "Finite series by cancellation",
+    "group": "fp2g-finite-series"
+   },
+   {
+    "id": "fp2-summation-formulae-for-finite-series",
+    "zh": "有限级数求和公式",
+    "en": "Summation formulae for finite series",
+    "group": "fp2g-finite-series"
+   },
+   {
+    "id": "fp2-convergence-and-divergence-of-infinite-series",
+    "zh": "无穷级数收敛判别",
+    "en": "Convergence & divergence of infinite series",
+    "group": "fp2g-series-and-limits"
+   },
+   {
+    "id": "fp2-maclaurin-theorem-and-standard-series",
+    "zh": "麦克劳林定理与级数",
+    "en": "Maclaurin theorem & standard series",
+    "group": "fp2g-series-and-limits"
+   },
+   {
+    "id": "fp2-power-series-expansions-and-limits-using-series",
+    "zh": "幂级数展开与极限",
+    "en": "Power series expansions & limits using series",
+    "group": "fp2g-series-and-limits"
+   },
+   {
+    "id": "fp2-improper-integrals-as-limits",
+    "zh": "广义积分的极限",
+    "en": "Improper integrals as limits",
+    "group": "fp2g-series-and-limits"
+   },
+   {
+    "id": "fp2-inverse-trig-functions-ranges-and-graphs",
+    "zh": "反三角函数与图像",
+    "en": "Inverse trig functions, ranges & graphs",
+    "group": "fp2g-the-calculus-of-inverse-trigonometrical-functions"
+   },
+   {
+    "id": "fp2-differentiation-of-inverse-trig-functions",
+    "zh": "反三角函数求导",
+    "en": "Differentiation of inverse trig functions",
+    "group": "fp2g-the-calculus-of-inverse-trigonometrical-functions"
+   },
+   {
+    "id": "fp2-integration-using-inverse-trig-standard-forms",
+    "zh": "反三角标准积分",
+    "en": "Integration using inverse trig standard forms",
+    "group": "fp2g-the-calculus-of-inverse-trigonometrical-functions"
+   },
+   {
+    "id": "fp2-inverse-tangent-and-quadratic-denominators",
+    "zh": "反正切与二次分母",
+    "en": "Inverse tangent & quadratic denominators",
+    "group": "fp2g-the-calculus-of-inverse-trigonometrical-functions"
+   },
+   {
+    "id": "fp2-completed-square-square-root-denominators",
+    "zh": "配方后平方根分母",
+    "en": "Completed-square square-root denominators",
+    "group": "fp2g-the-calculus-of-inverse-trigonometrical-functions"
+   },
+   {
+    "id": "fp2-arc-length-in-cartesian-form",
+    "zh": "笛卡尔形式弧长",
+    "en": "Arc length in Cartesian form",
+    "group": "fp2g-arc-length-and-area-of-surface-of-revolution-about-the-x-axi"
+   },
+   {
+    "id": "fp2-arc-length-in-parametric-form",
+    "zh": "参数形式弧长",
+    "en": "Arc length in parametric form",
+    "group": "fp2g-arc-length-and-area-of-surface-of-revolution-about-the-x-axi"
+   },
+   {
+    "id": "fp2-arc-length-formulae",
+    "zh": "弧长公式",
+    "en": "Arc length formulae",
+    "group": "fp2g-arc-length-and-area-of-surface-of-revolution-about-the-x-axi"
+   },
+   {
+    "id": "fp2-area-of-a-surface-of-revolution",
+    "zh": "旋转体表面积",
+    "en": "Area of a surface of revolution",
+    "group": "fp2g-arc-length-and-area-of-surface-of-revolution-about-the-x-axi"
+   },
+   {
+    "id": "fp2-definitions-and-graphs-of-hyperbolic-functions",
+    "zh": "双曲函数定义与图像",
+    "en": "Definitions & graphs of hyperbolic functions",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-hyperbolic-identities-and-solving-equations",
+    "zh": "双曲恒等式与方程",
+    "en": "Hyperbolic identities & solving equations",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-calculus-of-hyperbolic-functions",
+    "zh": "双曲函数微积分",
+    "en": "Calculus of hyperbolic functions",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-inverse-hyperbolic-functions-and-their-calculus",
+    "zh": "反双曲函数与微积分",
+    "en": "Inverse hyperbolic functions & their calculus",
+    "group": "fp2g-hyperbolic-functions"
+   },
+   {
+    "id": "fp2-integrating-factors-for-linear-equations",
+    "zh": "积分因子法",
+    "en": "Integrating factors for linear equations",
+    "group": "fp2g-differential-equations-first-order"
+   },
+   {
+    "id": "fp2-complementary-function-and-particular-integral",
+    "zh": "互补函数与特解",
+    "en": "Complementary function & particular integral",
+    "group": "fp2g-differential-equations-first-order"
+   },
+   {
+    "id": "fp2-second-order-homogeneous-equations",
+    "zh": "二阶齐次方程",
+    "en": "Second-order homogeneous equations",
+    "group": "fp2g-differential-equations-second-order"
+   },
+   {
+    "id": "fp2-finding-particular-integrals-by-integration",
+    "zh": "特解积分求法",
+    "en": "Finding particular integrals by integration",
+    "group": "fp2g-differential-equations-second-order"
+   },
+   {
+    "id": "fp2-undetermined-coefficients",
+    "zh": "待定系数法",
+    "en": "Undetermined coefficients",
+    "group": "fp2g-differential-equations-second-order"
+   },
+   {
+    "id": "fp2-resonant-and-repeated-root-particular-integrals",
+    "zh": "共振与重根特解",
+    "en": "Resonant & repeated-root particular integrals",
+    "group": "fp2g-differential-equations-second-order"
+   },
+   {
+    "id": "fp2-particular-integrals-non-homogeneous-cases",
+    "zh": "二阶非齐次特解",
+    "en": "Particular integrals: non-homogeneous cases",
+    "group": "fp2g-differential-equations-second-order"
+   },
+   {
+    "id": "fp2-3d-vector-representation-and-direction",
+    "zh": "三维向量表示",
+    "en": "3D vector representation & direction",
+    "group": "fp2g-vectors-and-three-dimensional-coordinate-geometry"
+   },
+   {
+    "id": "fp2-vector-product-normals-and-areas",
+    "zh": "向量积：法向量与面积",
+    "en": "Vector product: normals & areas",
+    "group": "fp2g-vectors-and-three-dimensional-coordinate-geometry"
+   },
+   {
+    "id": "fp2-equations-and-construction-of-lines-and-planes",
+    "zh": "直线与平面方程",
+    "en": "Equations & construction of lines & planes",
+    "group": "fp2g-vectors-and-three-dimensional-coordinate-geometry"
+   },
+   {
+    "id": "fp2-angles-intersections-and-distances",
+    "zh": "夹角交线与距离",
+    "en": "Angles, intersections & distances",
+    "group": "fp2g-vectors-and-three-dimensional-coordinate-geometry"
+   },
+   {
+    "id": "fp2-determinants-minors-and-inverse-matrices",
+    "zh": "行列式余子式与逆矩阵",
+    "en": "Determinants, minors & inverse matrices",
+    "group": "fp2g-matrix-algebra"
+   },
+   {
+    "id": "fp2-matrices-for-3d-linear-transformations",
+    "zh": "三维线性变换矩阵",
+    "en": "Matrices for 3D linear transformations",
+    "group": "fp2g-matrix-algebra"
+   },
+   {
+    "id": "fp2-composite-matrix-transformations",
+    "zh": "复合矩阵变换",
+    "en": "Composite matrix transformations",
+    "group": "fp2g-matrix-algebra"
+   },
+   {
+    "id": "fp2-eigenvalues-and-eigenvectors",
+    "zh": "特征值与特征向量",
+    "en": "Eigenvalues & eigenvectors",
+    "group": "fp2g-matrix-algebra"
+   },
+   {
+    "id": "fp2-solutions-of-linear-equations",
+    "zh": "线性方程组求解",
+    "en": "Solutions of linear equations",
+    "group": "fp2g-solution-of-linear-equations"
+   },
+   {
+    "id": "fp2-number-of-solutions-of-3-variable-equations",
+    "zh": "三元方程组解的个数",
+    "en": "Number of solutions of 3-variable equations",
+    "group": "fp2g-solution-of-linear-equations"
+   },
+   {
+    "id": "fp2-geometric-interpretation-and-determinants",
+    "zh": "几何解释与行列式",
+    "en": "Geometric interpretation & determinants",
+    "group": "fp2g-solution-of-linear-equations"
+   },
+   {
+    "id": "fp2-parametric-solutions-of-related-eqn-systems",
+    "zh": "相关方程组参数解",
+    "en": "Parametric solutions of related eqn systems",
+    "group": "fp2g-solution-of-linear-equations"
+   }
+  ]
+ },
+ "FS2": {
+  "groups": [
+   {
+    "id": "fs2g-moment-generating-functions-mgf",
+    "zh": "矩量母函数",
+    "en": "Moment generating functions (mgf)"
+   },
+   {
+    "id": "fs2g-estimators",
+    "zh": "估计量",
+    "en": "Estimators"
+   },
+   {
+    "id": "fs2g-estimation",
+    "zh": "置信区间估计",
+    "en": "Estimation"
+   },
+   {
+    "id": "fs2g-further-hypothesis-testing",
+    "zh": "进阶假设检验",
+    "en": "Further hypothesis testing"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fs2-moment-generating-functions-random-variables",
+    "zh": "随机变量矩量母函数",
+    "en": "Moment generating functions: random variables",
+    "group": "fs2g-moment-generating-functions-mgf"
+   },
+   {
+    "id": "fs2-moment-generating-functions-standard-distns",
+    "zh": "标准分布的矩量母函数",
+    "en": "Moment generating functions: standard distns",
+    "group": "fs2g-moment-generating-functions-mgf"
+   },
+   {
+    "id": "fs2-sums-of-independent-variables-using-mgfs",
+    "zh": "独立变量之和",
+    "en": "Sums of independent variables using MGFs",
+    "group": "fs2g-moment-generating-functions-mgf"
+   },
+   {
+    "id": "fs2-moments-and-transformations-from-mgfs",
+    "zh": "由矩量母函数求矩",
+    "en": "Moments & transformations from MGFs",
+    "group": "fs2g-moment-generating-functions-mgf"
+   },
+   {
+    "id": "fs2-population-parameters-and-statistical-inference",
+    "zh": "总体参数与推断",
+    "en": "Population parameters & statistical inference",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-statistics-and-sampling-distributions",
+    "zh": "统计量与抽样分布",
+    "en": "Statistics & sampling distributions",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-estimators-and-estimates",
+    "zh": "估计量与估计值",
+    "en": "Estimators & estimates",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-unbiased-estimators",
+    "zh": "无偏估计量",
+    "en": "Unbiased estimators",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-pooled-unbiased-estimators",
+    "zh": "合并无偏估计量",
+    "en": "Pooled unbiased estimators",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-consistent-estimators",
+    "zh": "一致估计量",
+    "en": "Consistent estimators",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-efficient-estimators-and-relative-efficiency",
+    "zh": "有效性与相对效率",
+    "en": "Efficient estimators & relative efficiency",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-comparing-and-choosing-estimators",
+    "zh": "估计量比较与选择",
+    "en": "Comparing & choosing estimators",
+    "group": "fs2g-estimators"
+   },
+   {
+    "id": "fs2-confidence-intervals-and-critical-values",
+    "zh": "置信区间概念与临界值",
+    "en": "Confidence intervals & critical values",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-normal-population-mean-with-known-variance",
+    "zh": "方差已知的正态均值",
+    "en": "Normal population mean with known variance",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-large-sample-normal-approximation-intervals",
+    "zh": "大样本正态近似",
+    "en": "Large-sample normal approximation intervals",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-confidence-intervals-with-unknown-variance",
+    "zh": "未知方差的均值区间",
+    "en": "Confidence intervals with unknown variance",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-students-t-distribution-and-t-tables",
+    "zh": "学生t分布与t表",
+    "en": "Student's t-distribution & t-tables",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-finding-sample-size-for-a-given-width",
+    "zh": "给定宽度求样本量",
+    "en": "Finding sample size for a given width",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-one-tailed-confidence-intervals",
+    "zh": "单侧置信区间",
+    "en": "One-tailed confidence intervals",
+    "group": "fs2g-estimation"
+   },
+   {
+    "id": "fs2-test-foundations-and-error-probabilities",
+    "zh": "检验基础与错误概率",
+    "en": "Test foundations & error probabilities",
+    "group": "fs2g-further-hypothesis-testing"
+   },
+   {
+    "id": "fs2-independent-sample-tests-for-mean-difference",
+    "zh": "独立样本均值差检验",
+    "en": "Independent-sample tests for mean difference",
+    "group": "fs2g-further-hypothesis-testing"
+   },
+   {
+    "id": "fs2-paired-sample-tests-for-mean-difference",
+    "zh": "配对样本均值差检验",
+    "en": "Paired-sample tests for mean difference",
+    "group": "fs2g-further-hypothesis-testing"
+   },
+   {
+    "id": "fs2-chi-squared-and-f-tests-for-population-variance",
+    "zh": "方差的卡方与F检验",
+    "en": "Chi-squared & F tests for population variance",
+    "group": "fs2g-further-hypothesis-testing"
+   },
+   {
+    "id": "fs2-chi-squared-goodness-of-fit-tests",
+    "zh": "卡方拟合优度检验",
+    "en": "Chi-squared goodness-of-fit tests",
+    "group": "fs2g-further-hypothesis-testing"
+   },
+   {
+    "id": "fs2-chi-squared-tests-of-independence",
+    "zh": "列联表独立性检验",
+    "en": "Chi-squared tests of independence",
+    "group": "fs2g-further-hypothesis-testing"
+   }
+  ]
+ },
+ "FM2": {
+  "groups": [
+   {
+    "id": "fm2g-vertical-circular-motion",
+    "zh": "竖直圆周运动",
+    "en": "Vertical circular motion"
+   },
+   {
+    "id": "fm2g-projectiles-launched-onto-inclined-planes",
+    "zh": "斜面上的抛体运动",
+    "en": "Projectiles launched onto inclined planes"
+   },
+   {
+    "id": "fm2g-elastic-strings-and-springs",
+    "zh": "弹性绳和弹簧",
+    "en": "Elastic strings and springs"
+   },
+   {
+    "id": "fm2g-collisions-in-two-dimensions",
+    "zh": "二维碰撞",
+    "en": "Collisions in two dimensions"
+   },
+   {
+    "id": "fm2g-application-of-differential-equations",
+    "zh": "微分方程的应用",
+    "en": "Application of differential equations"
+   },
+   {
+    "id": "fm2g-simple-harmonic-motion",
+    "zh": "简谐运动",
+    "en": "Simple harmonic motion"
+   }
+  ],
+  "tags": [
+   {
+    "id": "fm2-circular-motion-with-non-uniform-speed",
+    "zh": "非匀速圆周运动",
+    "en": "Circular motion with non-uniform speed",
+    "group": "fm2g-vertical-circular-motion"
+   },
+   {
+    "id": "fm2-motion-in-a-vertical-circle",
+    "zh": "竖直圆周运动",
+    "en": "Motion in a vertical circle",
+    "group": "fm2g-vertical-circular-motion"
+   },
+   {
+    "id": "fm2-complete-vertical-circles-with-rods-and-strings",
+    "zh": "杆绳约束完整圆周",
+    "en": "Complete vertical circles with rods & strings",
+    "group": "fm2g-vertical-circular-motion"
+   },
+   {
+    "id": "fm2-leaving-the-circular-path",
+    "zh": "离开圆周路径",
+    "en": "Leaving the circular path",
+    "group": "fm2g-vertical-circular-motion"
+   },
+   {
+    "id": "fm2-projectile-model-and-inclined-plane-coordinates",
+    "zh": "抛体模型与斜面坐标",
+    "en": "Projectile model & inclined-plane coordinates",
+    "group": "fm2g-projectiles-launched-onto-inclined-planes"
+   },
+   {
+    "id": "fm2-range-up-and-down-an-inclined-plane",
+    "zh": "沿斜面上下发射",
+    "en": "Range up & down an inclined plane",
+    "group": "fm2g-projectiles-launched-onto-inclined-planes"
+   },
+   {
+    "id": "fm2-maximum-range-on-an-inclined-plane",
+    "zh": "斜面最大射程",
+    "en": "Maximum range on an inclined plane",
+    "group": "fm2g-projectiles-launched-onto-inclined-planes"
+   },
+   {
+    "id": "fm2-other-inclined-plane-projectile-problems",
+    "zh": "斜面抛体其他问题",
+    "en": "Other inclined-plane projectile problems",
+    "group": "fm2g-projectiles-launched-onto-inclined-planes"
+   },
+   {
+    "id": "fm2-vector-modelling-on-inclined-planes",
+    "zh": "斜面向量建模与反弹",
+    "en": "Vector modelling on inclined planes",
+    "group": "fm2g-projectiles-launched-onto-inclined-planes"
+   },
+   {
+    "id": "fm2-elastic-strings-springs-and-hooke-law",
+    "zh": "弹性绳与胡克定律",
+    "en": "Elastic strings, springs & Hooke law",
+    "group": "fm2g-elastic-strings-and-springs"
+   },
+   {
+    "id": "fm2-equilibrium-with-elastic-strings-and-springs",
+    "zh": "弹性系统平衡",
+    "en": "Equilibrium with elastic strings & springs",
+    "group": "fm2g-elastic-strings-and-springs"
+   },
+   {
+    "id": "fm2-work-and-elastic-potential-energy",
+    "zh": "变力做功与弹性势能",
+    "en": "Work & elastic potential energy",
+    "group": "fm2g-elastic-strings-and-springs"
+   },
+   {
+    "id": "fm2-conservation-of-energy-in-elastic-systems",
+    "zh": "弹性系统能量守恒",
+    "en": "Conservation of energy in elastic systems",
+    "group": "fm2g-elastic-strings-and-springs"
+   },
+   {
+    "id": "fm2-work-energy-principle-with-friction",
+    "zh": "含摩擦的功能原理",
+    "en": "Work-energy principle with friction",
+    "group": "fm2g-elastic-strings-and-springs"
+   },
+   {
+    "id": "fm2-impulse-and-momentum-in-two-dimensions",
+    "zh": "二维冲量与动量",
+    "en": "Impulse & momentum in two dimensions",
+    "group": "fm2g-collisions-in-two-dimensions"
+   },
+   {
+    "id": "fm2-principles-of-elastic-collisions",
+    "zh": "弹性碰撞原理",
+    "en": "Principles of elastic collisions",
+    "group": "fm2g-collisions-in-two-dimensions"
+   },
+   {
+    "id": "fm2-oblique-collision-with-a-fixed-object",
+    "zh": "与固定物体斜碰",
+    "en": "Oblique collision with a fixed object",
+    "group": "fm2g-collisions-in-two-dimensions"
+   },
+   {
+    "id": "fm2-oblique-collision-between-two-moving-objects",
+    "zh": "两运动物体斜碰",
+    "en": "Oblique collision between two moving objects",
+    "group": "fm2g-collisions-in-two-dimensions"
+   },
+   {
+    "id": "fm2-variable-forces-and-differential-equations",
+    "zh": "变力与运动微分方程",
+    "en": "Variable forces & differential equations",
+    "group": "fm2g-application-of-differential-equations"
+   },
+   {
+    "id": "fm2-acceleration-from-time-or-velocity",
+    "zh": "由时间或速度求加速度",
+    "en": "Acceleration from time or velocity",
+    "group": "fm2g-application-of-differential-equations"
+   },
+   {
+    "id": "fm2-acceleration-as-a-function-of-displacement",
+    "zh": "加速度作为位移函数",
+    "en": "Acceleration as a function of displacement",
+    "group": "fm2g-application-of-differential-equations"
+   },
+   {
+    "id": "fm2-oscillation-and-the-spring-mass-equation",
+    "zh": "振动与弹簧质点方程",
+    "en": "Oscillation & the spring-mass equation",
+    "group": "fm2g-simple-harmonic-motion"
+   },
+   {
+    "id": "fm2-definition-and-equation-of-shm",
+    "zh": "简谐运动定义与方程",
+    "en": "Definition & equation of SHM",
+    "group": "fm2g-simple-harmonic-motion"
+   },
+   {
+    "id": "fm2-showing-and-solving-shm-in-given-situations",
+    "zh": "证明与求解简谐运动",
+    "en": "Showing & solving SHM in given situations",
+    "group": "fm2g-simple-harmonic-motion"
+   },
+   {
+    "id": "fm2-period-frequency-and-vertical-spring-shm",
+    "zh": "周期频率与竖直弹簧",
+    "en": "Period, frequency & vertical spring SHM",
+    "group": "fm2g-simple-harmonic-motion"
+   },
+   {
+    "id": "fm2-the-simple-pendulum-and-shm-summary-results",
+    "zh": "单摆与简谐运动总结",
+    "en": "The simple pendulum & SHM summary results",
+    "group": "fm2g-simple-harmonic-motion"
+   }
+  ]
+ }
+}

@@ -32,6 +32,10 @@ TAXONOMY_DIR = Path(__file__).resolve().parents[2] / "data" / "taxonomy"
 # 故 U5 卷放开 U1..U5 的标签；其余卷（含 Edexcel 的 U5）一律只可选自身单元。
 # 列表顺序 = 右栏显示顺序：U5 自身知识点置顶（Section A 直接对应），
 # U1–U4 依次排在其后（Section B 综合题按需引用）。
+# ⚠️ 键是 (board, unit)、**不分学科**：化学 AQA Unit 5「Practical and synoptic」
+# 同样吃这条规则。2026-10-22 化学词表按飞书重建后 AQA 只到 U4（CH05 综合卷无
+# 独立知识点），因此化学 U5 卷实际可选 U1–U4 共 91 个标签——这是刻意保留的，
+# 别因为"化学 U5 没词表"就把这条删掉或按学科收窄。
 _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
     ("aqa", "U5"): ["U5", "U1", "U2", "U3", "U4"],
 }
@@ -239,7 +243,7 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -
 # Edexcel IAL 数学用 P1–P4 / M1–M3 / S1–S3 / D1 / F1–F3（P 与 CIE 的 P 形似但不冲突：
 # 词表按学科一文件，单元键只在文件内唯一）。
 # 牛津 AQA 会计 9615（2026-10-21）按 AS/A2 分两套词表：Paper 1+2 → AS，Paper 3+4 → AL。
-_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FM|FS|[SMFD][1-9]|AS|AL)$")
+_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
 
 _TAG_KEYS = ("id", "zh", "en", "group")
 _GROUP_KEYS = ("id", "zh", "en")

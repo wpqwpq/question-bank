@@ -1,0 +1,269 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""import_biz.py — 把 Edexcel IAL 商务卷（WBS11–14）导入题库目录规范
+
+用法:
+    python scripts/import_biz.py --dry-run
+    python scripts/import_biz.py --apply
+    python scripts/import_biz.py --apply --only 2025-june-wbs11
+
+规则:
+    · 只收 2018 新大纲 WBS11/12/13/14（U1–U4）；
+      **WBS03/WBS04 是旧大纲**（2020-Oct 那两份，2 个 Section、无 Source Booklet）一律不收；
+    · 只收文件名含 `que` / `qp` 的 PDF（排除 rms / msc / pef / ms）；
+    · 卷号从封面文本取（`WBS11/01`、`WBS11/01A`），不从文件名猜；
+    · 目录名 `<year>-<session>-<paperCode>`，session = jan|june|oct，01A（中国区）卷号后加 a；
+    · 源目录命名三套并存：`2019.1`（年.月）、`2024/Jan`（年/月名）、`2020.10/past paper`；
+    · PDF 复制为 session 目录下的 `source.pdf`（已存在且 sha256 相同则跳过）；
+    · `paper.md` 只在缺失时写入，已存在不覆盖。
+
+⚠️ 与 import_eco.py 的差别：商务的 Source Booklet **与 QP 合订在同一个 PDF 里**
+   （资料在前或在后按考场版本不同），所以切割脚本要从同一份 PDF 里分两段取。
+"""
+
+import argparse
+import hashlib
+import re
+import shutil
+import sys
+from pathlib import Path
+
+import pymupdf
+
+ROOT = Path(__file__).resolve().parent.parent
+DATA = ROOT / "data" / "edexcel" / "a-level" / "business"
+
+BOARD = "edexcel"
+QUAL = "a-level"
+SUBJECT = "business"
+
+# 卷面满分（考生实际作答）：WBS11–14 全部 80 分
+BUSINESS_AWARDED = 80
+
+# 封面卷号：WBS11/01 或 WBS11/01A（WBS03/WBS04 旧大纲不匹配本正则，天然排除）
+COVER_CODE_RE = re.compile(r"\bWBS\s*(1[1-4])\s*/\s*01\s*(A)?", re.I)
+DIR_SESSION_RE = re.compile(r"^((?:19|20)\d{2})\.(\d{1,2})$")
+ANSWER_RE = re.compile(r"rms|msc|-ms-|_ms|\bms\b|pef|answer|答案", re.I)
+TOTAL_RE = re.compile(r"\(?\s*Total\s+for\s+Question\s*\*?\s*(\d+)\s*=\s*(\d+)\s*marks?\s*\)?")
+
+UNIT_TITLES = {
+    "WBS11": "Unit 1: Marketing and people",
+    "WBS12": "Unit 2: Managing business activities",
+    "WBS13": "Unit 3: Business decisions and strategy",
+    "WBS14": "Unit 4: Global business",
+}
+
+# 目录月号 → 考季
+DIR_MONTH_TO_SESSION = {1: "jan", 5: "june", 6: "june", 10: "oct"}
+NAME_TO_SESSION = {"jan": "jan", "january": "jan", "jun": "june", "june": "june",
+                   "may": "june", "oct": "oct", "october": "oct"}
+
+
+def norm_session(rel: Path):
+    """从相对路径推 (year, session)。支持 `2019.1` 与 `2024/Jan` 两套命名。"""
+    for seg in rel.parts:
+        m = DIR_SESSION_RE.match(seg)
+        if m:
+            y, mo = int(m.group(1)), int(m.group(2))
+            ses = DIR_MONTH_TO_SESSION.get(mo)
+            if ses:
+                return y, ses
+    year = None
+    for seg in rel.parts:
+        if re.fullmatch(r"(?:19|20)\d{2}", seg):
+            year = int(seg)
+            continue
+        ses = NAME_TO_SESSION.get(seg.strip().lower())
+        if ses and year:
+            return year, ses
+    return None, None
+
+
+def cover_meta(doc):
+    """封面：卷号（含 A 后缀）+ 考试日期 + 时长 + 卷号 P 号。"""
+    t = doc[0].get_text()
+    flat = " | ".join(x.strip() for x in t.split("\n") if x.strip())
+    out = {}
+    m = COVER_CODE_RE.search(flat)
+    if m:
+        out["code"] = f"WBS{m.group(1)}"
+        out["suffix"] = "a" if m.group(2) else ""
+    m = re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+(\d{1,2})\s+"
+                  r"(January|February|March|April|May|June|July|August|September|October|"
+                  r"November|December)\s+((?:19|20)\d{2})", flat)
+    if m:
+        mo = {"january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+              "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
+              "december": 12}[m.group(3).lower()]
+        out["exam_date"] = f"{m.group(4)}-{mo:02d}-{int(m.group(2)):02d}"
+        out["exam_day"] = m.group(1)
+    m = re.search(r"(Morning|Afternoon|Evening)\s*\(Time:\s*([^)]+)\)", flat)
+    if m:
+        out["exam_time"] = f"{m.group(1)} (Time: {m.group(2).strip()})"
+    m = re.search(r"\b([A-Z]\d{5}[A-Z])\b", flat)
+    if m:
+        out["paper_ref"] = m.group(1)
+    m = re.search(r"UNIT\s*(\d)\s*:\s*([^|]+)", flat, re.I)
+    if m:
+        out["unit_no"] = int(m.group(1))
+        out["unit_title"] = m.group(2).strip()
+    return out
+
+
+def marks_profile(doc):
+    """(题数, 题目分值合计, 卷面满分)。"""
+    first = {}
+    for pg in doc:
+        for m in TOTAL_RE.finditer(pg.get_text()):
+            n, mk = int(m.group(1)), int(m.group(2))
+            first.setdefault(n, mk)
+    total = sum(first.values())
+    m = re.search(r"total mark for this paper is\s*(\d+)", doc[0].get_text(), re.I)
+    awarded = int(m.group(1)) if m else BUSINESS_AWARDED
+    return len(first), total, awarded
+
+
+def walk(source: Path):
+    rows = []
+    for p in sorted(source.rglob("*.pdf")):
+        rel = p.relative_to(source)
+        flat = rel.as_posix()
+        low = p.stem.lower()
+        if "igcse" in flat.lower() or "specimen" in flat.lower():
+            continue
+        if not re.search(r"que|_qp|qp\b", low):
+            continue
+        if ANSWER_RE.search(low):
+            continue
+        year, ses = norm_session(rel)
+        if not year:
+            print(f"  [skip] 无法解析年/考季: {flat}")
+            continue
+        try:
+            with pymupdf.open(p) as doc:
+                meta = cover_meta(doc)
+        except Exception as e:  # noqa: BLE001
+            print(f"  [skip] 打不开 {flat}: {e}")
+            continue
+        code = meta.get("code")
+        if not code:
+            print(f"  [skip] 封面无 WBS11–14 卷号（旧大纲？）: {flat}")
+            continue
+        suffix = meta.get("suffix", "")
+        rows.append({"pdf": p, "rel": flat, "year": year, "session": ses,
+                     "paper_code": f"{code}{suffix}".upper(), "suffix": suffix,
+                     "dir": f"{year}-{ses}-{code.lower()}{suffix}",
+                     "meta": meta})
+    seen, out = set(), []
+    for r in rows:
+        if r["dir"] in seen:
+            print(f"  [skip] 重复: {r['rel']}（同季同卷号已有）")
+            continue
+        seen.add(r["dir"])
+        out.append(r)
+    out.sort(key=lambda r: r["dir"])
+    return out
+
+
+def sha256(p: Path):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def write_paper_md(md_path: Path, row: dict, n_q: int, total: int, awarded: int):
+    pc = row["paper_code"]
+    base = pc[:-1] if row["suffix"] else pc
+    unit = f"{base}/01" + ("A" if row["suffix"] else "")
+    meta = row["meta"]
+    title = UNIT_TITLES.get(base, meta.get("unit_title", ""))
+    lines = [
+        "---",
+        f"id: {BOARD}-{QUAL}-{SUBJECT}-{row['dir']}",
+        f"board: {BOARD}",
+        f"qualification: {QUAL}",
+        f"subject: {SUBJECT}",
+        f"paper_code: {pc}",
+        f"paper_unit: {unit}",
+        f"year: {row['year']}",
+        f"session: {row['session']}",
+        f'title: "{title}"',
+    ]
+    if meta.get("exam_date"):
+        lines.append(f"exam_date: {meta['exam_date']}")
+    if meta.get("exam_time"):
+        lines.append(f'exam_time: "{meta["exam_time"]}"')
+    lines += [
+        f"total_marks: {total}",
+        f"marks_awarded: {awarded}",
+        "source_pdf: source.pdf",
+    ]
+    if meta.get("paper_ref"):
+        lines.append(f"paper_ref: {meta['paper_ref']}")
+    lines += ["cut: cut.json", "language: en", "---", ""]
+    lines.append(f"Pearson Edexcel IAL · Business · {unit} · {title}")
+    lines.append("")
+    if base in ("WBS11", "WBS12"):
+        lines.append(f"**卷面结构**：Section A 一题（30 分，a–e）＋ Section B 一题（30 分，a–e）"
+                     f"＋ Section C 一题（20 分，整题）。卷面 {awarded} 分，题目分值合计 {total}。")
+    else:
+        lines.append(f"**卷面结构**：Section A 一题（40 分，a–e）＋ Section B 一题（20 分，整题）"
+                     f"＋ Section C 一题（20 分，整题）。卷面 {awarded} 分，题目分值合计 {total}。")
+    lines.append("")
+    lines.append("**切割口径**：题图 = 该题的 Source Booklet 资料（多段，跨页按序拼接）＋ 题面"
+                 "（点线作答区全部裁掉，同页多段以虚线接缝）；Q3 与 WBS13/14 的 Q2 无小问，不产 subquestions。")
+    md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="导入 Edexcel IAL 商务卷")
+    ap.add_argument("--source", default="downloadPapers/Edexcel_ALevel_Business")
+    ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--only", default=None, help="只处理这些目录名（逗号分隔）")
+    args = ap.parse_args()
+
+    src = (ROOT / args.source).resolve()
+    if not src.is_dir():
+        sys.exit(f"源目录不存在: {src}")
+
+    rows = walk(src)
+    only = set(x.strip() for x in args.only.split(",")) if args.only else None
+    if only:
+        rows = [r for r in rows if r["dir"] in only]
+        missing = only - {r["dir"] for r in rows}
+        if missing:
+            sys.exit(f"未找到: {', '.join(sorted(missing))}")
+
+    print(f"共 {len(rows)} 卷")
+    by_unit = {}
+    for r in rows:
+        by_unit[r["paper_code"]] = by_unit.get(r["paper_code"], 0) + 1
+        print(f"  {r['dir']:<24} ← {r['rel']}")
+    print("\n按卷号：" + "  ".join(f"{k} {v}" for k, v in sorted(by_unit.items())))
+
+    if not args.apply:
+        print("\n（dry-run，未落盘。加 --apply 执行）")
+        return
+
+    DATA.mkdir(parents=True, exist_ok=True)
+    for r in rows:
+        dst = DATA / r["dir"]
+        dst.mkdir(parents=True, exist_ok=True)
+        target = dst / "source.pdf"
+        sha = sha256(r["pdf"])
+        if target.exists() and sha256(target) == sha:
+            action = "已存在"
+        else:
+            shutil.copy2(r["pdf"], target)
+            action = "复制"
+        with pymupdf.open(target) as doc:
+            n_q, total, awarded = marks_profile(doc)
+            pages = doc.page_count
+        md = dst / "paper.md"
+        if not md.exists():
+            write_paper_md(md, r, n_q, total, awarded)
+        print(f"  {r['dir']:<24} {action} pdf（{pages} 页，{n_q} 题，合计 {total} / 满分 {awarded}）")
+    print(f"\n完成：{len(rows)} 卷 → {DATA}")
+
+
+if __name__ == "__main__":
+    main()

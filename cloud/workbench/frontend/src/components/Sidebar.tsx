@@ -60,6 +60,8 @@ export default function Sidebar(p: Props) {
           <option value="further-mathematics">Further Mathematics</option>
           <option value="accounting">Accounting</option>
           <option value="economics">Economics</option>
+          {/* 牛津 AQA 商务 9725（2026-10-22 上线）。这个列表是手写的，数据里有了不会自己冒出来；新增学科必须在这里补一行，否则打标台左侧选不到（标签管理页读词表树，不受影响）。 */}
+          <option value="business">Business</option>
         </select>
       </div>
       <div>

@@ -1,5 +1,5 @@
 {
- "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「化学」表 AL/AS 行（2026-10-18 导出），不含 IG/GCSE。",
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「化学」表 A-Level 段（2026-10-22 全量导出，以飞书为准），不含 IG/GCSE。",
  "U1": {
   "groups": [
    {
@@ -9,7 +9,7 @@
    },
    {
     "id": "u1g-ideal-gas-law-and-concentration",
-    "zh": "理想气体方程和浓度",
+    "zh": "理想气体和浓度",
     "en": "Ideal Gas Law and Concentration"
    },
    {
@@ -58,9 +58,9 @@
     "en": "Organic Nomenclature and Isomerism"
    },
    {
-    "id": "u1g-crude-oil-lab-safety-and-environmental-protection",
-    "zh": "原油，实验室安全，环保",
-    "en": "Crude Oil, Lab Safety and Environmental Protection"
+    "id": "u1g-crude-oil-and-environmental-protection",
+    "zh": "原油和环保",
+    "en": "Crude Oil and Environmental Protection"
    },
    {
     "id": "u1g-free-radical-substitution-of-alkane",
@@ -149,7 +149,7 @@
     "id": "u1-fractional-distillation",
     "zh": "分馏",
     "en": "fractional distillation",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-homolytic-and-heterolytic-fission",
@@ -171,7 +171,7 @@
    },
    {
     "id": "u1-isotope",
-    "zh": "同位素",
+    "zh": "同位素定义",
     "en": "isotope",
     "group": "u1g-the-basic-structure-of-substance"
    },
@@ -182,9 +182,9 @@
     "group": "u1g-the-basic-structure-of-substance"
    },
    {
-    "id": "u1-calculation-between-mass-and-amount-mole",
-    "zh": "质量与数量（摩尔）计算",
-    "en": "calculation between mass and amount (mole)",
+    "id": "u1-calculation-between-mass-and-amount",
+    "zh": "质量与数量计算",
+    "en": "calculation between mass and amount",
     "group": "u1g-the-basic-structure-of-substance"
    },
    {
@@ -255,7 +255,7 @@
    },
    {
     "id": "u1-the-half-full-full-principle-and-electronic-configuration-of",
-    "zh": "过渡金属的半满、全满和离子电子构型",
+    "zh": "过渡金属和半满全满",
     "en": "the half-full/full principle and electronic configuration of transition metal ions",
     "group": "u1g-electronic-configuration"
    },
@@ -389,7 +389,7 @@
     "id": "u1-cracking",
     "zh": "裂化",
     "en": "cracking",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-melting-boiling-point",
@@ -413,43 +413,43 @@
     "id": "u1-reforming",
     "zh": "重整",
     "en": "reforming",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-hazard-symbol",
     "zh": "危害标志",
     "en": "hazard symbol",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-precaution",
     "zh": "安全防护",
     "en": "precaution",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-acid-rain",
     "zh": "酸雨",
     "en": "acid rain",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-carbon-neutrality",
     "zh": "碳中和",
     "en": "carbon neutrality",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-sustainability",
     "zh": "可持续性",
     "en": "sustainability",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-disposal-of-polymer",
     "zh": "聚合物垃圾处理",
     "en": "disposal of polymer",
-    "group": "u1g-crude-oil-lab-safety-and-environmental-protection"
+    "group": "u1g-crude-oil-and-environmental-protection"
    },
    {
     "id": "u1-mechanism-of-free-radical-substitution",
@@ -791,9 +791,14 @@
     "en": "Enthalpy Measurement"
    },
    {
-    "id": "u3g-rate-measurement",
-    "zh": "速率测定",
-    "en": "Rate Measurement"
+    "id": "u3g-rate-of-hydrolysis-of-halogenoalkane",
+    "zh": "卤代烃水解速率",
+    "en": "Rate of Hydrolysis of Halogenoalkane"
+   },
+   {
+    "id": "u3g-measure-volume-of-gas",
+    "zh": "测量气体体积",
+    "en": "Measure Volume of Gas"
    }
   ],
   "tags": [
@@ -828,10 +833,16 @@
     "group": "u3g-enthalpy-measurement"
    },
    {
-    "id": "u3-rate-measurement",
-    "zh": "速率测定",
-    "en": "Rate Measurement",
-    "group": "u3g-rate-measurement"
+    "id": "u3-rate-of-hydrolysis-of-halogenoalkane",
+    "zh": "卤代烃水解速率",
+    "en": "Rate of Hydrolysis of Halogenoalkane",
+    "group": "u3g-rate-of-hydrolysis-of-halogenoalkane"
+   },
+   {
+    "id": "u3-measure-volume-of-gas",
+    "zh": "测量气体体积",
+    "en": "Measure Volume of Gas",
+    "group": "u3g-measure-volume-of-gas"
    }
   ]
  },
@@ -1366,7 +1377,7 @@
    },
    {
     "id": "u6g-synthesis-experiment",
-    "zh": "（有机）合成题",
+    "zh": "合成题",
     "en": "Synthesis Experiment"
    },
    {
@@ -1376,7 +1387,7 @@
    },
    {
     "id": "u6g-redox-titration",
-    "zh": "滴定题，含氧化还原滴定和返滴定",
+    "zh": "滴定",
     "en": "Redox Titration"
    }
   ],
@@ -1395,7 +1406,7 @@
    },
    {
     "id": "u6-synthesis-experiment",
-    "zh": "（有机）合成题",
+    "zh": "合成题",
     "en": "Synthesis Experiment",
     "group": "u6g-synthesis-experiment"
    },

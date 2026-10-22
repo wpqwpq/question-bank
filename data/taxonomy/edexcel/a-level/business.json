@@ -1,0 +1,675 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 u<单元>-<英文slug>，组 u<单元>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base（D28lbXMsyasWyas8iWhch1KXnB5）商务表 tblG7MwzRN5YdZOd，筛 考试局=EDX 且 考试阶段=AL，共 93 条（Unit 1 30 / Unit 2 20 / Unit 3 25 / Unit 4 18）；2026-10-22 导出。",
+ "U1": {
+  "groups": [
+   {
+    "id": "u1g-meeting-customer-needs",
+    "zh": "满足顾客需求",
+    "en": "Meeting customer needs"
+   },
+   {
+    "id": "u1g-the-market",
+    "zh": "市场",
+    "en": "The market"
+   },
+   {
+    "id": "u1g-marketing-mix-and-strategy",
+    "zh": "市场营销组合与策略",
+    "en": "Marketing mix and strategy"
+   },
+   {
+    "id": "u1g-managing-people",
+    "zh": "人力管理",
+    "en": "Managing people"
+   },
+   {
+    "id": "u1g-entrepreneurs-and-leaders",
+    "zh": "企业家和领导",
+    "en": "Entrepreneurs and leaders"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u1-mass-and-niche-markets",
+    "zh": "大众市场与利基市场",
+    "en": "Mass and niche markets",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-online-retailing",
+    "zh": "在线零售",
+    "en": "Online retailing",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-market-share",
+    "zh": "市场份额",
+    "en": "Market share",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-competition",
+    "zh": "竞争",
+    "en": "Competition",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-the-purpose-and-methods-of-market-research",
+    "zh": "市场调研的目的与方法",
+    "en": "The purpose and methods of market research",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-market-segmentation",
+    "zh": "市场细分",
+    "en": "Market segmentation",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-product-differentiation",
+    "zh": "产品差异化",
+    "en": "Product differentiation",
+    "group": "u1g-meeting-customer-needs"
+   },
+   {
+    "id": "u1-demand",
+    "zh": "需求",
+    "en": "Demand",
+    "group": "u1g-the-market"
+   },
+   {
+    "id": "u1-supply",
+    "zh": "供给",
+    "en": "Supply",
+    "group": "u1g-the-market"
+   },
+   {
+    "id": "u1-market-equilibrium",
+    "zh": "市场均衡",
+    "en": "Market equilibrium",
+    "group": "u1g-the-market"
+   },
+   {
+    "id": "u1-price-elasticity-of-demand",
+    "zh": "需求的价格弹性",
+    "en": "Price elasticity of demand",
+    "group": "u1g-the-market"
+   },
+   {
+    "id": "u1-income-elasticity-of-demand",
+    "zh": "需求的收入弹性",
+    "en": "Income elasticity of demand",
+    "group": "u1g-the-market"
+   },
+   {
+    "id": "u1-marketing-objectives-and-strategy",
+    "zh": "营销目标与战略",
+    "en": "Marketing objectives and strategy",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-product-service-design",
+    "zh": "产品/服务设计",
+    "en": "Product/service design",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-promotion",
+    "zh": "推广",
+    "en": "Promotion",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-branding",
+    "zh": "品牌塑造",
+    "en": "Branding",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-pricing",
+    "zh": "定价",
+    "en": "Pricing",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-place-distribution",
+    "zh": "位置/分销",
+    "en": "Place/distribution",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-design-mix",
+    "zh": "设计组合",
+    "en": "Design mix",
+    "group": "u1g-marketing-mix-and-strategy"
+   },
+   {
+    "id": "u1-approaches-to-staffing",
+    "zh": "员工管理方法",
+    "en": "Approaches to staffing",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-flexible-workforce",
+    "zh": "灵活用工",
+    "en": "Flexible workforce",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-recruitment-and-selection",
+    "zh": "招聘和选拔",
+    "en": "Recruitment and selection",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-training",
+    "zh": "培训",
+    "en": "Training",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-motivation",
+    "zh": "激励",
+    "en": "Motivation",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-organisational-design",
+    "zh": "组织设计",
+    "en": "Organisational design",
+    "group": "u1g-managing-people"
+   },
+   {
+    "id": "u1-leadership",
+    "zh": "领导力",
+    "en": "Leadership",
+    "group": "u1g-entrepreneurs-and-leaders"
+   },
+   {
+    "id": "u1-role-of-an-entrepreneur",
+    "zh": "企业家的角色",
+    "en": "Role of an entrepreneur",
+    "group": "u1g-entrepreneurs-and-leaders"
+   },
+   {
+    "id": "u1-barriers-to-entrepreneurship",
+    "zh": "创业的障碍",
+    "en": "Barriers to entrepreneurship",
+    "group": "u1g-entrepreneurs-and-leaders"
+   },
+   {
+    "id": "u1-entrepreneurial-motives",
+    "zh": "创业的动机",
+    "en": "Entrepreneurial motives",
+    "group": "u1g-entrepreneurs-and-leaders"
+   },
+   {
+    "id": "u1-entrepreneurial-characteristics",
+    "zh": "企业家的特质",
+    "en": "Entrepreneurial characteristics",
+    "group": "u1g-entrepreneurs-and-leaders"
+   }
+  ]
+ },
+ "U2": {
+  "groups": [
+   {
+    "id": "u2g-planning-a-business-and-raising-finance",
+    "zh": "商业计划和融资",
+    "en": "Planning a business and raising finance"
+   },
+   {
+    "id": "u2g-financial-planning",
+    "zh": "财务计划",
+    "en": "Financial planning"
+   },
+   {
+    "id": "u2g-resource-management",
+    "zh": "资源管理",
+    "en": "Resource management"
+   },
+   {
+    "id": "u2g-external-influences",
+    "zh": "外部影响",
+    "en": "External influences"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u2-business-plan",
+    "zh": "商业计划书",
+    "en": "Business plan",
+    "group": "u2g-planning-a-business-and-raising-finance"
+   },
+   {
+    "id": "u2-internal-finance",
+    "zh": "内部融资",
+    "en": "Internal finance",
+    "group": "u2g-planning-a-business-and-raising-finance"
+   },
+   {
+    "id": "u2-external-finance",
+    "zh": "外部融资",
+    "en": "External finance",
+    "group": "u2g-planning-a-business-and-raising-finance"
+   },
+   {
+    "id": "u2-forms-of-business-organisation",
+    "zh": "企业的组织形式",
+    "en": "Forms of business organisation",
+    "group": "u2g-planning-a-business-and-raising-finance"
+   },
+   {
+    "id": "u2-limited-and-unlimited-liability",
+    "zh": "有限责任与无限责任",
+    "en": "Limited and unlimited liability",
+    "group": "u2g-planning-a-business-and-raising-finance"
+   },
+   {
+    "id": "u2-sales-revenue-and-costs",
+    "zh": "销售、收入和成本",
+    "en": "Sales, revenue and costs",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-contribution-and-break-even-analysis",
+    "zh": "贡献与收支平衡分析",
+    "en": "Contribution and break-even Analysis",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-sales-forecasting",
+    "zh": "销量预测",
+    "en": "Sales forecasting",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-cash-flow-forecasting",
+    "zh": "现金流预测",
+    "en": "Cash flow forecasting",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-budgets-and-variance-analysis",
+    "zh": "预算与差异",
+    "en": "Budgets and variance analysis",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-profit-and-profitability",
+    "zh": "利润与利润率",
+    "en": "Profit and profitability",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-liquidity-and-working-capital",
+    "zh": "流动性与运营资本",
+    "en": "Liquidity and working Capital",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-business-failure",
+    "zh": "企业失败",
+    "en": "Business failure",
+    "group": "u2g-financial-planning"
+   },
+   {
+    "id": "u2-production-productivity-and-efficiency",
+    "zh": "生产、生产力与效率",
+    "en": "Production, productivity and efficiency",
+    "group": "u2g-resource-management"
+   },
+   {
+    "id": "u2-capacity-utilisation",
+    "zh": "产能利用率",
+    "en": "Capacity utilisation",
+    "group": "u2g-resource-management"
+   },
+   {
+    "id": "u2-inventory-control",
+    "zh": "存货控制",
+    "en": "Inventory control",
+    "group": "u2g-resource-management"
+   },
+   {
+    "id": "u2-quality-management",
+    "zh": "质量管理",
+    "en": "Quality management",
+    "group": "u2g-resource-management"
+   },
+   {
+    "id": "u2-economic-influences",
+    "zh": "经济影响",
+    "en": "Economic Influences",
+    "group": "u2g-external-influences"
+   },
+   {
+    "id": "u2-legislation",
+    "zh": "立法",
+    "en": "Legislation",
+    "group": "u2g-external-influences"
+   },
+   {
+    "id": "u2-the-competitive-environment",
+    "zh": "竞争环境",
+    "en": "The competitive environment",
+    "group": "u2g-external-influences"
+   }
+  ]
+ },
+ "U3": {
+  "groups": [
+   {
+    "id": "u3g-business-objectives-and-strategy",
+    "zh": "企业目标和战略",
+    "en": "Business objectives and strategy"
+   },
+   {
+    "id": "u3g-business-growth",
+    "zh": "企业成长",
+    "en": "Business growth"
+   },
+   {
+    "id": "u3g-decision-making-techniques",
+    "zh": "决策技巧",
+    "en": "Decision-making techniques"
+   },
+   {
+    "id": "u3g-influences-on-business-decisions",
+    "zh": "企业决策的影响",
+    "en": "Influences on business decisions"
+   },
+   {
+    "id": "u3g-managing-change",
+    "zh": "管理变革",
+    "en": "Managing change"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u3-business-objectives",
+    "zh": "企业目标",
+    "en": "Business objectives",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-mission-statements",
+    "zh": "使命宣言",
+    "en": "Mission statements",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-ansoffs-matrix",
+    "zh": "安索夫矩阵",
+    "en": "Ansoff's Matrix",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-porters-strategic-matrix",
+    "zh": "波特的战略矩阵",
+    "en": "Porter's Strategic Matrix",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-portfolio-analysis-the-boston-matrix",
+    "zh": "产品组合分析：波士顿矩阵",
+    "en": "Portfolio Analysis: the Boston Matrix",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-swot-analysis",
+    "zh": "SWOT 分析",
+    "en": "SWOT analysis",
+    "group": "u3g-business-objectives-and-strategy"
+   },
+   {
+    "id": "u3-objectives-of-growth",
+    "zh": "增长的目标",
+    "en": "Objectives of growth",
+    "group": "u3g-business-growth"
+   },
+   {
+    "id": "u3-organic-growth",
+    "zh": "有机增长",
+    "en": "Organic growth",
+    "group": "u3g-business-growth"
+   },
+   {
+    "id": "u3-inorganic-growth",
+    "zh": "无机增长",
+    "en": "Inorganic growth",
+    "group": "u3g-business-growth"
+   },
+   {
+    "id": "u3-problems-arising-from-growth",
+    "zh": "增长引发的问题",
+    "en": "Problems arising from growth",
+    "group": "u3g-business-growth"
+   },
+   {
+    "id": "u3-quantitative-sales-forecasting",
+    "zh": "定量销售预测",
+    "en": "Quantitative sales forecasting",
+    "group": "u3g-decision-making-techniques"
+   },
+   {
+    "id": "u3-investment-appraisal",
+    "zh": "投资评估",
+    "en": "Investment appraisal",
+    "group": "u3g-decision-making-techniques"
+   },
+   {
+    "id": "u3-decision-trees",
+    "zh": "决策树",
+    "en": "Decision trees",
+    "group": "u3g-decision-making-techniques"
+   },
+   {
+    "id": "u3-critical-path-analysis",
+    "zh": "关键路径分析",
+    "en": "Critical path analysis",
+    "group": "u3g-decision-making-techniques"
+   },
+   {
+    "id": "u3-contribution-analysis",
+    "zh": "贡献分析",
+    "en": "Contribution analysis",
+    "group": "u3g-decision-making-techniques"
+   },
+   {
+    "id": "u3-corporate-culture",
+    "zh": "企业文化",
+    "en": "Corporate culture",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-stakeholder-model-versus-shareholder-model",
+    "zh": "利益相关者模式与股东模式",
+    "en": "Stakeholder model versus shareholder model",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-business-ethics",
+    "zh": "商业伦理",
+    "en": "Business ethics",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-statement-of-comprehensive-income",
+    "zh": "综合损益表",
+    "en": "Statement of comprehensive income",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-statement-of-financial-position",
+    "zh": "资产负债表",
+    "en": "Statement of financial position",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-ratio-analysis",
+    "zh": "比率分析",
+    "en": "Ratio analysis",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-return-on-capital-employed-roce",
+    "zh": "资本回报率",
+    "en": "Return on capital employed (ROCE)",
+    "group": "u3g-influences-on-business-decisions"
+   },
+   {
+    "id": "u3-key-factors-in-change",
+    "zh": "变革的关键因素",
+    "en": "Key factors in change",
+    "group": "u3g-managing-change"
+   },
+   {
+    "id": "u3-causes-of-change",
+    "zh": "变化的原因",
+    "en": "Causes of change",
+    "group": "u3g-managing-change"
+   },
+   {
+    "id": "u3-contingency-planning",
+    "zh": "应急规划",
+    "en": "Contingency planning",
+    "group": "u3g-managing-change"
+   }
+  ]
+ },
+ "U4": {
+  "groups": [
+   {
+    "id": "u4g-globalisation",
+    "zh": "全球化",
+    "en": "Globalisation"
+   },
+   {
+    "id": "u4g-global-markets-and-business-expansion",
+    "zh": "全球市场和企业扩张",
+    "en": "Global markets and business expansion"
+   },
+   {
+    "id": "u4g-global-marketing",
+    "zh": "全球市场营销",
+    "en": "Global marketing"
+   },
+   {
+    "id": "u4g-global-industries-and-companies",
+    "zh": "全球产业和公司",
+    "en": "Global industries and companies"
+   }
+  ],
+  "tags": [
+   {
+    "id": "u4-growing-economies",
+    "zh": "增长中的经济体",
+    "en": "Growing economies",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-international-trade-and-business-growth",
+    "zh": "国际贸易与商业增长",
+    "en": "International trade and business growth",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-factors-contributing-to-increased-globalisation",
+    "zh": "促进全球化增长的因素",
+    "en": "Factors contributing to increased globalisation",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-protectionism",
+    "zh": "贸易保护主义",
+    "en": "Protectionism",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-global-expansion-and-uncertainty",
+    "zh": "全球扩张与不确定性",
+    "en": "Global expansion and uncertainty",
+    "group": "u4g-globalisation"
+   },
+   {
+    "id": "u4-conditions-that-prompt-trade",
+    "zh": "促进贸易的条件",
+    "en": "Conditions that prompt trade",
+    "group": "u4g-global-markets-and-business-expansion"
+   },
+   {
+    "id": "u4-assessment-of-a-country-as-a-market",
+    "zh": "评估一个国家作为市场",
+    "en": "Assessment of a country as a market",
+    "group": "u4g-global-markets-and-business-expansion"
+   },
+   {
+    "id": "u4-assessment-of-a-country-as-a-production-location",
+    "zh": "评估一个国家作为生产地点",
+    "en": "Assessment of a country as a production location",
+    "group": "u4g-global-markets-and-business-expansion"
+   },
+   {
+    "id": "u4-reasons-for-global-mergers-takeovers-or-joint-ventures",
+    "zh": "全球并购、收购或合资的原因",
+    "en": "Reasons for global mergers, takeovers or joint ventures",
+    "group": "u4g-global-markets-and-business-expansion"
+   },
+   {
+    "id": "u4-global-marketing-strategy-and-glocalisation",
+    "zh": "全球营销战略与全球本地化",
+    "en": "Global marketing strategy and glocalisation",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-marketing-approaches",
+    "zh": "营销方法",
+    "en": "Marketing approaches",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-marketing-mix-4ps",
+    "zh": "营销组合（4Ps)",
+    "en": "Marketing mix (4Ps)",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-ansoffs-matrix",
+    "zh": "安索夫矩阵",
+    "en": "Ansoff's Matrix",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-porters-strategic-matrix",
+    "zh": "波特战略矩阵",
+    "en": "Porter's Strategic Matrix",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-global-niche-markets",
+    "zh": "全球利基市场",
+    "en": "Global niche markets",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-cultural-and-social-factors",
+    "zh": "文化与社会因素",
+    "en": "Cultural and social factors",
+    "group": "u4g-global-marketing"
+   },
+   {
+    "id": "u4-mncs",
+    "zh": "跨国公司",
+    "en": "MNCs",
+    "group": "u4g-global-industries-and-companies"
+   },
+   {
+    "id": "u4-international-business-ethics",
+    "zh": "国际商业伦理",
+    "en": "International business ethics",
+    "group": "u4g-global-industries-and-companies"
+   }
+  ]
+ }
+}

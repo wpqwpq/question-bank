@@ -98,6 +98,22 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
     不能沿用物理化学的 P1P2 合用池——否则 P1/P2 混池、QP6x 还会落到 unknown。
     """
     subj = (subject or "").strip().lower()
+    if subj == "business":
+        # 牛津 AQA 商务 9725（2026-10-22）：一纸一单元，BU01–BU04 → U1–U4。
+        # 卷号 BU0N 里没有「1 后跟数字」也没有 [PC]H，不加这条会落到 unknown，
+        # 整科无法打标（前端表现为标签存不进去）。
+        # ⚠️ Edexcel IAL 商务（WBS11–WBS14）不走这里：卷号是 WBS1x，仍由下面
+        #    通用的 `1(\d)` 分支判成 U1–U4，与本分支互不干扰。
+        m = re.match(r"(?i)^BU0?([1-4])$", code.strip())
+        if m:
+            return f"U{m.group(1)}"
+        # CIE 9609 商务（2026-10-22）：词表只有 P1P2 / P3P4 两个单元
+        # （Paper 1&2 合池、Paper 3&4 合池，见 taxonomy/cie/a-level/business.json）。
+        # 通用分支会把 QP11 判成 U1、QP31 判成 U3，词表里没有这两个单元 →
+        # 前端看不到词表、标签也存不进去。
+        m = re.match(r"(?i)^QP([1-4])\d$", code.strip())
+        if m:
+            return "P1P2" if int(m.group(1)) <= 2 else "P3P4"
     if subj == "accounting":
         # 牛津 AQA 会计 9615（2026-10-21）：单元不按 paper 分，而是按 AS/A2 两套词表——
         # Paper 1+2（AC01/AC02）→ AS，Paper 3+4（AC03/AC04）→ AL。卷号 AC0N 不含 `1\d`，
@@ -105,6 +121,11 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
         m = re.match(r"(?i)^AC0?([1-4])$", code.strip())
         if m:
             return "AS" if int(m.group(1)) <= 2 else "AL"
+        # CIE 9706 会计（2026-10-22）：词表只有 P1P2 / P3P4 两个单元。
+        # 通用分支会把 QP3x 判成 P3、QP4x 判成 P4，词表里没有这两个单元 → 标签存不进去。
+        m = re.match(r"(?i)^QP([1-4])\d$", code.strip())
+        if m:
+            return "P1P2" if int(m.group(1)) <= 2 else "P3P4"
     if subj == "biology":
         # 牛津 AQA 生物 9610（2026-10-21）：BL01–BL05 → U1–U5。
         # 卷号 BL0N 既不含 `1\d`，也不匹配 [PC]H，不加这条会落到 unknown、整科无法打标。
@@ -113,6 +134,12 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
         if m:
             return f"U{int(m.group(1))}"
     if subj == "further-mathematics":
+        # 牛津 AQA 进阶数学 9665（2026-10-22）：一纸一单元，FM01–FM05 →
+        # FP1 / FPSM1 / FP2 / FS2 / FM2。卷号 FM0N 不含 `QP`，不前置会落到 unknown。
+        m = re.match(r"(?i)^FM0([1-5])$", code.strip())
+        if m:
+            return {"1": "FP1", "2": "FPSM1", "3": "FP2",
+                    "4": "FS2", "5": "FM2"}[m.group(1)]
         # CIE 9231 进阶数学：Paper 1–4 → FP1/FP2/FM/FS。
         # 卷号 QP11–QP44，与 9709 数学、物理、化学全撞，必须按 subject 先分流。
         m = re.match(r"(?i)^QP([1-4])\d$", code.strip())
