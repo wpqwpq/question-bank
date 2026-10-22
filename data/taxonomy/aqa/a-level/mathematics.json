@@ -1,0 +1,1177 @@
+{
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <unit>-<英文slug>，组 <unit>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base（D28lbXMsyasWyas8iWhch1KXnB5）数学表 tblIZGjYO4y3TCkw，视图 vewRrsDFTd，筛 考试局=AQA 且 考试阶段=AL 且 单元∈{P1,PSM1,P2,S2,M2}，共 159 条 / 38 组（P1 28、PSM1 39、P2 38、S2 28、M2 26）；2026-10-22 导出。",
+ "P1": {
+  "groups": [
+   {
+    "id": "p1g-algebra",
+    "zh": "代数",
+    "en": "Algebra"
+   },
+   {
+    "id": "p1g-coordinate-geometry",
+    "zh": "解析几何",
+    "en": "Coordinate geometry"
+   },
+   {
+    "id": "p1g-differentiation",
+    "zh": "微分",
+    "en": "Differentiation"
+   },
+   {
+    "id": "p1g-integration",
+    "zh": "积分",
+    "en": "Integration"
+   },
+   {
+    "id": "p1g-sequences-and-series",
+    "zh": "数列与级数",
+    "en": "Sequences and series"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p1-algebraic-expressions-indices-and-surds",
+    "zh": "代数式与指数根式",
+    "en": "Algebraic expressions, indices & surds",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-quadratics-polynomials-and-equations",
+    "zh": "二次多项式与方程",
+    "en": "Quadratics: polynomials & equations",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-simultaneous-equations-and-inequalities",
+    "zh": "联立方程与不等式",
+    "en": "Simultaneous equations & inequalities",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-polynomial-theorems-and-factorising",
+    "zh": "多项式定理与因式",
+    "en": "Polynomial theorems & factorising",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-polynomial-graphs-and-transformations",
+    "zh": "多项式图像与变换",
+    "en": "Polynomial graphs & transformations",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-binomial-theorem",
+    "zh": "二项式定理",
+    "en": "Binomial theorem",
+    "group": "p1g-algebra"
+   },
+   {
+    "id": "p1-length-and-midpoint-of-line-segments",
+    "zh": "线段长度与中点",
+    "en": "Length & midpoint of line segments",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-gradient-and-the-equation-of-a-straight-line",
+    "zh": "斜率与直线方程",
+    "en": "Gradient & the equation of a straight line",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-intersections-of-straight-lines",
+    "zh": "直线求交点",
+    "en": "Intersections of straight lines",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-general-form-of-a-straight-line-equation",
+    "zh": "直线方程一般形式",
+    "en": "General form of a straight-line equation",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-finding-the-equation-of-a-line",
+    "zh": "由条件求直线方程",
+    "en": "Finding the equation of a line",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-straight-line-coordinate-geometry",
+    "zh": "直线解析几何应用",
+    "en": "Straight-line coordinate geometry",
+    "group": "p1g-coordinate-geometry"
+   },
+   {
+    "id": "p1-curve-gradients-and-derivative-notation",
+    "zh": "曲线斜率与导数记号",
+    "en": "Curve gradients & derivative notation",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-basic-differentiation-rules",
+    "zh": "基本求导法则",
+    "en": "Basic differentiation rules",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-increasing-decreasing-and-stationary-points",
+    "zh": "增减性与驻点分类",
+    "en": "Increasing/decreasing & stationary points",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-optimisation-with-differentiation",
+    "zh": "微分优化应用",
+    "en": "Optimisation with differentiation",
+    "group": "p1g-differentiation"
+   },
+   {
+    "id": "p1-indefinite-integration-and-powers",
+    "zh": "不定积分运算",
+    "en": "Indefinite integration & powers",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-using-integration-to-find-areas",
+    "zh": "积分求面积",
+    "en": "Using integration to find areas",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-definite-integration",
+    "zh": "定积分",
+    "en": "Definite integration",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-finding-areas-by-definite-integration",
+    "zh": "定积分求面积",
+    "en": "Finding areas by definite integration",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-the-trapezium-rule",
+    "zh": "梯形法则",
+    "en": "The trapezium rule",
+    "group": "p1g-integration"
+   },
+   {
+    "id": "p1-defining-sequences-and-behaviour-of-terms",
+    "zh": "数列定义与通项",
+    "en": "Defining sequences & behaviour of terms",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-series-sigma-notation-and-arithmetic-series",
+    "zh": "级数与等差级数",
+    "en": "Series, sigma notation & arithmetic series",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-sum-of-an-arithmetic-series",
+    "zh": "等差级数求和",
+    "en": "Sum of an arithmetic series",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-geometric-series",
+    "zh": "等比级数",
+    "en": "Geometric series",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-convergence-of-series",
+    "zh": "级数的收敛",
+    "en": "Convergence of series",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-binomial-expansion-and-approximation",
+    "zh": "二项展开与近似",
+    "en": "Binomial expansion & approximation",
+    "group": "p1g-sequences-and-series"
+   },
+   {
+    "id": "p1-applications-of-sequences-and-series",
+    "zh": "数列与级数应用",
+    "en": "Applications of sequences & series",
+    "group": "p1g-sequences-and-series"
+   }
+  ]
+ },
+ "PSM1": {
+  "groups": [
+   {
+    "id": "psm1g-circle",
+    "zh": "圆",
+    "en": "Circle"
+   },
+   {
+    "id": "psm1g-trigonometry",
+    "zh": "三角函数",
+    "en": "Trigonometry"
+   },
+   {
+    "id": "psm1g-exponentials-and-logarithms",
+    "zh": "指数与对数",
+    "en": "Exponentials and logarithms"
+   },
+   {
+    "id": "psm1g-further-probability",
+    "zh": "进阶概率",
+    "en": "Further probability"
+   },
+   {
+    "id": "psm1g-discrete-random-variables",
+    "zh": "离散型随机变量",
+    "en": "Discrete random variables"
+   },
+   {
+    "id": "psm1g-bernoulli-and-binomial-distributions",
+    "zh": "伯努利分布与二项分布",
+    "en": "Bernoulli and binomial distributions"
+   },
+   {
+    "id": "psm1g-motion-in-a-straight-line-with-constant-acceleration",
+    "zh": "匀加速直线运动",
+    "en": "Motion in a straight line with constant acceleration"
+   },
+   {
+    "id": "psm1g-motion-in-a-straight-line-with-variable-acceleration",
+    "zh": "变加速直线运动",
+    "en": "Motion in a straight line with variable acceleration"
+   },
+   {
+    "id": "psm1g-forces-and-newtons-laws",
+    "zh": "力与牛顿运动定律",
+    "en": "Forces and Newton’s Laws"
+   },
+   {
+    "id": "psm1g-momentum-and-impulse",
+    "zh": "动量与冲量",
+    "en": "Momentum and impulse"
+   }
+  ],
+  "tags": [
+   {
+    "id": "psm1-equation-of-a-circle-and-translations",
+    "zh": "圆的方程与平移",
+    "en": "Equation of a circle & translations",
+    "group": "psm1g-circle"
+   },
+   {
+    "id": "psm1-geometric-properties-of-circles",
+    "zh": "圆的几何性质",
+    "en": "Geometric properties of circles",
+    "group": "psm1g-circle"
+   },
+   {
+    "id": "psm1-tangents-to-circles",
+    "zh": "圆的切线",
+    "en": "Tangents to circles",
+    "group": "psm1g-circle"
+   },
+   {
+    "id": "psm1-arc-length",
+    "zh": "弧长",
+    "en": "Arc length",
+    "group": "psm1g-circle"
+   },
+   {
+    "id": "psm1-area-of-a-sector-and-radians",
+    "zh": "扇形面积与弧度",
+    "en": "Area of a sector & radians",
+    "group": "psm1g-circle"
+   },
+   {
+    "id": "psm1-basic-trig-ratios-and-angles-in-quadrants",
+    "zh": "基本三角比与象限角",
+    "en": "Basic trig ratios & angles in quadrants",
+    "group": "psm1g-trigonometry"
+   },
+   {
+    "id": "psm1-triangle-formulae-for-sides-and-areas",
+    "zh": "三角形边角与面积",
+    "en": "Triangle formulae for sides & areas",
+    "group": "psm1g-trigonometry"
+   },
+   {
+    "id": "psm1-radians-and-angle-conversion",
+    "zh": "弧度制与换算",
+    "en": "Radians & angle conversion",
+    "group": "psm1g-trigonometry"
+   },
+   {
+    "id": "psm1-trigonometric-functions-graphs-and-equations",
+    "zh": "三角函数与方程",
+    "en": "Trigonometric functions, graphs & equations",
+    "group": "psm1g-trigonometry"
+   },
+   {
+    "id": "psm1-exponential-functions-and-models",
+    "zh": "指数函数与模型",
+    "en": "Exponential functions & models",
+    "group": "psm1g-exponentials-and-logarithms"
+   },
+   {
+    "id": "psm1-logarithms-and-their-laws",
+    "zh": "对数与运算法则",
+    "en": "Logarithms & their laws",
+    "group": "psm1g-exponentials-and-logarithms"
+   },
+   {
+    "id": "psm1-equations-with-logs-or-unknown-powers",
+    "zh": "对数与幂次方程",
+    "en": "Equations with logs or unknown powers",
+    "group": "psm1g-exponentials-and-logarithms"
+   },
+   {
+    "id": "psm1-probability-measures-sample-spaces-and-models",
+    "zh": "概率度量与样本空间",
+    "en": "Probability measures, sample spaces & models",
+    "group": "psm1g-further-probability"
+   },
+   {
+    "id": "psm1-composite-events-unions-and-exclusive-events",
+    "zh": "复合事件与并集",
+    "en": "Composite events, unions & exclusive events",
+    "group": "psm1g-further-probability"
+   },
+   {
+    "id": "psm1-conditional-probability-and-independence",
+    "zh": "条件概率与独立性",
+    "en": "Conditional probability & independence",
+    "group": "psm1g-further-probability"
+   },
+   {
+    "id": "psm1-summary-statistics-for-discrete-data",
+    "zh": "离散数据统计概括",
+    "en": "Summary statistics for discrete data",
+    "group": "psm1g-discrete-random-variables"
+   },
+   {
+    "id": "psm1-discrete-random-variables-and-distributions",
+    "zh": "随机变量与分布",
+    "en": "Discrete random variables & distributions",
+    "group": "psm1g-discrete-random-variables"
+   },
+   {
+    "id": "psm1-expectation-variance-and-standard-deviation",
+    "zh": "期望与方差",
+    "en": "Expectation, variance & standard deviation",
+    "group": "psm1g-discrete-random-variables"
+   },
+   {
+    "id": "psm1-linear-combinations-independence-and-modelling",
+    "zh": "线性组合与建模",
+    "en": "Linear combinations, independence & modelling",
+    "group": "psm1g-discrete-random-variables"
+   },
+   {
+    "id": "psm1-bernoulli-distribution-and-its-moments",
+    "zh": "伯努利分布及其矩",
+    "en": "Bernoulli distribution & its moments",
+    "group": "psm1g-bernoulli-and-binomial-distributions"
+   },
+   {
+    "id": "psm1-binomial-modelling-and-conditions",
+    "zh": "二项模型与条件",
+    "en": "Binomial modelling & conditions",
+    "group": "psm1g-bernoulli-and-binomial-distributions"
+   },
+   {
+    "id": "psm1-binomial-probabilities-and-cumulative-tables",
+    "zh": "二项概率与累积表",
+    "en": "Binomial probabilities & cumulative tables",
+    "group": "psm1g-bernoulli-and-binomial-distributions"
+   },
+   {
+    "id": "psm1-binomial-mean-variance-and-standard-deviation",
+    "zh": "二项均值与方差",
+    "en": "Binomial mean, variance & standard deviation",
+    "group": "psm1g-bernoulli-and-binomial-distributions"
+   },
+   {
+    "id": "psm1-displacement-speed-velocity-and-acceleration",
+    "zh": "位移速度与加速度",
+    "en": "Displacement, speed, velocity & acceleration",
+    "group": "psm1g-motion-in-a-straight-line-with-constant-acceleration"
+   },
+   {
+    "id": "psm1-velocity-time-graphs-and-equations-of-motion",
+    "zh": "速度时间图与运动方程",
+    "en": "Velocity-time graphs & equations of motion",
+    "group": "psm1g-motion-in-a-straight-line-with-constant-acceleration"
+   },
+   {
+    "id": "psm1-free-fall-motion-under-gravity",
+    "zh": "自由落体运动",
+    "en": "Free fall motion under gravity",
+    "group": "psm1g-motion-in-a-straight-line-with-constant-acceleration"
+   },
+   {
+    "id": "psm1-displacement-time-graphs",
+    "zh": "位移时间图像",
+    "en": "Displacement-time graphs",
+    "group": "psm1g-motion-in-a-straight-line-with-variable-acceleration"
+   },
+   {
+    "id": "psm1-tangents-chords-and-areas-in-motion",
+    "zh": "切线弦与面积问题",
+    "en": "Tangents, chords & areas in motion",
+    "group": "psm1g-motion-in-a-straight-line-with-variable-acceleration"
+   },
+   {
+    "id": "psm1-motion-with-variable-acceleration",
+    "zh": "变加速度运动",
+    "en": "Motion with variable acceleration",
+    "group": "psm1g-motion-in-a-straight-line-with-variable-acceleration"
+   },
+   {
+    "id": "psm1-types-of-force-and-force-diagrams",
+    "zh": "力的类型与受力图",
+    "en": "Types of force & force diagrams",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-newtons-first-and-second-laws",
+    "zh": "牛顿第一与第二定律",
+    "en": "Newton's first & second laws",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-weight-vertical-forces-and-newtons-third-law",
+    "zh": "重力与第三定律",
+    "en": "Weight, vertical forces & Newton's third law",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-connected-particles-friction-and-coefficients",
+    "zh": "连接体与摩擦",
+    "en": "Connected particles, friction & coefficients",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-equations-of-motion-with-friction",
+    "zh": "含摩擦的运动方程",
+    "en": "Equations of motion with friction",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-newtons-laws-and-contact-forces",
+    "zh": "牛顿定律与接触力",
+    "en": "Newton's laws & contact forces",
+    "group": "psm1g-forces-and-newtons-laws"
+   },
+   {
+    "id": "psm1-momentum-and-impulse",
+    "zh": "动量与冲量",
+    "en": "Momentum & impulse",
+    "group": "psm1g-momentum-and-impulse"
+   },
+   {
+    "id": "psm1-impulse-and-the-momentum-equation",
+    "zh": "冲量与动量定理",
+    "en": "Impulse & the momentum equation",
+    "group": "psm1g-momentum-and-impulse"
+   },
+   {
+    "id": "psm1-impulsive-forces-collisions-and-coalescence",
+    "zh": "冲击力与碰撞",
+    "en": "Impulsive forces, collisions & coalescence",
+    "group": "psm1g-momentum-and-impulse"
+   },
+   {
+    "id": "psm1-conservation-of-linear-momentum",
+    "zh": "线动量守恒",
+    "en": "Conservation of linear momentum",
+    "group": "psm1g-momentum-and-impulse"
+   }
+  ]
+ },
+ "P2": {
+  "groups": [
+   {
+    "id": "p2g-algebra-and-functions",
+    "zh": "代数与函数",
+    "en": "Algebra and functions"
+   },
+   {
+    "id": "p2g-sequences-and-series",
+    "zh": "数列与级数",
+    "en": "Sequences and series"
+   },
+   {
+    "id": "p2g-coordinate-geometry-in-the-plane",
+    "zh": "平面解析几何",
+    "en": "Coordinate geometry in the plane"
+   },
+   {
+    "id": "p2g-trigonometry",
+    "zh": "三角函数",
+    "en": "Trigonometry"
+   },
+   {
+    "id": "p2g-exponentials-and-logarithms",
+    "zh": "指数与对数",
+    "en": "Exponentials and logarithms"
+   },
+   {
+    "id": "p2g-differentiation",
+    "zh": "微分",
+    "en": "Differentiation"
+   },
+   {
+    "id": "p2g-integration",
+    "zh": "积分",
+    "en": "Integration"
+   },
+   {
+    "id": "p2g-differential-equations",
+    "zh": "微分方程",
+    "en": "Differential equations"
+   },
+   {
+    "id": "p2g-numerical-methods",
+    "zh": "数值方法",
+    "en": "Numerical methods"
+   },
+   {
+    "id": "p2g-vectors",
+    "zh": "向量",
+    "en": "Vectors"
+   }
+  ],
+  "tags": [
+   {
+    "id": "p2-functions-domains-and-composite-inverse",
+    "zh": "函数与复合反函数",
+    "en": "Functions, domains & composite/inverse",
+    "group": "p2g-algebra-and-functions"
+   },
+   {
+    "id": "p2-modulus-functions-and-graph-transformations",
+    "zh": "绝对值与图像变换",
+    "en": "Modulus functions & graph transformations",
+    "group": "p2g-algebra-and-functions"
+   },
+   {
+    "id": "p2-rational-functions-and-partial-fractions",
+    "zh": "有理函数与部分分式",
+    "en": "Rational functions & partial fractions",
+    "group": "p2g-algebra-and-functions"
+   },
+   {
+    "id": "p2-binomial-series",
+    "zh": "二项式级数",
+    "en": "Binomial series",
+    "group": "p2g-algebra-and-functions"
+   },
+   {
+    "id": "p2-the-binomial-series-for-any-n",
+    "zh": "任意n的二项式级数",
+    "en": "The binomial series for any n",
+    "group": "p2g-sequences-and-series"
+   },
+   {
+    "id": "p2-series-expansion-of-rational-functions",
+    "zh": "有理函数级数展开",
+    "en": "Series expansion of rational functions",
+    "group": "p2g-sequences-and-series"
+   },
+   {
+    "id": "p2-approximations",
+    "zh": "近似计算",
+    "en": "Approximations",
+    "group": "p2g-sequences-and-series"
+   },
+   {
+    "id": "p2-parametric-equations",
+    "zh": "参数方程",
+    "en": "Parametric equations",
+    "group": "p2g-coordinate-geometry-in-the-plane"
+   },
+   {
+    "id": "p2-parametric-to-cartesian-conversion",
+    "zh": "参数方程与笛卡尔转换",
+    "en": "Parametric to Cartesian conversion",
+    "group": "p2g-coordinate-geometry-in-the-plane"
+   },
+   {
+    "id": "p2-sketching-parametric-curves",
+    "zh": "参数曲线作图",
+    "en": "Sketching parametric curves",
+    "group": "p2g-coordinate-geometry-in-the-plane"
+   },
+   {
+    "id": "p2-inverse-and-reciprocal-trig-functions",
+    "zh": "反三角与倒数函数",
+    "en": "Inverse & reciprocal trig functions",
+    "group": "p2g-trigonometry"
+   },
+   {
+    "id": "p2-secant-cotangent-and-trig-identities",
+    "zh": "正割余切与恒等式",
+    "en": "Secant, cotangent & trig identities",
+    "group": "p2g-trigonometry"
+   },
+   {
+    "id": "p2-compound-angle-formulae",
+    "zh": "和差角公式",
+    "en": "Compound angle formulae",
+    "group": "p2g-trigonometry"
+   },
+   {
+    "id": "p2-auxiliary-and-r-forms",
+    "zh": "辅助角与R形式",
+    "en": "Auxiliary & R-forms",
+    "group": "p2g-trigonometry"
+   },
+   {
+    "id": "p2-double-angle-formulae",
+    "zh": "二倍角公式",
+    "en": "Double angle formulae",
+    "group": "p2g-trigonometry"
+   },
+   {
+    "id": "p2-exponential-growth-decay-and-models",
+    "zh": "指数增长与模型",
+    "en": "Exponential growth, decay & models",
+    "group": "p2g-exponentials-and-logarithms"
+   },
+   {
+    "id": "p2-the-exponential-function-and-natural-logarithms",
+    "zh": "指数与自然对数",
+    "en": "The exponential function & natural logarithms",
+    "group": "p2g-exponentials-and-logarithms"
+   },
+   {
+    "id": "p2-the-logarithmic-function",
+    "zh": "对数函数",
+    "en": "The logarithmic function",
+    "group": "p2g-exponentials-and-logarithms"
+   },
+   {
+    "id": "p2-exponential-equations-and-limits",
+    "zh": "指数方程与极限",
+    "en": "Exponential equations & limits",
+    "group": "p2g-exponentials-and-logarithms"
+   },
+   {
+    "id": "p2-logarithms-and-non-linear-data",
+    "zh": "对数与非线性数据",
+    "en": "Logarithms & non-linear data",
+    "group": "p2g-exponentials-and-logarithms"
+   },
+   {
+    "id": "p2-standard-derivatives-and-implicit",
+    "zh": "标准导数与隐函数求导",
+    "en": "Standard derivatives & implicit",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-product-quotient-and-chain-rules",
+    "zh": "乘积商与链式法则",
+    "en": "Product, quotient & chain rules",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-parametric-differentiation-and-tangents",
+    "zh": "参数方程求导",
+    "en": "Parametric differentiation & tangents",
+    "group": "p2g-differentiation"
+   },
+   {
+    "id": "p2-standard-antiderivatives-and-basic-integration",
+    "zh": "标准反导与基本积分",
+    "en": "Standard antiderivatives & basic integration",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-inspection-reverse-chain-rule-and-substitution",
+    "zh": "换元法与逆链式法则",
+    "en": "Inspection, reverse chain rule & substitution",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-integration-by-parts-and-further-techniques",
+    "zh": "分部积分与技巧",
+    "en": "Integration by parts & further techniques",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-volumes-of-revolution",
+    "zh": "旋转体体积",
+    "en": "Volumes of revolution",
+    "group": "p2g-integration"
+   },
+   {
+    "id": "p2-first-order-separable-differential-equations",
+    "zh": "可分离变量方程",
+    "en": "First order separable differential equations",
+    "group": "p2g-differential-equations"
+   },
+   {
+    "id": "p2-differential-equations-and-rates-of-change",
+    "zh": "微分方程与变化率",
+    "en": "Differential equations & rates of change",
+    "group": "p2g-differential-equations"
+   },
+   {
+    "id": "p2-solving-equations-in-context",
+    "zh": "实际情境方程求解",
+    "en": "Solving equations in context",
+    "group": "p2g-differential-equations"
+   },
+   {
+    "id": "p2-half-life-natural-growth-and-decay",
+    "zh": "半衰期与增减模型",
+    "en": "Half-life, natural growth & decay",
+    "group": "p2g-differential-equations"
+   },
+   {
+    "id": "p2-approximately-locating-roots-of-equations",
+    "zh": "根的近似定位",
+    "en": "Approximately locating roots of equations",
+    "group": "p2g-numerical-methods"
+   },
+   {
+    "id": "p2-root-finding-using-iteration-formulae",
+    "zh": "迭代公式求根",
+    "en": "Root finding using iteration formulae",
+    "group": "p2g-numerical-methods"
+   },
+   {
+    "id": "p2-rules-for-approximate-area-under-curves",
+    "zh": "曲线下面积近似",
+    "en": "Rules for approximate area under curves",
+    "group": "p2g-numerical-methods"
+   },
+   {
+    "id": "p2-vector-representation-and-position-vectors",
+    "zh": "向量表示与位置向量",
+    "en": "Vector representation & position vectors",
+    "group": "p2g-vectors"
+   },
+   {
+    "id": "p2-cartesian-operations-and-line-equations",
+    "zh": "笛卡尔运算与直线方程",
+    "en": "Cartesian operations & line equations",
+    "group": "p2g-vectors"
+   },
+   {
+    "id": "p2-relationships-between-lines-and-scalar-product",
+    "zh": "直线位置关系与标量积",
+    "en": "Relationships between lines & scalar product",
+    "group": "p2g-vectors"
+   },
+   {
+    "id": "p2-perpendicular-foot-and-point-line-distance",
+    "zh": "垂足与点到直线距离",
+    "en": "Perpendicular foot & point-line distance",
+    "group": "p2g-vectors"
+   }
+  ]
+ },
+ "S2": {
+  "groups": [
+   {
+    "id": "s2g-poisson-distribution",
+    "zh": "泊松分布",
+    "en": "Poisson distribution"
+   },
+   {
+    "id": "s2g-continuous-random-variables",
+    "zh": "连续型随机变量",
+    "en": "Continuous random variables"
+   },
+   {
+    "id": "s2g-exponential-distribution",
+    "zh": "指数分布",
+    "en": "Exponential distribution"
+   },
+   {
+    "id": "s2g-normal-distribution",
+    "zh": "正态分布",
+    "en": "Normal distribution"
+   },
+   {
+    "id": "s2g-estimation",
+    "zh": "估计量与抽样分布",
+    "en": "Estimation"
+   },
+   {
+    "id": "s2g-hypothesis-testing",
+    "zh": "假设检验",
+    "en": "Hypothesis testing"
+   }
+  ],
+  "tags": [
+   {
+    "id": "s2-poisson-distribution-probabilities-and-moments",
+    "zh": "泊松分布定义与矩",
+    "en": "Poisson distribution: probabilities & moments",
+    "group": "s2g-poisson-distribution"
+   },
+   {
+    "id": "s2-poisson-modelling-and-interval-scaling",
+    "zh": "泊松建模条件",
+    "en": "Poisson modelling & interval scaling",
+    "group": "s2g-poisson-distribution"
+   },
+   {
+    "id": "s2-poisson-approximation-to-the-binomial",
+    "zh": "二项的泊松近似",
+    "en": "Poisson approximation to the binomial",
+    "group": "s2g-poisson-distribution"
+   },
+   {
+    "id": "s2-combining-poissons-and-exponential-waits",
+    "zh": "泊松合并与指数等待",
+    "en": "Combining Poissons & exponential waits",
+    "group": "s2g-poisson-distribution"
+   },
+   {
+    "id": "s2-continuous-variables-density-and-probabilities",
+    "zh": "连续变量与密度函数",
+    "en": "Continuous variables, density & probabilities",
+    "group": "s2g-continuous-random-variables"
+   },
+   {
+    "id": "s2-constructing-and-using-cdfs-for-probabilities",
+    "zh": "分布函数与分位数",
+    "en": "Constructing & using CDFs for probabilities",
+    "group": "s2g-continuous-random-variables"
+   },
+   {
+    "id": "s2-expectation-and-moments-of-continuous-variables",
+    "zh": "连续变量期望与矩",
+    "en": "Expectation & moments of continuous variables",
+    "group": "s2g-continuous-random-variables"
+   },
+   {
+    "id": "s2-variance-and-linear-combinations",
+    "zh": "方差与线性组合",
+    "en": "Variance & linear combinations",
+    "group": "s2g-continuous-random-variables"
+   },
+   {
+    "id": "s2-exponential-distribution-model",
+    "zh": "指数分布模型",
+    "en": "Exponential distribution model",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-mean-variance-and-standard-deviation",
+    "zh": "均值方差与标准差",
+    "en": "Mean, variance & standard deviation",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-probability-density-and-distribution-functions",
+    "zh": "概率密度与分布函数",
+    "en": "Probability density & distribution functions",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-finding-probabilities-using-the-cdf",
+    "zh": "用分布函数求概率",
+    "en": "Finding probabilities using the CDF",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-link-between-poisson-and-exponential",
+    "zh": "泊松与指数的联系",
+    "en": "Link between Poisson & exponential",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-no-memory-property-and-further-applications",
+    "zh": "无记忆性与应用",
+    "en": "'No memory' property & further applications",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-applications-of-the-exponential-distn",
+    "zh": "指数分布综合应用",
+    "en": "Applications of the exponential distn",
+    "group": "s2g-exponential-distribution"
+   },
+   {
+    "id": "s2-normal-model-standard-normal-and-standardising",
+    "zh": "正态模型与标准化",
+    "en": "Normal model, standard normal & standardising",
+    "group": "s2g-normal-distribution"
+   },
+   {
+    "id": "s2-normal-probabilities-tails-and-intervals",
+    "zh": "正态概率与区间",
+    "en": "Normal probabilities, tails & intervals",
+    "group": "s2g-normal-distribution"
+   },
+   {
+    "id": "s2-finding-mean-and-standard-deviation",
+    "zh": "均值标准差反查",
+    "en": "Finding mean & standard deviation",
+    "group": "s2g-normal-distribution"
+   },
+   {
+    "id": "s2-sums-of-independent-normal-variables",
+    "zh": "独立正态变量之和",
+    "en": "Sums of independent normal variables",
+    "group": "s2g-normal-distribution"
+   },
+   {
+    "id": "s2-sampling-and-estimating-population-parameters",
+    "zh": "抽样与总体估计",
+    "en": "Sampling & estimating population parameters",
+    "group": "s2g-estimation"
+   },
+   {
+    "id": "s2-unbiased-estimators-of-mean-and-variance",
+    "zh": "均值方差无偏估计量",
+    "en": "Unbiased estimators of mean & variance",
+    "group": "s2g-estimation"
+   },
+   {
+    "id": "s2-the-sample-mean-and-its-distribution",
+    "zh": "样本均值及其分布",
+    "en": "The sample mean & its distribution",
+    "group": "s2g-estimation"
+   },
+   {
+    "id": "s2-standardising-and-the-central-limit-theorem",
+    "zh": "标准化与中心极限定理",
+    "en": "Standardising & the central limit theorem",
+    "group": "s2g-estimation"
+   },
+   {
+    "id": "s2-using-the-distribution-of-the-sample-mean",
+    "zh": "样本均值分布应用",
+    "en": "Using the distribution of the sample mean",
+    "group": "s2g-estimation"
+   },
+   {
+    "id": "s2-hypotheses-tails-and-decision-rules",
+    "zh": "假设与判决规则",
+    "en": "Hypotheses, tails & decision rules",
+    "group": "s2g-hypothesis-testing"
+   },
+   {
+    "id": "s2-discrete-tests-proportions-and-poisson-means",
+    "zh": "离散分布检验",
+    "en": "Discrete tests: proportions & Poisson means",
+    "group": "s2g-hypothesis-testing"
+   },
+   {
+    "id": "s2-type-i-and-type-ii-errors",
+    "zh": "两类错误",
+    "en": "Type I & Type II errors",
+    "group": "s2g-hypothesis-testing"
+   },
+   {
+    "id": "s2-z-tests-normal-approximation-and-t-tests",
+    "zh": "z检验与t检验",
+    "en": "z-tests, normal approximation & t-tests",
+    "group": "s2g-hypothesis-testing"
+   }
+  ]
+ },
+ "M2": {
+  "groups": [
+   {
+    "id": "m2g-mathematical-modelling",
+    "zh": "数学建模",
+    "en": "Mathematical modelling"
+   },
+   {
+    "id": "m2g-kinematics",
+    "zh": "运动学",
+    "en": "Kinematics"
+   },
+   {
+    "id": "m2g-statics-and-forces",
+    "zh": "静力学与受力分析",
+    "en": "Statics and forces"
+   },
+   {
+    "id": "m2g-newtons-laws-of-motion",
+    "zh": "牛顿运动定律",
+    "en": "Newton’s Laws of Motion"
+   },
+   {
+    "id": "m2g-projectiles",
+    "zh": "抛体运动",
+    "en": "Projectiles"
+   },
+   {
+    "id": "m2g-work-and-energy",
+    "zh": "功和能",
+    "en": "Work and energy"
+   },
+   {
+    "id": "m2g-uniform-circular-motion",
+    "zh": "匀速圆周运动",
+    "en": "Uniform circular motion"
+   }
+  ],
+  "tags": [
+   {
+    "id": "m2-mathematical-modelling",
+    "zh": "数学建模",
+    "en": "Mathematical modelling",
+    "group": "m2g-mathematical-modelling"
+   },
+   {
+    "id": "m2-modelling-assumptions-and-criticism",
+    "zh": "建模假设与评价",
+    "en": "Modelling assumptions & criticism",
+    "group": "m2g-mathematical-modelling"
+   },
+   {
+    "id": "m2-refining-and-validating-models",
+    "zh": "模型的修正与检验",
+    "en": "Refining & validating models",
+    "group": "m2g-mathematical-modelling"
+   },
+   {
+    "id": "m2-cartesian-unit-vectors",
+    "zh": "笛卡尔单位向量",
+    "en": "Cartesian unit vectors",
+    "group": "m2g-kinematics"
+   },
+   {
+    "id": "m2-variable-acceleration-in-2d-and-3d",
+    "zh": "二维三维变加速度",
+    "en": "Variable acceleration in 2D & 3D",
+    "group": "m2g-kinematics"
+   },
+   {
+    "id": "m2-applied-kinematics-modelling-problems",
+    "zh": "运动学建模应用",
+    "en": "Applied kinematics modelling problems",
+    "group": "m2g-kinematics"
+   },
+   {
+    "id": "m2-force-modelling-and-free-body-diagrams",
+    "zh": "受力建模与受力图",
+    "en": "Force modelling & free body diagrams",
+    "group": "m2g-statics-and-forces"
+   },
+   {
+    "id": "m2-coplanar-resultants-and-concurrent-equilibrium",
+    "zh": "共面力合成与平衡",
+    "en": "Coplanar resultants & concurrent equilibrium",
+    "group": "m2g-statics-and-forces"
+   },
+   {
+    "id": "m2-friction-and-limiting-equilibrium",
+    "zh": "摩擦与极限平衡",
+    "en": "Friction & limiting equilibrium",
+    "group": "m2g-statics-and-forces"
+   },
+   {
+    "id": "m2-moments-and-rigid-body-equilibrium",
+    "zh": "力矩与刚体平衡",
+    "en": "Moments & rigid-body equilibrium",
+    "group": "m2g-statics-and-forces"
+   },
+   {
+    "id": "m2-centres-of-mass-of-uniform-and-composite-bodies",
+    "zh": "质心与均匀物体",
+    "en": "Centres of mass of uniform & composite bodies",
+    "group": "m2g-statics-and-forces"
+   },
+   {
+    "id": "m2-newtons-second-law-in-connected-models",
+    "zh": "连接体与牛顿第二定律",
+    "en": "Newton's second law in connected models",
+    "group": "m2g-newtons-laws-of-motion"
+   },
+   {
+    "id": "m2-linear-motion-with-constant-acceleration",
+    "zh": "匀加速度直线运动",
+    "en": "Linear motion with constant acceleration",
+    "group": "m2g-newtons-laws-of-motion"
+   },
+   {
+    "id": "m2-newtons-law-for-resolved-forces",
+    "zh": "力的分解问题",
+    "en": "Newton's law for resolved forces",
+    "group": "m2g-newtons-laws-of-motion"
+   },
+   {
+    "id": "m2-newtons-law-with-variable-acceleration",
+    "zh": "牛顿定律与变加速度",
+    "en": "Newton's law with variable acceleration",
+    "group": "m2g-newtons-laws-of-motion"
+   },
+   {
+    "id": "m2-projectiles-and-the-equation-of-the-path",
+    "zh": "抛体运动与路径方程",
+    "en": "Projectiles & the equation of the path",
+    "group": "m2g-projectiles"
+   },
+   {
+    "id": "m2-range-and-maximum-range-on-a-horizontal-plane",
+    "zh": "水平射程与最大射程",
+    "en": "Range & maximum range on a horizontal plane",
+    "group": "m2g-projectiles"
+   },
+   {
+    "id": "m2-work-and-power",
+    "zh": "功与功率",
+    "en": "Work & power",
+    "group": "m2g-work-and-energy"
+   },
+   {
+    "id": "m2-kinetic-and-potential-energy",
+    "zh": "动能与势能",
+    "en": "Kinetic & potential energy",
+    "group": "m2g-work-and-energy"
+   },
+   {
+    "id": "m2-the-work-energy-principle",
+    "zh": "功-能原理",
+    "en": "The work-energy principle",
+    "group": "m2g-work-and-energy"
+   },
+   {
+    "id": "m2-conservation-of-mechanical-energy",
+    "zh": "机械能守恒",
+    "en": "Conservation of mechanical energy",
+    "group": "m2g-work-and-energy"
+   },
+   {
+    "id": "m2-applied-work-and-power-problems",
+    "zh": "功与功率的应用",
+    "en": "Applied work & power problems",
+    "group": "m2g-work-and-energy"
+   },
+   {
+    "id": "m2-angular-and-linear-velocity",
+    "zh": "角速度与线速度",
+    "en": "Angular & linear velocity",
+    "group": "m2g-uniform-circular-motion"
+   },
+   {
+    "id": "m2-forces-and-acceleration-in-circular-motion",
+    "zh": "圆周运动的力与加速度",
+    "en": "Forces & acceleration in circular motion",
+    "group": "m2g-uniform-circular-motion"
+   },
+   {
+    "id": "m2-horizontal-circular-motion",
+    "zh": "水平圆周运动",
+    "en": "Horizontal circular motion",
+    "group": "m2g-uniform-circular-motion"
+   },
+   {
+    "id": "m2-the-conical-pendulum",
+    "zh": "圆锥摆",
+    "en": "The conical pendulum",
+    "group": "m2g-uniform-circular-motion"
+   }
+  ]
+ }
+}

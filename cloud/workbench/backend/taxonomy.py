@@ -239,7 +239,7 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -
 # Edexcel IAL 数学用 P1–P4 / M1–M3 / S1–S3 / D1 / F1–F3（P 与 CIE 的 P 形似但不冲突：
 # 词表按学科一文件，单元键只在文件内唯一）。
 # 牛津 AQA 会计 9615（2026-10-21）按 AS/A2 分两套词表：Paper 1+2 → AS，Paper 3+4 → AL。
-_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|FP[1-9]|FM|FS|[SMFD][1-9]|AS|AL)$")
+_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FM|FS|[SMFD][1-9]|AS|AL)$")
 
 _TAG_KEYS = ("id", "zh", "en", "group")
 _GROUP_KEYS = ("id", "zh", "en")

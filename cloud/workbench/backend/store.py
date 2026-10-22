@@ -133,6 +133,13 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
         if m:
             return "AS" if int(m.group(1)) <= 2 else "AL"
     if subj == "mathematics":
+        # 牛津 AQA 数学 9660（2026-10-21）：一纸一单元，MA01–MA05 →
+        # P1 / PSM1 / P2 / S2 / M2。卷号是 `MA0N`，不含 `QP`、也不含 `1\d`，
+        # 不前置就会落到 unknown、整科无法打标。与 CIE 9709 的 QP1x–QP6x 不撞。
+        m = re.match(r"(?i)^MA0([1-5])$", code.strip())
+        if m:
+            return {"1": "P1", "2": "PSM1", "3": "P2",
+                    "4": "S2", "5": "M2"}[m.group(1)]
         m = re.match(r"(?i)^QP([1-6])\d$", code.strip())
         if m:
             return f"P{m.group(1)}"
