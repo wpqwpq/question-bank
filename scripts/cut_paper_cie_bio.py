@@ -63,6 +63,8 @@ QSTART_RE = re.compile(
     r"^(\d{1,2})\s*(?:\(\s*[a-z]{1,4}\s*\)\s*(.*))?$"
     r"|^(\d{1,2})[ \t=~]+(\S.*)$")
 SUBHEAD_RE = re.compile(r"^(\*?)((?:\([a-z]{1,4}\)[\t\u0020\u00a0\u2009]*){1,3})[\t\u0020\u00a0\u2009]*(.*)$")
+# 题号 + 小问标签同行："10 (a) The respiratory…"（9700 常见形态）
+QSUB_RE = re.compile(r"^\d{1,2}[\t\u0020\u00a0\u2009]*((?:\([a-z]{1,4}\)[\t\u0020\u00a0\u2009]*){1,3})")
 OPTION_LABEL_RE = re.compile(r"^([A-D])$")
 SPACE_FOR_WORKING_RE = re.compile(r"space\s+for\s+working", re.I)
 ROMAN_SUB = {"ii", "iii", "iv", "vi", "vii", "viii", "ix", "xi", "xii"}
@@ -120,6 +122,12 @@ def decode_shift(text):
     out = []
     for c in text:
         o = ord(c)
+        if o == 0x20:
+            # 🔴 空格必须原样保留：0x20+0x1D=0x3D 会变成 '='，把
+            # "Some agar" 解成 "Some=agar"。真机乱码的空格是 \x03（+0x1D=0x20），
+            # 但同一行里也可能夹着未被位移的正常空格。
+            out.append(" ")
+            continue
         if o < 0x20:
             if c != "\t" and o >= 0x03:
                 o += 0x1D
@@ -138,6 +146,9 @@ def decode_shift_back(text):
     """
     out = []
     for c in text:
+        if c == " ":
+            out.append(" ")          # 同上：空格原样保留
+            continue
         o = ord(c) - 0x1D
         out.append(chr(o) if 0x20 <= o <= 0x7E else c)
     return "".join(out)
@@ -150,32 +161,62 @@ def word_hits(text):
 # 乱码签名：大写字母 -0x1D 后落进的标点区（健康文本的字母不会整批变成这些）
 SIG_PUNCT = frozenset("$%&'()*+,-./:;<=>?@")
 
+# 英文常见二元组：判「这段文本像不像英文」，**与学科无关**。
+# 🔴 原来的 word_hits() 只认物理词表（COMMON_WORDS: energy/force/current…），
+# 生物题的 some/agar/coloured/pink 一个都不在表里 → 判据 2 全线失效。
+# 后果：2025 生物 P1 五卷（200 题）整卷未解码，"Some agar was…" 留成
+# "6RPH DJDU ZDV…"，其中一题的 \x83 还让线上 index_db.rebuild() 崩了。
+EN_BIGRAMS = ("th", "he", "in", "er", "an", "re", "on", "at", "en", "nd",
+              "ti", "es", "or", "te", "of", "ed", "is", "it", "al", "ar",
+              "st", "to", "nt", "ng", "se", "ha", "as", "ou", "io", "le",
+              "ve", "co", "me", "de", "hi", "ri", "ro", "ic", "ne", "ea",
+              "ra", "ce", "li", "ch", "ll", "be", "ma", "si", "om", "ur")
+
+
+def en_score(text):
+    """英文度 = 常见二元组密度。正常英文约 0.25–0.40，+0x1D 位移乱码约 0.03–0.12。"""
+    t = text.lower()
+    if not t:
+        return 0.0
+    return sum(t.count(b) for b in EN_BIGRAMS) / len(t)
+
+
+def word_hits(text):
+    return sum(1 for w in re.findall(r"[A-Za-z]{2,}", text.lower()) if w in COMMON_WORDS)
+
 
 def decode_span(text):
-    """按判据决定是否对 span 做 +0x1D 还原；返回 (解码后文本, 是否解码)。
+    """按判据决定是否对 span 做位移还原；返回 (解码后文本, 是否解码)。
 
     判据（按序）：
-      1. 含控制字符（除 \t）→ 还原（2021+ 型：数字/空格也位移，空格→\x03）；
-      2. 原文含乱码签名标点且还原后英文常用词命中上升 → 还原
-         （健康卷的 "21"→"ON"、"25"→"OR" 误不中——数字不是签名标点）；
+      1. 含控制字符（除 \\t）→ 还原（2021+ 型：数字/空格也位移，空格→\\x03）；
+      2. **英文度**：原文够像英文就不动；否则试 ±0x1D 两个方向，取英文度更高者，
+         且要求还原后显著变好（bs>0.18 且 bs>base*1.6）。与学科无关；
       3. 单字符 span 且还原后恰为 A–D → 还原（P1 选项标签 "$"→"A" 场景）。
     """
     if not text:
         return text, False
+    # 1. 控制字符
     if any(0x03 <= ord(c) < 0x20 and c != "\t" for c in text):
         return decode_shift(text), True
-    if any(c in SIG_PUNCT or c in "~|\x7f{" for c in text):
-        base = word_hits(text)
+    # 🔴 2. 不含字母的 span（纯数字/符号）一律不解码。
+    # 英文二元组判据对 "17" 这种无字母文本毫无意义：base=0，而 "17"+0x1D="NT"、
+    # en_score("NT")=0.5（含 "nt"）→ 判据认为「解码后更像英文」，于是题号 17
+    # 变成 "NT"、整卷题号序列断在第 16 题。
+    # 例外只有单字符 "A–D"（P1 选项标签 "$"→"A"）。
+    if not any(c.isalpha() for c in text):
+        s = text.strip()
+        if len(s) == 1 and s in SIG_PUNCT and decode_shift(text).strip() in "ABCD":
+            return decode_shift(text), True
+        return text, False
+    # 3. 双向位移 + 英文度
+    base = en_score(text)
+    if base < 0.22:                      # 本来就够像英文 → 不动
         fwd, bwd = decode_shift(text), decode_shift_back(text)
-        hs = sorted(((word_hits(fwd), fwd), (word_hits(bwd), bwd)), key=lambda t: -t[0])
-        # 强特征：'=' 密集（正常排版里 '=' 两侧必有空格、一行至多一两个）。
-        # 这类行（如 2016 w11 Q15 "=cour=be~ms=of=the=s~me"）部分 span 未被
-        # 编码、混合常见词，词频判据会失效（原文命中数不低），必须靠标点密度。
-        strong = text.count("=") >= 3
-        if hs[0][0] > base or (strong and hs[0][0] >= base and hs[0][0] > 0):
-            return hs[0][1], True
-    if len(text.strip()) == 1 and text.strip() in SIG_PUNCT and decode_shift(text).strip() in "ABCD":
-        return decode_shift(text), True
+        sf, sb = en_score(fwd), en_score(bwd)
+        best, bs = (fwd, sf) if sf >= sb else (bwd, sb)
+        if bs > 0.18 and bs > base * 1.6:
+            return best, True
     return text, False
 
 
@@ -233,7 +274,16 @@ BLANK_PAGE_RE = re.compile(r"^BLANK PAGE$", re.I)
 
 def content_lines(lines, footer_y=None):
     """版心内容行：滤掉页眉（页码/条码）、页脚（UCLES/卷号/Turn over/水印/
-    BLANK PAGE 占位）、点线装饰垃圾（', ,' 等）。footer_y 缺省用全局 FOOTER_Y。"""
+    BLANK PAGE 占位）、点线装饰垃圾（', ,' 等）、条形码条纹行。
+    footer_y 缺省用全局 FOOTER_Y。
+
+    🔴 条形码：CIE 2024 的部分卷（2024-june / 2024-oct）把条形码画成一行文字，
+    内容是密集的 \\x01 / \\x02 控制字符（视觉上就是黑条纹），且位置在 y≈54–64，
+    **超过 HEADER_Y=50 的页眉线**，会被当成正文切进题图（用户抽检发现）。
+    判据用 \\x01/\\x02 计数而不是"控制字符总数"——A 型乱码的版权行
+    （'\\x8b\\x038&/(6\\x03…'）也有一堆控制字符，但含的是 \\x03/\\x15/\\x13，
+    不能被误杀。
+    """
     fy = FOOTER_Y if footer_y is None else footer_y
     out = []
     for ln in lines:
@@ -245,6 +295,8 @@ def content_lines(lines, footer_y=None):
             continue
         if FOOTER_LINE_RE.match(raw) or BLANK_PAGE_RE.match(raw):
             continue
+        if ln["raw"].count("\x01") + ln["raw"].count("\x02") >= 6:
+            continue          # 条形码条纹行
         out.append(ln)
     return out
 
@@ -289,13 +341,17 @@ def yaml_scalar(v):
     return json.dumps(s, ensure_ascii=False)
 
 
-def build_regions(start_page, sy0, end_page, end_y1, L, T, R, B):
+def build_regions(start_page, sy0, end_page, end_y1, L, T, R, B, top_of=None, bot_of=None):
+    """top_of(page)/bot_of(page) 给出该页可用的上下边——
+    让开条形码 / 页脚装饰框时与全局 T/B 不同。"""
+    tk = top_of if top_of is not None else (lambda pi: T)
+    bk = bot_of if bot_of is not None else (lambda pi: B)
     if end_page == start_page:
         return [{"page": start_page, "bbox": [r2(L), r2(sy0), r2(R), r2(end_y1)]}]
-    regs = [{"page": start_page, "bbox": [r2(L), r2(sy0), r2(R), r2(B)]}]
+    regs = [{"page": start_page, "bbox": [r2(L), r2(sy0), r2(R), r2(bk(start_page))]}]
     for mp in range(start_page + 1, end_page):
-        regs.append({"page": mp, "bbox": [r2(L), r2(T), r2(R), r2(B)]})
-    regs.append({"page": end_page, "bbox": [r2(L), r2(T), r2(R), r2(end_y1)]})
+        regs.append({"page": mp, "bbox": [r2(L), r2(tk(mp)), r2(R), r2(bk(mp))]})
+    regs.append({"page": end_page, "bbox": [r2(L), r2(tk(end_page)), r2(R), r2(end_y1)]})
     return regs
 
 
@@ -359,14 +415,29 @@ def trim_regions_trailing_blank(doc, regions, pages_content, content_cache, foot
 
 
 def parse_subhead(raw):
-    """解析 "(a)(i) …" 小问标签行 → (tokens, tail) 或 None。多字符 token 只收罗马数字。"""
-    m = SUBHEAD_RE.match(raw.strip())
-    if not m:
+    """解析小问标签行 → (tokens, tail) 或 None。多字符 token 只收罗马数字。
+
+    🔴 两种形态都要认：
+      ① 行首就是标签：`(a) Describe…` / `(b) (i) State…`
+      ② **题号 + 标签同行**：`10 (a) The respiratory quotient…`（9700 常见）。
+         原版只认 ①，导致这类题的 (a) 漏识别；随后紧跟的 (i)(ii)(iii)
+         因 parent=None 被整批丢弃（2025-june-qp44 Q10 只剩 1 个 'b'）。
+    """
+    t = raw.strip()
+    m = SUBHEAD_RE.match(t)
+    if m:
+        seg = m.group(2)
+    else:
+        m = QSUB_RE.match(t)
+        if not m:
+            return None
+        seg = m.group(1)
+    tokens = re.findall(r"\(([a-z]{1,4})\)", seg)
+    if not tokens:
         return None
-    tokens = re.findall(r"\(([a-z]{1,4})\)", m.group(2))
-    if any(len(t) > 1 and t not in ROMAN_SUB for t in tokens):
+    if any(len(x) > 1 and x not in ROMAN_SUB for x in tokens):
         return None
-    return tuple(tokens), m.group(3).strip()
+    return tuple(tokens), ""
 
 
 def sub_label(tokens):
@@ -436,11 +507,16 @@ def main():
         print(f"    A 型乱码解码: {n_decoded} 个 span 已还原")
 
     # ── 题号列 QCOL：题号行 x0 众数（各年在 49.6 / 72.4 / 72.8 之间浮动） ──
+    # 🔴 判据必须排除「图上坐标轴刻度」这类行：2021-oct-qp23 的 p13 有一张图，
+    # 轴标签「10 000 / 20 000 …」共 15 行在 x≈54.5，把众数从 49.6 拽到 54，
+    # 之后真题号行（49.6）全被 qcol-2 的下界挡掉 → 整卷 0 起点。
+    # 题号行的数字后面只能是：行尾 / 小问标签 `(` / 空格+字母（含希腊字母）。
+    QCOL_RE = re.compile(r"^\d{1,2}(?:$|\s*\(|\s+[A-Za-z\u2018\u2019\u201c\u201d\"'(\u0370-\u03ff])")
     digit_x0 = []
     for lines in pages_content:
         for ln in lines:
             b = ln["bbox"]
-            if b[0] < 100.0 and re.match(r"^\d{1,2}(\s|\(|$)", ln["raw"].strip()):
+            if b[0] < 100.0 and QCOL_RE.match(ln["raw"].strip()):
                 digit_x0.append(round(b[0]))
     if len(digit_x0) < 4:
         sys.exit("题号列定位失败（数字起始行过少）——疑似扫描卷或版式异常。")
@@ -460,6 +536,51 @@ def main():
     # （实测 2020-june-qp21 Q3 的 [Total: 9]、qp42 Q2 的 [4]）。
     B = min(footer_y, 800.0)
 
+    # ── 页脚装饰框的竖线：按页让开，但不能切掉压底的内容 ──
+    # 部分卷（2024-oct 等）在页脚区画了一圈角标框：竖线 x≈37 / x≈558，y 从 791 起。
+    # region 底边越过它会渲染出题图底部一条孤立黑竖线（用户抽检看到）。
+    # 但如果该页有内容（[Total: N] / [n]）压过装饰框顶，就保内容——宁可留条竖线，
+    # 也不能切掉分值锚点（2024-oct-qp23 Q2 的 [Total: 12] 行底在 805，正好压过 791）。
+    deco_top = {}
+    try:
+        for _pi in range(n_pages):
+            for _dr in doc[_pi].get_drawings():
+                _r = _dr["rect"]
+                if _r.y0 > 770 and _r.height > 8 and _r.width < 6:
+                    deco_top[_pi] = min(deco_top.get(_pi, 1e9), _r.y0)
+    except Exception:
+        pass
+
+    def bot_of(pi):
+        d = deco_top.get(pi)
+        if d is None:
+            return B
+        # 只看装饰框顶以上的内容行——页脚区那几行乱码水印（'ĬÓĊ®…'，y≈793–805）
+        # 会把"最后内容行"拉到 805，让让开逻辑永远失效。
+        last = max((ln["bbox"][3] for ln in pages_content[pi]
+                    if ln["bbox"][1] < d), default=0.0)
+        if last > d:            # 内容越过装饰框顶 → 保内容
+            return B
+        return min(B, d - 0.5)
+
+
+    # ── 每页条形码底：region 顶边必须让开 ──
+    # CIE 2024-june / 2024-oct 的部分卷把条形码画成一行密集 \x01/\x02 字符，
+    # 位置 y≈45–62（超过 HEADER_Y=50）。content_lines 只把这一「行」从版心计算里
+    # 剔掉，但 region 裁剪是按坐标直裁原页面的，顶边 59.8 仍会切到条码下半截
+    # （用户抽检看到题图顶部残留黑条纹）。所以按页记录条码底，作为该页的可用顶边。
+    bar_bottom = {}
+    for pi, lines in enumerate(pages_lines):
+        for ln in lines:
+            if ln["raw"].count("\x01") + ln["raw"].count("\x02") >= 6:
+                bar_bottom[pi] = max(bar_bottom.get(pi, 0.0), ln["bbox"][3])
+
+    def top_of(pi):
+        # +4：条纹是用 5pt 字体画的，字形实际渲染到 bbox[3] 下方约 3pt
+        # （line bbox 只有 54–59，视觉到 62），只让 0.5 仍会切进条码底部。
+        return max(T, bar_bottom.get(pi, 0.0) + 4.0)
+
+
     # ── 题号起点候选（序列约束 1..N） ──
     # P1: 题号可在页内任意位置（每页约 3 题）。
     # P2/P4: 大题**多数**从新页顶开始，但内容排满时下一题同页续排
@@ -470,7 +591,11 @@ def main():
     for pi, lines in enumerate(pages_content):
         for ln in lines:
             b = ln["bbox"]
-            if not (HEADER_Y < b[1] < y_max) or b[0] > qcol + QCOL_SLACK or b[0] < qcol - 2:
+            # 🔴 同卷内题号列 x0 稳定在 ±1pt，窗口必须收紧到 ±4。
+            # 物理版给的 QCOL_SLACK=12 会放进图里的编号：2023-mar-qp22 的 p6
+            # 有一张带 1/2/3 标号的图，编号 x0=60.9（qcol=50），
+            # 被当成 Q3 起点 → Q2 的分值锚点被挤到下一题之外、只兜到 7 分（应 13）。
+            if not (HEADER_Y < b[1] < y_max) or abs(b[0] - qcol) > 4.0:
                 continue
             raw = ln["raw"].strip()
             m = QSTART_RE.match(raw)
@@ -480,11 +605,14 @@ def main():
             if n > (40 if is_mcq_paper else 20):
                 continue
             if not is_mcq_paper:
-                # P2/P4 防误报：独立行放行；合并行只接受「题号后跟 (a… 小问标签」
-                # 或粗体行（正文/图表里以数字开头的行不粗体且不带标签）
-                if not ln["bold"] and not re.match(r"^\d{1,2}\s*\(", raw):
+                # P2/P4 防误报：独立行放行；合并行接受三种形态——
+                #   ① 粗体行  ② 「题号 + (a) 小问标签」  ③ 「题号 + 空格 + 大写词」（题号+题干同行）
+                # ③ 是生物卷常见形态（2024-oct-qp43 的 "10 Populations of the moth…"，
+                # 非粗体、题号后直接接正文）。图里的编号（1/2/3 Mitochondria…）也会命中 ③，
+                # 但序列约束 1..N 会挡掉——它们不会出现在「上一题已定位」之后的位置。
+                if not ln["bold"] and not re.match(r"^\d{1,2}\s*(\(|\s[A-Z])", raw):
                     tail = re.match(r"^\d{1,2}\s*(.*)$", raw).group(1)
-                    if tail:  # 有尾随文字却既非标签也非粗体 → 不当题号
+                    if tail:  # 有尾随文字却既非标签、非大写开头、也非粗体 → 不当题号
                         continue
             cands.append((pi, b[1], n, b, ln))
     cands.sort(key=lambda c: (c[0], c[1]))
@@ -611,7 +739,7 @@ def main():
                     # 处置：两段拼接 —— ①本题题干段（到本题 [Total] 底）
                     #                    ②共享作答区段（从 Section B 最后一条
                     #                      [Total] 之后起，到卷末），跳过别题题干。
-                    sy0 = st["y0"] - 4
+                    sy0 = max(st["y0"] - 4, top_of(st["page"]))
                     q1 = {"page": st["page"],
                           "bbox": [r2(L), r2(sy0), r2(R), r2(min(en["y1"] + 2, B))]}
                     segs = [q1]
@@ -625,14 +753,16 @@ def main():
                             y_start = max(share[1], q1["bbox"][3])
                             if y_start < B - 2:
                                 segs.append({"page": st["page"],
-                                             "bbox": [r2(L), r2(y_start), r2(R), r2(B)]})
+                                             "bbox": [r2(L), r2(y_start), r2(R),
+                                                      r2(bot_of(st["page"]))]})
                             start_after = share[0] + 1
                         elif share[0] > st["page"]:
                             start_after = share[0]
                         else:
                             start_after = st["page"] + 1
                         for mp in range(max(start_after, st["page"] + 1), n_pages):
-                            segs.append({"page": mp, "bbox": [r2(L), r2(T), r2(R), r2(B)]})
+                            segs.append({"page": mp,
+                                         "bbox": [r2(L), r2(top_of(mp)), r2(R), r2(bot_of(mp))]})
                     sec_b_segs = segs
                     end_page, end_y1 = n_pages - 1, B
                     anchor_end = False
@@ -679,18 +809,23 @@ def main():
                     end_page, end_y1 = sw[0], sw[1] - 2
                     end_ok = True
                 else:
+                    # 🔴 9700 P1 **没有** "Space for working" 这一行（那是物理/化学的）。
+                    # 末题只能落到版心底，再靠 trim_regions_trailing_blank 裁掉页尾空白。
+                    # 这是 9700 的正常路径，不算低置信——否则每卷末题都进 review。
                     end_page, end_y1 = st["page"], B
+                    end_ok = True
             if not is_mcq_paper and not end_ok:
                 q["status"] = "review"
                 conf = min(conf, 0.3)
         if is_mcq_paper and end_ok:
             conf += 0.2
 
-        sy0 = st["y0"] - 4
+        sy0 = max(st["y0"] - 4, top_of(st["page"]))
         if sec_b_segs is not None:
             q["regions"] = sec_b_segs          # Section B：题干段 + 共享作答区段
         else:
-            q["regions"] = build_regions(st["page"], sy0, end_page, end_y1, L, T, R, B)
+            q["regions"] = build_regions(st["page"], sy0, end_page, end_y1, L, T, R, B,
+                                         top_of=top_of, bot_of=bot_of)
         # 锚点终点（[Total]/Space for working/下一题同页起点）之下无排版空白，
         # 末段不裁；B 兜底的末段连页尾空白一起裁。
         # Section B 的题整段都是点线作答区，不能裁（会削掉作答空间）。
@@ -716,12 +851,12 @@ def main():
                     if not parsed:
                         continue
                     tokens = parsed[0]
-                    if tokens[0] in ROMAN_TOKENS:
-                        if parent is None:
-                            continue
+                    if tokens[0] in ROMAN_TOKENS and parent is not None:
                         tokens = (parent,) + tokens
-                    else:
+                    elif tokens[0] not in ROMAN_TOKENS:
                         parent = tokens[0]
+                    # 罗马小问但还没有 parent（上面的 (a) 漏了）：**保留**成顶层，
+                    # 不要丢——丢了会把整段小问吃掉（2025-june-qp44 Q10 的教训）。
                     subqs.append({"label": sub_label(tokens), "page": rg["page"],
                                   "bbox": [r2(v) for v in lb]})
             q["subquestions"] = subqs
@@ -855,7 +990,13 @@ def extract_mcq_options_cie(q, st, nxt, pages_content, pages_pairs, R, B, notes)
             parts, rows = [], []
             for ln2 in pages_content[pi]:
                 b2 = ln2["bbox"]
-                if lb["y0"] - 1 <= b2[1] <= y_end + 1 and b2[0] >= lb["x1"] - 1:
+                # 🔴 必须带右边界 x1：同行四列选项（A 0.33 : 1  B 0.83 : 1  C …）
+                # 时，只判「x 在标签右侧」会把 B/C/D 的内容全塞进 A 的 text
+                # （2025-june-qp12 Q20 的 A = "0.33 : 1 B 0.83 : 1 C 1.2 : 1 D 3.0 : 1"）。
+                # 上下容差给到 3pt：选项内容的行 bbox 常常比标签行高 1–2pt
+                # （2020-june-qp11 Q3 标签 y=450.0、内容 "×10" y=448.9），
+                # 只给 1pt 会取不到内容 → text 全空。
+                if lb["y0"] - 3 <= b2[1] <= y_end + 1 and lb["x1"] - 1 <= b2[0] < x1:
                     rows.append(ln2)
             rows.sort(key=lambda l: (round(l["bbox"][1], 1), l["bbox"][0]))
             text = " ".join(re.sub(r"\s+", " ", ln2["raw"]).strip() for ln2 in rows).strip()
@@ -890,13 +1031,35 @@ def question_text_lines(q, pages_content, pages_pairs):
             cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
             if not regions_contain(q["regions"], pi, cx, cy):
                 continue
-            text = " ".join(w[4] for w, ref in pages_pairs[pi] if ref is ln)
-            text = text or ln["raw"]
+            # 🔴 解码过的行必须用 ln["raw"]：pages_pairs 里的 words 是
+            # get_text("words") 的原始文本，**没走过 decode_span**，
+            # 用它会把 "Some agar was…" 又拼回 "6RPH DJDU ZDV…"
+            # （2025 P1 五卷整卷乱码就是这个原因，decode 只改了行文本、
+            #  正文却优先取 words）。
+            if ln.get("decoded"):
+                text = ln["raw"]
+            else:
+                text = " ".join(w[4] for w, ref in pages_pairs[pi] if ref is ln)
+                text = text or ln["raw"]
             text = re.sub(r"[\u2009\u00a0\t]+", " ", text).strip()
             text = re.sub(r" {2,}", " ", text)
             if text:
                 out.append(text)
     return out
+
+
+def strip_c1(text):
+    """把 C1 控制字符（0x7F–0x9F）换成空格。
+
+    🔴 这类字符来自 A 型乱码里的特殊符号（\x83 是度数/单位符号的残骸），
+    本身无意义，但 **PyYAML 见到就抛 ReaderError**：
+    "unacceptable character #x0083: special characters are not allowed"。
+    线上 index_db.rebuild() 因此整轮崩掉、索引只剩 387 卷（2026-10-22）。
+    正文和 front-matter 都要洗。
+    """
+    if not text:
+        return text
+    return "".join(" " if 0x7F <= ord(c) <= 0x9F else c for c in text)
 
 
 def write_question_md(sdir, n, q, board, qualification, subject, year, session,
@@ -940,7 +1103,7 @@ def write_question_md(sdir, n, q, board, qualification, subject, year, session,
     lines.append("---")
     lines.append("")
     lines.append(body)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    path.write_text(strip_c1("\n".join(lines)) + "\n", encoding="utf-8")
 
 
 def update_front_matter(path, fm_pairs, q):
