@@ -172,6 +172,7 @@ def load_paper(board, qual, subject, paper):
         # 小问线：取自 layout.json，坐标已归一化到题图（0-1），直接按百分比画
         subs = []
         areas = []
+        opts = []
         bottoms = {}
         block_y = None
         lay = assets / (e.name.rsplit(".", 1)[0] + ".layout.json")
@@ -207,6 +208,23 @@ def load_paper(board, qual, subject, paper):
                     bottoms[lbl] = round(max(
                         float(b["y"]) + float(b.get("h") or 0)
                         for b in a["boxes"] if isinstance(b.get("y"), (int, float))), 4)
+                # 选项热区（选择题）：render_questions 只在 question_type=mcq 且
+                # cut.json 有 option_hotzones 时写 options，box 已归一化到题图。
+                # 化学一题可有多套 A–D（part = a/b…），按套别上色。
+                for o in L.get("options") or []:
+                    b = o.get("box") or {}
+                    lbl = str(o.get("label") or "")
+                    if not lbl or not all(
+                            isinstance(b.get(k), (int, float)) for k in ("x", "y", "w", "h")):
+                        continue
+                    opts.append({
+                        "label": lbl,
+                        "part": str(o.get("part") or ""),
+                        "x": round(float(b["x"]), 4),
+                        "y": round(float(b["y"]), 4),
+                        "w": round(float(b["w"]), 4),
+                        "h": round(float(b["h"]), 4),
+                    })
                 # 真实的切片起点：render_subsplit 的册内侧从 answer_block 顶
                 # （册内题号行，含 "(a)(i)" 与右对齐分值行）开始，比 areas 高
                 # 一行到两行。预览要画「切点」就必须用这个坐标。
@@ -225,7 +243,7 @@ def load_paper(board, qual, subject, paper):
                             block_y = round(py / hh, 4)
                             break
             except (OSError, ValueError):
-                subs, areas, bottoms, block_y = [], [], {}, None
+                subs, areas, opts, bottoms, block_y = [], [], [], {}, None
         subs.sort(key=lambda x: x["y"])
         areas.sort(key=lambda x: x["y"])
         seen_lbl = set()
@@ -249,6 +267,8 @@ def load_paper(board, qual, subject, paper):
             "pages": sorted({r.get("page") for r in regions if r.get("page")}),
             "subs": subs,
             "areas": areas,
+            "opts": opts,
+            "n_opts": len(opts),
             "n_areas": len({a["label"] for a in areas}),
             "block_y": block_y,
             # 「N 个小问」按**一级**计数（(a)(b)(c)），与打标台 top_labels 同口径；
@@ -523,8 +543,16 @@ h1,h2,h3{margin:0;font-weight:600}
   padding:0 6px;border-radius:3px}
 #view.nosubs .subs{display:none}
 #view.noareas .areas{display:none}
+#view.nohots .hots{display:none}
+/* 选项热区：选择题每个 A–D 选项一整块，绿色实线框；多套（a/b…）按套别换色 */
+.hots{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hbox{position:absolute;border:2px solid #2f9e44;border-radius:3px;background:rgba(47,158,68,.07)}
+.hbox i{position:absolute;right:100%;top:-2px;margin-right:2px;font-style:normal;font-size:10px;
+  line-height:15px;font-weight:600;font-family:Consolas,Menlo,monospace;color:#fff;
+  background:#2f9e44;padding:0 4px;border-radius:3px;white-space:nowrap}
 .qmeta .an{color:#1c7ed6;font-weight:600}
 .qmeta .sn{color:#e8590c;font-weight:600}
+.qmeta .hn{color:#2f9e44;font-weight:600}
 .zoom{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
 .zb{width:26px;height:26px;font-size:15px;line-height:1;color:var(--muted);
   display:flex;align-items:center;justify-content:center}
@@ -580,6 +608,7 @@ h1,h2,h3{margin:0;font-weight:600}
       <div class="stat" id="stat"></div>
       <button class="tool on" id="subsbtn" title="显示 / 隐藏小问切割线">小问线</button>
       <button class="tool on" id="areasbtn" title="显示 / 隐藏答题区切割线（答题册另附卷）">作答区线</button>
+      <button class="tool on" id="hotsbtn" title="显示 / 隐藏选择题选项热区（A–D 选项框，只有切出了热区的选择题才有）">热区</button>
       <div class="zoom">
         <button class="zb" id="zout" title="缩小 5%">&#8722;</button>
         <button class="zv" id="zval" title="点击回到 100%">100%</button>
@@ -603,6 +632,8 @@ const $ = (s) => document.querySelector(s);
 const TREE = {};
 const S = { b: null, q: null, s: null, papers: [], cur: null, meta: null };
 const SLABEL = { jan:'Jan', mar:'Mar', may:'May', june:'June', july:'July', oct:'Oct', nov:'Nov' };
+// 选项热区的套别配色（part=a → 绿，part=b → 紫…）；与橙(小问线)/蓝(作答区线)区分开
+const HOTPART = ['#2f9e44', '#7048e8', '#0c8599', '#d6336c'];
 
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function fmtK(n){ return n >= 1000 ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k' : String(n); }
@@ -751,6 +782,7 @@ async function openPaper(name){
       if (x.section) bits.push('Section ' + esc(x.section));
       if (x.n_subs) bits.push(`<span class="sn">${x.n_subs} 个小问</span>`);
       if (x.n_areas) bits.push(`<span class="an">作答区 ${x.n_areas} 段</span>`);
+      if (x.n_opts) bits.push(`<span class="hn">热区 ${x.n_opts}</span>`);
       if (x.regions > 1) bits.push(`<span class="warn">跨 ${x.regions} 段${x.pages.length?`（P${x.pages.join(',')}）`:''}</span>`);
       if (x.status && x.status !== 'auto') bits.push(esc(x.status));
       const lines = (x.subs || []).map(s =>
@@ -770,10 +802,24 @@ async function openPaper(name){
       const alines = aFirst.map(a =>
         `<div class="aline" style="top:${(a.y * 100).toFixed(2)}%"><i>${esc(a.label)}</i></div>`
       ).join('');
+      // 选项热区：one box per A–D。标签挂在框**左外侧**（框内左上角正好压住选项字母），
+      // 套别按出现顺序取色，同一题的两套 A–D 不会看混。
+      const pc = new Map();
+      (x.opts || []).forEach(o => {
+        if (o.part && !pc.has(o.part)) pc.set(o.part, HOTPART[pc.size % HOTPART.length]);
+      });
+      const hots = (x.opts || []).map(o => {
+        const c = o.part ? pc.get(o.part) : HOTPART[0];
+        const box = `left:${(o.x*100).toFixed(2)}%;top:${(o.y*100).toFixed(2)}%;`
+                  + `width:${(o.w*100).toFixed(2)}%;height:${(o.h*100).toFixed(2)}%;`
+                  + `border-color:${c};background:${c}12`;
+        return `<div class="hbox" style="${box}"><i style="background:${c}">`
+             + `${o.part ? esc(o.part) + '·' : ''}${esc(o.label)}</i></div>`;
+      }).join('');
       return `<article class="qcard" id="q${x.no}">
         <header><span class="qno">第 ${x.no} 题</span>
           <span class="qmeta">${bits.join(' · ')}</span></header>
-        <div class="qimg"><div class="qwrap">${lines ? `<div class="subs">${lines}</div>` : ''}${alines ? `<div class="areas">${alines}</div>` : ''}<img loading="lazy" decoding="async"
+        <div class="qimg"><div class="qwrap">${lines ? `<div class="subs">${lines}</div>` : ''}${alines ? `<div class="areas">${alines}</div>` : ''}${hots ? `<div class="hots">${hots}</div>` : ''}<img loading="lazy" decoding="async"
           src="/img?b=${S.b}&q=${S.q}&s=${S.s}&p=${encodeURIComponent(name)}&f=${x.file}&v=${x.ver || 0}"
           alt="第 ${x.no} 题"></div></div>
       </article>`;
@@ -829,6 +875,11 @@ $('#subsbtn').onclick = e => {
 
 $('#areasbtn').onclick = e => {
   const off = $('#view').classList.toggle('noareas');
+  e.target.classList.toggle('on', !off);
+};
+
+$('#hotsbtn').onclick = e => {
+  const off = $('#view').classList.toggle('nohots');
   e.target.classList.toggle('on', !off);
 };
 
