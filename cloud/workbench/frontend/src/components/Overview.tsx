@@ -80,6 +80,16 @@ const STATE_COLOR: Record<OverviewState, string> = {
   some: '#a9dfba',
   none: '#e3e6ea',
 }
+/**
+ * 「题目有误」标记色（2026-10-23）。
+ *
+ * 语义：这张卷里有至少一道题被标了有误。**不是第四种状态**——底色照旧只说审核进度，
+ * 红框是叠加上去的独立标记（有误题会退出确认分母，所以它经常叠在深绿卷上）。
+ * 色值比左侧题目栏的 outline-red-400 深一档：#f87171 在 11px 的格子上太淡。
+ */
+const FLAG_COLOR = '#dc2626'
+/** 红框描边宽度：画在格子内侧，外框尺寸/间距/行高一律不动。9px 格子上 2px 就糊了，故分档 */
+const FLAG_RING: Record<Density, number> = { compact: 1.5, normal: 2, loose: 2.5 }
 const SZ: Record<Density, { cell: number; gap: number }> = {
   compact: { cell: 9, gap: 2 },
   normal: { cell: 11, gap: 2 },
@@ -141,7 +151,8 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
   const [err, setErr] = useState<string | null>(null)
 
   const [qual, setQual] = useState<QualFilter>('all')
-  const [filter, setFilter] = useState<'all' | OverviewState>('all')
+  // 'flagged' 不是第四种状态，是「只看含题目有误的卷」这个筛选条件（2026-10-23）
+  const [filter, setFilter] = useState<'all' | OverviewState | 'flagged'>('all')
   const [density, setDensity] = useState<Density>('normal')
   const [selected, setSelected] = useState<OverviewPaper | null>(null)
 
@@ -150,6 +161,7 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
   const tipSubRef = useRef<HTMLDivElement>(null)
   const tipDotRef = useRef<HTMLElement>(null)
   const tipTextRef = useRef<HTMLSpanElement>(null)
+  const tipFlagRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async (force = false) => {
     setLoading(true)
@@ -174,8 +186,26 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
   )
 
   const stats = useMemo(() => {
-    const s = { total: papers.length, all: 0, some: 0, none: 0 }
-    for (const p of papers) s[p.state] += 1
+    const s = {
+      total: papers.length,
+      all: 0,
+      some: 0,
+      none: 0,
+      /** 含「题目有误」的卷数 */
+      flaggedPapers: 0,
+      /** 这些卷里被标有误的题数（KPI 第五张卡的主数字） */
+      flaggedQuestions: 0,
+    }
+    for (const p of papers) {
+      if (p.state === 'all') s.all += 1
+      else if (p.state === 'some') s.some += 1
+      else s.none += 1
+      const fn = p.flagged_count ?? 0
+      if (fn > 0) {
+        s.flaggedPapers += 1
+        s.flaggedQuestions += fn
+      }
+    }
     return s
   }, [papers])
 
@@ -298,6 +328,12 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
           : p.state === 'some'
             ? `已开工（已核对 ${p.verified_count}/${p.question_count}）`
             : '未开工'
+    }
+    // 「有误」是叠加信息：三态照旧显示，另起一行红字，没有就整行藏起来
+    const nf = p.flagged_count ?? 0
+    if (tipFlagRef.current) {
+      tipFlagRef.current.style.display = nf > 0 ? 'flex' : 'none'
+      if (nf > 0) tipFlagRef.current.textContent = `⚠ 含题目有误 ${nf} 题（已退出待核对）`
     }
     t.style.opacity = '1'
     moveTip(e.clientX, e.clientY)
@@ -433,15 +469,50 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
         ) : (
           <div className="mx-auto max-w-[1240px] px-4 pb-14 pt-4">
             {/* ── KPI ── */}
-            <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-              {(
-                [
-                  ['total', '试卷总数', stats.total, ''],
-                  ['all', '审核通过', stats.all, STATE_COLOR.all],
-                  ['some', '已开工', stats.some, STATE_COLOR.some],
-                  ['none', '未开工', stats.none, STATE_COLOR.none],
-                ] as const
-              ).map(([k, label, n, color]) => {
+            <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-5">
+              {[
+                {
+                  k: 'total' as const,
+                  label: '试卷总数',
+                  n: stats.total,
+                  color: '',
+                  unit: '份',
+                  note: '',
+                },
+                {
+                  k: 'all' as const,
+                  label: '审核通过',
+                  n: stats.all,
+                  color: STATE_COLOR.all,
+                  unit: '份',
+                  note: `${pct(stats.all)}%`,
+                },
+                {
+                  k: 'some' as const,
+                  label: '已开工',
+                  n: stats.some,
+                  color: STATE_COLOR.some,
+                  unit: '份',
+                  note: `${pct(stats.some)}%`,
+                },
+                {
+                  k: 'none' as const,
+                  label: '未开工',
+                  n: stats.none,
+                  color: STATE_COLOR.none,
+                  unit: '份',
+                  note: `${pct(stats.none)}%`,
+                },
+                {
+                  k: 'flagged' as const,
+                  label: '题目有误',
+                  n: stats.flaggedQuestions,
+                  color: FLAG_COLOR,
+                  unit: '题',
+                  // 右上角不写百分比，改写「分布在几份卷」——题数单独看没有分母可依
+                  note: `${stats.flaggedPapers} 份试卷`,
+                },
+              ].map(({ k, label, n, color, unit, note }) => {
                 const active = k === 'total' ? filter === 'all' : filter === k
                 return (
                   <button
@@ -449,30 +520,35 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
                     type="button"
                     onClick={() => {
                       if (k === 'total') setFilter('all')
-                      else setFilter(filter === k ? 'all' : (k as OverviewState))
+                      else setFilter(filter === k ? 'all' : k)
                     }}
                     className={`relative rounded-[11px] border bg-white px-4 py-3 text-left transition-all ${
-                      active && k !== 'total'
-                        ? 'border-gray-400 shadow-[0_0_0_3px_rgba(148,163,184,0.18)]'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      !active || k === 'total'
+                        ? 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                        : k === 'flagged'
+                          ? 'border-[#dc2626] shadow-[0_0_0_3px_rgba(220,38,38,0.13)]'
+                          : 'border-gray-400 shadow-[0_0_0_3px_rgba(148,163,184,0.18)]'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                      {color && (
+                      {k === 'flagged' ? (
+                        // 空心红框：与格子上的「有误」标记、图例同一符号
+                        <i className="inline-block h-2 w-2 shrink-0 rounded-[1px] border border-[#dc2626]" />
+                      ) : color ? (
                         <i
-                          className="inline-block h-2 w-2 rounded-[2px]"
+                          className="inline-block h-2 w-2 shrink-0 rounded-[2px]"
                           style={{ background: color }}
                         />
-                      )}
+                      ) : null}
                       {label}
                     </div>
                     <div className="mt-1 text-[23px] font-semibold leading-none tracking-tight">
                       {n}
-                      <span className="ml-1 text-xs font-normal text-gray-400">份</span>
+                      <span className="ml-1 text-xs font-normal text-gray-400">{unit}</span>
                     </div>
-                    {k !== 'total' && (
+                    {note && (
                       <div className="absolute right-3.5 top-3.5 text-[11px] text-gray-400">
-                        {pct(n)}%
+                        {note}
                       </div>
                     )}
                   </button>
@@ -509,6 +585,13 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
               <span className="inline-flex items-center gap-1.5">
                 <i className="inline-block h-[11px] w-[11px] rounded-[2px] bg-[#e3e6ea]" />
                 未开工
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <i
+                  className="inline-block h-[11px] w-[11px] rounded-[2px] bg-[#c9cdd3]"
+                  style={{ outline: `2px solid ${FLAG_COLOR}`, outlineOffset: '-2px' }}
+                />
+                含题目有误
               </span>
               <span className="ml-auto hidden text-gray-400 sm:inline">
                 悬停看卷号 · 点击定位 · 上方卡片可筛选
@@ -615,18 +698,40 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
                                 onClick={onWallClick}
                               >
                                 {b.list.map((p) => {
-                                  const dim = filter !== 'all' && p.state !== filter
+                                  const nf = p.flagged_count ?? 0
+                                  // 'flagged' 只留下含题目有误的卷，其余淡出（不是第四种状态）
+                                  const dim =
+                                    filter === 'all'
+                                      ? false
+                                      : filter === 'flagged'
+                                        ? nf === 0
+                                        : p.state !== filter
                                   const sel = selected?.id === p.id
+                                  const ringW = FLAG_RING[density]
                                   return (
                                     <button
                                       key={p.id}
                                       type="button"
                                       data-pid={p.id}
-                                      aria-label={`${p.paper_code ?? p.id} ${p.year ?? ''} ${STATE_LABEL[p.state]}`}
+                                      aria-label={`${p.paper_code ?? p.id} ${p.year ?? ''} ${
+                                        STATE_LABEL[p.state]
+                                      }${nf > 0 ? ` · 含题目有误 ${nf} 题` : ''}`}
                                       className={`block shrink-0 rounded-[2px] border-0 p-0 transition-[transform,box-shadow,opacity] duration-100 hover:relative hover:z-10 hover:scale-[1.45] hover:shadow-[0_0_0_1.5px_#111827] ${
                                         dim ? 'opacity-10' : ''
                                       } ${sel ? 'relative z-10 scale-[1.3] ring-2 ring-gray-900 ring-offset-1' : ''}`}
-                                      style={{ ...cellStyle, background: STATE_COLOR[p.state] }}
+                                      style={{
+                                        ...cellStyle,
+                                        background: STATE_COLOR[p.state],
+                                        // 内描边：outlineOffset 取负值画在格子内侧，
+                                        // 盒模型尺寸不变、不影响换行与行高；与 hover/选中的
+                                        // box-shadow 也互不覆盖（两者是不同属性）
+                                        ...(nf > 0
+                                          ? {
+                                              outline: `${ringW}px solid ${FLAG_COLOR}`,
+                                              outlineOffset: `-${ringW}px`,
+                                            }
+                                          : null),
+                                      }}
                                     />
                                   )
                                 })}
@@ -659,6 +764,11 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
           <i ref={tipDotRef} className="inline-block h-[7px] w-[7px] rounded-[1px]" />
           <span ref={tipTextRef} className="text-gray-300" />
         </div>
+        <div
+          ref={tipFlagRef}
+          className="mt-1 items-center gap-1 text-[11px] text-[#ffa2a2]"
+          style={{ display: 'none' }}
+        />
       </div>
 
       {/* 选中信息条 */}
