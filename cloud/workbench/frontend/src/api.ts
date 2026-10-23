@@ -163,6 +163,11 @@ export interface TaxTag {
   zh: string
   en: string
   group: string
+  /**
+   * IGCSE 专用：该知识点考在哪几份 paper（`p1` / `2c` / `u1` / `4mb1p1`）。
+   * A-Level 词表没有这个键；缺失 = 不按 paper 过滤（全可见）。
+   */
+  papers?: string[]
 }
 export interface TaxGroup {
   id: string

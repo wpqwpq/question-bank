@@ -94,6 +94,11 @@ const matchQual = (q: string, f: QualFilter) => {
   if (f === 'al') return n === 'alevel' || n === 'gceadv'
   return n === 'igcse' || n === 'gcse'
 }
+/** 资格档：同一学科里 AL 与 IGCSE 分块显示（2026-10-23 培琪要的） */
+const qualTier = (q: string): 'al' | 'ig' => (matchQual(q, 'ig') ? 'ig' : 'al')
+const TIER_LABEL: Record<'al' | 'ig', string> = { al: 'AL · A-Level', ig: 'IG · IGCSE' }
+const TIER_COLOR: Record<'al' | 'ig', string> = { al: '#1f5fa8', ig: '#d9730d' }
+const TIER_ORDER: ('al' | 'ig')[] = ['al', 'ig']
 /** 回打标台时 Sidebar 三个下拉只认这三个值 */
 const qualForSelect = (q: string) => {
   const n = normQual(q)
@@ -107,11 +112,21 @@ interface BoardGroup {
   board: string
   /** 该行卷的原始学科（进阶数学与数学同局时会各占一行，靠它区分） */
   subject: string
+  /** 资格档：同一个考试局在同一学科下可有 AL、IG 两行，不能只按「局+学科」拼 */
+  qual: 'al' | 'ig'
   list: OverviewPaper[]
+}
+/** 学科内的资格模块：AL 一块、IG 一块，块内按考试局分行 */
+interface QualBlock {
+  qual: 'al' | 'ig'
+  boards: BoardGroup[]
+  total: number
+  all: number
+  some: number
 }
 interface SubjectGroup {
   subject: string
-  boards: BoardGroup[]
+  blocks: QualBlock[]
   total: number
   all: number
   some: number
@@ -170,9 +185,16 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
     return m
   }, [papers])
 
-  /** 学科（归并后）→ 考试局 → 卷（卷按年份、考季、卷号排，老的在前） */
+  /**
+   * 学科（归并后）→ 资格模块（AL / IG）→ 考试局 → 卷
+   * （卷按年份、考季、卷号排，老的在前）
+   *
+   * 2026-10-23：同局同科的行键里加了资格档。之前只看「局 + 是否进阶」，
+   * IG 上线后 Edexcel 的 A-Level 物理和 IGCSE 物理会拼进同一排、按年份混着排，
+   * 完全看不出是两套资格。现在学科内先分 AL / IG 两块，块内再按考试局分行。
+   */
   const groups = useMemo<SubjectGroup[]>(() => {
-    // 行键 = 考试局 + 是否进阶：同局同科才拼成一排，进阶数学单独起一行
+    // 行键 = 资格档 | 考试局 | 是否进阶
     const m = new Map<string, Map<string, BoardGroup>>()
     for (const p of papers) {
       const raw = p.subject || 'other'
@@ -183,15 +205,24 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
         m.set(sub, bm)
       }
       const board = p.board || 'other'
-      const key = `${board}|${isFurther(raw) ? 'f' : 'm'}`
+      const tier = qualTier(p.qualification)
+      const key = `${tier}|${board}|${isFurther(raw) ? 'f' : 'm'}`
       const row = bm.get(key)
       if (row) row.list.push(p)
-      else bm.set(key, { board, subject: raw, list: [p] })
+      else bm.set(key, { board, subject: raw, qual: tier, list: [p] })
+    }
+    const boardSort = (a: BoardGroup, b: BoardGroup) => {
+      const ia = BOARD_ORDER.indexOf(a.board)
+      const ib = BOARD_ORDER.indexOf(b.board)
+      const da = ia < 0 ? 99 : ia
+      const db = ib < 0 ? 99 : ib
+      if (da !== db) return da - db
+      return (isFurther(a.subject) ? 1 : 0) - (isFurther(b.subject) ? 1 : 0) // 进阶排在同局数学之后
     }
     const out: SubjectGroup[] = []
     for (const [subject, bm] of m) {
-      const boards: BoardGroup[] = [...bm.values()]
-      for (const g of boards) {
+      const rows = [...bm.values()]
+      for (const g of rows) {
         g.list.sort(
           (a, b) =>
             (a.year ?? 0) - (b.year ?? 0) ||
@@ -199,27 +230,31 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
             String(a.paper_code ?? '').localeCompare(String(b.paper_code ?? '')),
         )
       }
-      boards.sort((a, b) => {
-        const ia = BOARD_ORDER.indexOf(a.board)
-        const ib = BOARD_ORDER.indexOf(b.board)
-        const da = ia < 0 ? 99 : ia
-        const db = ib < 0 ? 99 : ib
-        if (da !== db) return da - db
-        return (isFurther(a.subject) ? 1 : 0) - (isFurther(b.subject) ? 1 : 0) // 进阶排在同局数学之后
-      })
+      const blocks: QualBlock[] = []
       let all = 0
       let some = 0
       let total = 0
       let further = 0
-      for (const g of boards) {
-        for (const p of g.list) {
-          total += 1
-          if (isFurther(g.subject)) further += 1
-          if (p.state === 'all') all += 1
-          else if (p.state === 'some') some += 1
+      for (const tier of TIER_ORDER) {
+        const bs = rows.filter((r) => r.qual === tier).sort(boardSort)
+        if (!bs.length) continue
+        let bt = 0
+        let ba = 0
+        let bso = 0
+        for (const g of bs) {
+          for (const p of g.list) {
+            bt += 1
+            if (isFurther(g.subject)) further += 1
+            if (p.state === 'all') ba += 1
+            else if (p.state === 'some') bso += 1
+          }
         }
+        blocks.push({ qual: tier, boards: bs, total: bt, all: ba, some: bso })
+        total += bt
+        all += ba
+        some += bso
       }
-      out.push({ subject, boards, total, all, some, further })
+      out.push({ subject, blocks, total, all, some, further })
     }
     out.sort((a, b) => {
       const ia = SUBJECT_ORDER.indexOf(a.subject)
@@ -250,9 +285,10 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
       }`
     }
     if (tipSubRef.current) {
-      tipSubRef.current.textContent = `${BOARD_LABEL[p.board] ?? p.board} · ${
-        SUBJECT_ZH[p.subject] ?? p.subject
-      }`
+      // AL / IG 前缀不能省：IG 上线后同一学科同一考试局有两套卷，只看「局 · 学科」分不清
+      tipSubRef.current.textContent = `${
+        qualTier(p.qualification) === 'ig' ? 'IG' : 'AL'
+      } · ${BOARD_LABEL[p.board] ?? p.board} · ${SUBJECT_ZH[p.subject] ?? p.subject}`
     }
     if (tipDotRef.current) tipDotRef.current.style.background = STATE_COLOR[p.state]
     if (tipTextRef.current) {
@@ -518,49 +554,89 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2.5 pt-3">
-                    {g.boards.map((b) => {
-                      const ba = b.list.filter((x) => x.state === 'all').length
-                      return (
-                        <div key={`${b.board}|${b.subject}`} className="flex items-start gap-3">
-                          <div className="w-[72px] shrink-0 pt-px text-right text-[10.5px] leading-[14px] text-gray-400">
-                            <b className="block text-[10.5px] font-medium text-gray-500">
-                              {BOARD_LABEL[b.board] ?? b.board}
-                              {isFurther(b.subject) && (
-                                <span className="ml-1 font-normal text-gray-400">进阶</span>
-                              )}
-                            </b>
-                            {ba}/{b.list.length}
-                          </div>
-                          <div
-                            className="flex min-w-0 flex-1 flex-wrap"
-                            style={wallStyle}
-                            onMouseOver={onWallOver}
-                            onMouseMove={onWallMove}
-                            onMouseOut={onWallOut}
-                            onClick={onWallClick}
-                          >
-                            {b.list.map((p) => {
-                              const dim = filter !== 'all' && p.state !== filter
-                              const sel = selected?.id === p.id
-                              return (
-                                <button
-                                  key={p.id}
-                                  type="button"
-                                  data-pid={p.id}
-                                  aria-label={`${p.paper_code ?? p.id} ${p.year ?? ''} ${STATE_LABEL[p.state]}`}
-                                  className={`block shrink-0 rounded-[2px] border-0 p-0 transition-[transform,box-shadow,opacity] duration-100 hover:relative hover:z-10 hover:scale-[1.45] hover:shadow-[0_0_0_1.5px_#111827] ${
-                                    dim ? 'opacity-10' : ''
-                                  } ${sel ? 'relative z-10 scale-[1.3] ring-2 ring-gray-900 ring-offset-1' : ''}`}
-                                  style={{ ...cellStyle, background: STATE_COLOR[p.state] }}
-                                />
-                              )
-                            })}
-                          </div>
+                  {/* 资格模块：AL 一块、IG 一块，块内按考试局分行 */}
+                  {g.blocks.map((blk) => (
+                    <div key={blk.qual} className="mt-3">
+                      <div className="mb-2 flex items-center gap-2 rounded-md bg-gray-50 px-2 py-[5px]">
+                        <i
+                          className="block h-[11px] w-[3px] shrink-0 rounded-full"
+                          style={{ background: TIER_COLOR[blk.qual] }}
+                        />
+                        <span
+                          className="text-[11.5px] font-semibold tracking-wide"
+                          style={{ color: TIER_COLOR[blk.qual] }}
+                        >
+                          {TIER_LABEL[blk.qual]}
+                        </span>
+                        <span className="text-[11px] tabular-nums text-gray-400">
+                          {blk.total} 份
+                        </span>
+                        <div className="ml-auto flex items-center gap-2">
+                          <span className="text-[11px] tabular-nums text-gray-500">
+                            {blk.all} 通过 ·{' '}
+                            {Math.round((blk.all / Math.max(1, blk.total)) * 100)}%
+                          </span>
+                          <span className="flex h-[4px] w-[80px] overflow-hidden rounded-[2px] bg-gray-200">
+                            <i
+                              className="block h-full bg-[#2f9e5c]"
+                              style={{ width: `${(blk.all / Math.max(1, blk.total)) * 100}%` }}
+                            />
+                            <i
+                              className="block h-full bg-[#a9dfba]"
+                              style={{ width: `${(blk.some / Math.max(1, blk.total)) * 100}%` }}
+                            />
+                          </span>
                         </div>
-                      )
-                    })}
-                  </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2.5">
+                        {blk.boards.map((b) => {
+                          const ba = b.list.filter((x) => x.state === 'all').length
+                          return (
+                            <div
+                              key={`${b.qual}|${b.board}|${b.subject}`}
+                              className="flex items-start gap-3"
+                            >
+                              <div className="w-[72px] shrink-0 pt-px text-right text-[10.5px] leading-[14px] text-gray-400">
+                                <b className="block text-[10.5px] font-medium text-gray-500">
+                                  {BOARD_LABEL[b.board] ?? b.board}
+                                  {isFurther(b.subject) && (
+                                    <span className="ml-1 font-normal text-gray-400">进阶</span>
+                                  )}
+                                </b>
+                                {ba}/{b.list.length}
+                              </div>
+                              <div
+                                className="flex min-w-0 flex-1 flex-wrap"
+                                style={wallStyle}
+                                onMouseOver={onWallOver}
+                                onMouseMove={onWallMove}
+                                onMouseOut={onWallOut}
+                                onClick={onWallClick}
+                              >
+                                {b.list.map((p) => {
+                                  const dim = filter !== 'all' && p.state !== filter
+                                  const sel = selected?.id === p.id
+                                  return (
+                                    <button
+                                      key={p.id}
+                                      type="button"
+                                      data-pid={p.id}
+                                      aria-label={`${p.paper_code ?? p.id} ${p.year ?? ''} ${STATE_LABEL[p.state]}`}
+                                      className={`block shrink-0 rounded-[2px] border-0 p-0 transition-[transform,box-shadow,opacity] duration-100 hover:relative hover:z-10 hover:scale-[1.45] hover:shadow-[0_0_0_1.5px_#111827] ${
+                                        dim ? 'opacity-10' : ''
+                                      } ${sel ? 'relative z-10 scale-[1.3] ring-2 ring-gray-900 ring-offset-1' : ''}`}
+                                      style={{ ...cellStyle, background: STATE_COLOR[p.state] }}
+                                    />
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </section>
               ))
             )}
@@ -593,6 +669,7 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
             {' · '}
             {selected.year} {SESSION_LABELS[selected.session ?? ''] ?? selected.session}
             <span className="ml-1.5 text-gray-400">
+              {qualTier(selected.qualification) === 'ig' ? 'IG' : 'AL'} ·{' '}
               {SUBJECT_ZH[selected.subject] ?? selected.subject} /{' '}
               {BOARD_LABEL[selected.board] ?? selected.board} · {STATE_LABEL[selected.state]}
             </span>
