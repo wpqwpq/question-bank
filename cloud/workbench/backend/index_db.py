@@ -272,7 +272,8 @@ def rebuild_paper(paper_dir: Path, board: str, qual: str, subject: str,
     pmeta = store.read_meta(mains[0]) if mains else {}
     code = str(pmeta.get("paper_code") or "")
     unit = store.unit_from_paper_code(code, str(pmeta.get("subject") or ""),
-                                      qual) if code else "unknown"
+                                      qual, board,
+                                      str(pmeta.get("paper_unit") or "")) if code else "unknown"
     annotated = sum(1 for r in rows if r["parent_qid"] is None and r["status"] == "done")
     main_count = sum(1 for r in rows if r["parent_qid"] is None)
     try:

@@ -77,7 +77,53 @@ def _validator() -> Draft202012Validator:
     return _schema_validator
 
 
-def unit_from_paper_code(code: str, subject: str = "", qualification: str = "") -> str:
+def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str | None:
+    """IGCSE 卷 → 单元键（与 _tmp/gen_ig_taxonomy_v2.unit_for_code 同一套规则）。
+
+    🔴 **优先用 front-matter 的 `paper_unit`**：IG 交付包的 `paper_code` 是拼合形式
+    （`9202P1` / `QP11` / `4CH11C`），syllabus 号与 paper 号被揉在一起，正则认不出；
+    `paper_unit`（`9202/1`、`0620/11`、`4CH1/1C`）把 `/` 换成 `-` 就还原成规范形式。
+
+    单元制（2026-10-23 培琪定，与 A-Level 同构）：
+      AQA 化学/经济      9202-1 → P1、9202-2 → P2
+      Edexcel 化学/会计  4CH1-1C → U1、4CH1-2C → U2
+      Edexcel 经济       4EC1-01 → P1、-02 → P2
+      CIE 会计/商务/经济 一科一个池 → U1U2 / P1P2 / P1P2（飞书里这两份 paper 100% 共用一套知识点）
+      CIE 化学           P1–P4 → P14、P5–P6 → P56
+      三门数学（0580/0606/0607、9260、4MA/4MB1/4PM）→ None：一个知识点横跨多份 paper，
+      拆不干净，按培琪的要求先不建词表（卷照常可开、只是右栏无标签）。
+    """
+    b = (board or '').strip().lower()
+    s = (subject or '').strip().lower()
+    pu = (paper_unit or '').strip().lower().replace("/", "-")
+    c = pu or (code or '').strip().lower()
+    if re.match(r"^4[a-z]{2}", c):        # Edexcel regional 后缀 r
+        c = re.sub(r"r$", "", c)
+    key = (b, s)
+    if key in (("aqa", "chemistry"), ("aqa", "economics")):
+        m = re.match(r"^(\d{4})-(\d)$", c)
+        return f"P{m.group(2)}" if m else None
+    if key in (("edexcel", "chemistry"), ("edexcel", "accounting")):
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        return f"U{int(m.group(2))}" if m else None
+    if key == ("edexcel", "economics"):
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        return f"P{int(m.group(2))}" if m else None
+    if key in (("cie", "accounting"), ("cie", "business"), ("cie", "economics")):
+        m = re.match(r"^(\d{4})-(\d{2})$", c)
+        if not m:
+            return None
+        return {"accounting": "U1U2", "business": "P1P2", "economics": "P1P2"}[s]
+    if key == ("cie", "chemistry"):
+        m = re.match(r"^(\d{4})-(\d{2})$", c)
+        if not m:
+            return None
+        return "P14" if int(m.group(2)[0]) <= 4 else "P56"
+    return None
+
+
+def unit_from_paper_code(code: str, subject: str = "", qualification: str = "",
+                         board: str = "", paper_unit: str = "") -> str:
     """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）；
     CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4、QP51–QP54 -> P5（对齐 taxonomy/cie 词表的单元键）。
 
@@ -105,9 +151,10 @@ def unit_from_paper_code(code: str, subject: str = "", qualification: str = "") 
     """
     subj = (subject or "").strip().lower()
     if (qualification or "").strip().lower() == "igcse":
-        # IGCSE（2026-10-23）：一科一个单元池，见函数头说明。
+        # IGCSE（2026-10-23）：走 _ig_unit，按 考试局×学科×paper 映射到具体单元，
+        # 与 A-Level 同构（一门课左侧列 P1/P2/U1/U2 这种，不再有 papers 维度）。
         # 必须先于下面所有分支判断——IG 卷号会误命中通用 `1(\d)` / `[PC]H` 规则。
-        return "IG"
+        return _ig_unit(code, board, subj, paper_unit) or "IG"
     if subj == "business":
         # 牛津 AQA 商务 9725（2026-10-22）：一纸一单元，BU01–BU04 → U1–U4。
         # 卷号 BU0N 里没有「1 后跟数字」也没有 [PC]H，不加这条会落到 unknown，
@@ -497,7 +544,8 @@ class Paper:
     def unit(self) -> str:
         meta = self.load_meta()
         return unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or ""),
-                                    self.qualification)
+                                    self.qualification, self.board,
+                                    str(meta.get("paper_unit") or ""))
 
     def papers(self) -> set[str] | None:
         """IGCSE 卷考哪几份 paper（用于词表按 papers 过滤）；非 IG 返回 None。"""
@@ -553,7 +601,8 @@ class Paper:
             "year": meta.get("year"),
             "session": meta.get("session"),
             "unit": unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or ""),
-                                         self.qualification),
+                                         self.qualification, self.board,
+                                         str(meta.get("paper_unit") or "")),
             "question_count": len(self.qfiles),
             "annotated_count": statuses.count("done"),
             "source": meta.get("source"),

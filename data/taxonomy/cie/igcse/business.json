@@ -1,1228 +1,752 @@
 {
- "$comment": "IGCSE 知识点词表（cie / business）。来源：飞书「知识点数据」Base 的「商务」表，取 考试阶段=IG 的行；Excel 合并单元格导致的空值已向下填充。单元键统一 IG（一科一池）；tag.papers 记录该知识点出现在哪几份 paper，打标时按「当前卷 paper token ∩ tag.papers ≠ ∅」过滤。",
- "IG": {
+ "$comment": "IGCSE 知识点词表（cie / business）。来源：飞书「知识点数据」Base 的「商务」表，取 考试阶段=IG 的行；Excel 合并单元格导致的空值已向下填充。单元制与 A-Level 同构：每个知识点只属一个单元（合池科目用 U1U2 / P1P2 / P14 / P56 表示多份 paper 共用）。",
+ "P1P2": {
   "groups": [
    {
-    "id": "igg-understanding-business-activity",
+    "id": "p1p2g-understanding-business-activity",
     "zh": "理解企业活动",
     "en": "Understanding business activity"
    },
    {
-    "id": "igg-people-in-business",
+    "id": "p1p2g-people-in-business",
     "zh": "企业中的人",
     "en": "People in business"
    },
    {
-    "id": "igg-marketing",
+    "id": "p1p2g-marketing",
     "zh": "市场营销",
     "en": "Marketing"
    },
    {
-    "id": "igg-operations-management",
+    "id": "p1p2g-operations-management",
     "zh": "运营管理",
     "en": "Operations management"
    },
    {
-    "id": "igg-financial-information-and-decisions",
+    "id": "p1p2g-financial-information-and-decisions",
     "zh": "财务信息与决策",
     "en": "Financial information and decisions"
    },
    {
-    "id": "igg-external-influences",
+    "id": "p1p2g-external-influences",
     "zh": "外部影响",
     "en": "External influences"
    }
   ],
   "tags": [
    {
-    "id": "ig-needs-and-wants",
+    "id": "p1p2-needs-and-wants",
     "zh": "需要与欲望",
     "en": "Needs and wants",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-scarcity",
+    "id": "p1p2-scarcity",
     "zh": "稀缺性",
     "en": "Scarcity",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-factors-of-production",
+    "id": "p1p2-factors-of-production",
     "zh": "生产要素",
     "en": "Factors of production",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-opportunity-cost",
+    "id": "p1p2-opportunity-cost",
     "zh": "机会成本",
     "en": "Opportunity cost",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-specialisation-and-division-of-labour",
+    "id": "p1p2-specialisation-and-division-of-labour",
     "zh": "专业化与劳动分工",
     "en": "Specialisation and division of labour",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-consumers-goods-and-capital-goods",
+    "id": "p1p2-consumers-goods-and-capital-goods",
     "zh": "消费品与资本货物",
     "en": "Consumers goods and capital goods",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-added-value",
+    "id": "p1p2-added-value",
     "zh": "附加值",
     "en": "Added value",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-economic-sectors",
+    "id": "p1p2-economic-sectors",
     "zh": "经济部门",
     "en": "Economic sectors",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-private-and-public-sectors",
+    "id": "p1p2-private-and-public-sectors",
     "zh": "私营部门与公共部门",
     "en": "Private and public sectors",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-characteristics-of-successful-entrepreneurs",
+    "id": "p1p2-characteristics-of-successful-entrepreneurs",
     "zh": "成功企业家的特质",
     "en": "Characteristics of successful entrepreneurs",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-measuring-business-size",
+    "id": "p1p2-measuring-business-size",
     "zh": "衡量企业规模",
     "en": "Measuring business size",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-methods-of-business-growth",
+    "id": "p1p2-methods-of-business-growth",
     "zh": "企业增长的方式",
     "en": "Methods of business growth",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-problems-of-growth",
+    "id": "p1p2-problems-of-growth",
     "zh": "企业增长的问题",
     "en": "Problems of growth",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-reasons-for-remaining-small",
+    "id": "p1p2-reasons-for-remaining-small",
     "zh": "企业保持小规模的原因",
     "en": "Reasons for remaining small",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-causes-of-business-failure",
+    "id": "p1p2-causes-of-business-failure",
     "zh": "企业倒闭的原因",
     "en": "Causes of business failure",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-sole-traders",
+    "id": "p1p2-sole-traders",
     "zh": "个体经营者",
     "en": "Sole traders",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-partnerships",
+    "id": "p1p2-partnerships",
     "zh": "合伙企业",
     "en": "Partnerships",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-unincorporated-and-incorporated-businesses",
+    "id": "p1p2-unincorporated-and-incorporated-businesses",
     "zh": "非法人企业与法人企业",
     "en": "Unincorporated and incorporated businesses",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-private-and-public-limited-companies",
+    "id": "p1p2-private-and-public-limited-companies",
     "zh": "私人有限公司与上市公司",
     "en": "Private and public limited companies",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-franchises",
+    "id": "p1p2-franchises",
     "zh": "特许经营",
     "en": "Franchises",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-joint-ventures",
+    "id": "p1p2-joint-ventures",
     "zh": "合资企业",
     "en": "Joint ventures",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-choosing-the-type-of-business-organisation",
+    "id": "p1p2-choosing-the-type-of-business-organisation",
     "zh": "选择企业组织类型",
     "en": "Choosing the type of business organisation",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-public-sector-organisations-and-public-corporations",
+    "id": "p1p2-public-sector-organisations-and-public-corporations",
     "zh": "公共部门组织与公营企业",
     "en": "Public sector organisations and public corporations",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-importance-of-business-objectives",
+    "id": "p1p2-importance-of-business-objectives",
     "zh": "企业目标的重要性",
     "en": "Importance of business objectives",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-smart-objectives",
+    "id": "p1p2-smart-objectives",
     "zh": "SMART 目标",
     "en": "SMART objectives",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-different-business-objectives",
+    "id": "p1p2-different-business-objectives",
     "zh": "不同的企业目标",
     "en": "Different business objectives",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-objectives-of-social-enterprises",
+    "id": "p1p2-objectives-of-social-enterprises",
     "zh": "社会企业的目标",
     "en": "Objectives of social enterprises",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-internal-and-external-stakeholders",
+    "id": "p1p2-internal-and-external-stakeholders",
     "zh": "内部与外部利益相关者",
     "en": "Internal and external stakeholders",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-stakeholder-objectives-and-conflicts",
+    "id": "p1p2-stakeholder-objectives-and-conflicts",
     "zh": "利益相关者的目标与冲突",
     "en": "Stakeholder objectives and conflicts",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-objectives-of-public-sector-organisations",
+    "id": "p1p2-objectives-of-public-sector-organisations",
     "zh": "公共部门组织的目标",
     "en": "Objectives of public sector organisations",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-importance-of-motivation",
+    "id": "p1p2-importance-of-motivation",
     "zh": "激励的重要性",
     "en": "Importance of motivation",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-maslows-hierarchy-of-needs-at-work",
+    "id": "p1p2-maslows-hierarchy-of-needs-at-work",
     "zh": "马斯洛需求层次理论",
     "en": "Maslow's hierarchy of needs at work",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-taylor-and-herzberg-motivation-theories",
+    "id": "p1p2-taylor-and-herzberg-motivation-theories",
     "zh": "泰勒与赫茨伯格激励理论",
     "en": "Taylor and Herzberg motivation theories",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-financial-rewards",
+    "id": "p1p2-financial-rewards",
     "zh": "金钱激励",
     "en": "Financial rewards",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-non-financial-rewards",
+    "id": "p1p2-non-financial-rewards",
     "zh": "非金钱激励",
     "en": "Non-financial rewards",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-choosing-and-evaluating-motivation-methods",
+    "id": "p1p2-choosing-and-evaluating-motivation-methods",
     "zh": "选择与评估激励方式",
     "en": "Choosing and evaluating motivation methods",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-understand-simple-organisational-charts",
+    "id": "p1p2-understand-simple-organisational-charts",
     "zh": "看懂简易组织结构图",
     "en": "Understand simple organisational charts",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-functions-of-management",
+    "id": "p1p2-functions-of-management",
     "zh": "管理的职能",
     "en": "Functions of management",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-importance-of-delegation",
+    "id": "p1p2-importance-of-delegation",
     "zh": "放权的重要性",
     "en": "Importance of delegation",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-leadership-styles",
+    "id": "p1p2-leadership-styles",
     "zh": "领导风格",
     "en": "Leadership styles",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-trade-union",
+    "id": "p1p2-trade-union",
     "zh": "工会",
     "en": "Trade union",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-recruitment-and-selection-methods",
+    "id": "p1p2-recruitment-and-selection-methods",
     "zh": "招聘与选拔方法",
     "en": "Recruitment and selection methods",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-internal-recruitment-and-external-recruitment",
+    "id": "p1p2-internal-recruitment-and-external-recruitment",
     "zh": "内部招聘与外部招聘",
     "en": "Internal recruitment and\nexternal recruitment",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-part-time-employees-and-full-time-employees",
+    "id": "p1p2-part-time-employees-and-full-time-employees",
     "zh": "兼职员工与全职员工",
     "en": "Part-time employees and full-time employees",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-importance-of-training",
+    "id": "p1p2-importance-of-training",
     "zh": "培训的重要性",
     "en": "Importance of training",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-training-methods",
+    "id": "p1p2-training-methods",
     "zh": "培训方式",
     "en": "Training methods",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-reducing-the-size-of-the-workforce",
+    "id": "p1p2-reducing-the-size-of-the-workforce",
     "zh": "缩减员工规模",
     "en": "Reducing the size of the workforce",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-legal-controls-over-employment-issues",
+    "id": "p1p2-legal-controls-over-employment-issues",
     "zh": "就业问题的法律监管",
     "en": "Legal controls over employment issues",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-importance-of-effective-communication",
+    "id": "p1p2-importance-of-effective-communication",
     "zh": "有效沟通的重要性",
     "en": "Importance of effective communication",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-types-of-communication",
+    "id": "p1p2-types-of-communication",
     "zh": "沟通的类型",
     "en": "Types of communication",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-choosing-the-best-communication-method-and-medium",
+    "id": "p1p2-choosing-the-best-communication-method-and-medium",
     "zh": "选择最佳的沟通方式和媒介",
     "en": "Choosing the best communication method and medium",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-communication-barriers",
+    "id": "p1p2-communication-barriers",
     "zh": "沟通障碍",
     "en": "Communication barriers",
-    "group": "igg-people-in-business",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-people-in-business"
    },
    {
-    "id": "ig-the-role-of-marketing",
+    "id": "p1p2-the-role-of-marketing",
     "zh": "市场营销的作用",
     "en": "The role of marketing",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-niche-and-mass-marketing",
+    "id": "p1p2-niche-and-mass-marketing",
     "zh": "利基营销与大众营销",
     "en": "Niche and mass marketing",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-market-segmentation",
+    "id": "p1p2-market-segmentation",
     "zh": "市场细分",
     "en": "Market segmentation",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-market-orientated-businesses",
+    "id": "p1p2-market-orientated-businesses",
     "zh": "市场导向的企业",
     "en": "Market-orientated businesses",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-primary-research-and-secondary-research",
+    "id": "p1p2-primary-research-and-secondary-research",
     "zh": "一手调研和二手调研",
     "en": "Primary research and secondary research",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-methods-of-primary-research",
+    "id": "p1p2-methods-of-primary-research",
     "zh": "一手调研的方法",
     "en": "Methods of primary research",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-the-need-for-sampling",
+    "id": "p1p2-the-need-for-sampling",
     "zh": "抽样的需求",
     "en": "The need for sampling",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-methods-of-secondary-research",
+    "id": "p1p2-methods-of-secondary-research",
     "zh": "二手调研方法",
     "en": "Methods of secondary research",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-market-research-data-accuracy",
+    "id": "p1p2-market-research-data-accuracy",
     "zh": "市场调研数据的准确性",
     "en": "Market research data accuracy",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-presentation-and-analysis-of-research-results",
+    "id": "p1p2-presentation-and-analysis-of-research-results",
     "zh": "调研结果的展示与分析",
     "en": "Presentation and analysis of research results",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-developing-new-products",
+    "id": "p1p2-developing-new-products",
     "zh": "开发新产品",
     "en": "Developing new products",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-branding",
+    "id": "p1p2-branding",
     "zh": "品牌创建",
     "en": "Branding",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-the-role-of-packaging",
+    "id": "p1p2-the-role-of-packaging",
     "zh": "包装的作用",
     "en": "The role of packaging",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-product-life-cycle-and-extension-strategies",
+    "id": "p1p2-product-life-cycle-and-extension-strategies",
     "zh": "产品生命周期与延长策略",
     "en": "Product life cycle and extension strategies",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-price-and-pricing-methods",
+    "id": "p1p2-price-and-pricing-methods",
     "zh": "价格及定价方式",
     "en": "Price and pricing methods",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-price-elasticity-of-demand-and-pricing-decisions",
+    "id": "p1p2-price-elasticity-of-demand-and-pricing-decisions",
     "zh": "需求价格弹性与定价决策",
     "en": "Price elasticity of demand and pricing decisions",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-place-distribution-channels",
+    "id": "p1p2-place-distribution-channels",
     "zh": "场所——分销渠道",
     "en": "Place – distribution channels",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-advantages-and-disadvantages-of-different-channels",
+    "id": "p1p2-advantages-and-disadvantages-of-different-channels",
     "zh": "不同渠道的优缺点",
     "en": "Advantages and disadvantages of different channels",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-aims-of-promotion",
+    "id": "p1p2-aims-of-promotion",
     "zh": "推广的目标",
     "en": "Aims of promotion",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-forms-of-promotion",
+    "id": "p1p2-forms-of-promotion",
     "zh": "推广的方式",
     "en": "Forms of promotion",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-the-marketing-budget-and-promotion-decisions",
+    "id": "p1p2-the-marketing-budget-and-promotion-decisions",
     "zh": "营销预算与推广决策",
     "en": "The marketing budget and promotion decisions",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-e-commerce",
+    "id": "p1p2-e-commerce",
     "zh": "电子商务",
     "en": "E-commerce",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-social-media-marketing",
+    "id": "p1p2-social-media-marketing",
     "zh": "社交媒体营销",
     "en": "Social media marketing",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-developing-and-choosing-a-marketing-strategy",
+    "id": "p1p2-developing-and-choosing-a-marketing-strategy",
     "zh": "制定与选择营销策略",
     "en": "Developing and choosing a marketing strategy",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-legal-controls-on-marketing-strategy",
+    "id": "p1p2-legal-controls-on-marketing-strategy",
     "zh": "营销策略的法律管控",
     "en": "Legal controls on marketing strategy",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-opportunities-and-problems-of-entering-new-foreign-markets",
+    "id": "p1p2-opportunities-and-problems-of-entering-new-foreign-markets",
     "zh": "进入新国外市场的机遇与挑战",
     "en": "Opportunities and problems of entering new foreign markets",
-    "group": "igg-marketing",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-marketing"
    },
    {
-    "id": "ig-production-and-productivity",
+    "id": "p1p2-production-and-productivity",
     "zh": "生产和生产率",
     "en": "Production and productivity",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-increasing-efficiency",
+    "id": "p1p2-increasing-efficiency",
     "zh": "提高效率",
     "en": "Increasing efficiency",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-holding-inventories",
+    "id": "p1p2-holding-inventories",
     "zh": "持有库存",
     "en": "Holding inventories",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-lean-production",
+    "id": "p1p2-lean-production",
     "zh": "精益生产",
     "en": "Lean production",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-main-methods-of-production",
+    "id": "p1p2-main-methods-of-production",
     "zh": "主要的生产方式",
     "en": "Main methods of production",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-technology-in-production",
+    "id": "p1p2-technology-in-production",
     "zh": "生产中的科技",
     "en": "Technology in production",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-cost-classifications",
+    "id": "p1p2-cost-classifications",
     "zh": "成本的分类",
     "en": "Cost classifications",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-costs-and-decision-making",
+    "id": "p1p2-costs-and-decision-making",
     "zh": "成本与决策",
     "en": "Costs and decision-making",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-economies-and-diseconomies-of-scale",
+    "id": "p1p2-economies-and-diseconomies-of-scale",
     "zh": "规模经济与规模不经济",
     "en": "Economies and diseconomies of scale",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-break-even-analysis",
+    "id": "p1p2-break-even-analysis",
     "zh": "收支平衡分析",
     "en": "Break-even analysis",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-meaning-and-importance-of-quality",
+    "id": "p1p2-meaning-and-importance-of-quality",
     "zh": "质量的意义与重要性",
     "en": "Meaning and importance of quality",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-quality-control",
+    "id": "p1p2-quality-control",
     "zh": "质量控制",
     "en": "Quality control",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-quality-assurance",
+    "id": "p1p2-quality-assurance",
     "zh": "质量保证",
     "en": "Quality assurance",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-factors-influencing-the-location",
+    "id": "p1p2-factors-influencing-the-location",
     "zh": "影响选址的因素",
     "en": "Factors influencing the location",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-legal-controls-on-location-decisions",
+    "id": "p1p2-legal-controls-on-location-decisions",
     "zh": "对选址决策的法律控制",
     "en": "Legal controls on location decisions",
-    "group": "igg-operations-management",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-operations-management"
    },
    {
-    "id": "ig-the-need-for-business-finance",
+    "id": "p1p2-the-need-for-business-finance",
     "zh": "企业融资的必要性",
     "en": "The need for business finance",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-internal-sources-of-finance",
+    "id": "p1p2-internal-sources-of-finance",
     "zh": "内部融资来源",
     "en": "Internal sources of finance",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-external-sources-of-finance",
+    "id": "p1p2-external-sources-of-finance",
     "zh": "外部融资来源",
     "en": "External sources of finance",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-factors-influencing-the-choice-of-finance",
+    "id": "p1p2-factors-influencing-the-choice-of-finance",
     "zh": "影响融资选择的因素",
     "en": "Factors influencing the choice of finance",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-importance-of-cash",
+    "id": "p1p2-importance-of-cash",
     "zh": "现金的重要性",
     "en": "Importance of cash",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-cash-flow-forecasting",
+    "id": "p1p2-cash-flow-forecasting",
     "zh": "现金流预测",
     "en": "Cash-flow forecasting",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-working-capital",
+    "id": "p1p2-working-capital",
     "zh": "营运资金",
     "en": "Working capital",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-calculations-of-profits",
+    "id": "p1p2-calculations-of-profits",
     "zh": "利润的计算",
     "en": "Calculations of profits",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-importance-of-profit",
+    "id": "p1p2-importance-of-profit",
     "zh": "利润的重要性",
     "en": "Importance of profit",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-business-plan",
+    "id": "p1p2-business-plan",
     "zh": "商务计划书",
     "en": "Business plan",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-business-start-ups-and-government-support",
+    "id": "p1p2-business-start-ups-and-government-support",
     "zh": "初创企业与政府支持",
     "en": "Business start-ups and government support",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-why-businesses-grow",
+    "id": "p1p2-why-businesses-grow",
     "zh": "企业增长的原因",
     "en": "Why businesses grow",
-    "group": "igg-understanding-business-activity",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-understanding-business-activity"
    },
    {
-    "id": "ig-difference-between-profit-and-cash",
+    "id": "p1p2-difference-between-profit-and-cash",
     "zh": "利润与现金之间的区别",
     "en": "Difference between profit and cash",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-income-statement",
+    "id": "p1p2-income-statement",
     "zh": "利润表",
     "en": "Income statement",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-income-statements-and-decision-making",
+    "id": "p1p2-income-statements-and-decision-making",
     "zh": "利润表与决策",
     "en": "Income statements and decision-making",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-statement-of-financial-position",
+    "id": "p1p2-statement-of-financial-position",
     "zh": "资产负债表",
     "en": "Statement of financial position",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-the-concept-and-importance-of-profitability",
+    "id": "p1p2-the-concept-and-importance-of-profitability",
     "zh": "盈利性的概念与重要性",
     "en": "The concept and importance of profitability",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-the-concept-and-importance-of-liquidity",
+    "id": "p1p2-the-concept-and-importance-of-liquidity",
     "zh": "流动性的概念与重要性",
     "en": "The concept and importance of liquidity",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-interpreting-accounts-and-using-ratio-analysis",
+    "id": "p1p2-interpreting-accounts-and-using-ratio-analysis",
     "zh": "解读财务报表并运用比率分析",
     "en": "Interpreting accounts and using ratio analysis",
-    "group": "igg-financial-information-and-decisions",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-financial-information-and-decisions"
    },
    {
-    "id": "ig-business-cycle",
+    "id": "p1p2-business-cycle",
     "zh": "经济周期",
     "en": "Business cycle",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-environmental-and-ethical-issues",
+    "id": "p1p2-environmental-and-ethical-issues",
     "zh": "环境与伦理问题",
     "en": "Environmental and ethical issues",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-the-importance-of-globalisation",
+    "id": "p1p2-the-importance-of-globalisation",
     "zh": "全球化的意义",
     "en": "The importance of globalisation",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-the-importance-and-growth-of-mncs",
+    "id": "p1p2-the-importance-and-growth-of-mncs",
     "zh": "跨国公司的重要性与增长",
     "en": "The importance and growth of MNCs",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-exchange-rates",
+    "id": "p1p2-exchange-rates",
     "zh": "汇率",
     "en": "Exchange rates",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-taxes-and-government-spending",
+    "id": "p1p2-taxes-and-government-spending",
     "zh": "税收与政府支出",
     "en": "Taxes and government spending",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    },
    {
-    "id": "ig-interest-rates",
+    "id": "p1p2-interest-rates",
     "zh": "利率",
     "en": "Interest rates",
-    "group": "igg-external-influences",
-    "papers": [
-     "p1",
-     "p2"
-    ]
+    "group": "p1p2g-external-influences"
    }
   ]
  }

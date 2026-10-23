@@ -254,8 +254,9 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str,
 # Edexcel IAL 数学用 P1–P4 / M1–M3 / S1–S3 / D1 / F1–F3（P 与 CIE 的 P 形似但不冲突：
 # 词表按学科一文件，单元键只在文件内唯一）。
 # 牛津 AQA 会计 9615（2026-10-21）按 AS/A2 分两套词表：Paper 1+2 → AS，Paper 3+4 → AL。
-# IGCSE（2026-10-23）一科只有一个池 → `IG`；paper 维度靠 tag.papers 过滤，不做单元拆分。
-_UNIT_KEY_RE = re.compile(r"^(?:IG|U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
+# IGCSE（2026-10-23）与 A-Level 同构的单元键：P1/P2/U1/U2，合池用 U1U2 / P1P2 / P14 / P56
+# （P14 = Paper 1–4 共用一套知识点、P56 = Paper 5–6 共用）。
+_UNIT_KEY_RE = re.compile(r"^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
 
 _TAG_KEYS = ("id", "zh", "en", "group")
 

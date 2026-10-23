@@ -40,10 +40,7 @@ interface PendingGroup {
 }
 type Ask = null | { kind: 'exit' } | { kind: 'switch'; next: Sel }
 
-const GRID_AL = 'grid grid-cols-[26px_minmax(0,1fr)_minmax(0,1fr)_236px_132px] items-center gap-2 px-2'
-/** IGCSE 词表多一列「考在哪些 paper」——这是 IG 唯一的单元维度，不给看就管不了 */
-const GRID_IG =
-  'grid grid-cols-[26px_minmax(0,1fr)_minmax(0,1fr)_200px_118px_132px] items-center gap-2 px-2'
+const GRID = 'grid grid-cols-[26px_minmax(0,1fr)_minmax(0,1fr)_236px_132px] items-center gap-2 px-2'
 const FIELD =
   'w-full min-w-0 rounded-md border border-transparent bg-transparent px-1.5 py-1 text-[13px] text-gray-900 outline-none transition-colors hover:border-gray-200 hover:bg-white focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100'
 const GRID_ADD =
@@ -70,8 +67,9 @@ const sLock = (
  *  物化 U1..U9 / CIE P1P2,P4,P5 / Edexcel IAL 数学 P1–P4,M1–M3,S1–S3,D1,F1–F3 /
  *  CIE 9709 数学 P1–P6 / CIE 9231 进阶数学 FP1,FP2,FM,FS（FM/FS 两位字母无数字） /
  *  牛津 AQA 会计 AS,AL（Paper 1+2 → AS，Paper 3+4 → AL） /
- *  IGCSE 一科一池 → IG（paper 维度靠 tag.papers 过滤，不拆单元） */
-const UNIT_RE = /^(?:IG|U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$/
+ *  IGCSE 与 AL 同构：P1,P2,U1,U2；合池用 U1U2 / P1P2 / P14 / P56 */
+const UNIT_RE =
+  /^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$/
 
 /** 词表维度下拉（考试局 / 资格 / 学科） */
 function Picker({
@@ -265,26 +263,6 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
     [patchUnit],
   )
 
-  /**
-   * IGCSE 的 papers：输入框里用「、」或逗号分隔，落盘是规范化小写数组。
-   * 清空 = 空数组 → 后端 `_paper_ok` 视为「全 paper 可见」（等同于没写这个键）。
-   */
-  const setTagPapers = useCallback(
-    (ti: number, raw: string) =>
-      patchUnit((u) => ({
-        ...u,
-        tags: u.tags.map((t, i) => {
-          if (i !== ti) return t
-          const list = raw
-            .split(/[、,，\s]+/)
-            .map((x) => x.trim().toLowerCase())
-            .filter(Boolean)
-          return { ...t, papers: list }
-        }),
-      })),
-    [patchUnit],
-  )
-
   const moveTag = useCallback(
     (ti: number, dir: -1 | 1) =>
       patchUnit((u) => {
@@ -325,9 +303,6 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
   }, [file])
 
   const unitLower = unit.toLowerCase()
-  /** IGCSE 词表（单元键 IG）多一列 papers；A-Level 词表没有这个维度，列宽不变 */
-  const isIG = unit === 'IG'
-  const GRID = isIG ? GRID_IG : GRID_AL
   const pendingTagId = pendingTag && slug(pendingTag.en) ? `${unitLower}-${slug(pendingTag.en)}` : ''
   const pendingGroupId = pendingGroup && slug(pendingGroup.en) ? `${unitLower}g-${slug(pendingGroup.en)}` : ''
 
@@ -687,8 +662,6 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
                           <span className="h-2.5 w-2.5 shrink-0 text-gray-300">{sLock}</span>
                           <span className="truncate">{g.id}</span>
                         </span>
-                        {/* IGCSE：组不参与 paper 过滤，这一列留给标签行 */}
-                        {isIG && <span />}
                         <span className="flex items-center justify-end gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
                           <button
                             type="button"
@@ -755,16 +728,6 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
                                 <span className="h-2.5 w-2.5 shrink-0 text-gray-300">{sLock}</span>
                                 <span className="truncate">{t.id}</span>
                               </span>
-                              {isIG && (
-                                <input
-                                  value={(t.papers || []).join('、')}
-                                  onChange={(e) => setTagPapers(ti, e.target.value)}
-                                  spellCheck={false}
-                                  placeholder="全 paper"
-                                  title="这知识点考在哪几份 paper（如 1c、2e / p1、p2 / u1 / 4mb1p1）。留空 = 所有 paper 都可见"
-                                  className={`${FIELD} font-mono text-[11.5px] text-gray-500 placeholder:text-gray-300`}
-                                />
-                              )}
                               <span className="flex items-center justify-end gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
                                 <button
                                   type="button"

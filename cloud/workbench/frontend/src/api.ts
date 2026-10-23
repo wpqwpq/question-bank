@@ -164,8 +164,9 @@ export interface TaxTag {
   en: string
   group: string
   /**
-   * IGCSE 专用：该知识点考在哪几份 paper（`p1` / `2c` / `u1` / `4mb1p1`）。
-   * A-Level 词表没有这个键；缺失 = 不按 paper 过滤（全可见）。
+   * 历史字段（2026-10-23 起不再写入）：IG 曾用 `papers` 记「这个知识点考在哪几份 paper」，
+   * 打标时按 paper 过滤；现已改为单元制（P1/P2/U1U2/P14…），词表里不再写这个键。
+   * 保留类型只为兼容可能存在的旧词表，界面不再展示也不再编辑。
    */
   papers?: string[]
 }
