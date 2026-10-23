@@ -20,6 +20,9 @@ interface Section {
   tags: TagDef[]
 }
 
+/** 组的来源单元列表：单单元卷 / 旧接口只有 unit，跨单元合并组才有多个 */
+const unitsOf = (g: GroupDef): string[] => g.units ?? (g.unit ? [g.unit] : [])
+
 const GRID =
   'grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-1.5'
 
@@ -117,10 +120,22 @@ export default function TagPanel({
     )
   }, [tags, query])
 
+  /**
+   * 跨单元合并（2026-10-23）：同一个一级组可能横跨多个单元——后端已把它合成一条，
+   * `gids` 收下各单元的原始组 id。标签上的 `group` 仍是原始 id，所以归桶前先建
+   * 「原始组 id → 合并组 id」的映射，否则后一个单元的标签会掉进「其他」。
+   */
+  const alias = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const g of groups) for (const gid of g.gids ?? [g.id]) m.set(gid, g.id)
+    return m
+  }, [groups])
+
   const sections = useMemo<Section[]>(() => {
     const byGroup = new Map<string, TagDef[]>()
     for (const t of filtered) {
-      const key = t.group ?? '_ungrouped'
+      const raw = t.group ?? '_ungrouped'
+      const key = alias.get(raw) ?? raw
       const bucket = byGroup.get(key)
       if (bucket) bucket.push(t)
       else byGroup.set(key, [t])
@@ -128,7 +143,8 @@ export default function TagPanel({
     if (groups.length < 2) {
       return byGroup.size ? [{ group: null, tags: filtered }] : []
     }
-    const known = new Map(groups.map((g) => [g.id, g]))
+    const known = new Map<string, GroupDef>()
+    for (const g of groups) for (const gid of g.gids ?? [g.id]) known.set(gid, g)
     const out: Section[] = []
     for (const g of groups) {
       const bucket = byGroup.get(g.id)
@@ -139,7 +155,7 @@ export default function TagPanel({
       if (!known.has(gid)) out.push({ group: { id: gid, zh: '其他' }, tags: bucket })
     }
     return out
-  }, [filtered, groups])
+  }, [filtered, groups, alias])
 
   const tagOf = (id: string) => tags.find((t) => t.id === id)
   const labelOf = (id: string) => {
@@ -154,18 +170,34 @@ export default function TagPanel({
     return t.en && t.en !== t.zh ? `${t.zh} · ${t.en}` : t.zh
   }
 
-  // 跨单元卷（组带 unit 字段，且后端已把本卷单元排在首位）：
-  // 在第一个「非本卷单元」的组之前插一条分隔，明示下方为其他单元的知识点。
+  // 跨单元卷（组带 unit / units 字段，且后端已把本卷单元排在首位）：
+  // 在第一个「不含本卷单元」的组之前插一条分隔，明示下方为其他单元的知识点。
+  // 合并组可能同时含本卷单元与外部单元——它跟着首次出现的位置走，不算外部段的起点。
+  // 单元清单按「首来源组出现的顺序」排（合并组里的次要单元先暂存，末尾补入），
+  // 否则合并组会把靠后单元（如 U4）提前推到 U2/U3 前面。
   const cross = useMemo(() => {
     if (groups.length < 2) return null
-    const others: string[] = []
+    const own: string[] = []
+    const later: string[] = []
     for (const g of groups) {
-      if (g.unit && g.unit !== unit && !others.includes(g.unit)) others.push(g.unit)
+      unitsOf(g).forEach((u, idx) => {
+        if (u === unit) return
+        if (idx === 0) {
+          if (!own.includes(u)) own.push(u)
+        } else if (!own.includes(u) && !later.includes(u)) {
+          later.push(u)
+        }
+      })
     }
-    return others.length ? { unit: others[0], label: others.join('、') } : null
+    const others = [...own, ...later.filter((u) => !own.includes(u))]
+    return others.length ? { label: others.join('、') } : null
   }, [groups, unit])
 
-  const crossAt = cross ? sections.findIndex((s) => s.group?.unit === cross.unit) : -1
+  const crossAt = cross
+    ? sections.findIndex(
+        (s) => s.group !== null && unitsOf(s.group).length > 0 && !unitsOf(s.group).includes(unit),
+      )
+    : -1
 
   return (
     <div data-tag-panel="1" className="flex min-h-0 flex-1 flex-col">
@@ -230,6 +262,9 @@ export default function TagPanel({
             {sections.map(({ group, tags: bucket }, i) => {
               const selCount = bucket.filter((t) => selected.includes(t.id)).length
               const active = !searching && selCount > 0
+              // 合并组（横跨多个单元）：组名不带单元前缀，另挂一枚小灰标标明来源
+              const srcUnits = group ? unitsOf(group) : []
+              const mergedSrc = srcUnits.length > 1 ? srcUnits.join('·') : null
               return (
                 <Fragment key={group?.id ?? '_all'}>
                   {i === crossAt && cross && (
@@ -256,6 +291,15 @@ export default function TagPanel({
                           aria-hidden
                         />
                         {en ? group.en || group.zh : group.zh}
+                        {mergedSrc && (
+                          <span
+                            data-group-units={mergedSrc}
+                            title={`合并自 ${srcUnits.join('、')} 的同名知识点组`}
+                            className="shrink-0 rounded bg-gray-100 px-1 py-px text-[10px] font-normal text-gray-500"
+                          >
+                            {mergedSrc}
+                          </span>
+                        )}
                         {!searching && selCount > 0 && (
                           <span className="ml-auto text-[10px] font-normal text-blue-700">{selCount}</span>
                         )}

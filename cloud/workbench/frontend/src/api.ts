@@ -66,6 +66,10 @@ export interface GroupDef {
   en?: string
   /** 跨单元卷（如 AQA U5）才有：该组所属单元，用于在自身单元与其他单元之间插分隔 */
   unit?: string
+  /** 该组收下的全部原始组 id（跨单元合并后可能多个）；单来源组为 [id] */
+  gids?: string[]
+  /** 该组的来源单元，按显示顺序；合并组会有多个（如 ["U1","U4"]） */
+  units?: string[]
 }
 
 export interface SubInfo {

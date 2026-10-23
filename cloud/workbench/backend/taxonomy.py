@@ -214,30 +214,70 @@ def tags_for_units(board: str, qualification: str, subject: str, unit: str,
     return out
 
 
+def _group_key(group: dict) -> tuple[str, str]:
+    """一级组合并判据：中英文完全相同时视为同一个组（2026-10-23）。
+
+    按用户口径「中英文都完全相同」——只用 zh 会误并（同名不同英文），只用 en 会
+    在缺英文时把两个无关的组并到一起。去首尾空白后逐字比对。
+    """
+    return ((group.get("zh") or "").strip(), (group.get("en") or "").strip())
+
+
 def groups_for_units(board: str, qualification: str, subject: str, unit: str,
                      papers: set[str] | None = None) -> list[dict]:
-    """本卷可选的一级组。跨单元时组中文名加「<单元> 」前缀区分同名组，并附 unit
-    字段标明组所属单元（前端据此在自身单元与其他单元之间插分隔线）。
-    单单元时原样返回（前端分组头不变）。
-    IGCSE 按 papers 过滤后，没有可见标签的组不返回（不留空组头）。"""
+    """本卷可选的一级组。
+
+    跨单元时组名加「<单元> 」前缀区分，并附 unit 字段标明组所属单元（前端据此在
+    自身单元与其他单元之间插分隔线）。单单元时原样返回（前端分组头不变）。
+    IGCSE 按 papers 过滤后，没有可见标签的组不返回（不留空组头）。
+
+    跨单元合并（2026-10-23）：不同单元存在中英文全等的一级组时合并成一个组头——
+    位置取**首次出现处**（单元设定顺序靠前的那次），组内标签按单元顺序排列，后面
+    单元独有的组仍留在原位。合并组不带单元前缀（带哪个单元都误导），改由 units
+    标明来源；每个组都附 gids（该组收下的全部原始组 id，单来源时即 [自身 id]），
+    前端据此把标签的原始 group 映射到合并组。
+    """
     tax = load_taxonomy(board, qualification, subject)
     full = _full_extra_units(board, qualification, subject, unit, tax)
     scoped = _scoped_group_specs(board, unit, tax)
     if not full and not scoped:
         groups = list(_unit_taxonomy(tax, unit)["groups"])
     else:
-        groups = []
+        # 展开顺序 = 显示顺序：本卷单元 → 整单元开放的外部单元 → 组级开放的外部组。
+        opened: list[tuple[str, dict]] = []
         for u in [unit, *full]:
-            for g in _unit_taxonomy(tax, u)["groups"]:
-                groups.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
+            opened.extend((u, g) for g in _unit_taxonomy(tax, u)["groups"])
         for u, gids in scoped:
             gset = set(gids)
-            for g in _unit_taxonomy(tax, u)["groups"]:
-                if g["id"] in gset:
-                    groups.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
+            opened.extend((u, g) for g in _unit_taxonomy(tax, u)["groups"] if g["id"] in gset)
+
+        merged: list[dict] = []
+        at: dict[tuple[str, str], int] = {}
+        for u, g in opened:
+            i = at.get(_group_key(g))
+            if i is None:
+                at[_group_key(g)] = len(merged)
+                merged.append({**g, "unit": u, "units": [u], "gids": [g["id"]]})
+            else:
+                merged[i]["gids"].append(g["id"])
+                merged[i]["units"].append(u)
+
+        groups = []
+        for g in merged:
+            if len(g["units"]) > 1:
+                groups.append(g)  # 合并组：组名不带单元前缀，来源看 units
+            else:
+                u = g["unit"]
+                groups.append({
+                    **g,
+                    "zh": f"{u} {g['zh']}",
+                    # 英语组名原本没加前缀，跨单元时看不出区别（2026-10-23 补上，与中文对称）
+                    "en": f"{u} {g['en']}" if g.get("en") else "",
+                })
+
     if papers is not None:
         keep = {t["group"] for t in tags_for_units(board, qualification, subject, unit, papers)}
-        groups = [g for g in groups if g["id"] in keep]
+        groups = [g for g in groups if keep & set(g.get("gids") or [g["id"]])]
     return groups
 
 
