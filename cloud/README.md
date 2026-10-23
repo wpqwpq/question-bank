@@ -179,7 +179,10 @@ find /opt/qbank/backup/latest -name '*.md' | wc -l
 
 # 恢复某一天
 sudo systemctl stop qbank
-sudo rsync -a --delete /opt/qbank/backup/2026-10-20/ /opt/qbank/data/
+# ⚠️ 整个 data/ 回滚会把 data/taxonomy/ 一起回滚成那天快照的样子。标签词表是老师在
+#    打标台实时改的（2026-10-23 起已移出 git，线上是唯一正本），只想恢复题目数据时
+#    必须排除词表，否则会丢快照之后的全部改词动作：
+sudo rsync -a --delete --exclude 'taxonomy/' /opt/qbank/backup/2026-10-20/ /opt/qbank/data/
 sudo cp /opt/qbank/backup/users-2026-10-20.yaml /opt/qbank/config/users.yaml
 sudo systemctl start qbank
 ```
