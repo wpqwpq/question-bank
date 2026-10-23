@@ -1,0 +1,1194 @@
+{
+ "$comment": "IGCSE 知识点词表（cie / economics）。来源：飞书「知识点数据」Base 的「经济」表，取 考试阶段=IG 的行；Excel 合并单元格导致的空值已向下填充。单元键统一 IG（一科一池）；tag.papers 记录该知识点出现在哪几份 paper，打标时按「当前卷 paper token ∩ tag.papers ≠ ∅」过滤。",
+ "IG": {
+  "groups": [
+   {
+    "id": "igg-the-economic-problem",
+    "zh": "经济问题",
+    "en": "The economic problem"
+   },
+   {
+    "id": "igg-factors-of-production",
+    "zh": "生产要素",
+    "en": "Factors of production"
+   },
+   {
+    "id": "igg-production-possibilities",
+    "zh": "生产可能性",
+    "en": "Production possibilities"
+   },
+   {
+    "id": "igg-demand-supply-and-equilibrium",
+    "zh": "供求与均衡",
+    "en": "Demand, supply and equilibrium"
+   },
+   {
+    "id": "igg-demand-elasticity",
+    "zh": "需求弹性",
+    "en": "Demand elasticity"
+   },
+   {
+    "id": "igg-supply-elasticity",
+    "zh": "供给弹性",
+    "en": "Supply elasticity"
+   },
+   {
+    "id": "igg-economic-systems",
+    "zh": "经济体制",
+    "en": "Economic systems"
+   },
+   {
+    "id": "igg-sources-of-market-failure",
+    "zh": "市场失灵的来源",
+    "en": "Sources of market failure"
+   },
+   {
+    "id": "igg-market-intervention",
+    "zh": "市场干预",
+    "en": "Market intervention"
+   },
+   {
+    "id": "igg-money-and-banking",
+    "zh": "货币与银行",
+    "en": "Money and banking"
+   },
+   {
+    "id": "igg-household-decisions",
+    "zh": "家庭决策",
+    "en": "Household decisions"
+   },
+   {
+    "id": "igg-labour-markets",
+    "zh": "劳动市场",
+    "en": "Labour markets"
+   },
+   {
+    "id": "igg-firms-and-scale",
+    "zh": "企业与规模",
+    "en": "Firms and scale"
+   },
+   {
+    "id": "igg-production-and-productivity",
+    "zh": "生产与生产率",
+    "en": "Production and productivity"
+   },
+   {
+    "id": "igg-costs-revenue-and-objectives",
+    "zh": "成本、收益与目标",
+    "en": "Costs, revenue and objectives"
+   },
+   {
+    "id": "igg-market-structures",
+    "zh": "市场结构",
+    "en": "Market structures"
+   },
+   {
+    "id": "igg-macroeconomic-objectives",
+    "zh": "宏观目标",
+    "en": "Macroeconomic objectives"
+   },
+   {
+    "id": "igg-fiscal-policy",
+    "zh": "财政政策",
+    "en": "Fiscal policy"
+   },
+   {
+    "id": "igg-monetary-policy",
+    "zh": "货币政策",
+    "en": "Monetary policy"
+   },
+   {
+    "id": "igg-supply-side-policy",
+    "zh": "供给侧政策",
+    "en": "Supply-side policy"
+   },
+   {
+    "id": "igg-economic-growth",
+    "zh": "经济增长",
+    "en": "Economic growth"
+   },
+   {
+    "id": "igg-employment-and-unemployment",
+    "zh": "就业与失业",
+    "en": "Employment and unemployment"
+   },
+   {
+    "id": "igg-inflation",
+    "zh": "通胀",
+    "en": "Inflation"
+   },
+   {
+    "id": "igg-living-standards",
+    "zh": "生活水平",
+    "en": "Living standards"
+   },
+   {
+    "id": "igg-poverty",
+    "zh": "贫困",
+    "en": "Poverty"
+   },
+   {
+    "id": "igg-population",
+    "zh": "人口",
+    "en": "Population"
+   },
+   {
+    "id": "igg-development-differences",
+    "zh": "发展差异",
+    "en": "Development differences"
+   },
+   {
+    "id": "igg-specialisation-and-trade",
+    "zh": "专业化与贸易",
+    "en": "Specialisation and trade"
+   },
+   {
+    "id": "igg-globalisation-and-protectionism",
+    "zh": "全球化与贸易保护",
+    "en": "Globalisation and protectionism"
+   },
+   {
+    "id": "igg-exchange-rates",
+    "zh": "汇率",
+    "en": "Exchange rates"
+   },
+   {
+    "id": "igg-the-current-account",
+    "zh": "经常账户",
+    "en": "The current account"
+   }
+  ],
+  "tags": [
+   {
+    "id": "ig-scarcity-and-choice",
+    "zh": "稀缺与选择",
+    "en": "Scarcity and choice",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-economic-and-free-goods",
+    "zh": "经济品与自由品",
+    "en": "Economic and free goods",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-opportunity-cost",
+    "zh": "机会成本",
+    "en": "Opportunity cost",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-factors-and-rewards",
+    "zh": "要素与报酬",
+    "en": "Factors and rewards",
+    "group": "igg-factors-of-production",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-factor-quantity-and-quality",
+    "zh": "要素数量与质量",
+    "en": "Factor quantity and quality",
+    "group": "igg-factors-of-production",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ppc-and-opportunity-cost",
+    "zh": "PPC与机会成本",
+    "en": "PPC and opportunity cost",
+    "group": "igg-production-possibilities",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ppc-shifts",
+    "zh": "PPC移动",
+    "en": "PPC shifts",
+    "group": "igg-production-possibilities",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-markets-and-the-price-mechanism",
+    "zh": "市场与价格机制",
+    "en": "Markets and the price mechanism",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-demand-and-quantity-demanded",
+    "zh": "需求与需求量",
+    "en": "Demand and quantity demanded",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-demand-shifts",
+    "zh": "需求移动",
+    "en": "Demand shifts",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-supply-and-quantity-supplied",
+    "zh": "供给与供给量",
+    "en": "Supply and quantity supplied",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-supply-shifts",
+    "zh": "供给移动",
+    "en": "Supply shifts",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-equilibrium-and-market-changes",
+    "zh": "均衡与供求变动",
+    "en": "Equilibrium and market changes",
+    "group": "igg-demand-supply-and-equilibrium",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ped-calculation-and-diagrams",
+    "zh": "PED计算与图像",
+    "en": "PED: calculation and diagrams",
+    "group": "igg-demand-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ped-determinants",
+    "zh": "PED决定因素",
+    "en": "PED determinants",
+    "group": "igg-demand-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ped-and-revenue",
+    "zh": "PED与收益",
+    "en": "PED and revenue",
+    "group": "igg-demand-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-ped-in-decision-making",
+    "zh": "PED与决策",
+    "en": "PED in decision-making",
+    "group": "igg-demand-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-pes-calculation-and-diagrams",
+    "zh": "PES计算与图像",
+    "en": "PES: calculation and diagrams",
+    "group": "igg-supply-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-pes-determinants",
+    "zh": "PES决定因素",
+    "en": "PES determinants",
+    "group": "igg-supply-elasticity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-market-economies",
+    "zh": "市场经济",
+    "en": "Market economies",
+    "group": "igg-economic-systems",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-mixed-economies",
+    "zh": "混合经济",
+    "en": "Mixed economies",
+    "group": "igg-economic-systems",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-market-failure-and-social-costs",
+    "zh": "失灵与社会成本收益",
+    "en": "Market failure and social costs",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-external-costs",
+    "zh": "外部成本",
+    "en": "External costs",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-external-benefits",
+    "zh": "外部收益",
+    "en": "External benefits",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-merit-and-demerit-goods",
+    "zh": "有益品与有害品",
+    "en": "Merit and demerit goods",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-public-and-private-goods",
+    "zh": "公共品与私人品",
+    "en": "Public and private goods",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-abuse-of-monopoly-power",
+    "zh": "垄断势力滥用",
+    "en": "Abuse of monopoly power",
+    "group": "igg-sources-of-market-failure",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-maximum-prices",
+    "zh": "最高限价",
+    "en": "Maximum prices",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-minimum-prices",
+    "zh": "最低限价",
+    "en": "Minimum prices",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-indirect-taxes",
+    "zh": "间接税",
+    "en": "Indirect taxes",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-subsidies",
+    "zh": "补贴",
+    "en": "Subsidies",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-regulation",
+    "zh": "政府管制",
+    "en": "Regulation",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-nationalisation-and-privatisation",
+    "zh": "国有化与私有化",
+    "en": "Nationalisation and privatisation",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-direct-provision",
+    "zh": "政府直接供给",
+    "en": "Direct provision",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-comparing-interventions",
+    "zh": "干预政策比较",
+    "en": "Comparing interventions",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-resource-extraction-quotas",
+    "zh": "资源开采配额",
+    "en": "Resource extraction quotas",
+    "group": "igg-market-intervention",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-money",
+    "zh": "货币",
+    "en": "Money",
+    "group": "igg-money-and-banking",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-commercial-banks",
+    "zh": "商业银行",
+    "en": "Commercial banks",
+    "group": "igg-money-and-banking",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-central-banks",
+    "zh": "中央银行",
+    "en": "Central banks",
+    "group": "igg-money-and-banking",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-spending-saving-and-borrowing",
+    "zh": "消费、储蓄与借贷",
+    "en": "Spending, saving and borrowing",
+    "group": "igg-household-decisions",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-occupational-choice",
+    "zh": "职业选择",
+    "en": "Occupational choice",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-wage-determination",
+    "zh": "工资决定",
+    "en": "Wage determination",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-wage-differentials",
+    "zh": "工资差异",
+    "en": "Wage differentials",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-division-of-labour",
+    "zh": "劳动分工",
+    "en": "Division of labour",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-minimum-wages",
+    "zh": "最低工资",
+    "en": "Minimum wages",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-labour-mobility",
+    "zh": "劳动流动性",
+    "en": "Labour mobility",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-trade-unions-and-bargaining",
+    "zh": "工会与议价",
+    "en": "Trade unions and bargaining",
+    "group": "igg-labour-markets",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-firm-types-and-size",
+    "zh": "企业类型与规模",
+    "en": "Firm types and size",
+    "group": "igg-firms-and-scale",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-types-of-merger",
+    "zh": "兼并类型",
+    "en": "Types of merger",
+    "group": "igg-firms-and-scale",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-economies-of-scale",
+    "zh": "规模经济",
+    "en": "Economies of scale",
+    "group": "igg-firms-and-scale",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-diseconomies-of-scale",
+    "zh": "规模不经济",
+    "en": "Diseconomies of scale",
+    "group": "igg-firms-and-scale",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-factor-demand",
+    "zh": "要素需求",
+    "en": "Factor demand",
+    "group": "igg-production-and-productivity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-factor-intensity",
+    "zh": "生产要素密集度",
+    "en": "Factor intensity",
+    "group": "igg-production-and-productivity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-output-and-productivity",
+    "zh": "产出与生产率",
+    "en": "Output and productivity",
+    "group": "igg-production-and-productivity",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-production-costs",
+    "zh": "生产成本",
+    "en": "Production costs",
+    "group": "igg-costs-revenue-and-objectives",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-firm-revenue",
+    "zh": "企业收益",
+    "en": "Firm revenue",
+    "group": "igg-costs-revenue-and-objectives",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-firm-objectives-and-profit",
+    "zh": "企业目标与利润",
+    "en": "Firm objectives and profit",
+    "group": "igg-costs-revenue-and-objectives",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-competitive-markets",
+    "zh": "竞争市场",
+    "en": "Competitive markets",
+    "group": "igg-market-structures",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-monopoly-markets",
+    "zh": "垄断市场",
+    "en": "Monopoly markets",
+    "group": "igg-market-structures",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-macroeconomic-objectives",
+    "zh": "宏观目标概述",
+    "en": "Macroeconomic objectives",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-conflicting-objectives",
+    "zh": "目标冲突",
+    "en": "Conflicting objectives",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-budgets-and-public-spending",
+    "zh": "预算与政府支出",
+    "en": "Budgets and public spending",
+    "group": "igg-fiscal-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-tax-types-and-effects",
+    "zh": "税收类型与影响",
+    "en": "Tax types and effects",
+    "group": "igg-fiscal-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-fiscal-tools-and-effects",
+    "zh": "财政工具与效果",
+    "en": "Fiscal tools and effects",
+    "group": "igg-fiscal-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-monetary-policy-tools",
+    "zh": "货币政策工具",
+    "en": "Monetary policy tools",
+    "group": "igg-monetary-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-monetary-policy-effects",
+    "zh": "货币政策效果",
+    "en": "Monetary policy effects",
+    "group": "igg-monetary-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-supply-side-measures",
+    "zh": "供给侧措施",
+    "en": "Supply-side measures",
+    "group": "igg-supply-side-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-supply-side-policy-effects",
+    "zh": "供给侧政策效果",
+    "en": "Supply-side policy effects",
+    "group": "igg-supply-side-policy",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-measuring-growth",
+    "zh": "增长衡量",
+    "en": "Measuring growth",
+    "group": "igg-economic-growth",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-recession",
+    "zh": "经济衰退",
+    "en": "Recession",
+    "group": "igg-economic-growth",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-growth-causes-and-effects",
+    "zh": "增长成因与影响",
+    "en": "Growth: causes and effects",
+    "group": "igg-economic-growth",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-growth-policies",
+    "zh": "增长政策",
+    "en": "Growth policies",
+    "group": "igg-economic-growth",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-measuring-employment-and-unemployment",
+    "zh": "就业与失业衡量",
+    "en": "Measuring employment and unemployment",
+    "group": "igg-employment-and-unemployment",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-unemployment-causes-and-types",
+    "zh": "失业成因与类型",
+    "en": "Unemployment: causes and types",
+    "group": "igg-employment-and-unemployment",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-unemployment-effects",
+    "zh": "失业影响",
+    "en": "Unemployment effects",
+    "group": "igg-employment-and-unemployment",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-unemployment-policies",
+    "zh": "失业政策",
+    "en": "Unemployment policies",
+    "group": "igg-employment-and-unemployment",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-and-deflation",
+    "zh": "通胀与通缩",
+    "en": "Inflation and deflation",
+    "group": "igg-inflation",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-cpi-and-inflation-measurement",
+    "zh": "CPI与通胀衡量",
+    "en": "CPI and inflation measurement",
+    "group": "igg-inflation",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-causes",
+    "zh": "通胀成因",
+    "en": "Inflation causes",
+    "group": "igg-inflation",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-effects",
+    "zh": "通胀影响",
+    "en": "Inflation effects",
+    "group": "igg-inflation",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-policies",
+    "zh": "通胀政策",
+    "en": "Inflation policies",
+    "group": "igg-inflation",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-real-gdp-per-head",
+    "zh": "人均实际GDP",
+    "en": "Real GDP per head",
+    "group": "igg-living-standards",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-human-development-index",
+    "zh": "人类发展指数",
+    "en": "Human Development Index",
+    "group": "igg-living-standards",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-living-standards-and-distribution",
+    "zh": "生活水平与分配差异",
+    "en": "Living standards and distribution",
+    "group": "igg-living-standards",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-absolute-and-relative-poverty",
+    "zh": "绝对与相对贫困",
+    "en": "Absolute and relative poverty",
+    "group": "igg-poverty",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-poverty-causes",
+    "zh": "贫困成因",
+    "en": "Poverty causes",
+    "group": "igg-poverty",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-poverty-reduction-and-redistribution",
+    "zh": "减贫与再分配",
+    "en": "Poverty reduction and redistribution",
+    "group": "igg-poverty",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-population-growth-and-migration",
+    "zh": "人口增长与迁移",
+    "en": "Population growth and migration",
+    "group": "igg-population",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-population-size-and-structure",
+    "zh": "人口规模与结构",
+    "en": "Population size and structure",
+    "group": "igg-population",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-development-comparisons",
+    "zh": "发展差异与比较",
+    "en": "Development comparisons",
+    "group": "igg-development-differences",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-causes-of-development-differences",
+    "zh": "发展差异成因",
+    "en": "Causes of development differences",
+    "group": "igg-development-differences",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-national-specialisation",
+    "zh": "国家专业化",
+    "en": "National specialisation",
+    "group": "igg-specialisation-and-trade",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-free-trade",
+    "zh": "自由贸易",
+    "en": "Free trade",
+    "group": "igg-specialisation-and-trade",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-globalisation",
+    "zh": "全球化",
+    "en": "Globalisation",
+    "group": "igg-globalisation-and-protectionism",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-multinational-companies",
+    "zh": "跨国公司",
+    "en": "Multinational companies",
+    "group": "igg-globalisation-and-protectionism",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-protectionist-tools",
+    "zh": "保护工具",
+    "en": "Protectionist tools",
+    "group": "igg-globalisation-and-protectionism",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-protection-reasons-and-effects",
+    "zh": "保护理由与影响",
+    "en": "Protection: reasons and effects",
+    "group": "igg-globalisation-and-protectionism",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-floating-exchange-rates",
+    "zh": "浮动汇率决定",
+    "en": "Floating exchange rates",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exchange-rate-effects",
+    "zh": "汇率变动影响",
+    "en": "Exchange-rate effects",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-current-account-structure-and-calculation",
+    "zh": "经常账户构成与计算",
+    "en": "Current account: structure and calculation",
+    "group": "igg-the-current-account",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-current-account-imbalance-causes",
+    "zh": "经常账户失衡成因",
+    "en": "Current-account imbalance causes",
+    "group": "igg-the-current-account",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-current-account-imbalance-effects",
+    "zh": "经常账户失衡影响",
+    "en": "Current-account imbalance effects",
+    "group": "igg-the-current-account",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-current-account-policies",
+    "zh": "经常账户政策",
+    "en": "Current-account policies",
+    "group": "igg-the-current-account",
+    "papers": [
+     "p1",
+     "p2"
+    ]
+   }
+  ]
+ }
+}

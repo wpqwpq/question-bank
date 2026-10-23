@@ -197,9 +197,11 @@ def _scoped_group_specs(board: str, unit: str, tax: dict) -> list[tuple[str, lis
     ]
 
 
-def tags_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
+def tags_for_units(board: str, qualification: str, subject: str, unit: str,
+                   papers: set[str] | None = None) -> list[dict]:
     """本卷可选的全部标签：本单元全部 + 整单元开放的外部单元 + 组级开放的外部组。
-    每项仍带 group 键；顺序即右栏显示顺序（本单元在前）。"""
+    每项仍带 group 键；顺序即右栏显示顺序（本单元在前）。
+    IGCSE 传 `papers`（本卷考的 paper token 集合）时按 tag.papers 求交集过滤。"""
     tax = load_taxonomy(board, qualification, subject)
     out: list[dict] = list(_unit_taxonomy(tax, unit)["tags"])
     for u in _full_extra_units(board, qualification, subject, unit, tax):
@@ -207,32 +209,41 @@ def tags_for_units(board: str, qualification: str, subject: str, unit: str) -> l
     for u, gids in _scoped_group_specs(board, unit, tax):
         gset = set(gids)
         out.extend(t for t in _unit_taxonomy(tax, u)["tags"] if t.get("group") in gset)
+    if papers is not None:
+        out = [t for t in out if _paper_ok(t, papers)]
     return out
 
 
-def groups_for_units(board: str, qualification: str, subject: str, unit: str) -> list[dict]:
+def groups_for_units(board: str, qualification: str, subject: str, unit: str,
+                     papers: set[str] | None = None) -> list[dict]:
     """本卷可选的一级组。跨单元时组中文名加「<单元> 」前缀区分同名组，并附 unit
     字段标明组所属单元（前端据此在自身单元与其他单元之间插分隔线）。
-    单单元时原样返回（前端分组头不变）。"""
+    单单元时原样返回（前端分组头不变）。
+    IGCSE 按 papers 过滤后，没有可见标签的组不返回（不留空组头）。"""
     tax = load_taxonomy(board, qualification, subject)
     full = _full_extra_units(board, qualification, subject, unit, tax)
     scoped = _scoped_group_specs(board, unit, tax)
     if not full and not scoped:
-        return _unit_taxonomy(tax, unit)["groups"]
-    out: list[dict] = []
-    for u in [unit, *full]:
-        for g in _unit_taxonomy(tax, u)["groups"]:
-            out.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
-    for u, gids in scoped:
-        gset = set(gids)
-        for g in _unit_taxonomy(tax, u)["groups"]:
-            if g["id"] in gset:
-                out.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
-    return out
+        groups = list(_unit_taxonomy(tax, unit)["groups"])
+    else:
+        groups = []
+        for u in [unit, *full]:
+            for g in _unit_taxonomy(tax, u)["groups"]:
+                groups.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
+        for u, gids in scoped:
+            gset = set(gids)
+            for g in _unit_taxonomy(tax, u)["groups"]:
+                if g["id"] in gset:
+                    groups.append({**g, "unit": u, "zh": f"{u} {g['zh']}"})
+    if papers is not None:
+        keep = {t["group"] for t in tags_for_units(board, qualification, subject, unit, papers)}
+        groups = [g for g in groups if g["id"] in keep]
+    return groups
 
 
-def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -> set[str]:
-    return {t["id"] for t in tags_for_units(board, qualification, subject, unit)}
+def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str,
+                      papers: set[str] | None = None) -> set[str]:
+    return {t["id"] for t in tags_for_units(board, qualification, subject, unit, papers)}
 
 
 # ---------------------------------------------------------------------------
@@ -243,14 +254,34 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str) -
 # Edexcel IAL 数学用 P1–P4 / M1–M3 / S1–S3 / D1 / F1–F3（P 与 CIE 的 P 形似但不冲突：
 # 词表按学科一文件，单元键只在文件内唯一）。
 # 牛津 AQA 会计 9615（2026-10-21）按 AS/A2 分两套词表：Paper 1+2 → AS，Paper 3+4 → AL。
-_UNIT_KEY_RE = re.compile(r"^(?:U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
+# IGCSE（2026-10-23）一科只有一个池 → `IG`；paper 维度靠 tag.papers 过滤，不做单元拆分。
+_UNIT_KEY_RE = re.compile(r"^(?:IG|U[1-9]|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
 
 _TAG_KEYS = ("id", "zh", "en", "group")
+
 _GROUP_KEYS = ("id", "zh", "en")
 
 
 def _norm_tag(tag: dict) -> dict:
-    return {k: (tag.get(k) or "") for k in _TAG_KEYS}
+    out = {k: (tag.get(k) or "") for k in _TAG_KEYS}
+    # IGCSE 专用：该知识点考在哪几份 paper（p1 / 1c / u1 / 4mb1p1 …）。
+    # A-Level 词表没有这个键，保持不写——不确定的字段不会被凭空造出来。
+    papers = tag.get("papers")
+    if isinstance(papers, list) and papers:
+        clean = [str(p).strip().lower() for p in papers if str(p).strip()]
+        if clean:
+            out["papers"] = clean
+    return out
+
+
+def _paper_ok(tag: dict, papers: set[str] | None) -> bool:
+    """该标签在本卷（考这几份 paper）是否可见。papers=None / 标签没写 papers → 可见。"""
+    if papers is None:
+        return True
+    tp = tag.get("papers")
+    if not tp:
+        return True
+    return bool(set(tp) & papers)
 
 
 def _norm_group(group: dict) -> dict:

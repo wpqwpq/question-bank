@@ -62,6 +62,9 @@ export default function Sidebar(p: Props) {
           <option value="economics">Economics</option>
           {/* 牛津 AQA 商务 9725（2026-10-22 上线）。这个列表是手写的，数据里有了不会自己冒出来；新增学科必须在这里补一行，否则打标台左侧选不到（标签管理页读词表树，不受影响）。 */}
           <option value="business">Business</option>
+          {/* IGCSE 独有科目（2026-10-23 上云）。目录名带下划线，值必须与 data/ 里一致。 */}
+          <option value="combined_science">Combined Science</option>
+          <option value="psychology">Psychology</option>
         </select>
       </div>
       <div>

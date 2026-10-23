@@ -77,9 +77,15 @@ def _validator() -> Draft202012Validator:
     return _schema_validator
 
 
-def unit_from_paper_code(code: str, subject: str = "") -> str:
+def unit_from_paper_code(code: str, subject: str = "", qualification: str = "") -> str:
     """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）；
     CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4、QP51–QP54 -> P5（对齐 taxonomy/cie 词表的单元键）。
+
+    **IGCSE 一律返回 `IG`**（2026-10-23）：IG 的卷号是真实 syllabus 号（`0580-11`、
+    `4ma1-1f`、`9260-1e`），和 A-Level 的 QP/MA/WMA 形式不撞，但会误命中下面的通用
+    规则——`0580-11` 会被 `1(\\d)` 判成 U1。飞书的 IG「单元」记的是「这知识点考在哪几份
+    paper」，不是知识分区，所以一科只建一个词表单元 `IG`，paper 维度的筛选交给
+    `paper_tokens()` + tag.papers 做。
 
     Edexcel 取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
     没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到返回 'unknown'——
@@ -98,6 +104,10 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
     不能沿用物理化学的 P1P2 合用池——否则 P1/P2 混池、QP6x 还会落到 unknown。
     """
     subj = (subject or "").strip().lower()
+    if (qualification or "").strip().lower() == "igcse":
+        # IGCSE（2026-10-23）：一科一个单元池，见函数头说明。
+        # 必须先于下面所有分支判断——IG 卷号会误命中通用 `1(\d)` / `[PC]H` 规则。
+        return "IG"
     if subj == "business":
         # 牛津 AQA 商务 9725（2026-10-22）：一纸一单元，BU01–BU04 → U1–U4。
         # 卷号 BU0N 里没有「1 后跟数字」也没有 [PC]H，不加这条会落到 unknown，
@@ -184,6 +194,73 @@ def unit_from_paper_code(code: str, subject: str = "") -> str:
     if m:
         return f"U{m.group(1)}"
     return "unknown"
+
+
+def paper_tokens(code: str, board: str = "", subject: str = "",
+                 qualification: str = "", paper_unit: str = "") -> set[str] | None:
+    """IGCSE 卷 → 这套卷考的是哪几份 paper，用于按 tag.papers 过滤词表。
+
+    **优先用 `paper_unit`**（front-matter 的 `paper_unit: 0580/11`、`4CH1/1C`、`9260/1E`）：
+    IG 交付包的 `paper_code` 是拼合形式（`QP11`、`4CH11C`、`4MB101`），syllabus 号被吃掉了，
+    单看它分不清 0580 与 0607、也拼不回 4MB1 Paper 1。`paper_unit` 把 `/` 换成 `-`
+    就还原成 `<spec>-<paper>`，与卷目录名同构，下面一套规则通吃。
+
+    口径与飞书「单元」字段的规范化一致：
+        Paper 1 / P1          → p1
+        1C / 1F / 2H          → 1c / 1f / 2h      （AQA 数学按 tier，Edexcel 数学同）
+        4MB1 Paper 1          → 4mb1p1
+        U1                    → u1
+    非 IGCSE 卷或该 spec 没有 IG 词表 → None（调用方不做 paper 过滤）。
+    """
+    if (qualification or "").strip().lower() != "igcse":
+        return None
+    b = (board or "").strip().lower()
+    s = (subject or "").strip().lower()
+    pu = (paper_unit or "").strip().lower().replace("/", "-")
+    c = pu or (code or "").strip().lower()
+    if not c:
+        return None
+    # Edexcel regional 后缀 r：4ma1-1fr / 4mb1-01r / 4ch1-1cr
+    if re.match(r"^4[a-z]{2}", c):
+        c = re.sub(r"r$", "", c)
+
+    # AQA：9260-1e（带 tier）/ 9202-1（纯 paper 号）
+    m = re.match(r"^(\d{4})-(\d)([a-z])$", c)
+    if m:
+        return {m.group(2) + m.group(3)}
+    m = re.match(r"^(\d{4})-(\d)$", c)
+    if m:
+        return {"p%d" % int(m.group(2))}
+
+    # CIE：0620-11 / 0452-11 / 0580-11（后两位首位 = paper 号）
+    m = re.match(r"^(\d{4})-(\d{2})$", c)
+    if m:
+        if b == "cie" and s == "accounting":
+            return {"u1", "u2"}          # 飞书会计 IG 只有 U1&2 一个合池
+        if b == "cie" and s == "mathematics" and m.group(1) != "0580":
+            return None                  # 0606 Additional / 0607 International 无 IG 词表
+        return {"p%d" % int(m.group(2)[0])}
+
+    # Edexcel 数学：4ma1-1f / 4mb1-01；4pm / 4wm 无 IG 词表
+    if b == "edexcel" and s == "mathematics":
+        m = re.match(r"^(4ma\d)-(\d)([a-z])$", c)
+        if m:
+            return {m.group(2) + m.group(3)}
+        m = re.match(r"^(4mb\d)-(\d+)$", c)
+        if m:
+            return {m.group(1) + "p" + str(int(m.group(2)))}
+        return None
+
+    # Edexcel 其他科：4ch1-1c / 4wch1-1c / 4ec1-01 / 4ac1-01
+    m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+    if m:
+        fam, paper = m.group(1), int(m.group(2))
+        if fam.startswith("4pm") or fam.startswith("4wm"):
+            return None
+        if s in ("chemistry", "accounting"):
+            return {"u%d" % paper}       # 飞书这两科 IG 按 Unit 1/2 分
+        return {"p%d" % paper}
+    return None
 
 
 def parse_front_matter(text: str) -> tuple[dict[str, Any], re.Match[str] | None]:
@@ -419,7 +496,14 @@ class Paper:
 
     def unit(self) -> str:
         meta = self.load_meta()
-        return unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or ""))
+        return unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or ""),
+                                    self.qualification)
+
+    def papers(self) -> set[str] | None:
+        """IGCSE 卷考哪几份 paper（用于词表按 papers 过滤）；非 IG 返回 None。"""
+        meta = self.load_meta()
+        return paper_tokens(str(meta.get("paper_code") or ""), self.board, self.subject,
+                            self.qualification, str(meta.get("paper_unit") or ""))
 
     def _ensure_indexed(self) -> dict[str, Any] | None:
         """确保本卷在索引里且未过期。索引不可用/重灌失败时返回 None（调用方回退扫文件）。"""
@@ -468,7 +552,8 @@ class Paper:
             "paper_code": meta.get("paper_code"),
             "year": meta.get("year"),
             "session": meta.get("session"),
-            "unit": unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or "")),
+            "unit": unit_from_paper_code(str(meta["paper_code"]), str(meta.get("subject") or ""),
+                                         self.qualification),
             "question_count": len(self.qfiles),
             "annotated_count": statuses.count("done"),
             "source": meta.get("source"),

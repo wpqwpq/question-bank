@@ -1,0 +1,1593 @@
+{
+ "$comment": "IGCSE 知识点词表（edexcel / economics）。来源：飞书「知识点数据」Base 的「经济」表，取 考试阶段=IG 的行；Excel 合并单元格导致的空值已向下填充。单元键统一 IG（一科一池）；tag.papers 记录该知识点出现在哪几份 paper，打标时按「当前卷 paper token ∩ tag.papers ≠ ∅」过滤。",
+ "IG": {
+  "groups": [
+   {
+    "id": "igg-the-economic-problem",
+    "zh": "经济问题",
+    "en": "The economic problem"
+   },
+   {
+    "id": "igg-economic-assumptions",
+    "zh": "经济学假设",
+    "en": "Economic assumptions"
+   },
+   {
+    "id": "igg-demand-supply-and-market-equilibrium",
+    "zh": "需求、供给与市场均衡",
+    "en": "Demand, supply and market equilibrium"
+   },
+   {
+    "id": "igg-elasticity",
+    "zh": "弹性",
+    "en": "Elasticity"
+   },
+   {
+    "id": "igg-the-mixed-economy",
+    "zh": "混合经济",
+    "en": "The mixed economy"
+   },
+   {
+    "id": "igg-externalities",
+    "zh": "外部性",
+    "en": "Externalities"
+   },
+   {
+    "id": "igg-production",
+    "zh": "生产",
+    "en": "Production"
+   },
+   {
+    "id": "igg-productivity-and-division-of-labour",
+    "zh": "生产率与劳动分工",
+    "en": "Productivity and division of labour"
+   },
+   {
+    "id": "igg-business-costs-revenues-and-profit",
+    "zh": "企业的成本、收入与利润",
+    "en": "Business costs, revenues and profit"
+   },
+   {
+    "id": "igg-business-competition",
+    "zh": "企业竞争",
+    "en": "Business competition"
+   },
+   {
+    "id": "igg-the-labour-market",
+    "zh": "劳动市场",
+    "en": "The labour market"
+   },
+   {
+    "id": "igg-government-intervention",
+    "zh": "政府干预",
+    "en": "Government intervention"
+   },
+   {
+    "id": "igg-macroeconomic-objectives",
+    "zh": "宏观经济目标",
+    "en": "Macroeconomic objectives"
+   },
+   {
+    "id": "igg-government-policies",
+    "zh": "政府政策",
+    "en": "Government policies"
+   },
+   {
+    "id": "igg-relationships-between-objectives-and-policies",
+    "zh": "目标与政策之间的关系",
+    "en": "Relationships between objectives and policies"
+   },
+   {
+    "id": "igg-globalisation",
+    "zh": "全球化",
+    "en": "Globalisation"
+   },
+   {
+    "id": "igg-international-trade",
+    "zh": "国际贸易",
+    "en": "International trade"
+   },
+   {
+    "id": "igg-exchange-rates",
+    "zh": "汇率",
+    "en": "Exchange rates"
+   }
+  ],
+  "tags": [
+   {
+    "id": "ig-needs-and-wants",
+    "zh": "需要与欲望",
+    "en": "Needs and wants",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-scarcity",
+    "zh": "稀缺性",
+    "en": "Scarcity",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-opportunity-cost",
+    "zh": "机会成本",
+    "en": "Opportunity cost",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-ppc-construction-and-interpreting-production-choices",
+    "zh": "生产可能性曲线的构造与生产选择解读",
+    "en": "PPC construction and interpreting production choices",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-ppc-shifts-economic-growth-and-productive-potential",
+    "zh": "生产可能性曲线移动、经济增长与生产潜力",
+    "en": "PPC shifts, economic growth and productive potential",
+    "group": "igg-the-economic-problem",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-rational-maximisation-assumptions",
+    "zh": "理性最大化假设",
+    "en": "Rational maximisation assumptions",
+    "group": "igg-economic-assumptions",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-reasons-why-consumers-may-not-maximise-benefit",
+    "zh": "消费者可能不追求利益最大化的原因",
+    "en": "Reasons why consumers may not maximise benefit",
+    "group": "igg-economic-assumptions",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-reasons-why-producers-may-not-maximise-profit",
+    "zh": "生产者可能不追求利润最大化的原因",
+    "en": "Reasons why producers may not maximise profit",
+    "group": "igg-economic-assumptions",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-demand-and-effective-demand",
+    "zh": "需求与有效需求",
+    "en": "Demand and effective demand",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-movements-along-the-demand-curve",
+    "zh": "沿需求曲线的变动",
+    "en": "Movements along the demand curve",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-shifts-in-the-demand-curve",
+    "zh": "需求曲线的移动",
+    "en": "Shifts in the demand curve",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-non-price-demand-shifters-income-advertising-tastes-and-demographics",
+    "zh": "非价格需求移动因素：收入、广告、品味与人口因素",
+    "en": "Non-price demand shifters: income, advertising, tastes and demographics",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-substitutes-complements-and-related-good-price-effects",
+    "zh": "替代品、互补品与相关商品价格影响",
+    "en": "Substitutes, complements and related-good price effects",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-supply-and-the-supply-curve",
+    "zh": "供给与供给曲线",
+    "en": "Supply and the supply curve",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-movements-along-the-supply-curve",
+    "zh": "沿供给曲线的变动",
+    "en": "Movements along the supply curve",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-shifts-in-the-supply-curve",
+    "zh": "供给曲线的移动",
+    "en": "Shifts in the supply curve",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-production-costs-and-input-cost-changes-shifting-supply",
+    "zh": "生产成本与投入成本变化导致供给移动",
+    "en": "Production costs and input-cost changes shifting supply",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-technology-natural-factors-and-resource-availability-affecting-supply",
+    "zh": "技术、自然因素与资源可用性对供给的影响",
+    "en": "Technology, natural factors and resource availability affecting supply",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-indirect-taxes-and-subsidies-shifting-supply",
+    "zh": "间接税与补贴导致供给移动",
+    "en": "Indirect taxes and subsidies shifting supply",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-equilibrium-price-quantity-and-total-revenue",
+    "zh": "均衡价格、均衡数量与总收益",
+    "en": "Equilibrium price, quantity and total revenue",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-excess-demand-excess-supply-and-price-adjustment",
+    "zh": "过度需求、过度供给与价格调整",
+    "en": "Excess demand, excess supply and price adjustment",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-shifts-in-demand-and-supply-and-new-equilibrium",
+    "zh": "需求与供给移动及新的均衡",
+    "en": "Shifts in demand and supply and new equilibrium",
+    "group": "igg-demand-supply-and-market-equilibrium",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-income-elasticity-of-demand-yed",
+    "zh": "需求收入弹性",
+    "en": "Income elasticity of demand (YED)",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-normal-inferior-and-luxury-goods",
+    "zh": "正常品、劣等品与奢侈品",
+    "en": "Normal, inferior and luxury goods",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-yed-and-business-decisions",
+    "zh": "需求收入弹性与企业决策",
+    "en": "YED and business decisions",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-price-elasticity-of-demand-ped",
+    "zh": "需求价格弹性",
+    "en": "Price elasticity of demand (PED)",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-determinants-of-price-elasticity-of-demand",
+    "zh": "需求价格弹性的决定因素",
+    "en": "Determinants of price elasticity of demand",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-ped-total-revenue-and-pricing-decisions",
+    "zh": "PED、总收益与定价决策",
+    "en": "PED, total revenue and pricing decisions",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-price-elasticity-of-supply-pes",
+    "zh": "供给价格弹性",
+    "en": "Price elasticity of supply (PES)",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-determinants-of-price-elasticity-of-supply",
+    "zh": "供给价格弹性的决定因素",
+    "en": "Determinants of price elasticity of supply",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-demand-elasticities-indirect-taxes-and-subsidies",
+    "zh": "需求弹性、间接税与补贴",
+    "en": "Demand elasticities, indirect taxes and subsidies",
+    "group": "igg-elasticity",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-economic-systems-and-the-mixed-economy",
+    "zh": "经济体制与混合经济",
+    "en": "Economic systems and the mixed economy",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-public-and-private-sector-ownership-and-provision",
+    "zh": "公共部门与私人部门的所有制和供给",
+    "en": "Public and private sector ownership and provision",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-private-and-public-sector-objectives",
+    "zh": "私人部门与公共部门的目标",
+    "en": "Private and public sector objectives",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-market-failure-definition-causes-and-external-costs",
+    "zh": "市场失灵：定义、原因与外部成本",
+    "en": "Market failure: definition, causes and external costs",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-public-goods-and-the-free-rider-problem",
+    "zh": "公共物品与搭便车问题",
+    "en": "Public goods and the free-rider problem",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-privatisation",
+    "zh": "私有化",
+    "en": "Privatisation",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-effects-of-privatisation",
+    "zh": "私有化的影响",
+    "en": "Effects of privatisation",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-merit-goods",
+    "zh": "优值品",
+    "en": "Merit goods",
+    "group": "igg-the-mixed-economy",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-private-external-and-social-costs-and-benefits",
+    "zh": "私人成本、外部成本与社会成本及相应收益",
+    "en": "Private, external and social costs and benefits",
+    "group": "igg-externalities",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-external-costs-of-production",
+    "zh": "生产的外部成本",
+    "en": "External costs of production",
+    "group": "igg-externalities",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-external-benefits-of-consumption",
+    "zh": "消费的外部收益",
+    "en": "External benefits of consumption",
+    "group": "igg-externalities",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-production",
+    "zh": "生产",
+    "en": "Production",
+    "group": "igg-production",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-factors-of-production",
+    "zh": "生产要素",
+    "en": "Factors of production",
+    "group": "igg-production",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-primary-secondary-and-tertiary-sectors",
+    "zh": "第一、第二与第三产业",
+    "en": "Primary, secondary and tertiary sectors",
+    "group": "igg-production",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-sectoral-employment-structural-change-and-de-industrialisation",
+    "zh": "部门就业、经济结构变化与去工业化",
+    "en": "Sectoral employment, structural change and de-industrialisation",
+    "group": "igg-production",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-measuring-and-interpreting-productivity",
+    "zh": "生产率的衡量与解释",
+    "en": "Measuring and interpreting productivity",
+    "group": "igg-productivity-and-division-of-labour",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-methods-of-improving-productivity",
+    "zh": "提高生产率的方法",
+    "en": "Methods of improving productivity",
+    "group": "igg-productivity-and-division-of-labour",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-division-of-labour-specialisation-benefits-and-drawbacks",
+    "zh": "劳动分工：专业化、益处与弊端",
+    "en": "Division of labour: specialisation, benefits and drawbacks",
+    "group": "igg-productivity-and-division-of-labour",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-fixed-and-variable-costs-and-cost-behaviour",
+    "zh": "固定成本、可变成本与成本行为",
+    "en": "Fixed and variable costs and cost behaviour",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-total-cost-and-average-cost-calculations-and-curves",
+    "zh": "总成本与平均成本的计算和曲线",
+    "en": "Total cost and average cost calculations and curves",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-total-revenue-and-profit",
+    "zh": "总收入与利润",
+    "en": "Total revenue and profit",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-internal-economies-of-scale",
+    "zh": "内部规模经济",
+    "en": "Internal economies of scale",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-external-economies-of-scale",
+    "zh": "外部规模经济",
+    "en": "External economies of scale",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-diseconomies-of-scale-and-long-run-average-costs",
+    "zh": "规模不经济与长期平均成本",
+    "en": "Diseconomies of scale and long-run average costs",
+    "group": "igg-business-costs-revenues-and-profit",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-market-structures-and-features-of-competitive-markets",
+    "zh": "市场结构与竞争性市场特征",
+    "en": "Market structures and features of competitive markets",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-benefits-and-drawbacks-of-competition-for-consumers-firms-and-the-economy",
+    "zh": "竞争对消费者、企业和经济的利弊",
+    "en": "Benefits and drawbacks of competition for consumers, firms and the economy",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-reduced-competition-monopoly-power-and-policy-responses",
+    "zh": "竞争减少、垄断力量与政策应对",
+    "en": "Reduced competition, monopoly power and policy responses",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-measuring-firm-size-and-sector-distribution",
+    "zh": "企业规模的衡量与行业分布",
+    "en": "Measuring firm size and sector distribution",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-small-firm-advantages-niches-and-survival",
+    "zh": "小企业的优势、利基市场与生存",
+    "en": "Small-firm advantages, niches and survival",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-large-firm-advantages-and-motives-for-growth",
+    "zh": "大企业的优势与增长动机",
+    "en": "Large-firm advantages and motives for growth",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-limits-to-growth-and-diseconomies-of-scale",
+    "zh": "增长限制与规模不经济",
+    "en": "Limits to growth and diseconomies of scale",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-monopoly-definition-features-and-barriers-to-entry",
+    "zh": "垄断的定义、特征与进入壁垒",
+    "en": "Monopoly definition, features and barriers to entry",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-natural-monopoly-economies-of-scale-and-innovation-benefits",
+    "zh": "自然垄断、规模经济与创新收益",
+    "en": "Natural monopoly, economies of scale and innovation benefits",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-monopoly-disadvantages-consumer-welfare-and-evaluation",
+    "zh": "垄断的弊端、消费者福利与评价",
+    "en": "Monopoly disadvantages, consumer welfare and evaluation",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-oligopolistic-market-structure-features-and-entry-barriers",
+    "zh": "寡头垄断的市场结构、特征与进入壁垒",
+    "en": "Oligopolistic market structure, features and entry barriers",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-non-price-competition-differentiation-and-consumer-benefits-in-oligopoly",
+    "zh": "寡头垄断中的非价格竞争、产品差异化与消费者利益",
+    "en": "Non-price competition, differentiation and consumer benefits in oligopoly",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-price-wars-collusion-and-cartel-outcomes-in-oligopoly",
+    "zh": "寡头垄断中的价格战、勾结与卡特尔结果",
+    "en": "Price wars, collusion and cartel outcomes in oligopoly",
+    "group": "igg-business-competition",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-labour-market-equilibrium-and-wage-determination",
+    "zh": "劳动市场均衡与工资决定",
+    "en": "Labour market equilibrium and wage determination",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-demand-for-labour-and-shifts-in-labour-demand",
+    "zh": "劳动力需求及其曲线移动",
+    "en": "Demand for labour and shifts in labour demand",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-supply-of-labour-and-factors-affecting-labour-supply",
+    "zh": "劳动力供给及其影响因素",
+    "en": "Supply of labour and factors affecting labour supply",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-labour-quality-mobility-and-labour-shortages",
+    "zh": "劳动力质量、流动性与劳动力短缺",
+    "en": "Labour quality, mobility and labour shortages",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-labour-supply-changes-and-demographic-or-migration-effects",
+    "zh": "劳动力供给变化及人口与移民影响",
+    "en": "Labour supply changes and demographic or migration effects",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-trade-unions-and-wages-and-working-conditions",
+    "zh": "工会、工资与工作条件",
+    "en": "Trade unions and wages and working conditions",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-uk-trade-union-legislation",
+    "zh": "英国工会立法",
+    "en": "UK trade union legislation",
+    "group": "igg-the-labour-market",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-scope-externalities-and-balance-of-government-intervention",
+    "zh": "政府干预的范围、外部性与平衡",
+    "en": "Scope, externalities and balance of government intervention",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-national-minimum-wage",
+    "zh": "全国最低工资",
+    "en": "National minimum wage",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-anti-competitive-practices-consumer-protection-and-competition-policy",
+    "zh": "反竞争行为、消费者保护与竞争政策",
+    "en": "Anti-competitive practices, consumer protection and competition policy",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-monopoly-and-merger-regulation",
+    "zh": "垄断与并购监管",
+    "en": "Monopoly and merger regulation",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-indirect-taxes-to-correct-externalities",
+    "zh": "纠正外部性的间接税",
+    "en": "Indirect taxes to correct externalities",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-subsidies-to-correct-externalities",
+    "zh": "纠正外部性的补贴",
+    "en": "Subsidies to correct externalities",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-regulation-to-correct-externalities",
+    "zh": "纠正外部性的监管",
+    "en": "Regulation to correct externalities",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-pollution-permits",
+    "zh": "污染排放许可",
+    "en": "Pollution permits",
+    "group": "igg-government-intervention",
+    "papers": [
+     "p1"
+    ]
+   },
+   {
+    "id": "ig-macroeconomics-and-macroeconomic-objectives",
+    "zh": "宏观经济学与宏观经济目标",
+    "en": "Macroeconomics and macroeconomic objectives",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-measuring-economic-growth-using-gdp-real-gdp-and-gdp-per-capita",
+    "zh": "用GDP、实际GDP和人均GDP衡量经济增长",
+    "en": "Measuring economic growth using GDP, real GDP and GDP per capita",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-economic-cycle-phases-and-overheating",
+    "zh": "经济周期阶段与经济过热",
+    "en": "Economic cycle phases and overheating",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-benefits-employment-effects-and-policy-support-for-economic-growth",
+    "zh": "经济增长的益处、就业影响与政策支持",
+    "en": "Benefits, employment effects and policy support for economic growth",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-limitations-of-gdp-and-costs-of-economic-growth",
+    "zh": "GDP的局限性与经济增长的代价",
+    "en": "Limitations of GDP and costs of economic growth",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation",
+    "zh": "通货膨胀",
+    "en": "Inflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-deflation",
+    "zh": "通货紧缩",
+    "en": "Deflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-the-consumer-price-index-cpi",
+    "zh": "消费者价格指数",
+    "en": "The consumer price index (CPI)",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-demand-pull-inflation",
+    "zh": "需求拉动型通货膨胀",
+    "en": "Demand-pull inflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-cost-push-inflation",
+    "zh": "成本推动型通货膨胀",
+    "en": "Cost-push inflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-costs-and-business-effects-of-inflation",
+    "zh": "通货膨胀的成本与对企业的影响",
+    "en": "Costs and business effects of inflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-defining-classifying-and-measuring-unemployment",
+    "zh": "失业的定义、分类与衡量",
+    "en": "Defining, classifying and measuring unemployment",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-types-and-causes-of-unemployment",
+    "zh": "失业的类型与成因",
+    "en": "Types and causes of unemployment",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-economic-and-social-consequences-of-unemployment",
+    "zh": "失业的经济与社会后果",
+    "en": "Economic and social consequences of unemployment",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-absolute-and-relative-poverty",
+    "zh": "绝对贫困与相对贫困",
+    "en": "Absolute and relative poverty",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-income-inequality",
+    "zh": "收入不平等",
+    "en": "Income inequality",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-neet-classification",
+    "zh": "NEET分类",
+    "en": "NEET classification",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-air-pollution-and-climate-change",
+    "zh": "空气污染与气候变化",
+    "en": "Air pollution and climate change",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-water-noise-and-visual-pollution",
+    "zh": "水污染、噪音污染与视觉污染",
+    "en": "Water, noise and visual pollution",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-environmental-damage-from-agriculture-construction-and-energy-industries",
+    "zh": "农业、建筑业与能源产业造成的环境破坏",
+    "en": "Environmental damage from agriculture, construction and energy industries",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-taxes-subsidies-and-market-incentives-for-environmental-protection",
+    "zh": "用于环境保护的税收、补贴与市场激励",
+    "en": "Taxes, subsidies and market incentives for environmental protection",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-environmental-regulation-fines-and-conservation",
+    "zh": "环境监管、罚款与自然保护",
+    "en": "Environmental regulation, fines and conservation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exports-imports-and-the-current-account-balance",
+    "zh": "出口、进口与经常账户差额",
+    "en": "Exports, imports and the current account balance",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-factors-determining-the-current-account-balance",
+    "zh": "决定经常账户差额的因素",
+    "en": "Factors determining the current account balance",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-effects-and-financing-of-a-persistent-current-account-deficit",
+    "zh": "持续经常账户赤字的影响与融资",
+    "en": "Effects and financing of a persistent current account deficit",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exchange-rates-and-the-current-account",
+    "zh": "汇率与经常账户",
+    "en": "Exchange rates and the current account",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-redistribution-through-taxes-and-benefits",
+    "zh": "通过税收与福利进行再分配",
+    "en": "Redistribution through taxes and benefits",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-investment-and-reforms-to-reduce-poverty",
+    "zh": "通过投资与改革减少贫困",
+    "en": "Investment and reforms to reduce poverty",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-the-lorenz-curve",
+    "zh": "洛伦兹曲线",
+    "en": "The Lorenz curve",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-money-supply-and-inflation",
+    "zh": "货币供应量与通货膨胀",
+    "en": "Money supply and inflation",
+    "group": "igg-macroeconomic-objectives",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-fiscal-policy-instruments-and-the-government-budget",
+    "zh": "财政政策工具与政府预算",
+    "en": "Fiscal policy instruments and the government budget",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-direct-and-indirect-taxes",
+    "zh": "直接税与间接税",
+    "en": "Direct and indirect taxes",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-progressive-taxation",
+    "zh": "累进税",
+    "en": "Progressive taxation",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-expansionary-and-contractionary-fiscal-policy-for-macroeconomic-objectives",
+    "zh": "用于宏观经济目标的扩张性与紧缩性财政政策",
+    "en": "Expansionary and contractionary fiscal policy for macroeconomic objectives",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-fiscal-deficits-surpluses-national-debt-and-fiscal-balance-data",
+    "zh": "财政赤字、盈余、国债与财政余额数据",
+    "en": "Fiscal deficits, surpluses, national debt and fiscal balance data",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-foundations-of-monetary-policy-central-banks-and-interest-rates",
+    "zh": "货币政策、中央银行与利率基础",
+    "en": "Foundations of monetary policy, central banks and interest rates",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-interest-rate-transmission-to-consumers-firms-and-aggregate-demand",
+    "zh": "利率对消费者、企业和总需求的传导",
+    "en": "Interest rate transmission to consumers, firms and aggregate demand",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-monetary-policy-effects-on-external-balance-and-policy-trade-offs",
+    "zh": "货币政策对外部收支的影响与政策权衡",
+    "en": "Monetary policy effects on external balance and policy trade-offs",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-central-bank-asset-purchases-and-quantitative-easing",
+    "zh": "中央银行资产购买与量化宽松",
+    "en": "Central bank asset purchases and quantitative easing",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-supply-side-policies-aggregate-supply-and-productive-potential",
+    "zh": "供给侧政策、总供给与生产潜力",
+    "en": "Supply-side policies, aggregate supply and productive potential",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-tax-investment-infrastructure-and-skills-as-supply-side-policies",
+    "zh": "税收、投资、基础设施和技能作为供给侧政策",
+    "en": "Tax, investment, infrastructure and skills as supply-side policies",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-labour-market-flexibility-competition-privatisation-and-deregulation",
+    "zh": "劳动力市场灵活性、竞争、私有化与放松管制",
+    "en": "Labour market flexibility, competition, privatisation and deregulation",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-regulation-and-legislation",
+    "zh": "监管与立法",
+    "en": "Regulation and legislation",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-fines",
+    "zh": "罚款",
+    "en": "Fines",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-government-controls-and-macroeconomic-objectives",
+    "zh": "政府管制与宏观经济目标",
+    "en": "Government controls and macroeconomic objectives",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-fiscal-and-monetary-policy-instruments-for-growth",
+    "zh": "促进增长的财政与货币政策工具",
+    "en": "Fiscal and monetary policy instruments for growth",
+    "group": "igg-government-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-control-and-unemployment-or-growth-trade-offs",
+    "zh": "通胀控制与失业或增长权衡",
+    "en": "Inflation control and unemployment or growth trade-offs",
+    "group": "igg-relationships-between-objectives-and-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-inflation-policies-and-the-current-account-balance",
+    "zh": "通胀政策与经常账户余额",
+    "en": "Inflation policies and the current account balance",
+    "group": "igg-relationships-between-objectives-and-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-rapid-economic-growth-overheating-and-environmental-trade-offs",
+    "zh": "快速经济增长、经济过热与环境权衡",
+    "en": "Rapid economic growth, overheating and environmental trade-offs",
+    "group": "igg-relationships-between-objectives-and-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-macroeconomic-objectives-and-trade-offs",
+    "zh": "宏观经济目标及其权衡",
+    "en": "Macroeconomic objectives and trade-offs",
+    "group": "igg-relationships-between-objectives-and-policies",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-definition-and-key-features-of-globalisation",
+    "zh": "全球化的定义与主要特征",
+    "en": "Definition and key features of globalisation",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-drivers-and-enablers-of-globalisation",
+    "zh": "全球化的驱动因素与推动条件",
+    "en": "Drivers and enablers of globalisation",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-effects-of-globalisation-on-consumers-producers-and-countries",
+    "zh": "全球化对消费者、生产者和国家的影响",
+    "en": "Effects of globalisation on consumers, producers and countries",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-costs-limits-and-evidence-based-evaluation-of-globalisation",
+    "zh": "全球化的成本、局限与基于证据的评价",
+    "en": "Costs, limits and evidence-based evaluation of globalisation",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-multinational-corporations-and-foreign-direct-investment",
+    "zh": "跨国公司与外国直接投资",
+    "en": "Multinational corporations and foreign direct investment",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-reasons-for-multinational-corporations-and-fdi",
+    "zh": "跨国公司产生与外国直接投资的原因",
+    "en": "Reasons for multinational corporations and FDI",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-benefits-of-mncs-and-fdi-for-host-economies",
+    "zh": "跨国公司与外国直接投资对东道国的收益",
+    "en": "Benefits of MNCs and FDI for host economies",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-costs-of-mncs-and-fdi-for-host-economies",
+    "zh": "跨国公司与外国直接投资对东道国的成本",
+    "en": "Costs of MNCs and FDI for host economies",
+    "group": "igg-globalisation",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-reasons-for-international-trade-and-specialisation",
+    "zh": "国际贸易与专业化的原因",
+    "en": "Reasons for international trade and specialisation",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-free-trade-and-gains-for-consumers-and-businesses",
+    "zh": "自由贸易及其对消费者和企业的收益",
+    "en": "Free trade and gains for consumers and businesses",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-costs-and-risks-of-free-trade-and-specialisation",
+    "zh": "自由贸易与专业化的成本和风险",
+    "en": "Costs and risks of free trade and specialisation",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-trade-data-current-account-effects-and-selective-trade-controls",
+    "zh": "贸易数据、经常账户影响与选择性贸易管制",
+    "en": "Trade data, current account effects and selective trade controls",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-protectionism-and-reasons-for-trade-barriers",
+    "zh": "保护主义及设置贸易壁垒的原因",
+    "en": "Protectionism and reasons for trade barriers",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-tariffs",
+    "zh": "关税",
+    "en": "Tariffs",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-quotas-as-trade-restrictions",
+    "zh": "作为贸易限制的配额",
+    "en": "Quotas as trade restrictions",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-subsidies-as-trade-protection",
+    "zh": "作为贸易保护的补贴",
+    "en": "Subsidies as trade protection",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-consequences-and-evaluation-of-protectionism",
+    "zh": "保护主义的后果与评价",
+    "en": "Consequences and evaluation of protectionism",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-trading-blocs",
+    "zh": "贸易集团",
+    "en": "Trading blocs",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-benefits-and-costs-of-trading-bloc-membership",
+    "zh": "贸易集团成员身份的收益与成本",
+    "en": "Benefits and costs of trading bloc membership",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-the-world-trade-organization-wto",
+    "zh": "世界贸易组织",
+    "en": "The World Trade Organization (WTO)",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-wto-actions-and-trade-disputes",
+    "zh": "世界贸易组织的行动与贸易争端",
+    "en": "WTO actions and trade disputes",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-growth-and-changing-patterns-of-world-trade",
+    "zh": "世界贸易增长与贸易格局变化",
+    "en": "Growth and changing patterns of world trade",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-commodity-dependence-and-developing-country-trade-vulnerability",
+    "zh": "商品依赖与发展中国家贸易脆弱性",
+    "en": "Commodity dependence and developing-country trade vulnerability",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-the-formal-theory-of-comparative-advantage",
+    "zh": "比较优势的正式理论模型",
+    "en": "The formal theory of comparative advantage",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-embargoes",
+    "zh": "禁运",
+    "en": "Embargoes",
+    "group": "igg-international-trade",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exchange-rate-meaning-notation-and-currency-conversion",
+    "zh": "汇率含义、标价与货币兑换",
+    "en": "Exchange rate meaning, notation and currency conversion",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-foreign-exchange-market-equilibrium-and-exchange-rate-shifts",
+    "zh": "外汇市场均衡与汇率变动",
+    "en": "Foreign exchange market equilibrium and exchange-rate shifts",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-trade-interest-rates-and-investment-as-causes-of-exchange-rate-changes",
+    "zh": "贸易、利率与投资导致的汇率变化",
+    "en": "Trade, interest rates and investment as causes of exchange-rate changes",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-currency-speculation",
+    "zh": "外汇投机",
+    "en": "Currency speculation",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exchange-rate-movements-conversion-and-policy-influence",
+    "zh": "汇率变动、货币换算与政策影响",
+    "en": "Exchange rate movements, conversion and policy influence",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-effects-of-exchange-rate-changes-on-exports-imports-and-trade-decisions",
+    "zh": "汇率变化对出口、进口和贸易决策的影响",
+    "en": "Effects of exchange rate changes on exports, imports and trade decisions",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-exchange-rate-depreciation-current-account-effects-and-evaluation",
+    "zh": "汇率贬值、经常账户影响与评价",
+    "en": "Exchange rate depreciation, current account effects and evaluation",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   },
+   {
+    "id": "ig-revaluation-and-devaluation",
+    "zh": "法定升值与法定贬值",
+    "en": "Revaluation and devaluation",
+    "group": "igg-exchange-rates",
+    "papers": [
+     "p2"
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,694 @@
+{
+ "$comment": "IGCSE 知识点词表（cie / accounting）。来源：飞书「知识点数据」Base 的「会计」表，取 考试阶段=IG 的行；Excel 合并单元格导致的空值已向下填充。单元键统一 IG（一科一池）；tag.papers 记录该知识点出现在哪几份 paper，打标时按「当前卷 paper token ∩ tag.papers ≠ ∅」过滤。",
+ "IG": {
+  "groups": [
+   {
+    "id": "igg-transaction-recording",
+    "zh": "交易记录",
+    "en": "Transaction recording"
+   },
+   {
+    "id": "igg-bank-reconciliation-statements",
+    "zh": "银行对账",
+    "en": "Bank reconciliation statements"
+   },
+   {
+    "id": "igg-accounting-concepts",
+    "zh": "会计准则",
+    "en": "Accounting concepts"
+   },
+   {
+    "id": "igg-professional-ethics",
+    "zh": "职业道德",
+    "en": "professional ethics"
+   },
+   {
+    "id": "igg-business-documentation",
+    "zh": "商务文件",
+    "en": "business documentation"
+   },
+   {
+    "id": "igg-books-of-original-entry",
+    "zh": "单式簿记",
+    "en": "books of original entry"
+   },
+   {
+    "id": "igg-non-current-asset",
+    "zh": "固定资产",
+    "en": "Non-current asset"
+   },
+   {
+    "id": "igg-receivables",
+    "zh": "应收账款",
+    "en": "Receivables"
+   },
+   {
+    "id": "igg-control-account",
+    "zh": "控制账户",
+    "en": "Control account"
+   },
+   {
+    "id": "igg-prepayments-and-accruals",
+    "zh": "预付与拖欠",
+    "en": "Prepayments and accruals"
+   },
+   {
+    "id": "igg-error-correction",
+    "zh": "错误更正",
+    "en": "Error Correction"
+   },
+   {
+    "id": "igg-trial-balance",
+    "zh": "试算平衡表",
+    "en": "Trial balance"
+   },
+   {
+    "id": "igg-financial-statements-of-a-sole-trader",
+    "zh": "财报：个体经营",
+    "en": "Financial statements of a sole trader"
+   },
+   {
+    "id": "igg-partnership",
+    "zh": "合伙制企业",
+    "en": "Partnership"
+   },
+   {
+    "id": "igg-incomplete-records",
+    "zh": "不完整记账",
+    "en": "Incomplete records"
+   },
+   {
+    "id": "igg-manufacturer",
+    "zh": "加工制造企业",
+    "en": "Manufacturer"
+   },
+   {
+    "id": "igg-inventory-valuation",
+    "zh": "存货估值",
+    "en": "Inventory valuation"
+   },
+   {
+    "id": "igg-limited-company",
+    "zh": "有限责任公司",
+    "en": "Limited company"
+   },
+   {
+    "id": "igg-clubs-and-societies",
+    "zh": "俱乐部",
+    "en": "Clubs and societies"
+   },
+   {
+    "id": "igg-accounting-ratios",
+    "zh": "财务比率",
+    "en": "Accounting ratios"
+   },
+   {
+    "id": "igg-technology-and-sustainability",
+    "zh": "科技与可持续发展",
+    "en": "Technology and sustainability"
+   }
+  ],
+  "tags": [
+   {
+    "id": "ig-journal-entries",
+    "zh": "日记账",
+    "en": "Journal entries",
+    "group": "igg-transaction-recording",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-leger-account",
+    "zh": "分类账",
+    "en": "Leger account",
+    "group": "igg-transaction-recording",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trial-balance",
+    "zh": "试算平衡表",
+    "en": "Trial balance",
+    "group": "igg-transaction-recording",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-bank-reconciliation-statements",
+    "zh": "银行对账",
+    "en": "Bank reconciliation statements",
+    "group": "igg-bank-reconciliation-statements",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-accounting-concepts",
+    "zh": "会计准则",
+    "en": "Accounting concepts",
+    "group": "igg-accounting-concepts",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-professional-ethics",
+    "zh": "职业道德",
+    "en": "professional ethics",
+    "group": "igg-professional-ethics",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-business-documentation",
+    "zh": "商务文件",
+    "en": "business documentation",
+    "group": "igg-business-documentation",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-books-of-original-entry",
+    "zh": "单式簿记",
+    "en": "books of original entry",
+    "group": "igg-books-of-original-entry",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-capital-expenditure-revenue-expenditure",
+    "zh": "资本性支出,费用性支出",
+    "en": "Capital expenditure, revenue expenditure",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-straight-line-method",
+    "zh": "直线折旧法",
+    "en": "Straight line method",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-reducing-balance-method",
+    "zh": "余额递减法",
+    "en": "Reducing balance method",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-disposal-of-non-current-assets",
+    "zh": "固定资产处置",
+    "en": "Disposal of non-current assets",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-non-current-asset-account",
+    "zh": "固定资产成本账户",
+    "en": "Non-current asset account",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-provision-for-depreciation-account",
+    "zh": "累计折旧账户",
+    "en": "Provision for depreciation account",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-causes-and-reasons-for-depreciation",
+    "zh": "折旧的原因与理由",
+    "en": "Causes and reasons for depreciation",
+    "group": "igg-non-current-asset",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trade-discounts-and-cash-discounts",
+    "zh": "商业折扣与现金折扣",
+    "en": "Trade discounts and cash discounts",
+    "group": "igg-receivables",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-irrecoverable-debts",
+    "zh": "坏账",
+    "en": "Irrecoverable debts",
+    "group": "igg-receivables",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-bad-debts-recovered",
+    "zh": "坏账恢复",
+    "en": "Bad debts recovered",
+    "group": "igg-receivables",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-allowance-for-irrecoverable-debts",
+    "zh": "坏账准备",
+    "en": "Allowance for irrecoverable debts",
+    "group": "igg-receivables",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-management-and-collection-of-receivables",
+    "zh": "应收款项的管理与收回",
+    "en": "Management and collection of receivables",
+    "group": "igg-receivables",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trade-receivable-control-account",
+    "zh": "应收账款控制账户",
+    "en": "Trade receivable control account",
+    "group": "igg-control-account",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trade-payable-control-account",
+    "zh": "应付账款控制账户",
+    "en": "Trade payable control account",
+    "group": "igg-control-account",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-accrued-expenses",
+    "zh": "应计费用",
+    "en": "Accrued expenses",
+    "group": "igg-prepayments-and-accruals",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-accrued-income",
+    "zh": "应计收入",
+    "en": "Accrued income",
+    "group": "igg-prepayments-and-accruals",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-prepaid-expenses",
+    "zh": "预付费用",
+    "en": "Prepaid expenses",
+    "group": "igg-prepayments-and-accruals",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-prepaid-income",
+    "zh": "预收收入",
+    "en": "Prepaid income",
+    "group": "igg-prepayments-and-accruals",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-types-of-errors",
+    "zh": "错误类型",
+    "en": "Types of errors",
+    "group": "igg-error-correction",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-error-correction",
+    "zh": "错误更正",
+    "en": "Error correction",
+    "group": "igg-error-correction",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-suspense-account",
+    "zh": "暂记账户",
+    "en": "Suspense account",
+    "group": "igg-error-correction",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trial-balance-2",
+    "zh": "试算平衡表",
+    "en": "Trial balance",
+    "group": "igg-trial-balance",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-bank-reconciliation-statements-2",
+    "zh": "银行对账",
+    "en": "Bank reconciliation statements",
+    "group": "igg-bank-reconciliation-statements",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-income-statement",
+    "zh": "损益表",
+    "en": "Income statement",
+    "group": "igg-financial-statements-of-a-sole-trader",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-statement-of-financial-position",
+    "zh": "资产负债表",
+    "en": "Statement of financial position",
+    "group": "igg-financial-statements-of-a-sole-trader",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-appropriation-of-partnership-profits",
+    "zh": "合伙利润的分配",
+    "en": "Appropriation of partnership profits",
+    "group": "igg-partnership",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-capital-accounts-for-partnerships",
+    "zh": "合伙企业的资本账户",
+    "en": "Capital accounts for partnerships",
+    "group": "igg-partnership",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-current-accounts-for-partnerships",
+    "zh": "合伙企业的往来账户",
+    "en": "Current accounts for partnerships",
+    "group": "igg-partnership",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-goodwill",
+    "zh": "商誉",
+    "en": "Goodwill",
+    "group": "igg-partnership",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-total-revenue",
+    "zh": "总收入",
+    "en": "Total revenue",
+    "group": "igg-incomplete-records",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-total-cost",
+    "zh": "总成本",
+    "en": "Total cost",
+    "group": "igg-incomplete-records",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-missing-figures",
+    "zh": "缺失数据",
+    "en": "Missing figures",
+    "group": "igg-incomplete-records",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trading-account",
+    "zh": "利润表（购销账户）",
+    "en": "Trading account",
+    "group": "igg-incomplete-records",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-cost-classification",
+    "zh": "成本分类",
+    "en": "Cost classification",
+    "group": "igg-manufacturer",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-manufacturing-account",
+    "zh": "制造账户",
+    "en": "Manufacturing account",
+    "group": "igg-manufacturer",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-manufacturing-business",
+    "zh": "制造企业的利润表",
+    "en": "Statement of profit or loss and other comprehensive income for a manufacturing business",
+    "group": "igg-manufacturer",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-statement-of-financial-position-for-a-manufacturing-business",
+    "zh": "制造企业的资产负债表",
+    "en": "Statement of financial position for a manufacturing business",
+    "group": "igg-manufacturer",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-revaluation-method",
+    "zh": "重估法",
+    "en": "Revaluation method",
+    "group": "igg-manufacturer",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-net-realisable-value-nrv",
+    "zh": "可变现净值",
+    "en": "Net realisable value (NRV)",
+    "group": "igg-inventory-valuation",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-finance",
+    "zh": "融资",
+    "en": "Finance",
+    "group": "igg-limited-company",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-statement-of-changes-in-equity",
+    "zh": "权益变动表",
+    "en": "Statement of changes in equity",
+    "group": "igg-limited-company",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-receipts-and-payments-account",
+    "zh": "收付款账户",
+    "en": "Receipts and payments account",
+    "group": "igg-clubs-and-societies",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-trading-accounts",
+    "zh": "交易账户",
+    "en": "Trading accounts",
+    "group": "igg-clubs-and-societies",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-subscriptions-account",
+    "zh": "会费账户",
+    "en": "Subscriptions account",
+    "group": "igg-clubs-and-societies",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-income-and-expenditure-account-and-statement-of-financial-position",
+    "zh": "收支账户与财务状况表",
+    "en": "Income and expenditure account and statement of financial position",
+    "group": "igg-clubs-and-societies",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-statement-of-financial-position-for-a-non-profit-organisation",
+    "zh": "非盈利组织的资产负债表",
+    "en": "Statement of financial position for a non-profit organisation",
+    "group": "igg-clubs-and-societies",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-profitability-ratios",
+    "zh": "盈利能力比率",
+    "en": "Profitability ratios",
+    "group": "igg-accounting-ratios",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-liquidity-ratios",
+    "zh": "流动性与营运资本比率：流动比率和速动比率",
+    "en": "Liquidity ratios",
+    "group": "igg-accounting-ratios",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-efficiency-ratios",
+    "zh": "经营效率比率",
+    "en": "Efficiency ratios",
+    "group": "igg-accounting-ratios",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   },
+   {
+    "id": "ig-technology-and-sustainability",
+    "zh": "科技与可持续发展",
+    "en": "Technology and sustainability",
+    "group": "igg-technology-and-sustainability",
+    "papers": [
+     "u1",
+     "u2"
+    ]
+   }
+  ]
+ }
+}

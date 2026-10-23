@@ -111,7 +111,8 @@ def _validate_tags(paper: store.Paper, tags: list[str], where: str) -> None:
         raise HTTPException(422, f"{where}: 至少勾选 1 个知识点标签")
     if len(set(tags)) != len(tags):
         raise HTTPException(422, f"{where}: 标签存在重复")
-    allowed = taxonomy.tag_ids_for_units(paper.board, paper.qualification, paper.subject, paper.unit())
+    allowed = taxonomy.tag_ids_for_units(paper.board, paper.qualification, paper.subject,
+                                         paper.unit(), paper.papers())
     illegal = [t for t in tags if t not in allowed]
     if illegal:
         raise HTTPException(422, f"{where}: 标签不属于本卷可选单元 {paper.unit()}: {', '.join(illegal)}")
@@ -576,8 +577,10 @@ def get_question(request: Request, qid: str):
         "primary_tag": primary_tag,
         "primary_ready": primary_ok,
         "difficulty": difficulty,
-        "available_tags": taxonomy.tags_for_units(paper.board, paper.qualification, paper.subject, unit),
-        "available_groups": taxonomy.groups_for_units(paper.board, paper.qualification, paper.subject, unit),
+        "available_tags": taxonomy.tags_for_units(paper.board, paper.qualification, paper.subject, unit,
+                                                 paper.papers()),
+        "available_groups": taxonomy.groups_for_units(paper.board, paper.qualification, paper.subject, unit,
+                                                     paper.papers()),
         "split_eligible": split_eligible,
         "top_labels": top_labels,
         "split_active": split_active,
