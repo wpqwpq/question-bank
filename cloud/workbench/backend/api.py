@@ -388,7 +388,7 @@ def list_papers(request: Request):
 
 
 # ---------------------------------------------------------------------------
-# 全局概览（管理员）：每卷只回一个三态标记，前端画格子墙。
+# 全局概览（管理员 + 学科负责人，见 auth.OVERVIEW_ROLES）：每卷只回一个三态标记，前端画格子墙。
 #
 # 性能约束（2026-10-19 压测，7500 卷 / 10 万单元）：
 #   · 复用上面的 paper_progress —— 逐卷构造 dict 约 337ms，10 万题时明显；
@@ -404,8 +404,8 @@ _overview_cache: dict = {"key": None, "at": 0.0, "payload": None}
 @router.get("/overview")
 def get_overview(request: Request, force: bool = False):
     ident = auth.current(request)
-    if not ident.is_admin:
-        raise HTTPException(403, "全局概览仅管理员可见")
+    if not ident.can_overview:
+        raise HTTPException(403, "全局概览仅管理员与学科负责人可见")
 
     key = (index_db.generation(), state.rev())
     now = time.monotonic()

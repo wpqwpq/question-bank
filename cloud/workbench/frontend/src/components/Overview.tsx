@@ -21,6 +21,12 @@ interface Props {
   onExit: () => void
   /** 点格子里的「打开这卷」→ 回打标台并定位到该卷 */
   onOpen: (p: OverviewPaper) => void
+  /**
+   * 这卷能不能跳过去打开。默认全允许（管理员）。
+   * 学科负责人（lead）能看到全库地图，但跳去别的学科拉题目后端会 404，
+   * 所以由 App 传一个「是否在我学科范围内」的判定，越界的卷把按钮置灰。
+   */
+  canOpen?: (p: OverviewPaper) => boolean
 }
 
 type QualFilter = 'all' | 'al' | 'ig'
@@ -113,7 +119,8 @@ interface SubjectGroup {
   further: number
 }
 
-export default function Overview({ onExit, onOpen }: Props) {
+export default function Overview({ onExit, onOpen, canOpen }: Props) {
+  const allowOpen = canOpen ?? (() => true)
   const [data, setData] = useState<OverviewResp | null>(null)
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState<string | null>(null)
@@ -593,9 +600,16 @@ export default function Overview({ onExit, onOpen }: Props) {
           <button
             type="button"
             onClick={() => {
+              if (!allowOpen(selected)) return
               onOpen({ ...selected, qualification: qualForSelect(selected.qualification) })
             }}
-            className="rounded-md bg-white px-2.5 py-1 text-[11.5px] font-medium text-gray-900 hover:bg-gray-100"
+            disabled={!allowOpen(selected)}
+            title={allowOpen(selected) ? '回打标台并定位到这卷' : '这卷不在你的学科范围内'}
+            className={`rounded-md px-2.5 py-1 text-[11.5px] font-medium ${
+              allowOpen(selected)
+                ? 'bg-white text-gray-900 hover:bg-gray-100'
+                : 'cursor-not-allowed bg-white/20 text-gray-400'
+            }`}
           >
             打开这卷
           </button>

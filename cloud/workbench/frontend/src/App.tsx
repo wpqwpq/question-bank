@@ -8,7 +8,7 @@ import type {
   SubDraft,
   VerifyState,
 } from './api'
-import { api, authApi, canEditTaxonomy, DIFFICULTY_LABELS, primaryOk, resolvePrimary } from './api'
+import { api, authApi, canEditTaxonomy, DIFFICULTY_LABELS, isRoleAtLeastLead, primaryOk, resolvePrimary } from './api'
 import type { SaveBody, SaveResult } from './api'
 import Sidebar from './components/Sidebar'
 import TagAdmin from './components/TagAdmin'
@@ -1135,12 +1135,14 @@ const pendingFocusRef = useRef<number | null>(null)
     return <AuditLog onExit={() => setView('workbench')} />
   }
 
-  // 全局概览页：整页切换（仅管理员；后端 /api/overview 另有 admin 校验兜底）。
+  // 全局概览页：整页切换（管理员 + 学科负责人；后端 /api/overview 另有 can_overview 校验兜底）。
   // 点格子里的「打开这卷」→ 三个下拉 + paperId 一起设，否则 Sidebar 按选择过滤会找不到这卷。
+  // lead 能看到全库地图，但题目仍受学科隔离：越界的卷按钮置灰，免得白跳一次 404。
   if (view === 'overview') {
     return (
       <Overview
         onExit={() => setView('workbench')}
+        canOpen={(p) => me.subjects.includes('*') || me.subjects.includes(p.subject)}
         onOpen={(p) => {
           setBoard(p.board)
           setQualification(p.qualification)
@@ -1193,7 +1195,7 @@ const pendingFocusRef = useRef<number | null>(null)
               {toast.text}
             </span>
           )}
-          {me.role === 'admin' && (
+          {isRoleAtLeastLead(me.role) && (
             <button
               type="button"
               onClick={() => setView('overview')}

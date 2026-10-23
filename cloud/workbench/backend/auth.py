@@ -54,6 +54,10 @@ WRITE_ROLES = {"admin", "lead", "tagger", "service"}   # 写标注 / 确认
 # 不该有权改全局事实源，两者都排除在外。
 TAX_ROLES = {"admin", "lead", "tagger"}
 CONFIRM_ROLES = {"admin", "lead", "tagger", "service"}
+# 全局概览（整库完成度地图）：2026-10-23 培琪定，lead 也放开。
+# 概览只给「卷级」聚合（学科/卷号/年份/季次 + 三态完成度），不含任何题面内容；
+# 跨学科隔离仍然生效——lead 点开别人的卷去拉题目，照样 404。
+OVERVIEW_ROLES = {"admin", "lead"}
 
 # 登录失败限流：同一 (IP, 用户名) 10 分钟内最多 10 次
 _MAX_FAILS = 10
@@ -111,6 +115,11 @@ class Ident:
     @property
     def can_confirm(self) -> bool:
         return self.role in CONFIRM_ROLES
+
+    @property
+    def can_overview(self) -> bool:
+        """能否看全局概览（整库卷级完成度地图）。admin 与学科负责人。"""
+        return self.role in OVERVIEW_ROLES
 
     def public(self) -> dict[str, Any]:
         return {
