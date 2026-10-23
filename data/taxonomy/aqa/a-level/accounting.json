@@ -1,16 +1,11 @@
 {
- "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的会计表，取 考试局=AQA 且 考试阶段不含 IG 的记录（2026-10-20 导出，10-21 修正）。源表「单元」列未填（遗留 Paper 3&4），按 Paper 1+2（AS）→ 单元键 AS / Paper 3+4（A2）→ 单元键 AL 分流。",
+ "$comment": "知识点标签词表（按考试局/资格/学科一文件）。**本文件即标签的唯一事实源**，可直接编辑（打标台前端界面维护）。id 规则：标签 <单元小写>-<英文slug>，组 <单元小写>g-<英文slug>；标签的 group 必须存在。来源：飞书「知识点数据」Base 的会计表（tblwJaD4xPq61wWB，视图 vewRrsDFTd），取 考试局=AQA 且 考试阶段不含 IG 的记录（2026-10-20 导出）。单元键：AS = Paper 1+2、AL = Paper 3+4。**2026-10-23 修分组**：原生成脚本的组头向下填充失效，AS 30 条 / AL 19 条标签被塞进兜底组 asg-x（显示名「融资」）/ alg-x（「标准成本制度」），已按飞书一级知识点重新归属并删除两个兜底组；标签 id / 中英文 / 顺序未变（当时该科 0 打标，无存量影响）。",
  "AS": {
   "groups": [
    {
     "id": "asg-types-of-business",
     "zh": "企业类型",
     "en": "Types of business"
-   },
-   {
-    "id": "asg-x",
-    "zh": "融资",
-    "en": "Finance"
    },
    {
     "id": "asg-transaction-recording",
@@ -94,7 +89,7 @@
     "id": "as-finance",
     "zh": "融资",
     "en": "Finance",
-    "group": "asg-x"
+    "group": "asg-types-of-business"
    },
    {
     "id": "as-books-of-prime-entry",
@@ -106,19 +101,19 @@
     "id": "as-journal-entries",
     "zh": "日记账",
     "en": "Journal entries",
-    "group": "asg-x"
+    "group": "asg-transaction-recording"
    },
    {
     "id": "as-leger-account",
     "zh": "分类账",
     "en": "Leger account",
-    "group": "asg-x"
+    "group": "asg-transaction-recording"
    },
    {
     "id": "as-trial-balance",
     "zh": "试算平衡表",
     "en": "Trial balance",
-    "group": "asg-x"
+    "group": "asg-transaction-recording"
    },
    {
     "id": "as-bank-reconciliation-statements",
@@ -136,49 +131,49 @@
     "id": "as-straight-line-method",
     "zh": "直线折旧法",
     "en": "Straight line method",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-reducing-balance-method",
     "zh": "余额递减法",
     "en": "Reducing balance method",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-revaluation-method",
     "zh": "重估法",
     "en": "Revaluation method",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-disposal-of-non-current-assets",
     "zh": "固定资产处置",
     "en": "Disposal of non-current assets",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-schedule-of-non-current-assets",
     "zh": "固定资产明细表",
     "en": "Schedule of non-current assets",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-non-current-asset-account",
     "zh": "固定资产成本账户",
     "en": "Non-current asset account",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-provision-for-depreciation-account",
     "zh": "累计折旧账户",
     "en": "Provision for depreciation account",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-causes-and-reasons-for-depreciation",
     "zh": "折旧的原因与理由",
     "en": "Causes and reasons for depreciation",
-    "group": "asg-x"
+    "group": "asg-non-current-asset"
    },
    {
     "id": "as-trade-discounts-and-cash-discounts",
@@ -190,25 +185,25 @@
     "id": "as-irrecoverable-debts",
     "zh": "坏账",
     "en": "Irrecoverable debts",
-    "group": "asg-x"
+    "group": "asg-receivables"
    },
    {
     "id": "as-bad-debts-recovered",
     "zh": "已收回的坏账",
     "en": "Bad debts recovered",
-    "group": "asg-x"
+    "group": "asg-receivables"
    },
    {
     "id": "as-allowance-for-irrecoverable-debts",
     "zh": "坏账准备",
     "en": "Allowance for irrecoverable debts",
-    "group": "asg-x"
+    "group": "asg-receivables"
    },
    {
     "id": "as-management-and-collection-of-receivables",
     "zh": "应收款项的管理与收回",
     "en": "Management and collection of receivables",
-    "group": "asg-x"
+    "group": "asg-receivables"
    },
    {
     "id": "as-trade-receivable-control-account",
@@ -220,7 +215,7 @@
     "id": "as-trade-payable-control-account",
     "zh": "应付账款控制账户",
     "en": "Trade payable control account",
-    "group": "asg-x"
+    "group": "asg-control-account"
    },
    {
     "id": "as-fifo",
@@ -232,25 +227,25 @@
     "id": "as-lifo",
     "zh": "后进先出法",
     "en": "LIFO",
-    "group": "asg-x"
+    "group": "asg-inventory-valuation"
    },
    {
     "id": "as-net-realisable-value-nrv",
     "zh": "可变现净值",
     "en": "Net realisable value (NRV)",
-    "group": "asg-x"
+    "group": "asg-inventory-valuation"
    },
    {
     "id": "as-periodic-and-perpetual-inventory-valuation",
     "zh": "定期盘存制与永续盘存制",
     "en": "Periodic and perpetual inventory valuation",
-    "group": "asg-x"
+    "group": "asg-inventory-valuation"
    },
    {
     "id": "as-effect-of-inventory-valuation-on-profit-and-net-assets",
     "zh": "存货估值对利润和净资产的影响",
     "en": "Effect of inventory valuation on profit and net assets",
-    "group": "asg-x"
+    "group": "asg-inventory-valuation"
    },
    {
     "id": "as-accrued-expenses",
@@ -262,19 +257,19 @@
     "id": "as-accrued-income",
     "zh": "应计收入",
     "en": "Accrued income",
-    "group": "asg-x"
+    "group": "asg-prepayments-and-accruals"
    },
    {
     "id": "as-prepaid-expenses",
     "zh": "预付费用",
     "en": "Prepaid expenses",
-    "group": "asg-x"
+    "group": "asg-prepayments-and-accruals"
    },
    {
     "id": "as-prepaid-income",
     "zh": "预收收入",
     "en": "Prepaid income",
-    "group": "asg-x"
+    "group": "asg-prepayments-and-accruals"
    },
    {
     "id": "as-accounting-principles-and-concepts",
@@ -292,7 +287,7 @@
     "id": "as-statement-of-profit-or-loss",
     "zh": "利润表",
     "en": "Statement of profit or loss",
-    "group": "asg-x"
+    "group": "asg-basic-financial-statements"
    },
    {
     "id": "as-financial-statements-and-equity-accounting",
@@ -310,19 +305,19 @@
     "id": "as-liquidity-and-efficiency-ratios",
     "zh": "流动性与效率比率",
     "en": "Liquidity and Efficiency Ratios",
-    "group": "asg-x"
+    "group": "asg-analysis-and-evaluation-of-financial-information"
    },
    {
     "id": "as-capital-structure-and-gearing",
     "zh": "资本结构与资本杠杆",
     "en": "Capital Structure and Gearing",
-    "group": "asg-x"
+    "group": "asg-analysis-and-evaluation-of-financial-information"
    },
    {
     "id": "as-ratio-analysis",
     "zh": "财务比率分析",
     "en": "Ratio analysis",
-    "group": "asg-x"
+    "group": "asg-analysis-and-evaluation-of-financial-information"
    },
    {
     "id": "as-cash-budget",
@@ -334,7 +329,7 @@
     "id": "as-budgeted-financial-statements",
     "zh": "预算财务报表",
     "en": "Budgeted Financial Statements",
-    "group": "asg-x"
+    "group": "asg-budgeting"
    },
    {
     "id": "as-break-even-analysis",
@@ -352,7 +347,7 @@
     "id": "as-marginal-costing-and-contribution",
     "zh": "边际成本法与贡献",
     "en": "Marginal Costing and Contribution",
-    "group": "asg-x"
+    "group": "asg-marginal-costing"
    }
   ]
  },
@@ -362,11 +357,6 @@
     "id": "alg-standard-costing",
     "zh": "标准成本法",
     "en": "Standard costing"
-   },
-   {
-    "id": "alg-x",
-    "zh": "标准成本制度",
-    "en": "Standard Costing System"
    },
    {
     "id": "alg-absorption-and-activity-based-costing",
@@ -425,7 +415,7 @@
     "id": "al-standard-costing-system",
     "zh": "标准成本制度",
     "en": "Standard Costing System",
-    "group": "alg-x"
+    "group": "alg-standard-costing"
    },
    {
     "id": "al-activity-based-costing",
@@ -437,19 +427,19 @@
     "id": "al-absorption-costing",
     "zh": "全部成本法",
     "en": "Absorption Costing",
-    "group": "alg-x"
+    "group": "alg-absorption-and-activity-based-costing"
    },
    {
     "id": "al-overhead-allocation",
     "zh": "间接费用分配",
     "en": "Overhead Allocation",
-    "group": "alg-x"
+    "group": "alg-absorption-and-activity-based-costing"
    },
    {
     "id": "al-pricing-and-profit",
     "zh": "定价与利润",
     "en": "Pricing and profit",
-    "group": "alg-x"
+    "group": "alg-absorption-and-activity-based-costing"
    },
    {
     "id": "al-payback-period-method",
@@ -461,13 +451,13 @@
     "id": "al-net-present-value",
     "zh": "净现值法",
     "en": "Net Present Value",
-    "group": "alg-x"
+    "group": "alg-capital-investment-appraisal"
    },
    {
     "id": "al-investment-appraisal",
     "zh": "投资评估",
     "en": "Investment appraisal",
-    "group": "alg-x"
+    "group": "alg-capital-investment-appraisal"
    },
    {
     "id": "al-incomplete-records",
@@ -485,43 +475,43 @@
     "id": "al-capital-accounts-for-partnerships",
     "zh": "合伙企业的资本账户",
     "en": "Capital accounts for partnerships",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-current-accounts-for-partnerships",
     "zh": "合伙企业的往来账户",
     "en": "Current accounts for partnerships",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-revaluation-account",
     "zh": "重估账户",
     "en": "Revaluation account",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-goodwill",
     "zh": "商誉",
     "en": "Goodwill",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-parntership",
     "zh": "合伙企业利润表",
     "en": "Statement of profit or loss and other comprehensive income for a parntership",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-statement-of-financial-position-for-a-partnership",
     "zh": "合伙企业资产负债表",
     "en": "Statement of financial position for a partnership",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-partnership-financial-statements-and-evaluation",
     "zh": "合伙企业财务报表与评价",
     "en": "Partnership financial statements and evaluation",
-    "group": "alg-x"
+    "group": "alg-partnership-accounts"
    },
    {
     "id": "al-financial-statement-under-ias1",
@@ -533,7 +523,7 @@
     "id": "al-statement-of-cash-flows-under-ias7",
     "zh": "IAS7下的现金流量表",
     "en": "Statement of Cash Flows under IAS7",
-    "group": "alg-x"
+    "group": "alg-accounting-for-limited-companies"
    },
    {
     "id": "al-cost-classification",
@@ -545,25 +535,25 @@
     "id": "al-manufacturing-account",
     "zh": "制造账户",
     "en": "Manufacturing account",
-    "group": "alg-x"
+    "group": "alg-manufacturing-accounts"
    },
    {
     "id": "al-statement-of-profit-or-loss-and-other-comprehensive-income-for-a-manufacturing-business",
     "zh": "制造企业的利润表",
     "en": "Statement of profit or loss and other comprehensive income for a manufacturing business",
-    "group": "alg-x"
+    "group": "alg-manufacturing-accounts"
    },
    {
     "id": "al-statement-of-financial-position-for-a-manufacturing-business",
     "zh": "制造企业的资产负债表",
     "en": "Statement of financial position for a manufacturing business",
-    "group": "alg-x"
+    "group": "alg-manufacturing-accounts"
    },
    {
     "id": "al-unrealised-profit",
     "zh": "未实现利润",
     "en": "Unrealised profit",
-    "group": "alg-x"
+    "group": "alg-manufacturing-accounts"
    },
    {
     "id": "al-financial-statements-for-a-non-profit-business",
@@ -581,7 +571,7 @@
     "id": "al-computerized-accounting-systems-and-software",
     "zh": "计算机化会计系统与软件",
     "en": "Computerized accounting systems and software",
-    "group": "alg-x"
+    "group": "alg-accounting-information"
    },
    {
     "id": "al-ethics",
