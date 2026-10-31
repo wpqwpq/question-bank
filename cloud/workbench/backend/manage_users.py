@@ -90,7 +90,8 @@ def _find(data: dict, username: str) -> dict | None:
     return None
 
 
-def _new_entry(username: str, name: str, role: str, subjects: list[str]) -> tuple[dict, str | None]:
+def _new_entry(username: str, name: str, role: str, subjects: list[str],
+               levels: list[str] | None = None) -> tuple[dict, str | None]:
     entry: dict = {
         "username": username,
         "name": name,
@@ -98,6 +99,9 @@ def _new_entry(username: str, name: str, role: str, subjects: list[str]) -> tupl
         "subjects": subjects,
         "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
     }
+    # levels 不写 = 不限学段（存量账号一律如此）。写了才落盘，保持 yaml 干净。
+    if levels:
+        entry["levels"] = levels
     if role == "service":
         key = auth.new_api_key()
         entry["key_hash"] = auth.hash_api_key(key)
@@ -162,11 +166,12 @@ def cmd_init(args: argparse.Namespace) -> int:
 def cmd_list(args: argparse.Namespace) -> int:
     data = _load_raw()
     rows = [u for u in data["users"]]
-    print(f"{'用户名':<12}{'角色':<9}{'学科':<26}{'状态':<6}姓名")
+    print(f"{'用户名':<12}{'角色':<9}{'学科':<26}{'学段':<8}{'状态':<6}姓名")
     for u in rows:
         subs = ",".join(u.get("subjects") or []) or "-"
+        lv = ",".join(u.get("levels") or []) or "全部"
         state = "停用" if u.get("disabled") else ("待改密" if u.get("must_change_password") else "正常")
-        print(f"{str(u.get('username')):<12}{str(u.get('role')):<9}{subs:<26}{state:<6}{u.get('name') or ''}")
+        print(f"{str(u.get('username')):<12}{str(u.get('role')):<9}{subs:<26}{lv:<8}{state:<6}{u.get('name') or ''}")
     print(f"\n共 {len(rows)} 条")
     return 0
 
@@ -206,7 +211,11 @@ def cmd_add(args: argparse.Namespace) -> int:
     if args.role not in ("admin", "service") and not subs:
         print("非管理员/服务账号必须指定 --subject", file=sys.stderr)
         return 1
-    e, secret = _new_entry(args.username, args.name or args.username, args.role, subs)
+    levels = auth._parse_levels(args.level) if args.level else []
+    if args.level and (not levels or levels == ["__invalid__"]):
+        print(f"--level 无法识别：{args.level}（只认 ig / al / all）", file=sys.stderr)
+        return 1
+    e, secret = _new_entry(args.username, args.name or args.username, args.role, subs, levels)
     data["users"].append(e)
     _save_raw(data)
     print(f"已新增 {args.username}（{args.role}）")
@@ -272,6 +281,8 @@ def main() -> int:
     sp.add_argument("username")
     sp.add_argument("--role", default="tagger", choices=sorted(auth.ROLES))
     sp.add_argument("--subject", action="append")
+    sp.add_argument("--level", action="append",
+                    help="限学段：ig / al（可多次）；不写 = 不限学段")
     sp.add_argument("--name")
     sp.set_defaults(func=cmd_add)
 

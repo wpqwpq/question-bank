@@ -38,6 +38,34 @@ TAXONOMY_DIR = Path(__file__).resolve().parents[2] / "data" / "taxonomy"
 # 别因为"化学 U5 没词表"就把这条删掉或按学科收窄。
 _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
     ("aqa", "U5"): ["U5", "U1", "U2", "U3", "U4"],
+    # IG 物理（2026-10-23）：
+    #   CIE 0625 extended 卷（Paper 2/4）＝ core + 补充两层知识 → P24 卷放开 P13；
+    #   Edexcel Paper 2 / 新纲 4WPH（P1P2）会考 Paper 1 的内容 → 放开 P1 + P2。
+    # 键是 (board, unit)、不分学科：P24 现在 CIE 物理与 CIE 数学 0580 共用同一条规则
+    # （数学 P24 = Paper 2&4 专用池，P13 = Paper 1&3 共用池，正好也是「extended 含 core」）；
+    # P1P2 只有 Edexcel 物理用（其余 Edexcel 科目没有 P1P2 单元），不会波及其他学科。
+    ("cie", "P24"): ["P24", "P13"],
+    ("edexcel", "P1P2"): ["P1P2", "P1", "P2"],
+    # AQA IG 商务 9225（2026-10-23）：飞书把词表分三档 —— P1 企业运营+人力资源、
+    # P2 市场营销+财务、P1P2 两卷共用的基础池（真实世界的商业、对企业的影响）。
+    # P1P2 不是卷单元，只是共用知识池 → P1、P2 两卷都要把它一并开出来。
+    # 键不分学科：AQA 化学 / 经济 IG 也有 P1、P2，但词表里没有 P1P2 单元，
+    # selectable_units 会把不存在的单元过滤掉，不会影响它们。
+    ("aqa", "P1"): ["P1", "P1P2"],
+    ("aqa", "P2"): ["P2", "P1P2"],
+    # Edexcel IG 数学（2026-10-26，培琪定）：词表按 Foundation / Higher 分两个单元。
+    # F 卷（4MA0/4MA1 的 1F、2F）只考 Foundation 内容 → 只开 F；
+    # H 卷（4MA1 的 1H、2H，新纲 4WM1H/4WM2H）覆盖 Foundation 全部内容 +
+    # Higher 专属的集合 / 转折点 / 条件概率（飞书里单列 15 条）→ 开 H + F。
+    # 词表里 F 与 H 的标签零重复，所以 H 卷看到的是 15 + 39 = 54 条、不重样。
+    # 键不分学科，但 Edexcel 其他科目的单元键都是 P1/P2/U1/U2，没有单字母 F/H，不受影响。
+    ("edexcel", "H"): ["H", "F"],
+    # AQA IG 数学 9260（2026-10-26，培琪定）：按难度分两层 ——
+    #   C = Core 卷（1C / 2C）也考的 40 个、E = 只有 Extension 卷（1E / 2E）考的 15 个。
+    #   Core 卷只开 C；Extension 卷开 E + C（跨单元），合计 55 个。
+    # 键不分学科：AQA 其余科目用 U1–U4 / P1 / P2 / P1P2 / AS / AL，没有单字母 C/E，
+    # 不受影响。
+    ("aqa", "E"): ["E", "C"],
 }
 
 # 跨单元的「指定组」开放：(考试局, 卷单元) -> [(外部单元, [组 id, …]), …]。
@@ -296,7 +324,12 @@ def tag_ids_for_units(board: str, qualification: str, subject: str, unit: str,
 # 牛津 AQA 会计 9615（2026-10-21）按 AS/A2 分两套词表：Paper 1+2 → AS，Paper 3+4 → AL。
 # IGCSE（2026-10-23）与 A-Level 同构的单元键：P1/P2/U1/U2，合池用 U1U2 / P1P2 / P14 / P56
 # （P14 = Paper 1–4 共用一套知识点、P56 = Paper 5–6 共用）。
-_UNIT_KEY_RE = re.compile(r"^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$")
+_UNIT_KEY_RE = re.compile(r"^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL|F|H|C|E)$")
+# F / H 是 Edexcel IGCSE 数学（2026-10-26）的 Foundation / Higher 层级单元，
+# 只在 data/taxonomy/edexcel/igcse/mathematics.json 出现；
+# C / E 是 AQA IGCSE 数学 9260（2026-10-26）的 Core / Extension 层级单元，
+# 只在 data/taxonomy/aqa/igcse/mathematics.json 出现；
+# 其他科目没有这几个单字母单元，加进来不会误放行现有词表的内容。
 
 _TAG_KEYS = ("id", "zh", "en", "group")
 

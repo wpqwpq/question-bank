@@ -35,6 +35,11 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "data" / "aqa" / "a-level" / "further-mathematics"
 
 QP_RE = re.compile(r"^qp-(\d{6})-further(\+)?math-(uf\w+)\.pdf$", re.I)
+# 备用命名族（2026-10-26 加）：官方站直接下的 `9665_<YYMM>_<UNIT>.pdf`，
+# 与 AQA 数学 9660 同构；UNIT 已是 FP1/FPSM1/FP2/FS2/FM2，映射到内部 UFxx 键。
+ALT_RE = re.compile(r"^9665_(\d{4})_([A-Za-z0-9]+)\.pdf$", re.I)
+ALT_UNIT = {"FP1": "UFP1", "FPSM1": "UFPSM1", "FP2": "UFP2",
+            "FS2": "UFS2", "FM2": "UFM2"}
 MIN_YEAR = 2020
 
 UNIT_TO_CODE = {"UFP1": "fm01", "UFPSM1": "fm02", "UFP2": "fm03",
@@ -60,25 +65,32 @@ CODE_RE = re.compile(r"\((9665)/(FM0\d)\)")
 
 
 def parse_qp(name):
-    """qp-2401-further(+math)-ufp1.pdf → (yyyymm, UNIT, 是否 further+math)。"""
+    """qp-2401-further(+math)-ufp1.pdf → (yyyymm, UNIT, 是否 further+math)。
+    备用族 9665_2401_FP1.pdf → (202401, UFP1, True)。"""
     m = QP_RE.match(name)
-    if not m:
-        return None
-    yyyymm, plus, unit = m.group(1), bool(m.group(2)), m.group(3).upper()
-    if unit not in UNIT_TO_CODE:
-        return None
-    return yyyymm, unit, plus
+    if m:
+        yyyymm, plus, unit = m.group(1), bool(m.group(2)), m.group(3).upper()
+        if unit not in UNIT_TO_CODE:
+            return None
+        return yyyymm, unit, plus
+    m = ALT_RE.match(name)
+    if m:
+        ym, tok = m.group(1), m.group(2).upper()
+        if tok not in ALT_UNIT:
+            return None
+        return f"20{ym}", ALT_UNIT[tok], True
+    return None
 
 
-def collect(src: Path):
+def collect(src: Path, min_year: int = MIN_YEAR):
     """按 (考季, 单元) 去重，further+math 优先。返回 kept / 丢弃的冗余 / 2019 及以前 / 坏卷。"""
     kept, dup, skipped, bad = {}, [], [], []
-    for p in sorted(src.glob("qp-*.pdf")):
+    for p in sorted(src.glob("*.pdf")):
         parsed = parse_qp(p.name)
         if parsed is None:
             continue
         yyyymm, unit, plus = parsed
-        if int(yyyymm[:4]) < MIN_YEAR:
+        if int(yyyymm[:4]) < min_year:
             skipped.append(p.name)
             continue
         try:
@@ -187,15 +199,18 @@ def main():
     ap.add_argument("--source", required=True)
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--only", default=None)
+    ap.add_argument("--min-year", type=int, default=MIN_YEAR,
+                    help=f"最低年份（默认 {MIN_YEAR}；切 2019 历史卷时传 2019）")
     args = ap.parse_args()
 
     src = Path(args.source).resolve()
     if not src.is_dir():
         sys.exit(f"源目录不存在: {src}")
 
-    kept, dup, skipped, bad = collect(src)
+    kept, dup, skipped, bad = collect(src, args.min_year)
     print(f"源目录: {src}")
-    print(f"2020+ 唯一卷 {len(kept)}；重复丢弃 {len(dup)}；跳过 2019 及以前 {len(skipped)}；坏卷 {len(bad)}\n")
+    print(f"{args.min_year}+ 唯一卷 {len(kept)}；重复丢弃 {len(dup)}；"
+          f"跳过 {args.min_year} 及以前 {len(skipped)}；坏卷 {len(bad)}\n")
 
     want = set(args.only.split(",")) if args.only else None
     rows = []

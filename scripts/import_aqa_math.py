@@ -69,14 +69,14 @@ def parse_qp(name):
     return f"20{yy}{mm}", unit
 
 
-def collect(src: Path):
+def collect(src: Path, min_year: int = MIN_YEAR):
     found, skipped, bad = {}, [], []
     for p in sorted(src.glob("*.pdf")):
         parsed = parse_qp(p.name)
         if parsed is None:
             continue
         yyyymm, unit = parsed
-        if int(yyyymm[:4]) < MIN_YEAR:
+        if int(yyyymm[:4]) < min_year:
             skipped.append(p.name)
             continue
         try:
@@ -184,16 +184,18 @@ def main():
     ap.add_argument("--apply", action="store_true", help="真正落盘")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--only", default=None, help="逗号分隔的目录名过滤")
+    ap.add_argument("--min-year", type=int, default=MIN_YEAR,
+                    help=f"最低年份（默认 {MIN_YEAR}；切 2019 历史卷时传 2019）")
     args = ap.parse_args()
 
     src = Path(args.source).resolve()
     if not src.is_dir():
         sys.exit(f"源目录不存在: {src}")
 
-    found, skipped, bad = collect(src)
+    found, skipped, bad = collect(src, args.min_year)
     print(f"源目录: {src}")
-    print(f"收集到 9660 QP（2020+）{len(found)} 卷；"
-          f"跳过 2019 及以前 {len(skipped)} 份；坏卷 {len(bad)} 份\n")
+    print(f"收集到 9660 QP（{args.min_year}+）{len(found)} 卷；"
+          f"跳过 {args.min_year} 及以前 {len(skipped)} 份；坏卷 {len(bad)} 份\n")
 
     want = set(args.only.split(",")) if args.only else None
     rows = []

@@ -173,6 +173,8 @@ def render_split(session_dir: str | Path, qnum: str | int,
     if not main_img_path.exists() or not layout_path.exists():
         raise FileNotFoundError(f"缺少一级图 {main_img_path.name} / layout，请先跑 render_questions.py")
     smap = SrcMap(json.loads(layout_path.read_text(encoding="utf-8")))
+    _play = json.loads(layout_path.read_text(encoding="utf-8"))
+    parent_opts = _play.get("options") or []
     main = Image.open(main_img_path)
     W = main.width
     render = dict(cut.get("render", {}))
@@ -330,6 +332,33 @@ def render_split(session_dir: str | Path, qnum: str | int,
                     area_entries[-1]["boxes"].append(nbox(y0, y1))
                 else:
                     area_entries.append({"label": lbl2, "boxes": [nbox(y0, y1)]})
+        # ── 子图选项热区投影（OPT_PROJ）─────────────────────────────
+        # 父级（一级图）的选项框按同样的裁剪位移映射进子图。子图的两段都是
+        # 一级图的像素级原样裁剪，所以只需加平移量；框顶落在哪一段就归哪个小问，
+        # 框底越界裁到段底（否则跨段的首末项会被整条丢掉）。
+        opt_entries = []
+        if parent_opts and q.get("question_type") == "mcq":
+            stem_h = max(0, int(round(stem_end_px)) - int(round(qp_top_px)))
+            segs_px = []
+            if stem_h >= 1:
+                segs_px.append((qp_top_px, stem_end_px, notice_h - qp_top_px))
+            if grp_y1 - grp_y0 >= 1:
+                segs_px.append((grp_y0, grp_y1, notice_h + stem_h - grp_y0))
+            for o in parent_opts:
+                b = o["box"]
+                py0, py1 = b["y"] * main.height, (b["y"] + b["h"]) * main.height
+                for p0, p1, off in segs_px:
+                    if p0 - 1 <= py0 <= p1 + 1:
+                        ent = {"label": o["label"],
+                               "box": {"x": round(b["x"], 4),
+                                       "y": round((py0 + off) / H, 4),
+                                       "w": round(b["w"], 4),
+                                       "h": round((min(py1, p1) - py0) / H, 4)}}
+                        if o.get("part"):
+                            ent["part"] = o["part"]
+                        opt_entries.append(ent)
+                        break
+
         layout = {
             "schema_version": 1,
             "image": out_img.name,
@@ -338,6 +367,8 @@ def render_split(session_dir: str | Path, qnum: str | int,
         }
         if area_entries:
             layout["areas"] = area_entries
+        if opt_entries:
+            layout["options"] = opt_entries
         out_layout = assets / f"{qbase}-{lbl}.layout.json"
         out_layout.write_text(json.dumps(layout, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 

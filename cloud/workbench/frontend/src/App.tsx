@@ -23,10 +23,11 @@ import LoginPage, { ChangePasswordPage } from './components/LoginPage'
 /**
  * 「按小问分别打标」三个考试局都支持，语义不同但入口一致：
  *
- *   - **AQA / CIE / accounting 学科**：小问之间的数据是传递的，只打标、**不切图**
+ *   - **AQA / CIE / accounting / mathematics 学科，以及 Edexcel 物理 U3、U6**（2026-10-27）：
+ *     小问之间的数据是传递的，只打标、**不切图**
  *     （后端 `store.sub_images_enabled`，子题文件不带 image/layout，预览回退整题图）；
- *   - **Edexcel physics / chemistry**：小问彼此独立，每个小问要连题区一起切出来单独成题
- *     （「题干 + a」「题干 + b」），所以保存时会真的裁剪子图。
+ *   - **Edexcel physics 的 U1/U2/U4/U5、chemistry**：小问彼此独立，每个小问要连题区
+ *     一起切出来单独成题（「题干 + a」「题干 + b」），所以保存时会真的裁剪子图。
  *
  * 云端因此装了 Pillow（裁剪只用它，不需要 pymupdf）。早期一版曾把开关整体隐藏，
  * 只放行已经切好的题，那是理解错了需求，已修正。
@@ -62,6 +63,27 @@ function loadRightWidth() {
  * 去连字符后 `a-level` 与 `alevel` 等价，igcse/gcse 不受影响。
  */
 const normQual = (q: string) => q.replace(/-/g, '').toLowerCase()
+
+/**
+ * 当前账号「学段」下拉里能出现哪些项（2026-10-27）。
+ * levels 为空 = 不限学段，返回全部三项（存量账号就是这样）；
+ * ["ig"] 的账号只留 IGCSE —— 它本来也只看得到 IG 卷，留着 A-Level 只会让人选出一片空白。
+ * 真正的闸门在后端（Ident.can_level），这里只是别让人白选一遍。
+ */
+const QUAL_OPTIONS: [string, string][] = [
+  ['a-level', 'A-Level'],
+  ['igcse', 'IGCSE'],
+  ['gcse', 'GCSE'],
+]
+const allowedQualsOf = (levels: string[] | undefined): string[] => {
+  const lv = levels ?? []
+  if (lv.length === 0 || lv.includes('*')) return QUAL_OPTIONS.map(([v]) => v)
+  const out: string[] = []
+  if (lv.includes('al')) out.push('a-level')
+  if (lv.includes('ig')) out.push('igcse')
+  // 配置写错（后端会把它当成「什么都不放行」）时不要在前端放大成全部，宁可留空
+  return out
+}
 
 // 难度不再是「完成」的必要条件（2026-10-16，与后端 compute_status 一致）：
 // 有知识点标签即完成；只有难度没标签算「缺其一」。难度是否齐备在预览模式单独补。
@@ -102,6 +124,8 @@ export default function App() {
    * role 为 null（还没登录）时按「可写」处理——此时页面被登录页挡住，不会渲染到这里。
    */
   const canWrite = me?.role !== 'viewer'
+  /** 学段下拉可用项：被限定在 IG 的账号只有 IGCSE 一项（后端仍是最终闸门） */
+  const allowedQuals = allowedQualsOf(me?.levels)
 
   const [papers, setPapers] = useState<Paper[]>([])
   const [board, setBoard] = useState('edexcel')
@@ -221,6 +245,11 @@ const pendingFocusRef = useRef<number | null>(null)
         // 默认学科落到本人学科上：否则化学生物老师一进来看到的是空的物理列表
         if (!u.subjects.includes('*') && u.subjects.length > 0 && !u.subjects.includes(subject)) {
           setSubject(u.subjects[0])
+        }
+        // 默认学段同理：账号被限定在 IG 时，直接切到 IGCSE，否则一进来是空的 A-Level 列表
+        const allowed = allowedQualsOf(u.levels)
+        if (allowed.length > 0 && !allowed.some((q) => normQual(q) === normQual(qualification))) {
+          setQualification(allowed[0])
         }
       })
       .catch(() => {
@@ -1321,6 +1350,7 @@ const pendingFocusRef = useRef<number | null>(null)
           visiblePapers={visiblePapers}
           board={board}
           qualification={qualification}
+          allowedQuals={allowedQuals}
           subject={subject}
           paperId={paperId}
           questions={mode === 'preview' ? previewQuestions : questions}
@@ -1433,7 +1463,8 @@ const pendingFocusRef = useRef<number | null>(null)
                   需要写权限请联系管理员提权。
                 </div>
               )}
-              {/* 小问切分开关（三个考试局都有；Edexcel 会额外裁子图，AQA/CIE 只打标不切） */}
+              {/* 小问切分开关（三个考试局都有；Edexcel 物理 U1/U2/U4/U5 与化学会额外裁子图，
+                  AQA/CIE/会计/数学/物理 U3·U6 只打标不切） */}
               {detail && (
                 <div className="shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                   <label

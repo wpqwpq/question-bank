@@ -50,6 +50,8 @@ node_modules/
 
 # 批量下载的原始真题（性质同 data/，不入库）
 downloads/
+# 真题打包（2026-10-31：根目录 downloadPapers.rar 已 2.0G，绝不能被 git add -A 带走）
+/*.rar
 
 # ── 视觉切割工作目录（技能 vision-cut 的中间产物，可随时重建）──
 .vision_work/

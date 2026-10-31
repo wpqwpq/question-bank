@@ -150,6 +150,11 @@
                 "type": "string",
                 "description": "所属小问标签（化学 2 分选择题 (a)/(b) 各一套选项时才有；单套选项时缺省）"
               },
+              "page": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "该选项所在的 PDF 页（0 基）。跨页题必须给：3 分三段选择题的 (c) 常落到下一页，渲染层只按 y 匹配会把框吸附到上一页。缺省时退回只按 y 匹配的旧行为"
+              },
               "bbox": {
                 "type": "array",
                 "minItems": 4,

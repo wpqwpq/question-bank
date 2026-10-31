@@ -21,6 +21,32 @@ from pathlib import Path
 DEFAULT_ROOT = "D:/Tasks/questionBank"
 
 
+def _cloud_zh(board, qual, subject) -> dict:
+    """从云端取该学科整份词表（线上是唯一正本，本地 data/taxonomy 常落后）。失败返回空。"""
+    if not (board and qual and subject):
+        return {}
+    import os
+    import urllib.request
+    key_file = Path(os.path.expanduser("~/.qbank_key"))
+    try:
+        key = os.environ.get("QBANK_API_KEY") or key_file.read_text(encoding="utf-8").strip()
+        base = os.environ.get("QBANK_BASE", "http://140.143.229.85")
+        op = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        req = urllib.request.Request(f"{base}/api/taxonomy/{board}/{qual}/{subject}",
+                                     headers={"Authorization": "Bearer " + key})
+        with op.open(req, timeout=20) as r:
+            data = json.loads(r.read().decode()).get("data") or {}
+    except Exception:  # noqa: BLE001
+        return {}
+    out = {}
+    for k, v in data.items():
+        if k.startswith("$") or not isinstance(v, dict):
+            continue
+        for t in v.get("tags") or []:
+            out[t["id"]] = t["zh"]
+    return out
+
+
 def load_zh(root: Path) -> dict:
     """全库 id -> 中文名（跨 board 合并；_prev 备份目录跳过）。"""
     zh = {}
@@ -84,6 +110,7 @@ def main():
 
     dec = json.loads(Path(a.decisions).read_text(encoding="utf-8"))
     zh = load_zh(Path(a.root))
+    zh.update(_cloud_zh(dec.get("board"), dec.get("qual"), dec.get("subject")))
 
     # apply_tags.py --apply 的 sidecar：记录 --auto-primary 兜底选中的主标签（整题的 label 为 None）
     auto_map = {}

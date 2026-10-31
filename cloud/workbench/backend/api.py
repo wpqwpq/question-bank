@@ -140,7 +140,9 @@ def _validate_primary(tags: list[str], primary: str | None, where: str) -> str |
 def get_taxonomy(request: Request):
     """词表清单：data/taxonomy/<board>/<qual>/<subject>.json 的目录树。
 
-    严格按学科隔离：taggers 只看到自己学科的词表文件（admin/service 看全部）。
+    严格按学科 + 学段隔离：taggers 只看到自己学科、自己学段的词表文件（admin/service 看全部）。
+    学段这一维是 2026-10-27 加的——IG 账号不该看见 A-Level 同科那份词表，
+    否则「只看 IG」在标签管理页就漏了（能读能改 A-Level 词表）。
     """
     ident = auth.current(request)
     root = taxonomy.TAXONOMY_DIR
@@ -148,6 +150,8 @@ def get_taxonomy(request: Request):
     if root.is_dir():
         for board in sorted(p for p in root.iterdir() if p.is_dir() and p.name != "_prev"):
             for qual in sorted(p for p in board.iterdir() if p.is_dir()):
+                if not ident.can_level(qual.name):
+                    continue
                 for f in sorted(qual.glob("*.json")):
                     if not ident.can(f.stem):
                         continue
@@ -158,7 +162,7 @@ def get_taxonomy(request: Request):
 @router.get("/taxonomy/{board}/{qual}/{subject}")
 def get_taxonomy_file(request: Request, board: str, qual: str, subject: str):
     """整份词表文件（标签管理页要看全部单元，而不只是某一卷的单元）。"""
-    auth.require_subject(request, subject)
+    auth.require_scope(request, subject, qual)
     path = taxonomy.taxonomy_path(board, qual, subject)
     if not path.exists():
         raise HTTPException(404, f"词表不存在：{board}/{qual}/{subject}")
@@ -180,13 +184,13 @@ def put_taxonomy_file(request: Request, board: str, qual: str, subject: str, pay
 
     校验不过整单拒绝（422，detail 为逐条错误、换行分隔）；成功则顺手清缓存，
     打标台右栏下一次拉详情就能看到新标签。
-    权限：admin / lead / tagger 都能改，但只能改**自己学科**的词表（跨科 404，
-    隔离在 require_subject 里）。viewer 只读、service（AI）不能改词表。
+    权限：admin / lead / tagger 都能改，但只能改**自己学科、自己学段**的词表（跨科/跨学段 404，
+    隔离在 require_scope 里）。viewer 只读、service（AI）不能改词表。
     并发：payload 带 `base_sig`（GET 时拿到的版本号），与磁盘不一致 → 409，
     响应头 X-QB-Current-Sig 给出当前版本号。不带 base_sig 时不校验（脚本兼容）。
     """
     auth.require_taxonomy(request)
-    ident = auth.require_subject(request, subject)
+    ident = auth.require_scope(request, subject, qual)
     data = payload.get("data", payload) if isinstance(payload, dict) else payload
     base_sig = payload.get("base_sig") if isinstance(payload, dict) else None
     try:
@@ -356,7 +360,10 @@ def _bulk_list_rows() -> tuple[dict[str, dict], dict[str, list]] | None:
 @router.get("/papers")
 def list_papers(request: Request):
     ident = auth.current(request)
-    key = (index_db.generation(), state.rev(), ident.is_admin, tuple(sorted(ident.subjects)))
+    # 缓存键必须带学段：否则 IG 账号和 A-Level 账号会共用同一份已过滤的列表
+    # （先来的人定调，后来的人看到别人的卷）。
+    key = (index_db.generation(), state.rev(), ident.is_admin,
+           tuple(sorted(ident.subjects)), tuple(sorted(ident.levels)))
     now = time.monotonic()
     with _papers_lock:
         c = _papers_cache
@@ -369,7 +376,8 @@ def list_papers(request: Request):
     by_id, qrows = bulk if bulk is not None else ({}, {})
     out = []
     for p in store.iter_papers():
-        if not ident.can(p.subject):  # 学科隔离：目录级过滤，跨科卷根本不出现
+        # 隔离：学科 + 学段，目录级过滤，越界的卷根本不出现
+        if not ident.can_paper(p.subject, p.qualification):
             continue
         row = by_id.get(p.id)
         qr = qrows.get(p.id)
@@ -408,7 +416,8 @@ def get_overview(request: Request, force: bool = False):
     if not ident.can_overview:
         raise HTTPException(403, "全局概览仅管理员与学科负责人可见")
 
-    key = (index_db.generation(), state.rev())
+    # 缓存键带上学段：overview 现在按 levels 过滤，不同学段的账号不能共用一份结果
+    key = (index_db.generation(), state.rev(), tuple(sorted(ident.levels)))
     now = time.monotonic()
     with _overview_lock:
         c = _overview_cache
@@ -421,6 +430,10 @@ def get_overview(request: Request, force: bool = False):
     papers = []
     counts = {"all": 0, "some": 0, "none": 0}
     for p in store.iter_papers():
+        # 学段隔离：写在 levels 里的账号（目前只有 IG 专用号）不看别学段的卷级信息。
+        # 存量 lead 的 levels 为空 → 与改造前完全一致（仍按原设计看全库卷级聚合）。
+        if not ident.can_level(p.qualification):
+            continue
         s = p.summary()
         pr = paper_progress(p, conf, flagged, s.get("question_count"))
         counts[pr["state"]] = counts.get(pr["state"], 0) + 1
@@ -454,7 +467,7 @@ def list_questions(request: Request, paper_id: str):
     paper = store.find_paper(paper_id)
     if paper is None:
         raise HTTPException(404, f"paper not found: {paper_id}")
-    auth.require_subject(request, paper.subject)
+    auth.require_paper(request, paper)
     conf = review.confirmed_ids()
     flagged = flags.flagged_ids()
     out = []
@@ -482,8 +495,8 @@ def get_question(request: Request, qid: str):
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
     paper, qpath = found
-    # 学科隔离检查点②：qid 归属校验，跨科一律 404（不用 403，避免泄露存在性）
-    auth.require_subject(request, paper.subject)
+    # 隔离检查点②：qid 归属校验（学科 + 学段），越界一律 404（不用 403，避免泄露存在性）
+    auth.require_paper(request, paper)
     text = qpath.read_text(encoding="utf-8")
     meta, fm = store.parse_front_matter(text)
     unit = paper.unit()
@@ -606,7 +619,7 @@ def put_flag(request: Request, qid: str, payload: FlagPayload):
         raise HTTPException(404, f"question not found: {qid}")
     paper, _ = found
     ident = auth.require_write(request)
-    auth.require_subject(request, paper.subject)
+    auth.require_paper(request, paper)
     try:
         res = flags.set_flag(qid, payload.flagged, by=ident.name or ident.username,
                              note=payload.note)
@@ -629,8 +642,8 @@ def put_confirm(request: Request, qid: str, payload: ConfirmPayload):
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
     paper, qpath = found
-    # 学科隔离检查点③-1：写接口再校验一次学科与角色
-    ident = auth.require_subject(request, paper.subject)
+    # 隔离检查点③-1：写接口再校验一次（学科 + 学段）与角色
+    ident = auth.require_paper(request, paper)
     if not ident.can_confirm:
         raise HTTPException(403, f"当前角色（{ident.role}）不能做审核确认")
     if flags.is_flagged(qid):
@@ -682,9 +695,9 @@ def put_annotation(request: Request, qid: str, payload: AnnotationPayload):
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
     paper, qpath = found
-    # 学科隔离检查点③-2：写接口再校验一次学科与角色
+    # 隔离检查点③-2：写接口再校验一次（学科 + 学段）与角色
     ident = auth.require_write(request)
-    auth.require_subject(request, paper.subject)
+    auth.require_paper(request, paper)
     # 「有误」的题冻结：不许打标、不许改难度、不许调切分，直到取消标记
     if flags.is_flagged(qid):
         raise HTTPException(409, "本题已标记为「有误」，请先取消标记再修改")
@@ -786,10 +799,15 @@ def _save_split(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         for sm in paper.sub_metas(qpath)
     }
 
-    # 渲染子图：AQA/CIE，以及 accounting 学科（任何考试局）按小问打标但「不切子图」——
-    # 子题文件不带 image/layout，预览自动回退整题图（前端 imageOverride ?? null）。
-    # 其余（Edexcel physics/chemistry）维持切子图。判定统一走 store.sub_images_enabled。
-    if not store.sub_images_enabled(paper.board, paper.subject):
+    # 渲染子图：AQA/CIE，accounting/mathematics 学科，以及 Edexcel IAL 物理 U3/U6
+    # （2026-10-27 培琪定）按小问打标但「不切子图」——子题文件不带 image/layout，
+    # 预览自动回退整题图（前端 imageOverride ?? null）。
+    # 其余（Edexcel physics 的 U1/U2/U4/U5、chemistry）维持切子图。
+    # 判定统一走 store.sub_images_enabled；卷号从主文件 front-matter 取（WPH13 / WPH13A）。
+    if not store.sub_images_enabled(paper.board, paper.subject,
+                                    str(meta.get("paper_code") or ""),
+                                    paper.qualification):
+
         render_res: dict = {
             "results": [{"label": l, "image": None, "layout": None} for l in top_labels],
             "warnings": [],

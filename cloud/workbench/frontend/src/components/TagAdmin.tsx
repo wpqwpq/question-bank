@@ -67,9 +67,11 @@ const sLock = (
  *  物化 U1..U9 / CIE P1P2,P4,P5 / Edexcel IAL 数学 P1–P4,M1–M3,S1–S3,D1,F1–F3 /
  *  CIE 9709 数学 P1–P6 / CIE 9231 进阶数学 FP1,FP2,FM,FS（FM/FS 两位字母无数字） /
  *  牛津 AQA 会计 AS,AL（Paper 1+2 → AS，Paper 3+4 → AL） /
- *  IGCSE 与 AL 同构：P1,P2,U1,U2；合池用 U1U2 / P1P2 / P14 / P56 */
+ *  IGCSE 与 AL 同构：P1,P2,U1,U2；合池用 U1U2 / P1P2 / P14 / P56 /
+ *  Edexcel IG 数学按层级分单元：F, H（2026-10-26） /
+ *  AQA IG 数学 9260 按层级分单元：C, E（Core / Extension，2026-10-26） */
 const UNIT_RE =
-  /^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL)$/
+  /^(?:IG|U[1-9]U[1-9]|U[1-9]|P[1-9]\d|P[1-9](?:P[1-9])?|PSM[1-9]|FP[1-9]|FPSM[1-9]|(?:FM|FS)[1-9]?|[SMFD][1-9]|AS|AL|F|H|C|E)$/
 
 /** 词表维度下拉（考试局 / 资格 / 学科） */
 function Picker({

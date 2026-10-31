@@ -66,9 +66,21 @@ from cut_paper import (  # noqa: E402  复用同一套坐标约定与 md 写法
     merge_with_existing,
 )
 
-# ── 版心（会计卷实测：页框 35–560.3，内容 x 42.2–552.8） ────────────────────
+# ── 版心 ────────────────────────────────────────────────────────────────────
+# 默认值 = A4（595×842）会计卷实测：页框 35.02–560.26 / 36.43–794.12 → 裁剪框
+# 39/556 / 40/788（四边内缩 3.98 / 4.26 / 3.57 / 6.12）。但 2019-june 等场次
+# Pearson 把整卷排成 652×898：版心宽度不变（525pt）、整体右移 28.35pt。写死
+# 39/556 会切掉右边框与点线右端、还把偶数页左侧条带露进来（2026-10-27 修）。
+# → 运行时按页框反算，见 apply_frame()。A4 卷算出来与原常量逐位重合。
 L_DEF, T_DEF = 39.0, 40.0
 R_DEF, B_DEF = 556.0, 788.0
+FRAME_PAD_L, FRAME_PAD_T = 3.9846, 3.5671   # 页框 → 裁剪框的左/上内缩
+FRAME_PAD_R, FRAME_PAD_B = 4.2594, 6.1179   # 右/下内缩
+
+# 罗马小问单独成行时常缩进一级（x≈107.7 > LEFT_MARGIN_MAX=100），放行到这里；
+# 只认「整行以 (i)/(ii)… 起头」，避免把缩进正文当成小问。
+ROMAN_LEFT_MAX = 150.0
+ROMAN_ONLY_RE = re.compile(r"^\(\s*(?:i{1,3}|iv|v|vi{1,3}|ix|x)\s*\)")
 
 # 点线压缩
 KEEP_LINES = 12          # 固定压缩行数（--keep-lines 指定时才用）
@@ -87,6 +99,33 @@ def is_dotted(ln):
     """作答点线行：整行只有 '.' 与空白，且够长（表格里的 '.' 不会这么长）。"""
     t = ln["raw"].strip()
     return len(t) >= 20 and set(t) <= set(". ")
+
+
+def detect_frame(doc):
+    """找 Pearson 每页那个灰色圆角页框（宽>380、高>600 的描边矩形）。"""
+    for pg in doc:
+        for dr in pg.get_drawings():
+            r = dr["rect"]
+            if r.width > 380 and r.height > 600 and dr.get("type") in ("s", "fs"):
+                return r
+    return None
+
+
+def apply_frame(doc):
+    """按页框反算裁剪框，覆盖 L/T/R/B 模块常量；认不出页框就沿用 A4 默认值。
+
+    这样 595 宽的常规卷结果与旧常量逐位一致，652 宽的卷自动改成 67.3/584.3 /
+    68.3/816.3（版心宽度不变，只是整体跟着页框右移）。
+    """
+    global L_DEF, T_DEF, R_DEF, B_DEF
+    fr = detect_frame(doc)
+    if fr is None:
+        return None
+    L_DEF = r2(fr.x0 + FRAME_PAD_L)
+    T_DEF = r2(fr.y0 + FRAME_PAD_T)
+    R_DEF = r2(fr.x1 - FRAME_PAD_R)
+    B_DEF = r2(fr.y1 - FRAME_PAD_B)
+    return fr
 
 
 def collect_totals(pages_lines):
@@ -433,8 +472,13 @@ def collect_subquestions(regions, pages_lines, n=None):
         bb = rg["bbox"]
         for ln in pages_lines[rg["page"]]:
             lb = ln["bbox"]
-            if lb[1] >= FOOTER_Y or lb[0] > LEFT_MARGIN_MAX:
+            if lb[1] >= FOOTER_Y:
                 continue
+            if lb[0] > LEFT_MARGIN_MAX:
+                # 罗马小问单独成行时缩进到 x≈107.7，超 LEFT_MARGIN_MAX=100
+                # → 只对「整行以 (i)/(ii)… 起头」的行放宽到 ROMAN_LEFT_MAX。
+                if lb[0] > ROMAN_LEFT_MAX or not ROMAN_ONLY_RE.match(ln["raw"].strip()):
+                    continue
             if lb[1] < bb[1] - 1 or lb[1] > bb[3] + 1:
                 continue
             tokens = starred = None
@@ -585,6 +629,10 @@ def main():
         sys.exit(f"缺少 source.pdf: {sdir}")
 
     doc = pymupdf.open(src)
+    fr = apply_frame(doc)
+    if fr is not None:
+        print(f"  版心 = {L_DEF}/{T_DEF}/{R_DEF}/{B_DEF}"
+              f"（按页框 {r2(fr.x0)}–{r2(fr.x1)} / {r2(fr.y0)}–{r2(fr.y1)} 反算）")
     pages_lines = [build_page_lines(pg) for pg in doc]
     pages_pairs = [assign_words_to_lines(pages_lines[i], doc[i].get_text("words"))
                    for i in range(doc.page_count)]

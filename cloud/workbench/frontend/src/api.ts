@@ -227,6 +227,11 @@ export interface AuthUser {
   role: Role
   /** 学科 token，与 data/<board>/<qual>/<subject>/ 的目录名一致；["*"] = 全部 */
   subjects: string[]
+  /**
+   * 学段限制（2026-10-27）：[] = 不限学段（存量账号，A-Level + IG 都能看）；
+   * ["ig"] = 只看 IGCSE。后端每个接口都会兜底，前端只用来收敛下拉与默认值。
+   */
+  levels: string[]
   must_change_password: boolean
 }
 

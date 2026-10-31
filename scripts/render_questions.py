@@ -477,11 +477,16 @@ def main():
         if q.get("question_type") == "mcq" and q.get("option_hotzones"):
             # 选项热区可落在任一题干段（共用题干块拼接后 MCQ 有多段），
             # 找到包含它的段，按段内相对坐标 + 段在图内的像素偏移换算
+            # ⚠️ 跨页题（3 分三段选择题的 (c) 常落在下一页）必须同时比 page：
+            #    只比 y 会让下一页的选项框吸附到上一页的段里（2026-10-28 踩过，
+            #    热区整体挪到题图顶部）。hotzone 带 page 时才启用该约束。
             for hz in q["option_hotzones"]:
                 b = hz["bbox"]
                 box = None
                 for (kind, _lbl, rg), yoff in zip(pieces, offsets):
                     rb = rg["bbox"]
+                    if hz.get("page") is not None and rg.get("page") != hz["page"]:
+                        continue
                     if kind == "qp" and rb[1] - 1 <= b[1] and b[3] <= rb[3] + 1:
                         box = nbox((b[0] - rb[0]) * q_zoom, yoff + (b[1] - rb[1]) * q_zoom,
                                    (b[2] - rb[0]) * q_zoom, yoff + (b[3] - rb[1]) * q_zoom)

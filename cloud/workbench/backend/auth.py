@@ -59,6 +59,12 @@ CONFIRM_ROLES = {"admin", "lead", "tagger", "service"}
 # 跨学科隔离仍然生效——lead 点开别人的卷去拉题目，照样 404。
 OVERVIEW_ROLES = {"admin", "lead"}
 
+# 学段（2026-10-27）：第二个隔离维度。`levels` 为空 = 不限学段（存量 80 个账号全是这种，
+# 行为与改造前完全一致）；写了就只放行列出的学段。
+#   "ig" = IGCSE / GCSE（aqa/igcse、cie/igcse、edexcel/igcse 三个目录）
+#   "al" = A-Level（aqa/a-level、cie/alevel、edexcel/a-level，三家的目录名不统一，靠 level_of 归一）
+LEVELS = {"ig", "al"}
+
 # 登录失败限流：同一 (IP, 用户名) 10 分钟内最多 10 次
 _MAX_FAILS = 10
 _FAIL_WINDOW = 600
@@ -83,12 +89,18 @@ def _users_sig() -> tuple[int, int]:
 
 @dataclass
 class Ident:
-    """一个请求身份。subjects 里的 "*" 表示全部学科。"""
+    """一个请求身份。subjects 里的 "*" 表示全部学科。
+
+    levels 是第二个维度（2026-10-27）：空 list = 不限学段，与改造前行为一致；
+    ["ig"] 就只能碰 IGCSE 卷。判据统一走 level_of()，不直接比字符串——
+    qualification 取的是目录名，A-Level 在 aqa/edexcel 叫 `a-level`、在 CIE 叫 `alevel`。
+    """
 
     username: str
     name: str
     role: str
     subjects: list[str] = field(default_factory=list)
+    levels: list[str] = field(default_factory=list)
     must_change_password: bool = False
     via: str = "cookie"  # cookie / key — 审计里区分人工与 AI
 
@@ -103,6 +115,16 @@ class Ident:
         if subject is None:
             return True
         return subject in self.subjects
+
+    def can_level(self, qualification: str | None) -> bool:
+        """能否看到该学段的卷。levels 为空（存量账号）= 不限，直接放行。"""
+        if not self.levels or self.is_admin or "*" in self.levels:
+            return True
+        return level_of(qualification) in self.levels
+
+    def can_paper(self, subject: str, qualification: str | None) -> bool:
+        """一卷能不能看/改：学科与学段都过关才算。"""
+        return self.can(subject) and self.can_level(qualification)
 
     @property
     def can_write(self) -> bool:
@@ -127,8 +149,54 @@ class Ident:
             "name": self.name,
             "role": self.role,
             "subjects": self.subjects,
+            "levels": self.levels,
             "must_change_password": self.must_change_password,
         }
+
+
+def level_of(qualification: str | None) -> str:
+    """把 qualification 目录名归一成学段："ig" 或 "al"。
+
+    线上这个值就是 `data/<board>/<qual>/` 的目录名，三家并不统一：
+    IG 都是 `igcse`；A-Level 在 aqa/edexcel 是 `a-level`、在 CIE 是 `alevel`。
+    前端下拉还有 `gcse` 选项，一并算进 ig —— 否则哪天真的导入 GCSE 卷，
+    IG 账号会因为字符串不等而看不见它。
+    """
+    q = (qualification or "").strip().lower().replace("_", "-").replace(" ", "-")
+    if q.startswith("ig") or q in {"gcse", "o-level", "olevel"}:
+        return "ig"
+    return "al"
+
+
+_LEVEL_ALIASES: dict[str, str] = {
+    "*": "*", "all": "*", "全部": "*",
+    "ig": "ig", "igcse": "ig", "gcse": "ig", "international-gcse": "ig",
+    "o-level": "ig", "olevel": "ig",
+    "al": "al", "a-level": "al", "alevel": "al", "as": "al", "as-level": "al",
+}
+
+
+def _parse_levels(raw: Any, username: str = "") -> list[str]:
+    """解析 users.yaml 的 `levels`。缺省/空 = 不限学段（存量账号的行为）。
+
+    ⚠️ 这里**不做前缀兜底**（不像 level_of）：手写配置认错一个字就等于免掉隔离，
+    所以只认别名表里的精确写法。写了但一个都认不出 → 退化成「任何学段都不放行」，
+    让账号登进来是空的，而不是悄悄变成全开。
+    """
+    if raw is None:
+        return []
+    items = [raw] if isinstance(raw, str) else list(raw or [])
+    out: list[str] = []
+    for x in items:
+        key = str(x).strip().lower().replace("_", "-").replace(" ", "-")
+        lv = _LEVEL_ALIASES.get(key)
+        if lv and lv not in out:
+            out.append(lv)
+    if items and not out:
+        print(f"[auth] 账号 {username} 的 levels 无法识别：{raw} → 已按「不放行任何学段」处理",
+              flush=True)
+        return ["__invalid__"]
+    return out
 
 
 def load_users() -> dict[str, Ident]:
@@ -161,6 +229,7 @@ def load_users() -> dict[str, Ident]:
                 name=str(u.get("name") or u["username"]),
                 role=role,
                 subjects=[str(s) for s in (subs or [])],
+                levels=_parse_levels(u.get("levels"), str(u["username"])),
                 must_change_password=bool(u.get("must_change_password")),
             )
     with _users_lock:
@@ -442,8 +511,8 @@ def _deny(status: int, detail: str) -> JSONResponse:
     return JSONResponse({"detail": detail}, status_code=status)
 
 
-def _subject_of_file_path(path: str) -> str | None:
-    """/files/<board>/<qual>/<subject>/<paper>/assets/<file> → subject，结构不对返回 None。
+def _scope_of_file_path(path: str) -> tuple[str, str] | None:
+    """/files/<board>/<qual>/<subject>/<paper>/assets/<file> → (subject, qual)，结构不对返回 None。
 
     只放行**题图目录**这一种形状。这样一刀就同时挡住了：
       /files/_review/*（审核记录 —— 2026-10-18 起已改存 var/state.db，本就不在 /files 范围，
@@ -456,7 +525,7 @@ def _subject_of_file_path(path: str) -> str | None:
     # files / <board> / <qual> / <subject> / <paper> / assets / <file>
     if len(segs) < 7 or segs[0] != "files" or segs[5] != "assets":
         return None
-    return segs[3]
+    return segs[3], segs[2]
 
 
 class AuthMiddleware:
@@ -495,11 +564,11 @@ class AuthMiddleware:
         if ident is not None and ident.must_change_password and path not in PASSWORD_PENDING_OK:
             return await _deny(428, "首次登录，请先修改初始密码")(scope, receive, send)
 
-        # /files/ 的学科隔离：题图 URL 里带学科段，直接按段比对，
+        # /files/ 的学科 + 学段隔离：题图 URL 里带学科段与资格段，直接按段比对，
         # 不用去查 paper（这是每个题图请求都要跑的热路径）
         if path.startswith("/files/") and ident is not None:
-            subject = _subject_of_file_path(path)
-            if subject is None or not ident.can(subject):
+            hit = _scope_of_file_path(path)
+            if hit is None or not ident.can_paper(hit[0], hit[1]):
                 return await _deny(404, "not found")(scope, receive, send)
 
         return await self.app(scope, receive, send)
@@ -517,7 +586,11 @@ def current(request: Request) -> Ident:
 
 
 def require_subject(request: Request, subject: str | None) -> Ident:
-    """学科不可见 → 404（不用 403，避免泄露「存在但你不能看」）。"""
+    """学科不可见 → 404（不用 403，避免泄露「存在但你不能看」）。
+
+    ⚠️ 只查学科、**不查学段**。题目/词表这类带 qualification 的资源一律用
+    require_scope / require_paper，别用这个（2026-10-27 加学段维度后）。
+    """
     ident = current(request)
     if not ident.can(subject):
         raise HTTPException(404, "not found")
@@ -529,6 +602,24 @@ def require_write(request: Request) -> Ident:
     if not ident.can_write:
         raise HTTPException(403, f"当前角色（{ident.role}）为只读，不能修改标注")
     return ident
+
+
+def require_scope(request: Request, subject: str | None, qualification: str | None) -> Ident:
+    """学科 + 学段双维度断言（2026-10-27）。
+
+    学段这一维只对「写了 levels 的账号」生效，存量账号 levels 为空，
+    等价于改造前的行为——所以这个函数可以直接替换原来的 require_subject，
+    不用在调用点判断新旧账号。
+    """
+    ident = current(request)
+    if not ident.can(subject) or not ident.can_level(qualification):
+        raise HTTPException(404, "not found")
+    return ident
+
+
+def require_paper(request: Request, paper) -> Ident:
+    """对一卷做权限断言。paper 传 store.Paper（只用到 subject 与 qualification 两个字段）。"""
+    return require_scope(request, paper.subject, getattr(paper, "qualification", None))
 
 
 def require_taxonomy(request: Request) -> Ident:

@@ -72,7 +72,31 @@ BARCODE_RE = re.compile(r"(P\d{5}[A-Z])\d*")
 BLANK_RE = re.compile(r"^BLANK\s+PAGE$", re.I)
 LEAVE_RE = re.compile(r"^(Leave|blank)$", re.I)
 MARKS_ONLY_RE = re.compile(r"^\(\s*\d{1,2}\s*\)$")          # 右对齐分值行
-SUB_RE = re.compile(r"^(\([a-z]\)|\([ivx]{1,4}\))")
+
+# 小问标签：Edexcel 会把**下一级标签印在上一级同一行**——
+#   首问      "5.\t (a)\t Find, using algebra…"   （标签跟在题号后）
+#   子项      "(b)\t (i)\t Show that…"             （罗马子项跟在字母后）
+#   罗马嵌套  "(ii)\t (a) Show that…"              （字母跟在罗马后）
+# 旧实现 `SUB_RE=^(\(a\)|\(i\))` 只认行首、且每题每行只取第一个 token，
+# 上面三种全漏 → 这些题在打标台上少一个（甚至没有）小问单元。2026-10-26 修。
+SUB_TOK_RE = re.compile(
+    r"(?:\(([a-z]{1,4})\)|\(([ivx]{1,4})\))[\t \u00a0\u2002\u2003\u2009]*")
+LEAD_QNUM_RE = re.compile(r"^\d{1,2}\s*(?:\.{1,2}|:)?\s*")   # "5." / "5:" / "5.."
+# 标签前面偶尔夹一个连接词：`(c)\t Hence (i) find the value of k`
+# （2022-june WMA14 Q1 实测，Hence 与 (i) 之间还有个 \x07 控制符）
+CONNECTOR_RE = re.compile(
+    r"([A-Za-z]{2,9},?)[\s\u00a0\u2002\u2003\u2009\x00-\x1f]+")
+CONNECTORS = {"hence", "and", "then", "so", "or", "thus"}
+# 行内子标签：父标签后面先跟实义词，再塞 "(i)"。
+#   "(a) Calculate  (i) the exact area…" / "Find  (i)  the centre of C,"
+# 只补**第一个子项 "(i)"**——全库实测这一类只丢 "(i)"（"(ii)"/"(iii)" 都独占一行），
+# 放宽到任意罗马 token 会把 "f (x)"、"speed v" 这类数学串认成标签。
+# 引述一律写成 "part (i)"，用它把假阳性挡掉。
+INLINE_SUB_RE = re.compile(
+    r"\((i)\)[\t \u00a0\u2002\u2003\u2009]*")
+INLINE_STOP = {"part", "parts"}
+SUB_XMAX = 145.0          # 标签行 x0 上限（新卷 42.5 / 缩进 60.9 / 子项 75–97 /
+                          # 少数二级项右移到 113–145；图注里的 "(m)" 在 248，挡在外面）
 CAPTION_RE = re.compile(
     r"^(Diagram\s+\d+|Figure\s+\d+|Copy\s+of\s+Diagram\s+\d+|"
     r"Only\s+use\s+this\s+copy.*|Turn\s+over\s+for\s+a\s+spare\s+grid.*)$", re.I)
@@ -218,9 +242,13 @@ def answer_page_cut(rows, draws):
     return cap_y + 18
 
 
-def build_page_model(doc, pages_lines, pages):
-    """每页行模型。作答页只保留第一张 Diagram 之前的内容 + Total 行。"""
-    cache = {}
+def build_page_model(doc, pages_lines, pages, cache=None):
+    """每页行模型。作答页只保留第一张 Diagram 之前的内容 + Total 行。
+
+    cache 由调用方传入可复用（page_content_rects 是全书最贵的一步，analyze 里
+    还要用同一份结果找页底下沿，重复算两遍纯属浪费）。
+    """
+    cache = {} if cache is None else cache
     model, answer_pages = {}, set()
     for pi in pages:
         rows = classify_page(pages_lines[pi])
@@ -336,6 +364,110 @@ def segments_of(rows):
     return [s for s in merged if s["y1"] - s["y0"] >= MIN_SEG_H]
 
 
+def _prefix_labels(raw):
+    """一行开头连续的标签 token（跳过题号）。"5. (a) Find…" → ["a"]；"(b) (i) …" → ["b", "i"]。
+
+    字母只认单个 a–z（老规矩）；多字母只有罗马数字才收——否则 "(pq)"、"f(ab)"
+    这种数学串会被当成小问标签。
+
+    另有一类 Edexcel 排版：父标签后面先跟几个实义词，再把子标签塞在同一行——
+      "(a) Calculate  (i) the exact area of the sector AOBX,"
+      "Find  (i)  the centre of C,"            （整题没有外层字母）
+    这类只补**行内第一个罗马 token**（"(i)"），且要求 token 前面还有实义文字。
+    反例要排除："…in part (i)…" / "…found in part (ii)(a)…" 这种引述——判据是
+    token 前紧邻的词不能是 "part"（引述一律写成 part (i)）。
+    """
+    txt = raw.lstrip()
+    m = LEAD_QNUM_RE.match(txt)
+    if m and m.end() < len(txt) and txt[m.end()] == "(":
+        txt = txt[m.end():]
+    out, pos = [], 0
+    for _ in range(6):
+        mm = SUB_TOK_RE.match(txt, pos)
+        if mm and mm.start() == pos:
+            tok = mm.group(1) or mm.group(2)
+            if tok not in ROMAN and len(tok) > 1:
+                break                  # "(pq)" / "(ab)" 不是标签
+            out.append(tok)
+            pos = mm.end()
+            continue
+        wm = CONNECTOR_RE.match(txt, pos)
+        if wm and wm.group(1).lower().strip(",") in CONNECTORS:
+            pos = wm.end()
+            continue
+        break
+    # 行内子标签（见 docstring）
+    if len(out) <= 1 and "i" not in out:
+        for im in INLINE_SUB_RE.finditer(txt, pos):
+            prev = txt[im.start() - 1] if im.start() else ""
+            # 标签是排版元素，前面一定是空白/制表/控制符；
+            # "f(x)"、"f′(x)" 这种数学串前面是字母或撇号，直接排除
+            if not (prev and (prev.isspace() or ord(prev) < 32)):
+                continue
+            pre = txt[pos:im.start()]
+            if not pre.strip():
+                continue
+            words = re.findall(r"[A-Za-z]+", pre)
+            if words and words[-1].lower() in INLINE_STOP:
+                continue               # "in part (i)" 这种引述
+            out.append("i")
+            break
+    return out
+
+
+def labels_from_tokens(toks):
+    """标签 token 流 → [{"label","page","bbox"}]（层级解析的唯一实现）。
+
+    toks = [(tok, page, y0, bbox), ...]，**按阅读顺序**给出（本函数内部还会再
+    按 (页, y 分带, x) 重排一次，见下）。
+
+    · 顶层类型看**本题第一个标签**：字母开头 → 字母是顶层、罗马是它的子项（"a i"）；
+      罗马开头（整题就是 (i)(ii)）→ 罗马是顶层、字母反而是它的子项（"ii a"）。
+    · 父标签一直生效到下一个小问字母为止，所以 "(b)" 之后的裸 "(i)" 记作 "b i"。
+    · 标签 bbox 直接取该行（下游 render_subsplit 只取 bbox[1] 当切点，x 不参与）：
+      math 管线不裁子图，D1 也不裁，所以 x 只用于同一行左右并排时的排序。
+
+    同名标签只认第一次出现：2026 起有些卷把作答页和题面印在一起，同一批标签
+    在作答页会再出现一遍（`(b)(i)` 独占一行、`(a)______` 这种），不去重会把
+    小问数翻倍。
+    """
+    if not toks:
+        return []
+    # 同一视觉行上左右并排的两个标签（"(a) Find  (i) the speed of…"）在 PDF 里是
+    # 两个独立文本行，读取顺序按 y 排会把右边的 (i) 排到前面 → 父链直接反了
+    # （2023-jan WME01 Q2 实测，两者 y 只差 0.2pt）。这里按 (页, y 分带, x) 重排：
+    # y 差 <2pt 的视为同一行，再按 x 从左到右；带内相同的键保持原序（stable）。
+    toks = sorted(toks, key=lambda t: (t[1], round(t[2] / 2), t[3][0]))
+    top = "roman" if toks[0][0] in ROMAN else "letter"
+    subs, seen, cur_letter, cur_roman = [], set(), None, None
+    for tok, page, y, bbox in toks:
+        if tok in ROMAN:
+            if top == "letter" and cur_letter:
+                lab = f"{cur_letter} {tok}"
+            else:
+                lab, cur_roman = tok, tok
+        elif top == "letter":
+            lab, cur_letter = tok, tok
+        else:
+            lab = f"{cur_roman} {tok}" if cur_roman else tok
+        if lab in seen:
+            continue                   # 作答页回声 / 合并行重复
+        seen.add(lab)
+        subs.append({"label": lab, "page": page, "bbox": [r2(v) for v in bbox]})
+    return subs
+
+
+def collect_subquestions(rows):
+    """本题范围内的小问标签 → [{"label","page","bbox"}]（math inline 管线）。"""
+    toks = []
+    for r in rows:
+        if r["kind"] != "text" or r.get("x0", 999) > SUB_XMAX:
+            continue
+        for tok in _prefix_labels(r["raw"]):
+            toks.append((tok, r["page"], r["y0"], r["line"]["bbox"]))
+    return labels_from_tokens(toks)
+
+
 # ── 主分析（cut 与 audit 共用） ─────────────────────────────────────────────
 
 PAPER_MARKS_RE = re.compile(
@@ -358,7 +490,8 @@ def analyze(doc, pages_lines, paper_marks=None):
         paper_marks = cover_marks(doc)
     hi = qp_page_limit(doc) or n_pages
     pages = list(range(1, hi))          # 封面永远不是题面页，排除
-    model, ans_pages = build_page_model(doc, pages_lines, pages)
+    rect_cache = {}
+    model, ans_pages = build_page_model(doc, pages_lines, pages, cache=rect_cache)
     starts, nq = find_qstarts(model, pages)
     totals = find_totals(model, pages)
     meta = {"pages": n_pages, "qp_pages": hi, "answer_pages": len(ans_pages),
@@ -385,7 +518,7 @@ def analyze(doc, pages_lines, paper_marks=None):
 
     bot_y = {}
     for pi in pages:
-        for y1, y0, x0, x1, _hl in page_content_rects(doc, pi, {}):
+        for y1, y0, x0, x1, _hl in page_content_rects(doc, pi, rect_cache):
             if y0 > 745 and (x1 - x0) > 400:
                 bot_y[pi] = min(bot_y.get(pi, 800.0), y0)
         # 页脚条码/页码行（小页卷在 y≈768 而不是 790 以下）也算下界，
@@ -467,19 +600,7 @@ def analyze(doc, pages_lines, paper_marks=None):
             q["status"] = "review"
             notes.append("本题未取到任何内容段（整题都在作答页？）")
 
-        subs, parent = [], None
-        for r in rows:
-            if r["kind"] != "text" or r.get("x0", 999) > 110:
-                continue
-            m = SUB_RE.match(r["raw"])
-            if not m:
-                continue
-            tok = m.group(1).strip("()")
-            lab = f"{parent} {tok}" if tok in ROMAN and parent else tok
-            if tok not in ROMAN:
-                parent = tok
-            subs.append({"label": lab, "page": r["page"],
-                         "bbox": [r2(v) for v in r["line"]["bbox"]]})
+        subs = collect_subquestions(rows)
         q["subquestions"] = subs
 
         conf = 0.6 if tot is not None else 0.4

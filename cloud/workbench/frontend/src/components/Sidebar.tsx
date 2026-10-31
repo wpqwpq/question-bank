@@ -6,6 +6,8 @@ interface Props {
   visiblePapers: Paper[]
   board: string
   qualification: string
+  /** 本账号可选的学段（IG 专用号只有 igcse 一项）；见 App.tsx 的 allowedQualsOf */
+  allowedQuals: string[]
   subject: string
   paperId: string
   questions: QuestionSummary[]
@@ -20,6 +22,12 @@ interface Props {
 
 const selectCls =
   'w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none'
+
+const QUAL_LABEL: Record<string, string> = {
+  'a-level': 'A-Level',
+  igcse: 'IGCSE',
+  gcse: 'GCSE',
+}
 
 function Label({ text }: { text: string }) {
   return <label className="mb-1 block text-xs font-medium text-gray-500">{text}</label>
@@ -44,10 +52,13 @@ export default function Sidebar(p: Props) {
           className={selectCls}
           value={p.qualification}
           onChange={(e) => p.onQualification(e.target.value)}
+          disabled={p.allowedQuals.length <= 1}
         >
-          <option value="a-level">A-Level</option>
-          <option value="igcse">IGCSE</option>
-          <option value="gcse">GCSE</option>
+          {p.allowedQuals.map((q) => (
+            <option key={q} value={q}>
+              {QUAL_LABEL[q] ?? q}
+            </option>
+          ))}
         </select>
       </div>
       <div>

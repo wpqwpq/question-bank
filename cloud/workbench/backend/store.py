@@ -36,6 +36,21 @@ SUB_NO_IMAGE_BOARDS = {"aqa", "cie"}
 # （纯数学一题一页、D1 还带作答册），按小问裁出来的碎片没有阅读价值。
 SUB_NO_IMAGE_SUBJECTS = {"accounting", "mathematics"}
 
+# 单元级豁免（2026-10-27 王培琪定）：Edexcel IAL 物理的 U3（WPH13）与 U6（WPH16）。
+# 这两份是实践技能卷，一题常跨 3 页，按小问裁出来的碎片把题干和几行空白切在一起，
+# 没有阅读价值（与 AQA/CIE 的判据同构）。键用**单元键**而非卷号，A 卷（WPH13A/WPH16A）
+# 与以后新增的卷自动生效，不必逐卷维护。
+# ⚠️ 只关「子图」，不关「按小问打标」：子题文件 qNN-<label>.md 照写、标签照落，
+#    预览回退整题图——2020 年那 45 个已打好的小问标签因此原样保得住。
+SUB_NO_IMAGE_UNITS = {("edexcel", "physics", "U3"), ("edexcel", "physics", "U6")}
+
+# 考试局 + 学科级豁免（2026-10-29 王培琪定）：Edexcel 商务（IAL WBS11/WBS12）。
+# 商务题是「材料 + 若干讨论题」，题干情境与作答区常常互相穿插，按小问裁出来的
+# 子图边界错乱（裁到半句、丢作答行），修脚本不划算——直接回退整题图。
+# ⚠️ 键是 (board, subject)，不含 qualification：edexcel IG business 同走这条
+#    （那 32 卷目前一个子题都没有，等于空转，以后也不会再产子图）。
+SUB_NO_IMAGE_BOARD_SUBJECTS = {("edexcel", "business")}
+
 
 # 打标粒度（2026-10-19）：默认按顶层字母（a/b/c）打标；下列学科展开到罗马子问。
 # 会计 IAL 的评分与知识点都落在 (a)(i)(ii) 这一层，一个 (a) 下常有 3–5 个分项，
@@ -57,14 +72,30 @@ def sub_slug(label: str) -> str:
     return "-".join(label.split())
 
 
-def sub_images_enabled(board: str, subject: str) -> bool:
+def sub_images_enabled(board: str, subject: str, paper_code: str = "",
+                       qualification: str = "") -> bool:
     """按小问打标时是否真的要裁子图。
 
     False = 只写子题文件、预览回退整题图（与 AQA/CIE 同语义）。
-    新增考试局/学科默认 True（黑名单制），不想切图就往上面两个集合里加。
+    新增考试局/学科默认 True（黑名单制），不想切图就往上面四个集合里加。
+
+    `paper_code` 传卷号（WPH13 / WPH13A），用于单元级豁免（SUB_NO_IMAGE_UNITS）；
+    不传则只按考试局/学科判——老调用点行为不变。
     """
-    return (board.lower() not in SUB_NO_IMAGE_BOARDS
-            and subject.lower() not in SUB_NO_IMAGE_SUBJECTS)
+    b = (board or "").lower()
+    s = (subject or "").lower()
+    if b in SUB_NO_IMAGE_BOARDS or s in SUB_NO_IMAGE_SUBJECTS:
+        return False
+    if (b, s) in SUB_NO_IMAGE_BOARD_SUBJECTS:
+        return False
+    if paper_code:
+        unit = unit_from_paper_code(
+            paper_code, subject=s, qualification=qualification or "a-level", board=b
+        )
+        if (b, s, unit) in SUB_NO_IMAGE_UNITS:
+            return False
+    return True
+
 
 _schema_validator: Draft202012Validator | None = None
 
@@ -90,7 +121,17 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
       Edexcel 经济       4EC1-01 → P1、-02 → P2
       CIE 会计/商务/经济 一科一个池 → U1U2 / P1P2 / P1P2（飞书里这两份 paper 100% 共用一套知识点）
       CIE 化学           P1–P4 → P14、P5–P6 → P56
-      三门数学（0580/0606/0607、9260、4MA/4MB1/4PM）→ None：一个知识点横跨多份 paper，
+      AQA 物理           9203/1、9203/2 → P1P2（飞书只有一套词表，两卷通吃）
+      CIE 物理           0625 Paper 1/3 → P13（core）、Paper 2/4 → P24（extended，跨单元开 P13）、
+                         Paper 5/6 → None（实践卷不给词表）
+      CIE 数学（0580）    Paper 1/3 → P13、Paper 2/4 → P24（extended，跨单元开 P13）；
+                         0606 / 0607 → None（大纲主题不同，暂不建词表）
+      Edexcel 物理       4PH0/4PH1 Paper 1 → P1、Paper 2 → P1P2（跨单元）；新纲 4WPH* → P1P2
+      Edexcel 数学       F 卷（4MA0/4MA1 的 1F、2F）→ F；H 卷（4MA1 的 1H、2H、新纲 4WM1H/4WM2H）
+                         → H（跨单元开 F）。2026-10-26 建词表。
+      AQA 数学 9260      Core 卷（1C/2C）→ C；Extension 卷（1E/2E）→ E（跨单元开 C）。
+                         2026-10-26 建词表。
+      其余数学（0606/0607、4MB1）→ None：一个知识点横跨多份 paper，
       拆不干净，按培琪的要求先不建词表（卷照常可开、只是右栏无标签）。
     """
     b = (board or '').strip().lower()
@@ -119,6 +160,87 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
         if not m:
             return None
         return "P14" if int(m.group(2)[0]) <= 4 else "P56"
+    if key == ("aqa", "business"):
+        # 牛津 AQA 9225（2026-10-23）：一纸一单元 P1 / P2。飞书里还有第三档
+        # 「Paper 1&2」＝两卷共用的基础内容池（真实世界的商业、对企业的影响），
+        # 它不是一份卷、只是词表里的 P1P2 单元，由 taxonomy._CROSS_UNIT_SELECTABLE
+        # 一并开给 P1、P2 两卷。
+        m = re.match(r"^(\d{4})-(\d)$", c)
+        return f"P{m.group(2)}" if m else None
+    if key == ("edexcel", "business"):
+        # Edexcel 4BS1（2026-10-23）：Paper 1 / Paper 2 在飞书里 100% 共用一套
+        # 知识点（单元写到「Paper 1&2」）→ 合成单池 P1P2，两卷都指向它。
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        return "P1P2" if m else None
+    if key == ("aqa", "physics"):
+        # 牛津 AQA 9203（2026-10-23）：飞书只有一套词表（单元写作 P1P2），
+        # Paper 1 与 Paper 2 不分知识点 → 两卷都指向同一个池。
+        m = re.match(r"^(\d{4})-(\d)$", c)
+        return "P1P2" if m else None
+    if key == ("aqa", "mathematics"):
+        # 牛津 AQA 9260（2026-10-26，培琪定）：两层难度卷 —— Core（1C / 2C）与
+        # Extension（1E / 2E）。飞书「数学」表的「单元」列已按层拆好：
+        #   C = Core 卷也考的 40 个、E = 只有 Extension 卷考的 15 个。
+        #   Core 卷（1C/2C）只开 C；
+        #   Extension 卷（1E/2E）→ E，再由 taxonomy._CROSS_UNIT_SELECTABLE[("aqa","E")]
+        #     把 C 的 40 个一并开放（跨单元），E 卷合计 55 个、13 个一级组合并成一个组头。
+        # 卷号尾字母就是层级，位置固定在 paper 段（9260-1c / 9260-2e）；别的 AQA 数学资格
+        # （无 9260 前缀）返回 None → 单元 IG，右栏无标签。
+        m = re.match(r"^(9260)-(\d)([ce])$", c)
+        if not m:
+            return None
+        return "C" if m.group(3) == "c" else "E"
+    if key == ("cie", "physics"):
+        # CIE 0625（2026-10-23）：飞书分 core（P13）/ extended（P24）两个池。
+        # Paper 1、3 是 core 卷 → 只开 P13；Paper 2、4 是 extended 卷 → P24，
+        #   再由 taxonomy._CROSS_UNIT_SELECTABLE 把 P13 的标签一并开放（跨单元）。
+        # Paper 5、6 是实验 / 实验替代卷，飞书没给对应知识点 → 不给词表
+        #   （培琪 2026-10-23 定，右栏为空、不可打标，与「实验卷不进分母」老口径一致）。
+        m = re.match(r"^(\d{4})-(\d{2})$", c)
+        if not m:
+            return None
+        return {1: "P13", 2: "P24", 3: "P13", 4: "P24"}.get(int(m.group(2)[0]))
+    if key == ("cie", "mathematics"):
+        # CIE 0580（2026-10-26）：飞书「数学」表里 IG 行已按两池写好单元 ——
+        #   P13 = Paper 1&3 共用（44 个）、P24 = Paper 2&4 专用（41 个）。
+        #   Paper 1、3 是 core 卷 → 只开 P13；
+        #   Paper 2、4 是 extended 卷 → P24，再由 taxonomy._CROSS_UNIT_SELECTABLE
+        #     把 P13 的 44 个一并开放（跨单元），两池共 85 个、9 个一级组合并成一个组头。
+        # 0606 Additional / 0607 International 不套这份词表（0607 是 10 个主题、含
+        #   Functions 与 Paper 5/6 探究卷，0580 的 9 个主题盖不住）→ None，
+        #   前端表现为「卷可开、右栏无标签」。
+        m = re.match(r"^(\d{4})-(\d{2})$", c)
+        if not m or m.group(1) != "0580":
+            return None
+        return {1: "P13", 2: "P24", 3: "P13", 4: "P24"}.get(int(m.group(2)[0]))
+    if key == ("edexcel", "physics"):
+        # Edexcel IG 物理（2026-10-23，培琪定）：
+        #   4PH0 / 4PH1 Paper 1  → P1
+        #   4PH0 / 4PH1 Paper 2  → P1P2（跨单元开 P1+P2，Paper 2 会考 Paper 1 的内容）
+        #   新纲 4WPH1 / 4WPH2   → 一律 P1P2（卷号都是 /1P，看不出 paper 维度）
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        if not m:
+            return None
+        fam, paper = m.group(1), int(m.group(2))
+        if fam.startswith("4w"):
+            return "P1P2"
+        return "P1" if paper == 1 else "P1P2"
+    if key == ("edexcel", "mathematics"):
+        # Edexcel IG 数学（2026-10-26，培琪定）：词表按 F / H 两个单元建。
+        #   4MA0/1F、4MA1/1F|2F           → F（Foundation，只开 F 的标签）
+        #   4MA1/1H|2H、4WM1H/01|4WM2H/01 → H（Higher 覆盖 Foundation 全部内容，
+        #                                   由 taxonomy._CROSS_UNIT_SELECTABLE 开 [H, F]）
+        # 层级字母的位置不固定：老纲在 paper 段（4ma1-1h / 4ma1-2fr），新纲在 spec 段
+        # （4wm1h-01），所以扫整个 paper_unit 串而不是只扫 paper 段。
+        # 4MB1（Mathematics B）没有 F/H 之分，卷已下架；万一再有卷，这里返回 None
+        # → 单元 IG → 无词表（可开卷、右栏空），不会误挂到 F 上。
+        if not c.startswith("4"):
+            return None
+        if "h" in c:
+            return "H"
+        if "f" in c:
+            return "F"
+        return None
     return None
 
 
@@ -127,11 +249,11 @@ def unit_from_paper_code(code: str, subject: str = "", qualification: str = "",
     """WPH11 -> U1, WPH14A -> U4；AQA 的 PH01 / CH01 -> U1（牛津 AQA 卷号是 PH0N / CH0N）；
     CIE 的 QP11–QP23 -> P1P2、QP41–QP43 -> P4、QP51–QP54 -> P5（对齐 taxonomy/cie 词表的单元键）。
 
-    **IGCSE 一律返回 `IG`**（2026-10-23）：IG 的卷号是真实 syllabus 号（`0580-11`、
-    `4ma1-1f`、`9260-1e`），和 A-Level 的 QP/MA/WMA 形式不撞，但会误命中下面的通用
-    规则——`0580-11` 会被 `1(\\d)` 判成 U1。飞书的 IG「单元」记的是「这知识点考在哪几份
-    paper」，不是知识分区，所以一科只建一个词表单元 `IG`，paper 维度的筛选交给
-    `paper_tokens()` + tag.papers 做。
+    **IGCSE 走 `_ig_unit`**（2026-10-23）：按 考试局×学科×paper 映射到与 A-Level 同构的
+    单元键（P1 / P2 / U1U2 / P1P2 / P24 …）；认不出时（0606/0607 及其余数学、CIE 物理实践卷、
+    CIE 数学 0606/0607）退回
+    `IG`——`IG` 没有词表，等于「卷可开、右栏无标签」。必须先于下面所有分支判断：
+    IG 卷号是真实 syllabus 号（`0580-11`、`4ma1-1f`、`9260-1e`），会误命中通用 `1(\\d)` 规则。
 
     Edexcel 取卷号中 '1' 后跟的那一位数字；AQA 的 PH01–PH05（物理）、CH01–CH05（化学）
     没有这个模式，回退到 PH0N / CH0N 形式。都匹配不到返回 'unknown'——

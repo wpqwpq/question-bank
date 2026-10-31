@@ -50,6 +50,9 @@ from cut_paper import (  # noqa: E402
     build_page_lines, build_regions, merge_with_existing, page_content_rects,
     r2, yaml_scalar,
 )
+# 小问标签解析与 math 管线共用一份实现（2026-10-26）：老版本 SUB_RE 只认
+# `^\(([a-z])\)`，于是 (i) 被当成顶层字母、(ii) 直接丢、(a) 印在题号行时整条漏掉。
+from cut_paper_math import _prefix_labels, labels_from_tokens  # noqa: E402
 
 # ── 版心（按 595×842 实测，其他页面尺寸按比例缩放） ────────────────────────
 BASE_W, BASE_H = 595.28, 841.89
@@ -67,7 +70,6 @@ ANSWER_HDR_RE = re.compile(r"^Write\s+the\s+answer\s+to\s+Question\s+\d+", re.I)
 QNAME_RE = re.compile(r"^Question\s+(\d+)$", re.I)
 BLANK_RE = re.compile(r"^BLANK\s+PAGE$", re.I)
 BARCODE_RE = re.compile(r"^\*?P\d{5}[A-Z]\d*\*?$")
-SUB_RE = re.compile(r"^\(\s*([a-z])\s*\)")
 
 LINEGAP = 26.0          # band 内相邻横线最大间距（pt）
 LINE_H_DEF = 26.6       # 单行横线占高（实测 26.4–26.8）
@@ -282,19 +284,27 @@ def qp_questions(doc, qp_pages, G, cache):
 
 
 def collect_subs(regs, pages_lines):
-    """从本题 QP 段里收小问标签 (a)/(b)/…（只在本题区间内）。"""
-    subs = []
+    """从本题 QP 段里收小问标签 (a)/(b)/(i)/(ii)…（只在本题区间内）。
+
+    D1 的三种版式（17 卷实测）都要吃得下：
+        · 字母父 + 缩进罗马子项：`(a) …` x0≈70.9 / `(i) …` x0≈92.1
+        · 同一行两个标签：`(c)\t (i)\t Use Prim's…`、`(i)\t (a)\t Explain…`
+        · 题号行带首标签：`4.\t (a)\t Explain the difference…`（老版本整条漏掉）
+    层级不靠缩进，靠标签顺序（见 cut_paper_math.labels_from_tokens）：
+    首标签是字母 → 字母为顶层；首标签是罗马 → 罗马为顶层。
+    """
+    toks = []
     for rg in regs:
         bb = rg["bbox"]
         for ln in pages_lines[rg["page"]]:
             lb = ln["bbox"]
             if not (bb[1] - 1 <= (lb[1] + lb[3]) / 2 <= bb[3] + 1):
                 continue
-            m = SUB_RE.match(ln["raw"].strip())
-            if m and lb[0] < 120:
-                subs.append({"label": m.group(1), "page": rg["page"],
-                             "bbox": [r2(v) for v in lb]})
-    return subs
+            if lb[0] >= 120:      # 图注/表格右列的 "(m)" 之类
+                continue
+            for tok in _prefix_labels(ln["raw"]):
+                toks.append((tok, rg["page"], lb[1], lb))
+    return labels_from_tokens(toks)
 
 
 def drop_trailing_rule(doc, pi, y_end, G, cache):
