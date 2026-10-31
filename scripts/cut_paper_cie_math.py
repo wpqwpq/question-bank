@@ -85,6 +85,13 @@ def looks_garbled(txt):
     return False
 
 
+def garbled_share(txt):
+    """一行里「非 ASCII / 控制字符」的占比（0–1）。"""
+    if not txt:
+        return 0.0
+    return sum(1 for c in txt if ord(c) < 32 or ord(c) > 127) / len(txt)
+
+
 def is_furniture_row(txt, bbox):
     """页边家具：2024 起每页顶部有「条形码」——它其实是一行用
     AllAndNone 乱码字体排的文字（含控制字符），外加 `*0019656641003*`
@@ -94,10 +101,17 @@ def is_furniture_row(txt, bbox):
     所以「含控制字符」单独一条不够——必须同时要求**在题干列左侧**
     （条形码 x0≈60.6，题干列 x0≈93.7）。否则会把 (b) 小问连同 [3] 一起切掉
     （2024-oct-qp33 Q5 分值 3≠6 就是这么来的）。
+
+    ⚠️ 2018 版式的正文首行也会带 2 个控制字符：数学括号被排成 `\\x001 −2x\\x015`
+    （连字符号用 AllAndNone 的 0x00 表示）。旧判据「含任一控制字符」就把
+    「(i) Find the first three terms…」当成条形码剔掉，furn_bottom 被抬到 y=77，
+    整题上沿卡到 78 —— 题干首行连同题号一起切没，只剩一页点线
+    （cie-alevel-mathematics-2018-june-qp11 q04/q07 等 25 题的病因）。
+    所以这里改按**占比**判：真条码行 ≥70%，正文行 ≤10%，阈值 0.5 两边都够不着。
     """
     if bbox[2] <= L_MARGIN + 2:                     # 左边距「DO NOT WRITE…」
         return True
-    if bbox[1] < 80 and bbox[0] < 90 and (SERIAL_RE.match(txt) or looks_garbled(txt)):
+    if bbox[1] < 80 and bbox[0] < 90 and (SERIAL_RE.match(txt) or garbled_share(txt) >= 0.5):
         return True
     return False
 
@@ -419,7 +433,11 @@ def cut_paper(sdir: Path, dry_run=False, force=False):
                     top = safe_header(pg)
                     continue
                 break
-            if pg + 1 < npi:
+            if pg + 1 <= npi:
+                # 推进到下一题所在页：该页上半可能仍是本题的续页（如
+                # 2024-oct-qp21 Q6 的 (d) 落在第 2 页顶部，Q7 在同页中部）。
+                # 少了这一页，续页内容会被整段划给下一题 —— q06 的图只到 (c)，
+                # (d) 跑到 q07 图顶上去了（数学12 标的那 4 题就是这个病）。
                 pg += 1
                 top = safe_header(pg)
                 continue
