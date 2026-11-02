@@ -1,12 +1,13 @@
 """API 路由。"""
 from __future__ import annotations
 
+import json
 import sys
 import threading
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 
 import auth
@@ -359,10 +360,22 @@ def paper_progress(paper: store.Paper, conf: set[str], flagged: set[str],
 # 缓存键 = (索引代际, 状态库写入代际, 是否管理员, 学科范围)：
 # 保存标注 / 确认 / 标有误 / 撤标记都会推代际，所以不会出现「勾完确认对勾不变」；
 # 不同学科的用户各存一份，不会串号。TTL 比 /overview 短——列表是主路径，宁可多算一次。
+#
+# ⚠️ 2026-11-02 修：键里**去掉 state.rev()**。原先它让每一次确认/保存都把列表缓存判废，
+# 全站 4.5 万次确认下来缓存形同虚设，/api/papers 几乎每次都是 0.7s 的冷算。
+# 前端在保存与确认后一律 setPapers(prev => ...) 本地更新，不重拉列表，所以取消 rev 失效
+# 不会让谁看到「勾了没反应」；新鲜度改由 3 秒 TTL 兜住，并发请求共享同一份。
 # ---------------------------------------------------------------------------
-_PAPERS_TTL = 15.0
+_PAPERS_TTL = 3.0
 _papers_lock = threading.Lock()
-_papers_cache: dict = {"key": None, "at": 0.0, "payload": None}
+_papers_cache: dict = {"key": None, "at": 0.0, "body": None}
+
+# 批量取数的共享缓存（列表页 + 概览页共用一份）。
+# TTL 只用来兜住 has_tags 的新鲜度——它随 md 标签变，不随确认动作变，
+# 所以不绑 state.rev。2 秒内多人请求共用一份，冷算只付一次。
+_BULK_TTL = 2.0
+_bulk_lock = threading.Lock()
+_bulk_cache: dict = {"gen": None, "at": 0.0, "by_id": None, "qrows": None}
 
 
 def _progress_from_rows(rows, conf: set[str], flagged: set[str],
@@ -435,17 +448,37 @@ def _summary_from_row(paper: store.Paper, row: dict) -> dict:
 
 
 def _bulk_list_rows() -> tuple[dict[str, dict], dict[str, list]] | None:
-    """一次取全库「卷摘要 + 题目投影」。
+    """一次取全库「卷摘要 + 题目投影」，按索引代际 + 短 TTL 复用。
 
     索引缺失或正在全量重建时返回 None，调用方回落逐卷（慢但正确）。
+
+    为什么要缓存这一份（2026-11-02 实测）：
+      · progress_rows() 返 9 万行，单次 206ms、常驻 22MB；papers() 另有 17ms；
+      · 列表页与概览页**各自**都要这一份，不缓存就是每请求重做两遍；
+      · 这份数据里真正易变的只有「has_tags 一位」，而它只随 md 标签变化，
+        不随确认动作变化，所以用一个短 TTL 兜住新鲜度即可（不绑 state.rev）。
+    缓存键只带 index_db.generation()：它仅在**卷集合**变化时递增（新增/删除/全量重建），
+    单卷重灌、标 stale 都不动它 —— 正好对应「结构没变就不用重算」。
     """
     if not index_db.exists() or index_db.is_building():
         return None
-    try:
-        return ({r["paper_id"]: r for r in index_db.papers()}, index_db.progress_rows())
-    except Exception as e:  # noqa: BLE001  索引坏了只是慢，不能让列表 500
-        print(f"[papers] 批量取数失败，回落逐卷：{e}", flush=True)
-        return None
+    gen = index_db.generation()
+    now = time.monotonic()
+    with _bulk_lock:
+        c = _bulk_cache
+        if c["by_id"] is not None and c["gen"] == gen and (now - c["at"]) < _BULK_TTL:
+            return c["by_id"], c["qrows"]
+        # 未命中就在锁内重建（single-flight）：否则过期那一刻 N 个并发请求会同时
+        # 各算一遍 206ms，实测 10 并发能排队到 5.7s。让后来的等第一个算完直接拿结果。
+        try:
+            by_id = {r["paper_id"]: r for r in index_db.papers()}
+            qrows = index_db.progress_rows()
+        except Exception as e:  # noqa: BLE001  索引坏了只是慢，不能让列表 500
+            print(f"[papers] 批量取数失败，回落逐卷：{e}", flush=True)
+            return None
+        _bulk_cache.update({"gen": gen, "at": time.monotonic(),
+                            "by_id": by_id, "qrows": qrows})
+        return by_id, qrows
 
 
 @router.get("/papers")
@@ -453,52 +486,54 @@ def list_papers(request: Request):
     ident = auth.current(request)
     # 缓存键必须带学段：否则 IG 账号和 A-Level 账号会共用同一份已过滤的列表
     # （先来的人定调，后来的人看到别人的卷）。
-    key = (index_db.generation(), state.rev(), ident.is_admin,
+    key = (index_db.generation(), ident.is_admin,
            tuple(sorted(ident.subjects)), tuple(sorted(ident.levels)))
     now = time.monotonic()
+    # 整段在锁内：未命中时由第一个请求重建，其余并发请求等它算完直接复用缓存，
+    # 避免过期瞬间 N 个线程各算一遍（实测 10 并发会排队到 5s+）。
     with _papers_lock:
         c = _papers_cache
-        if c["payload"] is not None and c["key"] == key and (now - c["at"]) < _PAPERS_TTL:
-            return c["payload"]
+        if c["body"] is not None and c["key"] == key and (now - c["at"]) < _PAPERS_TTL:
+            # 直接回缓存好的 JSON 字节：这份响应对每个账号都一样，
+            # 每次重新 json.dumps 1.2MB 要 ~100ms，比算进度还贵。
+            return Response(content=c["body"], media_type="application/json")
 
-    conf = review.confirmed_ids()
-    flagged = flags.flagged_ids()   # 一处取全，别在循环里反复读文件
-    bulk = _bulk_list_rows()
-    by_id, qrows = bulk if bulk is not None else ({}, {})
-    out = []
-    for p in store.iter_papers():
-        # 隔离：学科 + 学段，目录级过滤，越界的卷根本不出现
-        if not ident.can_paper(p.subject, p.qualification):
-            continue
-        row = by_id.get(p.id)
-        qr = qrows.get(p.id)
-        # 只有「索引里这一卷齐备且未过期」才走快路径，其余一律回落逐卷（会顺带重灌）
-        if row is None or row.get("stale") or qr is None:
-            s = p.summary()
-            pr = paper_progress(p, conf, flagged, s.get("question_count"))
-        else:
-            s = _summary_from_row(p, row)
-            pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
-        s["flagged_count"] = pr["flagged_count"]
-        s["verified_count"] = pr["verified_count"]
-        out.append(s)
-    with _papers_lock:
-        _papers_cache.update({"key": key, "at": time.monotonic(), "payload": out})
-    return out
+        conf = review.confirmed_ids()
+        flagged = flags.flagged_ids()   # 一处取全，别在循环里反复读文件
+        bulk = _bulk_list_rows()
+        by_id, qrows = bulk if bulk is not None else ({}, {})
+        out = []
+        for p in store.iter_papers():
+            # 隔离：学科 + 学段，目录级过滤，越界的卷根本不出现
+            if not ident.can_paper(p.subject, p.qualification):
+                continue
+            row = by_id.get(p.id)
+            qr = qrows.get(p.id)
+            # 只有「索引里这一卷齐备且未过期」才走快路径，其余一律回落逐卷（会顺带重灌）
+            if row is None or row.get("stale") or qr is None:
+                s = p.summary()
+                pr = paper_progress(p, conf, flagged, s.get("question_count"))
+            else:
+                s = _summary_from_row(p, row)
+                pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
+            s["flagged_count"] = pr["flagged_count"]
+            s["verified_count"] = pr["verified_count"]
+            out.append(s)
+        body = json.dumps(out, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        _papers_cache.update({"key": key, "at": time.monotonic(), "body": body})
+        return Response(content=body, media_type="application/json")
 
 
 # ---------------------------------------------------------------------------
 # 全局概览（管理员 + 学科负责人，见 auth.OVERVIEW_ROLES）：每卷只回一个三态标记，前端画格子墙。
 #
 # 性能约束（2026-10-19 压测，7500 卷 / 10 万单元）：
-#   · 复用上面的 paper_progress —— 逐卷构造 dict 约 337ms，10 万题时明显；
-#   · 但概览允许 60 秒陈旧，缓存命中后 <5ms，冷启动才付那一次钱。
-# 缓存键 = (索引代际, 状态库写入代际)：保存标注 / 确认 / 标有误都会自动失效，
-# 不用在各个写入点手工清缓存（漏一个就会出现「勾完确认概览不变色」）。
+#   · 2026-11-02 起改走 _bulk_list_rows()（与列表页共用缓存），冷算从 1.38s 降到 ~0.6s；
+#   · 缓存键不再带 state.rev()，靠 5 秒 TTL 兜新鲜度，命中后 <5ms。
 # ---------------------------------------------------------------------------
-_OVERVIEW_TTL = 60.0
+_OVERVIEW_TTL = 5.0
 _overview_lock = threading.Lock()
-_overview_cache: dict = {"key": None, "at": 0.0, "payload": None}
+_overview_cache: dict = {"key": None, "at": 0.0, "body": None}
 
 
 @router.get("/overview")
@@ -508,60 +543,63 @@ def get_overview(request: Request, force: bool = False):
         raise HTTPException(403, "全局概览仅管理员与学科负责人可见")
 
     # 缓存键带上学段：overview 现在按 levels 过滤，不同学段的账号不能共用一份结果
-    key = (index_db.generation(), state.rev(), tuple(sorted(ident.levels)))
+    # 2026-11-02：同样去掉 state.rev()（理由见 /papers 上方注释），TTL 从 60s 收到 5s——
+    # 批量取数已经缓存，重算只花几十毫秒，没必要为省这点钱让格子墙陈旧一分钟。
+    key = (index_db.generation(), tuple(sorted(ident.levels)))
     now = time.monotonic()
+    # 整段在锁内：未命中时第一个请求重建，其余并发等它算完复用缓存（single-flight）
     with _overview_lock:
         c = _overview_cache
         # force=1：用户点了「刷新」，跳过读取但结果仍写回缓存
-        if not force and c["payload"] is not None and c["key"] == key and (now - c["at"]) < _OVERVIEW_TTL:
-            return c["payload"]
+        if not force and c["body"] is not None and c["key"] == key and (now - c["at"]) < _OVERVIEW_TTL:
+            return Response(content=c["body"], media_type="application/json")
 
-    conf = review.confirmed_ids()
-    flagged = flags.flagged_ids()
-    # 与列表页共用同一份批量取数：一次查全库「卷摘要 + 题目投影」，
-    # 取代原来逐卷 p.summary() + paper_progress()（后者每卷一次 SELECT，4000 卷 ≈ 2s）。
-    # 口径不另写一套——进度判定仍是 _progress_from_rows，与列表页逐条对齐。
-    bulk = _bulk_list_rows()
-    by_id, qrows = bulk if bulk is not None else ({}, {})
-    papers = []
-    counts = {"all": 0, "some": 0, "none": 0}
-    for p in store.iter_papers():
-        # 学段隔离：写在 levels 里的账号（目前只有 IG 专用号）不看别学段的卷级信息。
-        # 存量 lead 的 levels 为空 → 与改造前完全一致（仍按原设计看全库卷级聚合）。
-        if not ident.can_level(p.qualification):
-            continue
-        row = by_id.get(p.id)
-        qr = qrows.get(p.id)
-        # 索引里这一卷齐备且未过期才走快路径，否则回落逐卷（与 /papers 同一判据）
-        if row is None or row.get("stale") or qr is None:
-            s = p.summary()
-            pr = paper_progress(p, conf, flagged, s.get("question_count"))
-        else:
-            s = _summary_from_row(p, row)
-            pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
-        counts[pr["state"]] = counts.get(pr["state"], 0) + 1
-        papers.append({
-            "id": s["id"],
-            "board": s["board"],
-            "qualification": s["qualification"],
-            "subject": s["subject"],
-            "paper_code": s.get("paper_code"),
-            "year": s.get("year"),
-            "session": s.get("session"),
-            "unit": s.get("unit"),
-            "state": pr["state"],
-            "question_count": pr["question_count"],
-            "verified_count": pr["verified_count"],
-            "flagged_count": pr["flagged_count"],
-        })
-    payload = {
-        "papers": papers,
-        "summary": {"total": len(papers), **counts},
-        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-    }
-    with _overview_lock:
-        _overview_cache.update({"key": key, "at": time.monotonic(), "payload": payload})
-    return payload
+        conf = review.confirmed_ids()
+        flagged = flags.flagged_ids()
+        # 与列表页共用同一份批量取数：一次查全库「卷摘要 + 题目投影」，
+        # 取代原来逐卷 p.summary() + paper_progress()（后者每卷一次 SELECT，4000 卷 ≈ 2s）。
+        # 口径不另写一套——进度判定仍是 _progress_from_rows，与列表页逐条对齐。
+        bulk = _bulk_list_rows()
+        by_id, qrows = bulk if bulk is not None else ({}, {})
+        papers = []
+        counts = {"all": 0, "some": 0, "none": 0}
+        for p in store.iter_papers():
+            # 学段隔离：写在 levels 里的账号（目前只有 IG 专用号）不看别学段的卷级信息。
+            # 存量 lead 的 levels 为空 → 与改造前完全一致（仍按原设计看全库卷级聚合）。
+            if not ident.can_level(p.qualification):
+                continue
+            row = by_id.get(p.id)
+            qr = qrows.get(p.id)
+            # 索引里这一卷齐备且未过期才走快路径，否则回落逐卷（与 /papers 同一判据）
+            if row is None or row.get("stale") or qr is None:
+                s = p.summary()
+                pr = paper_progress(p, conf, flagged, s.get("question_count"))
+            else:
+                s = _summary_from_row(p, row)
+                pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
+            counts[pr["state"]] = counts.get(pr["state"], 0) + 1
+            papers.append({
+                "id": s["id"],
+                "board": s["board"],
+                "qualification": s["qualification"],
+                "subject": s["subject"],
+                "paper_code": s.get("paper_code"),
+                "year": s.get("year"),
+                "session": s.get("session"),
+                "unit": s.get("unit"),
+                "state": pr["state"],
+                "question_count": pr["question_count"],
+                "verified_count": pr["verified_count"],
+                "flagged_count": pr["flagged_count"],
+            })
+        payload = {
+            "papers": papers,
+            "summary": {"total": len(papers), **counts},
+            "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+        body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        _overview_cache.update({"key": key, "at": time.monotonic(), "body": body})
+        return Response(content=body, media_type="application/json")
 
 
 
