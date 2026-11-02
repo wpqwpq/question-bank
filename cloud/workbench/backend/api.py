@@ -518,6 +518,11 @@ def get_overview(request: Request, force: bool = False):
 
     conf = review.confirmed_ids()
     flagged = flags.flagged_ids()
+    # 与列表页共用同一份批量取数：一次查全库「卷摘要 + 题目投影」，
+    # 取代原来逐卷 p.summary() + paper_progress()（后者每卷一次 SELECT，4000 卷 ≈ 2s）。
+    # 口径不另写一套——进度判定仍是 _progress_from_rows，与列表页逐条对齐。
+    bulk = _bulk_list_rows()
+    by_id, qrows = bulk if bulk is not None else ({}, {})
     papers = []
     counts = {"all": 0, "some": 0, "none": 0}
     for p in store.iter_papers():
@@ -525,8 +530,15 @@ def get_overview(request: Request, force: bool = False):
         # 存量 lead 的 levels 为空 → 与改造前完全一致（仍按原设计看全库卷级聚合）。
         if not ident.can_level(p.qualification):
             continue
-        s = p.summary()
-        pr = paper_progress(p, conf, flagged, s.get("question_count"))
+        row = by_id.get(p.id)
+        qr = qrows.get(p.id)
+        # 索引里这一卷齐备且未过期才走快路径，否则回落逐卷（与 /papers 同一判据）
+        if row is None or row.get("stale") or qr is None:
+            s = p.summary()
+            pr = paper_progress(p, conf, flagged, s.get("question_count"))
+        else:
+            s = _summary_from_row(p, row)
+            pr = _progress_from_rows(qr, conf, flagged, s.get("question_count"))
         counts[pr["state"]] = counts.get(pr["state"], 0) + 1
         papers.append({
             "id": s["id"],
