@@ -163,13 +163,14 @@ def exists() -> bool:
 
 def stats() -> dict[str, Any]:
     con = connect()
-    return {
-        "db": str(DB_PATH),
-        "bytes": DB_PATH.stat().st_size if DB_PATH.exists() else 0,
-        "papers": con.execute("SELECT COUNT(*) FROM papers").fetchone()[0],
-        "questions": con.execute("SELECT COUNT(*) FROM questions").fetchone()[0],
-        "built_at": (con.execute("SELECT value FROM meta WHERE key='built_at'").fetchone() or [None])[0],
-    }
+    with _lock:
+        return {
+            "db": str(DB_PATH),
+            "bytes": DB_PATH.stat().st_size if DB_PATH.exists() else 0,
+            "papers": con.execute("SELECT COUNT(*) FROM papers").fetchone()[0],
+            "questions": con.execute("SELECT COUNT(*) FROM questions").fetchone()[0],
+            "built_at": (con.execute("SELECT value FROM meta WHERE key='built_at'").fetchone() or [None])[0],
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -376,7 +377,8 @@ def drop_paper(paper_id: str) -> bool:
 def paper_mtimes() -> dict[str, int | None]:
     """{paper_id: 卷目录 mtime_ns}。给目录扫描对账用（1500 卷也就一次查询）。"""
     con = connect()
-    return {r[0]: r[1] for r in con.execute("SELECT paper_id, dir_mtime FROM papers")}
+    with _lock:
+        return {r[0]: r[1] for r in con.execute("SELECT paper_id, dir_mtime FROM papers")}
 
 
 # ---------------------------------------------------------------------------
@@ -385,75 +387,82 @@ def paper_mtimes() -> dict[str, int | None]:
 
 def paper_ids() -> list[str]:
     con = connect()
-    return [r[0] for r in con.execute("SELECT paper_id FROM papers ORDER BY paper_id")]
+    with _lock:
+        return [r[0] for r in con.execute("SELECT paper_id FROM papers ORDER BY paper_id")]
 
 
 def papers() -> list[dict[str, Any]]:
     """全部卷的摘要（列表页主体）。只碰 papers 表，不碰 questions。"""
     con = connect()
-    cur = con.execute(
-        "SELECT paper_id,board,qualification,subject,unit,paper_code,year,session,"
-        "question_count,annotated_count,source,dir_rel,dir_mtime,stale FROM papers ORDER BY paper_id"
-    )
-    cols = [c[0] for c in cur.description]
-    return [dict(zip(cols, r)) for r in cur]
+    with _lock:
+        cur = con.execute(
+            "SELECT paper_id,board,qualification,subject,unit,paper_code,year,session,"
+            "question_count,annotated_count,source,dir_rel,dir_mtime,stale FROM papers ORDER BY paper_id"
+        )
+        cols = [c[0] for c in cur.description]
+        return [dict(zip(cols, r)) for r in cur]
 
 
 def paper(paper_id: str) -> dict[str, Any] | None:
     con = connect()
-    cur = con.execute(
-        "SELECT paper_id,board,qualification,subject,unit,paper_code,year,session,"
-        "question_count,annotated_count,source,dir_rel,dir_mtime,stale FROM papers WHERE paper_id=?",
-        (str(paper_id),),
-    )
-    row = cur.fetchone()
-    if row is None:
-        return None
-    return dict(zip([c[0] for c in cur.description], row))
+    with _lock:
+        cur = con.execute(
+            "SELECT paper_id,board,qualification,subject,unit,paper_code,year,session,"
+            "question_count,annotated_count,source,dir_rel,dir_mtime,stale FROM papers WHERE paper_id=?",
+            (str(paper_id),),
+        )
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip([c[0] for c in cur.description], row))
 
 
 def has_paper(paper_id: str) -> bool:
     con = connect()
-    return con.execute("SELECT 1 FROM papers WHERE paper_id=? LIMIT 1",
-                       (str(paper_id),)).fetchone() is not None
+    with _lock:
+        return con.execute("SELECT 1 FROM papers WHERE paper_id=? LIMIT 1",
+                           (str(paper_id),)).fetchone() is not None
 
 
 def questions(paper_id: str) -> list[dict[str, Any]]:
     """该卷全部题（含子题行，调用方按 parent_qid 自行区分）。"""
     con = connect()
-    cur = con.execute(
-        "SELECT qid,paper_id,parent_qid,qnum,sub_label,total_marks,question_type,split,"
-        "status,difficulty,primary_tag,tags,image,file_name FROM questions "
-        "WHERE paper_id=? ORDER BY file_name",
-        (str(paper_id),),
-    )
-    cols = [c[0] for c in cur.description]
-    out = []
-    for r in cur:
-        d = dict(zip(cols, r))
-        try:
-            d["tags"] = json.loads(d["tags"] or "[]")
-        except json.JSONDecodeError:
-            d["tags"] = []
-        out.append(d)
-    return out
+    with _lock:
+        cur = con.execute(
+            "SELECT qid,paper_id,parent_qid,qnum,sub_label,total_marks,question_type,split,"
+            "status,difficulty,primary_tag,tags,image,file_name FROM questions "
+            "WHERE paper_id=? ORDER BY file_name",
+            (str(paper_id),),
+        )
+        cols = [c[0] for c in cur.description]
+        out = []
+        for r in cur:
+            d = dict(zip(cols, r))
+            try:
+                d["tags"] = json.loads(d["tags"] or "[]")
+            except json.JSONDecodeError:
+                d["tags"] = []
+            out.append(d)
+        return out
 
 
 def find_qid(qid: str) -> tuple[str, str] | None:
     """qid → (paper_id, file_name)。主键查询，微秒级。"""
     con = connect()
-    row = con.execute("SELECT paper_id, file_name FROM questions WHERE qid=?",
-                      (str(qid),)).fetchone()
-    return (row[0], row[1]) if row else None
+    with _lock:
+        row = con.execute("SELECT paper_id, file_name FROM questions WHERE qid=?",
+                          (str(qid),)).fetchone()
+        return (row[0], row[1]) if row else None
 
 
 def counts_by_paper() -> dict[str, int]:
     """{paper_id: 已完成主题题数}。聚合查询，10 万题约 3ms。"""
     con = connect()
-    return dict(con.execute(
-        "SELECT paper_id, COUNT(*) FROM questions "
-        "WHERE parent_qid IS NULL AND status='done' GROUP BY paper_id"
-    ))
+    with _lock:
+        return dict(con.execute(
+            "SELECT paper_id, COUNT(*) FROM questions "
+            "WHERE parent_qid IS NULL AND status='done' GROUP BY paper_id"
+        ))
 
 
 def progress_rows() -> dict[str, list[tuple[str, str | None, int, int]]]:
@@ -465,11 +474,12 @@ def progress_rows() -> dict[str, list[tuple[str, str | None, int, int]]]:
     """
     con = connect()
     out: dict[str, list[tuple[str, str | None, int, int]]] = {}
-    cur = con.execute(
-        "SELECT qid, paper_id, parent_qid, split, "
-        "CASE WHEN tags IS NULL OR tags='' OR tags='[]' THEN 0 ELSE 1 END "
-        "FROM questions ORDER BY paper_id, file_name"
-    )
-    for qid, pid, parent, split, has_tags in cur:
-        out.setdefault(pid, []).append((str(qid), parent, 1 if split else 0, int(has_tags)))
+    with _lock:
+        cur = con.execute(
+            "SELECT qid, paper_id, parent_qid, split, "
+            "CASE WHEN tags IS NULL OR tags='' OR tags='[]' THEN 0 ELSE 1 END "
+            "FROM questions ORDER BY paper_id, file_name"
+        )
+        for qid, pid, parent, split, has_tags in cur:
+            out.setdefault(pid, []).append((str(qid), parent, 1 if split else 0, int(has_tags)))
     return out
