@@ -126,6 +126,32 @@ def set_flag(qid: str, on: bool, by: str | None = None,
 # 指纹校验（不在请求热路径上）
 # ---------------------------------------------------------------------------
 
+def refresh(qid: str) -> bool:
+    """文件被**我们自己合法改写**后，刷新指纹（标记本身保留）。
+
+    与 verify_one 的区别：verify_one 发现指纹对不上就认定「题被换过了」并删掉标记；
+    而标签删除这类操作会正常改写 qNN.md 的 front-matter，题本身没换，
+    标记必须留着——否则 5 分钟后的轮转巡检或下次打开详情就把它清掉了。
+
+    没有这条标记 / 找不到文件时返回 False。
+    """
+    qid = str(qid)
+    if state.get_flag(qid) is None:
+        return False
+    import store
+    found = store.find_question(qid)
+    if found is None:
+        return False
+    _, qpath = found
+    try:
+        meta = store.read_meta(qpath)
+        fp = fingerprint(qpath, meta)
+    except OSError:
+        return False
+    state.touch_flag(qid, fp)
+    return True
+
+
 def verify_one(qid: str) -> bool:
     """校验单条标记。指纹对不上 / 文件没了 → 删除记录并返回 False。
 

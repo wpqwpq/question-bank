@@ -5,6 +5,7 @@ import json
 import os
 import re
 import tempfile
+from collections import OrderedDict
 import threading
 import time
 from pathlib import Path
@@ -517,7 +518,12 @@ def primary_ready(tags: list[str] | None, primary: Any) -> bool:
 # ---------------------------------------------------------------------------
 
 _lock = threading.RLock()
-_meta_cache: dict[str, tuple[int, int, dict[str, Any]]] = {}
+# front-matter 解析缓存：**有上限的 LRU**（2026-11-01）。
+# 原来是无上限 dict，每条约 2.6KB 常驻；老师逐题打标会把全库 6 万个 md 全灌进来，
+# 实测上限约 160MB，而命中收益只有「省一次 0.1ms 的 YAML 解析」——不划算。
+# 3000 条 × 2.6KB ≈ 8MB，足够覆盖一个人连续打标的局部性；调上限用 QBANK_META_CACHE_MAX。
+_META_CACHE_MAX = int(os.environ.get("QBANK_META_CACHE_MAX") or 3000)
+_meta_cache: "OrderedDict[str, tuple[int, int, dict[str, Any]]]" = OrderedDict()
 _papers: list[Paper] | None = None
 _papers_stamp: tuple[tuple[str, int], ...] | None = None
 _papers_by_id: dict[str, Paper] = {}
@@ -531,7 +537,7 @@ _SCAN_TTL = float(os.environ.get("QBANK_SCAN_TTL") or 5.0)
 
 
 def read_meta(path: Path) -> dict[str, Any]:
-    """读 front-matter（带 mtime/size 缓存）。文件未变则零解析开销。"""
+    """读 front-matter（带 mtime/size 的 LRU 缓存）。文件未变则零解析开销。"""
     key = str(path)
     try:
         st = path.stat()
@@ -541,11 +547,17 @@ def read_meta(path: Path) -> dict[str, Any]:
         return {}
     with _lock:
         hit = _meta_cache.get(key)
-    if hit is not None and hit[0] == st.st_mtime_ns and hit[1] == st.st_size:
-        return hit[2]
+        if hit is not None:
+            if hit[0] == st.st_mtime_ns and hit[1] == st.st_size:
+                _meta_cache.move_to_end(key)      # 命中即刷新，LRU 尾部最热
+                return hit[2]
+            _meta_cache.pop(key, None)            # 文件变了，旧条目立刻作废
     meta, _ = parse_front_matter(path.read_text(encoding="utf-8"))
     with _lock:
         _meta_cache[key] = (st.st_mtime_ns, st.st_size, meta)
+        _meta_cache.move_to_end(key)
+        while len(_meta_cache) > _META_CACHE_MAX:
+            _meta_cache.popitem(last=False)       # 淘汰最久未用
     return meta
 
 
@@ -1072,9 +1084,13 @@ def _build_annotation_lines(tags: list[str], difficulty: str | None,
     撞 schema（tags 必须是 array）→ 写后差分校验抛 ValueError，调用方（脚本、
     未来的「撤销打标」入口）拿到的是 500 而不是一次正常的清空。库内既有的空文件
     也都是 `tags: []`，这里与之同形。
+
+    ⚠️ 空 tags **不代表空难度**：`_strip_annotation_lines` 已经把旧的 difficulty 行剥掉，
+    这里若不补回来，难度就被静默丢了。标签删除（tag_delete）明确要求「清标签留难度」，
+    所以在 tags 为空时也要把 difficulty 写回去（2026-11-02 修）。
     """
     if not tags:
-        return ["tags: []"]
+        return ["tags: []"] + ([f"difficulty: {difficulty}"] if difficulty is not None else [])
     lines = ["tags:"]
     lines += [f"  - {t}" for t in tags]
     if primary_tag is not None:

@@ -14,6 +14,7 @@ import flags
 import index_db
 import state
 import store
+import tag_delete
 import taxonomy
 import review
 
@@ -211,6 +212,96 @@ def put_taxonomy_file(request: Request, board: str, qual: str, subject: str, pay
     auth.audit(ident, "taxonomy.save", f"{board}/{qual}/{subject}",
                {"units": res.get("units"), "tags": res.get("tags"),
                 "backup": res.get("backup")}, request)
+    return res
+
+
+# ---------------------------------------------------------------------------
+# 标签删除（2026-11-02）：admin / lead 从词表移除标签，并清理题库里已有的标注。
+#
+# 语义全在 tag_delete.py（两种方式的判定表、单元粒度、空组连带删除）。
+# 这一层只做三件事：权限、HTTP 语义、审计。
+# 两个接口分开而不是「删前必先预览」，是为了让弹窗能一次拿到两种方式的影响面
+# （方式一/方式二 影响的**单元集合相同**，但 clear / strip 的分布不同）。
+# ---------------------------------------------------------------------------
+
+class TagDeletePayload(BaseModel):
+    unit: str
+    mode: str
+    tag_id: str | None = None
+    group_id: str | None = None
+    # 乐观锁：GET 影响面时拿到的 sig，删除时原样回传；中途有人存过词表 → 409
+    base_sig: str | None = None
+
+
+@router.get("/taxonomy/{board}/{qual}/{subject}/usage")
+def get_tag_usage(request: Request, board: str, qual: str, subject: str, unit: str,
+                  tag_id: str | None = None, group_id: str | None = None):
+    """删除前的影响面（只读）：两种方式各会清空多少、只摘多少，附最多 300 条明细。"""
+    auth.require_delete_taxonomy(request)
+    auth.require_scope(request, subject, qual)
+    try:
+        return tag_delete.plan(board, qual, subject, unit, tag_id, group_id)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
+@router.post("/taxonomy/{board}/{qual}/{subject}/delete")
+def post_delete_tag(request: Request, board: str, qual: str, subject: str,
+                    payload: TagDeletePayload):
+    """删标签：先清标注（改 md），再从词表移除；全部成功才落词表。
+
+    权限：只有 admin / lead（tagger 能改词表但删不了标签）。
+    并发：md 改动幂等，任何一步失败都可以原样重试。
+    """
+    ident = auth.require_delete_taxonomy(request)
+    auth.require_scope(request, subject, qual)
+    target = f"{board}/{qual}/{subject}#{payload.unit}"
+    try:
+        res = tag_delete.apply(board, qual, subject, payload.unit, payload.mode,
+                               payload.tag_id, payload.group_id, payload.base_sig,
+                               actor=ident.name or ident.username)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+    except taxonomy.TaxonomyConflict as e:
+        # 前置版本校验就没过：md 一个字都没动，直接让前端重新加载。
+        auth.audit(ident, "taxonomy.delete.conflict", target,
+                   {"mode": payload.mode, "cleaned": 0}, request)
+        raise HTTPException(
+            409,
+            "这份词表刚被其他账号保存过，请重新加载后的词表再删（标注没有被改动）。",
+            headers={"X-QB-Current-Sig": e.current},
+        )
+    except tag_delete.VocabConflict as e:
+        auth.audit(ident, "taxonomy.delete.conflict", target,
+                   {"mode": payload.mode, "cleaned": e.done}, request)
+        raise HTTPException(
+            409,
+            "题目上的标注已经清理完，但词表在你确认期间被其他账号保存过。"
+            "重新加载后重试即可（已清理的题目不会再被处理一次）。",
+            headers={"X-QB-Current-Sig": e.current},
+        )
+    except tag_delete.PartialFailure as e:
+        brief = "；".join(f"{f['qid']}: {f['error']}" for f in e.failed[:3])
+        more = f" 等 {len(e.failed)} 处" if len(e.failed) > 3 else ""
+        auth.audit(ident, "taxonomy.delete.partial", target,
+                   {"mode": payload.mode, "failed": e.failed[:20], "done": e.done}, request)
+        raise HTTPException(500, f"标注没有全部写成功（已成功 {e.done} 处），词表未改动。"
+                                 f"可直接重试。失败：{brief}{more}")
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+
+    auth.audit(
+        ident,
+        "taxonomy.delete_group" if res.get("kind") == "group" else "taxonomy.delete_tag",
+        target,
+        {"mode": res.get("mode"), "tags": [t["id"] for t in res.get("tags") or []],
+         "cleared": res.get("cleared"), "stripped": res.get("stripped"),
+         "primary_fixed": res.get("primary_fixed"), "flagged": res.get("flagged"),
+         "removed_groups": [g["id"] for g in res.get("removed_groups") or []],
+         "confirm_cleared": len(res.get("confirm_cleared") or []),
+         "backup": res.get("backup")},
+        request,
+    )
     return res
 
 

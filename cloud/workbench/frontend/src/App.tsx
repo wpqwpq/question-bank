@@ -1151,6 +1151,7 @@ const pendingFocusRef = useRef<number | null>(null)
         initialQual={qualification}
         initialSubject={subject}
         initialUnit={currentPaper?.unit}
+        role={me.role}
         onExit={() => {
           setView('workbench')
           setRefreshTick((t) => t + 1)

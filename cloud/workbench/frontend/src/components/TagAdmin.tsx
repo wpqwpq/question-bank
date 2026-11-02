@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { TaxFile, TaxGroup, TaxTag, TaxTree, TaxUnit } from '../api'
-import { api, asUnit, ConflictError, slug, unitKeys } from '../api'
+import type { Role, TagDeleteResp, TaxFile, TaxGroup, TaxTag, TaxTree, TaxUnit } from '../api'
+import { api, asUnit, canDeleteTaxonomy, ConflictError, slug, unitKeys } from '../api'
+import TagDeleteDialog from './TagDeleteDialog'
+import type { DeleteTarget } from './TagDeleteDialog'
 
 /**
  * 标签管理页：直接维护 data/taxonomy/<board>/<qual>/<subject>.json。
  *
- * 本期只做「改」+「增」（2026-10-16 定）：不做删除、不做改 id。
  * 编辑模型：整页草稿 + 显式保存；词表只存 id，改中英文名不影响任何已打标题目。
+ * 删除（2026-11-02）：admin / lead 才看得见行尾的删除按钮；删除**不进草稿**——
+ * 它要同步清理题库里已有的标注，必须走独立接口一步到底（语义见 TagDeleteDialog）。
  *
  * 多人编辑（2026-10-19 起同一学科所有账号都能改）：整份覆盖写，靠 GET 拿到的
  * `sig` 做乐观锁——保存时回传，中途别人存过就 409，前端提示重载，绝不静默覆盖。
@@ -18,6 +21,8 @@ interface Props {
   initialSubject: string
   /** 打开时直接定位到的单元（如打标台当前卷的 U1 / P1P2）；不在该词表里则回落到第一个单元 */
   initialUnit?: string
+  /** 当前登录角色：决定要不要显示删除按钮（admin / lead 才有） */
+  role?: Role
   onExit: () => void
 }
 
@@ -62,6 +67,39 @@ const sLock = (
     <path d="M8 11V7a4 4 0 0 1 8 0v4" />
   </svg>
 )
+const sTrash = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18M9 6V4h6v2M6 6l1 14h10l1-14" />
+    <path d="M10 11v5M14 11v5" />
+  </svg>
+)
+
+/** 行尾删除按钮。**常显**——不跟上移/下移一起「hover 才出现」，
+ *  因为这是不可撤销的动作，不该藏在悬停里。 */
+function DelBtn({
+  kind,
+  disabled,
+  title,
+  onClick,
+}: {
+  kind: 'tag' | 'group'
+  disabled: boolean
+  title: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      data-ta-del={kind}
+      disabled={disabled}
+      title={title}
+      onClick={onClick}
+      className="grid h-6 w-6 place-items-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:text-gray-200 disabled:hover:bg-transparent disabled:hover:text-gray-200"
+    >
+      <span className="h-3.5 w-3.5">{sTrash}</span>
+    </button>
+  )
+}
 
 /** 与后端 taxonomy._UNIT_KEY_RE 保持一致：
  *  物化 U1..U9 / CIE P1P2,P4,P5 / Edexcel IAL 数学 P1–P4,M1–M3,S1–S3,D1,F1–F3 /
@@ -157,7 +195,14 @@ function clientValidate(file: TaxFile): string[] {
   return errs
 }
 
-export default function TagAdmin({ initialBoard, initialQual, initialSubject, initialUnit, onExit }: Props) {
+export default function TagAdmin({
+  initialBoard,
+  initialQual,
+  initialSubject,
+  initialUnit,
+  role,
+  onExit,
+}: Props) {
   const [tree, setTree] = useState<TaxTree | null>(null)
   const [sel, setSel] = useState<Sel>({ board: initialBoard, qual: initialQual, subject: initialSubject })
   const [file, setFile] = useState<TaxFile | null>(null)
@@ -179,6 +224,11 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
   const [ask, setAsk] = useState<Ask>(null)
+  /** 正在确认删除的目标（null = 没开弹窗） */
+  const [del, setDel] = useState<DeleteTarget | null>(null)
+
+  /** 删除权限：比「改词表」窄一档，只有 admin / lead */
+  const canDelete = canDeleteTaxonomy(role)
 
   // 待确认的新增行只要填了字，也算「未保存」——否则点返回会静默丢掉刚敲的内容
   const pendingHasText =
@@ -429,6 +479,39 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
 
   const errHead = errors.slice(0, 5)
 
+  // tag id → 中文名：删除弹窗的明细表里要把「现有标签」也显示成人话
+  const tagLabels = useMemo(() => {
+    const m = new Map<string, string>()
+    if (!file) return m
+    for (const u of unitKeys(file)) {
+      for (const t of asUnit(file, u).tags) if (t.id) m.set(t.id, t.zh || t.id)
+    }
+    return m
+  }, [file])
+  const labelOf = useCallback((id: string) => tagLabels.get(id) ?? id, [tagLabels])
+
+  // 有未保存的修改时不让删：删除成功后会整份重载词表，草稿会被冲掉，
+  // 而且此刻手里的 sig 可能已经和草稿对不上。
+  const delBlockedReason = saving
+    ? '正在保存'
+    : stale
+      ? '词表已过期，请先重新加载'
+      : dirty
+        ? '先保存或放弃当前词表修改'
+        : ''
+
+  function doDeleted(r: TagDeleteResp) {
+    const bits: string[] = []
+    if (r.cleared) bits.push(`清空 ${r.cleared} 处`)
+    if (r.stripped) bits.push(`摘掉 ${r.stripped} 处`)
+    if (r.removed_groups.length) bits.push(`连带删除 ${r.removed_groups.length} 个空分组`)
+    if (r.flagged) bits.push(`含 ${r.flagged} 处「有误」题（标记保留）`)
+    const what = r.kind === 'group' ? `${r.tags.length} 个标签` : (r.tags[0]?.zh ?? '标签')
+    showToast('ok', `已删除 ${what}：${bits.join(' · ') || '无题目受影响'}`)
+    setDel(null)
+    void load(sel)
+  }
+
   return (
     <div data-tagadmin="1" className="flex h-screen flex-col bg-white text-gray-900">
       {/* 顶栏 */}
@@ -664,38 +747,55 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
                           <span className="h-2.5 w-2.5 shrink-0 text-gray-300">{sLock}</span>
                           <span className="truncate">{g.id}</span>
                         </span>
-                        <span className="flex items-center justify-end gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
-                          <button
-                            type="button"
-                            title="分组上移"
-                            disabled={gi === 0}
-                            onClick={() => moveGroup(gi, -1)}
-                            className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
-                          >
-                            <span className="h-3.5 w-3.5">{sUp}</span>
-                          </button>
-                          <button
-                            type="button"
-                            title="分组下移"
-                            disabled={gi === (cur.groups.length ?? 0) - 1}
-                            onClick={() => moveGroup(gi, 1)}
-                            className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
-                          >
-                            <span className="h-3.5 w-3.5">{sDown}</span>
-                          </button>
-                          <button
-                            type="button"
-                            disabled={!g.id}
-                            title={g.id ? '在本组末尾新增一个标签' : '先填分组英文名（id 由它生成）'}
-                            onClick={() => {
-                              setPendingGroup(null)
-                              setPendingErr('')
-                              setPendingTag({ gid: g.id, zh: '', en: '' })
-                            }}
-                            className="rounded-md px-1.5 py-0.5 text-[11.5px] font-medium text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
-                          >
-                            + 标签
-                          </button>
+                        <span className="flex items-center justify-end gap-0.5">
+                          <span className="flex items-center gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
+                            <button
+                              type="button"
+                              title="分组上移"
+                              disabled={gi === 0}
+                              onClick={() => moveGroup(gi, -1)}
+                              className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
+                            >
+                              <span className="h-3.5 w-3.5">{sUp}</span>
+                            </button>
+                            <button
+                              type="button"
+                              title="分组下移"
+                              disabled={gi === (cur.groups.length ?? 0) - 1}
+                              onClick={() => moveGroup(gi, 1)}
+                              className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
+                            >
+                              <span className="h-3.5 w-3.5">{sDown}</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={!g.id}
+                              title={g.id ? '在本组末尾新增一个标签' : '先填分组英文名（id 由它生成）'}
+                              onClick={() => {
+                                setPendingGroup(null)
+                                setPendingErr('')
+                                setPendingTag({ gid: g.id, zh: '', en: '' })
+                              }}
+                              className="rounded-md px-1.5 py-0.5 text-[11.5px] font-medium text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
+                            >
+                              + 标签
+                            </button>
+                          </span>
+                          {canDelete && (
+                            <DelBtn
+                              kind="group"
+                              disabled={!!delBlockedReason}
+                              title={delBlockedReason || '删除本分组及其下全部标签（会清理题目上的标注）'}
+                              onClick={() =>
+                                setDel({
+                                  kind: 'group',
+                                  id: g.id,
+                                  zh: g.zh || g.id,
+                                  en: g.en,
+                                })
+                              }
+                            />
+                          )}
                         </span>
                       </div>
 
@@ -730,25 +830,43 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
                                 <span className="h-2.5 w-2.5 shrink-0 text-gray-300">{sLock}</span>
                                 <span className="truncate">{t.id}</span>
                               </span>
-                              <span className="flex items-center justify-end gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
-                                <button
-                                  type="button"
-                                  title="上移"
-                                  disabled={first}
-                                  onClick={() => moveTag(ti, -1)}
-                                  className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
-                                >
-                                  <span className="h-3.5 w-3.5">{sUp}</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  title="下移"
-                                  disabled={last}
-                                  onClick={() => moveTag(ti, 1)}
-                                  className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
-                                >
-                                  <span className="h-3.5 w-3.5">{sDown}</span>
-                                </button>
+                              <span className="flex items-center justify-end gap-0.5">
+                                <span className="flex items-center gap-0.5 opacity-45 transition-opacity group-hover:opacity-100">
+                                  <button
+                                    type="button"
+                                    title="上移"
+                                    disabled={first}
+                                    onClick={() => moveTag(ti, -1)}
+                                    className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
+                                  >
+                                    <span className="h-3.5 w-3.5">{sUp}</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    title="下移"
+                                    disabled={last}
+                                    onClick={() => moveTag(ti, 1)}
+                                    className="grid h-6 w-6 place-items-center rounded-md text-gray-500 hover:border hover:border-gray-200 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-25 disabled:hover:border-transparent disabled:hover:bg-transparent"
+                                  >
+                                    <span className="h-3.5 w-3.5">{sDown}</span>
+                                  </button>
+                                </span>
+                                {canDelete && (
+                                  <DelBtn
+                                    kind="tag"
+                                    disabled={!!delBlockedReason}
+                                    title={delBlockedReason || '删除这个标签（会清理题目上的标注）'}
+                                    onClick={() =>
+                                      setDel({
+                                        kind: 'tag',
+                                        id: t.id,
+                                        zh: t.zh || t.id,
+                                        en: t.en,
+                                        groupZh: g.zh,
+                                      })
+                                    }
+                                  />
+                                )}
                               </span>
                             </div>
                           )
@@ -968,6 +1086,20 @@ export default function TagAdmin({ initialBoard, initialQual, initialSubject, in
         >
           {toast.text}
         </div>
+      )}
+
+      {/* 删除标签 / 分组的确认弹窗（admin + lead） */}
+      {del && (
+        <TagDeleteDialog
+          board={sel.board}
+          qual={sel.qual}
+          subject={sel.subject}
+          unit={unit}
+          target={del}
+          labelOf={labelOf}
+          onClose={() => setDel(null)}
+          onDone={doDeleted}
+        />
       )}
 
       {/* 未保存离开确认 */}

@@ -204,6 +204,80 @@ export interface TaxSaveResp {
 /** 词表目录树：考试局 → 资格 → 学科[]（喂「标签管理」页的三个下拉） */
 export type TaxTree = Record<string, Record<string, string[]>>
 
+// ── 标签删除（admin / lead）──
+/** 两种删除方式：全部清空 / 只删这个标签 */
+export type TagDeleteMode = 'clear_all' | 'smart'
+
+export interface TagUsageTarget {
+  kind: 'tag' | 'group'
+  id: string
+  zh: string | null
+  en: string | null
+  group: string | null
+}
+
+/** 明细行：一个「打标单元」（未切分题 = 整题，切分题 = 某个小问） */
+export interface TagUsageRow {
+  qid: string
+  paper_code: string | null
+  year: number | null
+  session: string | null
+  question_number: string | null
+  sub_label: string | null
+  tags: string[]
+  primary_tag: string | null
+  /** 该题被标了「有误」——删除时一并处理，标记会保留 */
+  flagged: boolean
+  /** 方式一之后剩什么（恒为空） */
+  clear_all: string[]
+  /** 方式二之后剩什么 */
+  smart: string[]
+  clear_all_action: 'clear' | 'strip'
+  smart_action: 'clear' | 'strip'
+}
+
+export interface TagUsageResp {
+  unit: string
+  target: TagUsageTarget
+  /** 真正会被删掉的标签（删组时是组下全部） */
+  tags: { id: string; zh: string; en: string; group: string }[]
+  total_units: number
+  flagged_units: number
+  paper_count: number
+  by_mode: Record<TagDeleteMode, { clear: number; strip: number; tags_removed: number }>
+  /** 删完变空、会被连带删掉的分组 */
+  removed_groups: { id: string; zh: string }[]
+  /** 删完后该单元还剩几个标签（0 = 这个单元就不再有标签可选了） */
+  unit_tags_after: number
+  rows: TagUsageRow[]
+  truncated: boolean
+  discrepancies: number
+  /** 乐观锁版本号，删除时作为 base_sig 回传 */
+  sig: string
+}
+
+export interface TagDeleteResp {
+  ok: boolean
+  mode: TagDeleteMode
+  unit: string
+  kind: 'tag' | 'group'
+  tags: { id: string; zh: string }[]
+  total_units: number
+  cleared: number
+  stripped: number
+  /** 因为原本就没有可解析的主标签，顺手钉了一个的数量 */
+  primary_fixed: number
+  flagged: number
+  removed_groups: { id: string; zh: string }[]
+  /** 被连带撤销的「核对完成」单元 */
+  confirm_cleared: string[]
+  discrepancies: number
+  backup: string
+  path: string
+  sig: string
+  seconds: number
+}
+
 export const unitKeys = (file: TaxFile): string[] =>
   Object.keys(file).filter((k) => !k.startsWith('$'))
 
@@ -263,6 +337,11 @@ export const isRoleAtLeastLead = (r: Role | undefined) => r === 'admin' || r ===
  *  viewer 只读；service 是 AI 账号，浏览器不会登录它。 */
 export const canEditTaxonomy = (r: Role | undefined) =>
   r === 'admin' || r === 'lead' || r === 'tagger'
+
+/** 能不能删标签：只有 admin 与 lead。
+ *  改词表是「改名 / 加标签」，删标签是「把一条词表连同题目上的标注一起抹掉」、不可回滚，
+ *  所以比 canEditTaxonomy 窄一档。后端 auth.DELETE_TAX_ROLES 同口径。 */
+export const canDeleteTaxonomy = (r: Role | undefined) => r === 'admin' || r === 'lead'
 
 /** 409：词表乐观锁冲突——你编辑期间别人保存过。currentSig 是磁盘上的当前版本号。 */
 export class ConflictError extends Error {
@@ -391,6 +470,29 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data, base_sig: baseSig }),
     }),
+
+  /** 删除前的影响面（admin / lead）。tagId 与 groupId 二选一。 */
+  taxonomyUsage: (
+    board: string,
+    qual: string,
+    subject: string,
+    unit: string,
+    target: { tagId?: string; groupId?: string },
+  ) => {
+    const qs = new URLSearchParams({ unit })
+    if (target.tagId) qs.set('tag_id', target.tagId)
+    if (target.groupId) qs.set('group_id', target.groupId)
+    return req<TagUsageResp>(`/api/taxonomy/${board}/${qual}/${subject}/usage?${qs.toString()}`)
+  },
+
+  /** 删标签：清标注 + 改词表，一步到底。**不可回滚**。 */
+  deleteTaxonomy: (
+    board: string,
+    qual: string,
+    subject: string,
+    body: { unit: string; mode: TagDeleteMode; tag_id?: string; group_id?: string; base_sig: string },
+  ) =>
+    req<TagDeleteResp>(`/api/taxonomy/${board}/${qual}/${subject}/delete`, JSON_INIT('POST', body)),
 }
 
 export const SESSION_LABELS: Record<string, string> = {

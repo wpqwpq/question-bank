@@ -53,6 +53,10 @@ WRITE_ROLES = {"admin", "lead", "tagger", "service"}   # 写标注 / 确认
 # 学科边界由 require_subject 兜住，跨科一律 404。viewer 只读、service（AI）
 # 不该有权改全局事实源，两者都排除在外。
 TAX_ROLES = {"admin", "lead", "tagger"}
+# **删除**标签（连带动题库里已有的标注）只给管理员与学科负责人（2026-11-02 培琪定）。
+# 改词表是「改名字/加标签」，删标签是「把词表里的一条连同一批题目上的标注一起抹掉」，
+# 不可回滚，所以不含 tagger——前台看不见删除按钮，后端也拦。
+DELETE_TAX_ROLES = {"admin", "lead"}
 CONFIRM_ROLES = {"admin", "lead", "tagger", "service"}
 # 全局概览（整库完成度地图）：2026-10-23 培琪定，lead 也放开。
 # 概览只给「卷级」聚合（学科/卷号/年份/季次 + 三态完成度），不含任何题面内容；
@@ -133,6 +137,11 @@ class Ident:
     @property
     def can_taxonomy(self) -> bool:
         return self.role in TAX_ROLES
+
+    @property
+    def can_delete_taxonomy(self) -> bool:
+        """能否删除标签（会连带清空题目上的标注）。admin / lead。"""
+        return self.role in DELETE_TAX_ROLES
 
     @property
     def can_confirm(self) -> bool:
@@ -626,6 +635,17 @@ def require_taxonomy(request: Request) -> Ident:
     ident = current(request)
     if not ident.can_taxonomy:
         raise HTTPException(403, f"当前角色（{ident.role}）不能修改标签词表")
+    return ident
+
+
+def require_delete_taxonomy(request: Request) -> Ident:
+    """删除标签（含清理题目上的既有标注）比改词表更重，只有 admin / lead。
+
+    刻意与 require_taxonomy 分开：tagger 能改词表、不能删标签。
+    """
+    ident = current(request)
+    if not ident.can_delete_taxonomy:
+        raise HTTPException(403, f"当前角色（{ident.role}）不能删除标签")
     return ident
 
 
