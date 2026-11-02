@@ -84,14 +84,31 @@ def list_tree():
 
 
 def parse_paper_name(name):
+    """两种卷目录命名并存：
+
+    - `<year>-<session>-<paperCode>`（如 2020-jan-wph11，历史 A-Level 数据）
+    - `<board>-<qual>-<subject>-<year>-<session>-<paperCode>-<记录ID>`
+      （如 cie-igcse-mathematics-2016-june-0607-11-900000000000000588，IGCSE 交付版）
+    """
     parts = name.split("-")
-    if len(parts) < 3 or not parts[0].isdigit():
-        return None
-    return {
-        "year": int(parts[0]),
-        "session": parts[1].lower(),
-        "code": "-".join(parts[2:]),
-    }
+    if len(parts) >= 3 and parts[0].isdigit():
+        return {
+            "year": int(parts[0]),
+            "session": parts[1].lower(),
+            "code": "-".join(parts[2:]),
+        }
+    for i in range(len(parts) - 1):
+        if len(parts[i]) == 4 and parts[i].isdigit() and parts[i + 1].lower() in SESSION_ORDER:
+            rest = parts[i + 2:]
+            # 末尾是原记录 ID（纯数字），显示时去掉，避免卷号一列太长
+            if len(rest) >= 2 and rest[-1].isdigit():
+                rest = rest[:-1]
+            return {
+                "year": int(parts[i]),
+                "session": parts[i + 1].lower(),
+                "code": "-".join(rest),
+            }
+    return None
 
 
 def count_questions(paper_dir):
@@ -281,15 +298,16 @@ def load_paper(board, qual, subject, paper):
         })
     questions.sort(key=lambda x: x["no"])
 
+    meta = parse_paper_name(paper) or {}
     return {
         "board": board,
         "qual": qual,
         "subject": subject,
         "paper": paper,
         "paper_name": paper,
-        "year": int(paper.split("-")[0]) if paper.split("-")[0].isdigit() else None,
-        "session": paper.split("-")[1] if len(paper.split("-")) > 1 else "",
-        "code": "-".join(paper.split("-")[2:]) if len(paper.split("-")) > 2 else "",
+        "year": meta.get("year"),
+        "session": meta.get("session") or "",
+        "code": meta.get("code") or "",
         "page_size": cut.get("page_size"),
         "source_pages": cut.get("source_pages"),
         "has_cut": bool(by_no),
