@@ -528,8 +528,15 @@ _papers: list[Paper] | None = None
 _papers_stamp: tuple[tuple[str, int], ...] | None = None
 _papers_by_id: dict[str, Paper] = {}
 _qid_index: dict[str, tuple[str, str]] = {}  # qid -> (paper_id, file_name)
+_rebuild_lock = threading.Lock()             # 全量重建单飞：只允许一个线程扫盘
+_rebuild_at: float = 0.0                     # 上次全量重建时刻（monotonic）
 _scan_at: float = 0.0                        # 上次目录扫描时刻（monotonic）
 _papers_gen: int = -1                        # 上次建立 Paper 列表时的索引代际
+
+# 全量重建的冷却时长（秒）。重建要扫 6 万个 md，实测 306s（2026-11-04 出事时测的）；
+# 一个不存在的 qid（前端拼错、外部脚本传错）会让每次请求触发重建，
+# 40 个并发请求 = 40 个线程同时扫盘 → 整站 API 全卡死。冷却期内直接放弃重建。
+_REBUILD_COOLDOWN = float(os.environ.get("QBANK_REBUILD_COOLDOWN") or 300.0)
 
 # 目录扫描的缓存时长（秒）。卷列表仍靠扫目录，保留「上传新卷自动出现」的能力；
 # 5 秒一次扫描（410 卷约 76ms）摊到每个请求几乎为零，10 万题（1430 卷）约 250ms/5s。
@@ -937,22 +944,65 @@ def _paper_from_index(paper_id: str) -> Paper | None:
     return p
 
 
-def _rebuild_qid_index() -> None:
-    """全量重建 qid → (卷, 文件名)。仅在首次请求或索引过期时执行。"""
-    papers = iter_papers()
-    idx: dict[str, tuple[str, str]] = {}
-    for p in papers:
-        for qf in p.qfiles:
-            qid = read_meta(qf).get("id")
-            if qid:
-                idx[str(qid)] = (p.id, qf.name)
-        for sf in p.all_sub_files():  # 子题文件（split 产物，不在 qfiles 里）
-            qid = read_meta(sf).get("id")
-            if qid:
-                idx[str(qid)] = (p.id, sf.name)
+def _load_qid_index_from_db() -> bool:
+    """从 index.db 直接装载 qid 索引（约 0.1s）。装成功返回 True。
+
+    index.db 的 questions 表本来就是全量 qid 的权威来源，没必要为了填这个内存索引
+    回头去扫 6 万个 md（306s）。2026-11-04 全站卡死的直接原因就是「重启后首次点题
+    触发 306s 扫盘重建」。
+    """
+    if not index_db.exists():
+        return False
+    try:
+        rows = index_db.all_qids()
+    except Exception as e:  # noqa: BLE001  索引坏了就走扫盘兜底
+        print(f"[qid-index] 从 index.db 装载失败，回退扫盘：{e}", flush=True)
+        return False
+    if not rows:
+        return False
+    idx = {str(q): (str(p), str(f)) for q, p, f in rows}
     with _lock:
         _qid_index.clear()
         _qid_index.update(idx)
+    return True
+
+
+def _rebuild_qid_index(force: bool = False) -> None:
+    """重建 qid → (卷, 文件名)。
+
+    三级策略（2026-11-04 加锁 + 冷却，之前并发雪崩过）：
+      ① 单飞：同一时刻只允许一个线程重建，其余线程直接返回 → 不会 40 线程同时扫盘；
+      ② 优先走 index.db 装载（0.1s），装载不了才扫盘（306s）；
+      ③ 冷却：非 force 调用在 _REBUILD_COOLDOWN 秒内只重建一次 → 不存在的 qid 不会
+         把整站拖死（查不到就是查不到，等 5 分钟再试）。
+    """
+    global _rebuild_at
+    if not _rebuild_lock.acquire(blocking=False):
+        return  # 已有线程在重建，本次直接放弃
+    try:
+        if not force:
+            now = time.monotonic()
+            if _rebuild_at and now - _rebuild_at < _REBUILD_COOLDOWN:
+                return
+            _rebuild_at = now
+        if _load_qid_index_from_db():
+            return
+        papers = iter_papers()
+        idx: dict[str, tuple[str, str]] = {}
+        for p in papers:
+            for qf in p.qfiles:
+                qid = read_meta(qf).get("id")
+                if qid:
+                    idx[str(qid)] = (p.id, qf.name)
+            for sf in p.all_sub_files():  # 子题文件（split 产物，不在 qfiles 里）
+                qid = read_meta(sf).get("id")
+                if qid:
+                    idx[str(qid)] = (p.id, sf.name)
+        with _lock:
+            _qid_index.clear()
+            _qid_index.update(idx)
+    finally:
+        _rebuild_lock.release()
 
 
 def find_question(qid: str) -> tuple[Paper, Path] | None:
@@ -1005,9 +1055,15 @@ def warm() -> None:
             st = index_db.stats()
             if st["papers"] > 0:
                 n = len(iter_papers())
+                # 启动即把 qid 索引装进内存（0.1s）。不装的话，重启后第一次点题会
+                # 触发 306s 全量扫盘（2026-11-04 全站卡死就是这么来的）。
+                q0 = time.perf_counter()
+                ok = _load_qid_index_from_db()
+                hot = f"qid 索引预载 {len(_qid_index)} 条 {time.perf_counter() - q0:.2f}s" \
+                    if ok else "qid 索引待首次请求时构建"
                 print(
                     f"[warmup] 索引已就绪：{st['papers']} 卷 / {st['questions']} 题"
-                    f"（{st['bytes'] / 1024 / 1024:.1f} MB），{n} 卷已装载，"
+                    f"（{st['bytes'] / 1024 / 1024:.1f} MB），{n} 卷已装载，{hot}，"
                     f"耗时 {time.perf_counter() - t0:.2f}s（未解析 md）",
                     flush=True,
                 )
@@ -1018,6 +1074,7 @@ def warm() -> None:
     print("[warmup] 索引不存在或为空，开始全量构建…", flush=True)
     res = index_db.rebuild()
     papers = iter_papers()
+    _load_qid_index_from_db()
     print(
         f"[warmup] 索引构建完成：{res['papers']} 卷 / {res['rows']} 行，"
         f"装载 {len(papers)} 卷，耗时 {time.perf_counter() - t0:.2f}s",

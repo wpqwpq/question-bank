@@ -455,6 +455,16 @@ def find_qid(qid: str) -> tuple[str, str] | None:
         return (row[0], row[1]) if row else None
 
 
+def all_qids() -> list[tuple[str, str, str]]:
+    """全量 qid → (qid, paper_id, file_name)，给 store 预载内存索引用。
+
+    95k 行约 100ms / 8MB，比扫盘解析 6 万个 md（约 5 分钟）快三个数量级。
+    """
+    con = connect()
+    with _lock:
+        return con.execute("SELECT qid, paper_id, file_name FROM questions").fetchall()
+
+
 def counts_by_paper() -> dict[str, int]:
     """{paper_id: 已完成主题题数}。聚合查询，10 万题约 3ms。"""
     con = connect()
