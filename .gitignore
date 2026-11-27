@@ -75,3 +75,19 @@ dist-new.tar
 # 纯本地跑批产物，绝不入库
 /IGCSE-三考试局-边界复核版-*/
 /IGCSE-三考试局-边界复核版-*.zip
+
+# ── 2026-11-27 仓库收口：cloud/ 为唯一代码真源 ──
+# 作业平台的运行期数据与依赖（源码在 cloud/assignments/，这些不进库）
+cloud/assignments/data/
+cloud/assignments/venv/
+cloud/assignments/textbank/
+cloud/assignments/.drafts/
+cloud/assignments/**/__pycache__/
+# 本地运行状态（sqlite / 缓存）
+/var/
+# 讲义工程成品（584M PDF，源文件与生成脚本另存）
+/design/
+# 一次性对账/清洗的中间表
+/_tmp_*.csv
+/_tmp_tags.json
+/IGCSE-相对*.zip
