@@ -28,8 +28,27 @@ import flags as flags_mod
 import state
 import store
 from api import router
+from kb import router as kb_router
 
 FRONTEND_DIST = Path(__file__).resolve().parents[1] / "frontend" / "dist"
+
+# /docs 与 /openapi.json 是公开的（中间件只守 /api 与 /files），这里写一段给 AI agent
+# 的入口说明 —— 它会出现在 openapi 的 info.description 里，AI 拉一次 spec 就能看到。
+API_DESCRIPTION = """\
+题库按「考试局 / 学段 / 学科 / 二级知识点标签」组织。给老师做讲义、按知识点取真题时用 `/api/kb/*`：
+
+1. `GET /api/kb/tags?board=cie&qual=igcse&subject=physics`
+   —— 先拿这个学科的全部标签（几十条），自己对应到老师说的知识点。
+   **标签名和老师口语的粒度常常不一致**（老师说的「速度-时间图像」在词表里叫「运动图像」），
+   带 `q=关键词` 只是省一次阅读，解决不了语义差异；对不上就把它当不存在处理。
+2. `GET /api/kb/questions?board=…&qual=…&subject=…&tag_id=<上一步的 id>`
+   —— 题目清单，一行一个小问。先读完所有 `stem_preview` 再决定要哪几道。
+3. `GET /api/kb/question?qid=<上一步的 qid>`
+   —— 单题详情：**整题**全文 + **整题**图，`sub_label` 表示你要讲的是哪一小问。
+
+认证：先 `POST /api/login` 用账号密码换 cookie（12 小时），后续请求带上即可。
+`board` 取 cie / aqa / edexcel，`qual` 取 igcse / gcse / a-level。
+"""
 
 # 后台指纹巡检间隔（秒）。标记少的时候 10 分钟足够；调小只会多花 IO，不会更准。
 SWEEP_INTERVAL = int(os.environ.get("QBANK_SWEEP_INTERVAL") or 600)
@@ -85,7 +104,8 @@ async def lifespan(app: FastAPI):
     state.close()
 
 
-app = FastAPI(title="题库审核打标台（云端）", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="题库审核打标台（云端）", version="1.0.0", lifespan=lifespan,
+              description=API_DESCRIPTION)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -96,6 +116,7 @@ app.add_middleware(
 app.add_middleware(auth.AuthMiddleware)
 
 app.include_router(router)
+app.include_router(kb_router)
 
 
 # ---------------------------------------------------------------------------

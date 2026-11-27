@@ -45,7 +45,9 @@ R_MARGIN = 44.0
 # 2024 年起的版式会把题号并进题干同一行（"10 The equation of a circle is ("），
 # 老卷是题号独占一行，两种都要认，所以用「行首 1–2 位数字 + 空白/行尾」。
 QNUM_RE = re.compile(r"^(\d{1,2})(?:\s|$)")
-SUB_RE = re.compile(r"^\(([a-z])\)")
+# 小问标签：2018 卷一级是 (i)(ii)，2020 起是 (a)(b)，罗马也要认。
+# 层级不靠符号区分，由调用处按「题内最小缩进」判定。
+SUB_RE = re.compile(r"^\((i{1,3}|iv|v|vi|[a-z])\)")
 MARK_RE = re.compile(r"\[(\d{1,2})\]")
 BLANK_RE = re.compile(r"^BLANK\s+PAGE$", re.I)
 ADDITIONAL_RE = re.compile(r"^Additional\s+Page$", re.I)
@@ -453,13 +455,22 @@ def cut_paper(sdir: Path, dry_run=False, force=False):
                 if rg["bbox"][1] - 1 <= r["y0"] and r["bbox"][3] <= rg["bbox"][3] + 1:
                     text.append(r["raw"])
         marks = sum(int(m) for m in MARK_RE.findall(" ".join(text)))
-        # 小问标签（顶层 a/b/c）
+        # 小问标签（一级小问）
+        # 2018 卷一级是 (i)(ii)，2020 起一级是 (a)(b)；同一份卷里还会混用（(i) 里套 (a)(b)）。
+        # 所以按「题内最靠左的那层」判定，而不是写死按字母或按固定列 scol：
+        # 实测一级 x≈72–79、二级 x≈96–103，两层差 17+，同层内差 ≤3.2。
         subs = []
+        cand = []
         for rg in regions:
             for r in pages_rows[rg["page"]]:
                 m = SUB_RE.match(r["raw"])
-                if m and abs(r["x0"] - scol) <= 8.0 and rg["bbox"][1] <= r["y0"] <= rg["bbox"][3]:
-                    subs.append({"label": m.group(1), "page": rg["page"], "bbox": r["bbox"]})
+                if m and rg["bbox"][1] <= r["y0"] <= rg["bbox"][3]:
+                    cand.append((m.group(1), rg["page"], r["x0"], r["bbox"]))
+        if cand:
+            base_x = min(c[2] for c in cand)
+            for label, page, x, bbox in cand:
+                if x - base_x <= 8.0:
+                    subs.append({"label": label, "page": page, "bbox": bbox})
         questions.append({
             "number": str(num),
             "status": "auto",

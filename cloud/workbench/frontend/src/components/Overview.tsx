@@ -310,7 +310,7 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
     const t = tipRef.current
     if (!t) return
     if (tipTitleRef.current) {
-      tipTitleRef.current.textContent = `${p.paper_code ?? p.id} · ${p.year ?? ''} ${
+      tipTitleRef.current.textContent = `${(p.paper_code ?? p.id).toUpperCase()} · ${p.year ?? ''} ${
         SESSION_LABELS[p.session ?? ''] ?? p.session ?? ''
       }`
     }
@@ -775,7 +775,7 @@ export default function Overview({ onExit, onOpen, canOpen }: Props) {
       {selected && (
         <div className="fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-[10px] bg-gray-900 px-3.5 py-2.5 text-xs text-white shadow-xl">
           <span>
-            <b className="font-semibold">{selected.paper_code ?? selected.id}</b>
+            <b className="font-semibold">{(selected.paper_code ?? selected.id).toUpperCase()}</b>
             {' · '}
             {selected.year} {SESSION_LABELS[selected.session ?? ''] ?? selected.session}
             <span className="ml-1.5 text-gray-400">

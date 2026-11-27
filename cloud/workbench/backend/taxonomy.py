@@ -49,8 +49,10 @@ _CROSS_UNIT_SELECTABLE: dict[tuple[str, str], list[str]] = {
     # AQA IG 商务 9225（2026-10-23）：飞书把词表分三档 —— P1 企业运营+人力资源、
     # P2 市场营销+财务、P1P2 两卷共用的基础池（真实世界的商业、对企业的影响）。
     # P1P2 不是卷单元，只是共用知识池 → P1、P2 两卷都要把它一并开出来。
-    # 键不分学科：AQA 化学 / 经济 IG 也有 P1、P2，但词表里没有 P1P2 单元，
-    # selectable_units 会把不存在的单元过滤掉，不会影响它们。
+    # 键不分学科：AQA 经济 IG 也有 P1、P2，但词表里没有 P1P2 单元，
+    # selectable_units 会把不存在的单元过滤掉，不会影响它。
+    # （AQA 化学 2026-11-17 起词表已合并为单键 P1P2、卷单元直接判为 P1P2，
+    #  不再经过这条规则——见 store._ig_unit。）
     ("aqa", "P1"): ["P1", "P1P2"],
     ("aqa", "P2"): ["P2", "P1P2"],
     # Edexcel IG 数学（2026-10-26，培琪定）：词表按 Foundation / Higher 分两个单元。
@@ -141,10 +143,14 @@ def _qual_candidates(qualification: str) -> list[str]:
 def _taxonomy_path(board: str, qualification: str, subject: str) -> Path:
     """定位词表文件。
 
-    历史遗留：CIE 的卷数据目录与 front-matter 用 `alevel`，而词表目录建的是 `a-level`
-    （Edexcel/AQA 则统一 a-level）。这里按候选依次探测，两种写法都能命中；
+    qual 的历史遗留：CIE 的卷数据目录与 front-matter 曾用 `alevel`，而词表目录建的是
+    `a-level`（Edexcel/AQA 则统一 a-level）。这里按候选依次探测，两种写法都能命中；
     都找不到时返回首选路径，由调用方按「无词表」处理（返回 {}）。
+
+    subject 同理（2026-11-20 编码治理）：`combined_science` → `combined-science`，
+    已分发的讲义包里还写着旧值，这里统一兜住。
     """
+    subject = (subject or "").strip().replace("_", "-").lower()
     base = TAXONOMY_DIR / board
     cands = _qual_candidates(qualification)
     for q in cands:

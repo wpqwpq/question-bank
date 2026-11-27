@@ -82,6 +82,13 @@ def top_labels(q) -> list[str]:
         if before in letters and after in letters and mid not in letters:
             if any(s["label"] == mid for s in subs):
                 out.insert(out.index(after), mid)
+    # 2026-11-16 补：末位 (i)。(i) 后面没有 (j) 时上面的断档判据不成立，罗马过滤会把
+    # 顶层 (i) 一起吞掉（CIE 化学/数学、Edexcel 经济常见 a–i 收尾），打标台因此只出
+    # a–h，切分也生不出 i 的小问文件。新判据：cut.json 里存在**独立单 token** "i"，
+    # 且前一个字母 h 在场、j 不在场 —— 那它只能是顶层小问。
+    if ("i" not in out and "h" in letters and "j" not in letters
+            and any(s["label"] == "i" for s in subs)):
+        out.insert(out.index("h") + 1, "i")
     return out
 
 

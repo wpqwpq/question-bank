@@ -8,9 +8,11 @@ import time
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 import auth
+import export as export_mod
 import flags
 import index_db
 import state
@@ -712,12 +714,15 @@ def get_question(request: Request, qid: str):
 
     # 「此题有误」标记（审核意见，不写进 md；存在 var/state.db）
     # 指纹校验只在这里做（单条、按需）——列表页不再逐条 stat 全库标记。
-    if flags.is_flagged(qid):
-        flags.verify_one(qid)
-    frec = flags.get(qid)
+    # 用规范化后的 id：外部可能拿旧 qid 来查，标记是按当前 id 存的。
+    canonical = store.canonical_qid(qid)
+    if flags.is_flagged(canonical):
+        flags.verify_one(canonical)
+    frec = flags.get(canonical)
 
     return {
-        "qid": qid,
+        # 一律回当前 id：调用方可能用旧 id 查（走兼容层），回旧值会让它一直用旧 id
+        "qid": str(meta.get("id") or canonical),
         "paper_id": paper.id,
         "unit": unit,
         "flagged": frec is not None,
@@ -755,6 +760,7 @@ def put_flag(request: Request, qid: str, payload: FlagPayload):
     标记会自动失效：题目文件或题图被重新上传后指纹对不上，记录随即删除
     （见 flags.fingerprint_matches；校验发生在打开详情时与后台巡检，不在列表请求里）。
     """
+    qid = store.canonical_qid(qid)   # 旧 id → 当前 id：标记必须按当前 id 存
     found = store.find_question(qid)
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
@@ -779,6 +785,7 @@ def put_confirm(request: Request, qid: str, payload: ConfirmPayload):
     时，先把它写进该单元对应的 `qNN.md` / 子题文件（**只动 difficulty 一行，不碰 tags**），再记确认。
     取消确认（confirmed=false）不回退难度——难度是标注，不该被审核动作抹掉。
     """
+    qid = store.canonical_qid(qid)   # 旧 id → 当前 id：确认记录必须按当前 id 存
     found = store.find_question(qid)
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
@@ -832,6 +839,7 @@ def put_confirm(request: Request, qid: str, payload: ConfirmPayload):
 
 @router.put("/questions/{qid}/annotation")
 def put_annotation(request: Request, qid: str, payload: AnnotationPayload):
+    qid = store.canonical_qid(qid)   # 旧 id → 当前 id：审计与有误拦截都按当前 id 判
     found = store.find_question(qid)
     if found is None:
         raise HTTPException(404, f"question not found: {qid}")
@@ -1046,3 +1054,225 @@ def _save_whole(paper: store.Paper, qpath, meta, payload: AnnotationPayload):
         [qid, *old_sub_qids], {qid} if before == after else set()
     )
     return result
+
+
+# ---------------------------------------------------------------------------
+# 批量导出（2026-11-04）：打标信息 / 知识点体系
+#
+# 三条设计约束（与 docs/22 一致）：
+#   ① **只读**：只查 index.db 与 taxonomy 文件，一个字节都不写（zip 除外，落 var/exports/）。
+#   ② **不限速**：导出不是"爬"，它是正当的批量；要防的是把人肉浏览变成爬虫（那条在 /files 上）。
+#   ③ **全局串行**：同时只允许一个导出在生成。82k 行的 SQL + JSON 解析会把单核打满，
+#      20 个人同时点就会互相拖死 —— 拿不到锁直接 429，让前端（或脚本）等几秒重试。
+#
+# 导出自己的连接：export._read_conn() 开只读 URI，避免长游标与全局连接互相打乱。
+# ---------------------------------------------------------------------------
+
+_EXPORT_LOCK = threading.Lock()
+_EXPORT_TMP = REPO_ROOT / "var" / "exports"
+_EXPORT_KEEP_HOURS = 24
+
+
+class _Counted:
+    """包一层计数，供审计记"这次导出了多少行"。"""
+
+    def __init__(self, it):
+        self._it = it
+        self.n = 0
+
+    def __iter__(self):
+        for x in self._it:
+            self.n += 1
+            yield x
+
+
+def _export_scope(ident: auth.Ident, board, qual, subject, level):
+    f = export_mod.Filters(board=board, qual=qual, subject=subject, level=level)
+    try:
+        return export_mod.resolve_scope(ident, f)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    except LookupError:
+        raise HTTPException(404, "not found")
+
+
+_EXPORT_AT = [0.0]          # 当前持锁开始时间，用来兜"生成器没跑起来锁就丢了"的极端情况
+_EXPORT_STALE = 300         # 超过 5 分钟一律视为僵死锁
+
+
+def _take_lock(what: str) -> None:
+    """拿全局导出锁。拿不到 → 429。
+
+    极端情况：客户端在响应头发出后立刻断开，同步生成器可能一次都没执行，
+    finally 就不会跑，锁会一直挂着。所以持锁超过 5 分钟就强制释放。
+    """
+    got = _EXPORT_LOCK.acquire(blocking=False)
+    if not got:
+        age = time.time() - _EXPORT_AT[0]
+        if age > _EXPORT_STALE:
+            print(f"[export] 强制释放僵死锁（{what}，已持有 {age:.0f}s）", flush=True)
+            try:
+                _EXPORT_LOCK.release()
+            except RuntimeError:
+                pass
+            got = _EXPORT_LOCK.acquire(blocking=False)
+    if not got:
+        raise HTTPException(429, "上一次导出还在生成，请几秒后重试",
+                            headers={"Retry-After": "3"})
+    _EXPORT_AT[0] = time.time()
+
+
+@router.get("/export/annotations")
+def export_annotations(
+    request: Request,
+    board: str | None = None, qual: str | None = None, subject: str | None = None,
+    level: str | None = None,
+    unit: str | None = None, year: int | None = None, session: str | None = None,
+    paper_id: str | None = None,
+    tag: str | None = None, difficulty: str | None = None, status: str | None = None,
+    only_tagged: int = 0, flagged: int = 0, format: str = "csv", lang: str = "zh", meta: int = 0,
+):
+    """打标信息。一行一个标注单元（切分题的小问各一行，父行不输出）。
+
+    `tag` / `difficulty` / `status` 支持逗号分隔多值（OR）。`tag` 用**中文名**，
+    不接受 id —— id 是建标签时冻结的 slug，老师可以把某个 id 下的中英文改成完全
+    无关的内容，它早就跟语义脱钩了。
+
+    `flagged=1` 只出被标「此题有误」的行。判定按父子两侧（切分题标记落在父 qid 上），
+    与打标台列表同口径——详见 export.iter_annotation_rows。
+    """
+    ident = auth.current(request)
+    if not ident.can_export:
+        raise HTTPException(403, f"当前角色（{ident.role}）不能导出")
+
+    if format not in ("csv", "jsonl"):
+        raise HTTPException(422, "format 只能是 csv / jsonl")
+    if lang not in ("zh", "en"):
+        raise HTTPException(422, "lang 只能是 zh / en")
+
+    scope = _export_scope(ident, board, qual, subject, level)
+    f = export_mod.Filters(
+        board=board, qual=qual, subject=subject, level=level, unit=unit, year=year,
+        session=session, paper_id=paper_id,
+        tags=[x for x in (tag or "").split(",") if x.strip()],
+        difficulties=[x for x in (difficulty or "").split(",") if x.strip()],
+        statuses=[x for x in (status or "").split(",") if x.strip()],
+        only_tagged=bool(only_tagged), only_flagged=bool(flagged), lang=lang,
+    )
+
+    stem = "annotations_" + ("_".join(x for x in (board, subject) if x) + "_" if board else "all_")
+    fname = f"{stem}{time.strftime('%Y%m%d')}.{'jsonl' if format == 'jsonl' else 'csv'}"
+    exp_id = f"exp_{time.strftime('%Y%m%dT%H%M%S')}_{ident.username}"
+
+    _take_lock("annotations")
+    counted = _Counted(export_mod.iter_annotation_rows(scope, f))
+    head = None
+    if meta:
+        head = (f"# 快照 {time.strftime('%Y-%m-%dT%H:%M:%S%z')} · 范围 {len(scope)} 学科 · "
+                f"导出自 {ident.username}")
+
+    def body():
+        t0 = time.perf_counter()
+        try:
+            if format == "jsonl":
+                for chunk in export_mod.render_annotations_jsonl(
+                        counted, {"board": board, "qual": qual,
+                                  "subject": subject, "level": level,
+                                  "only_tagged": int(bool(only_tagged)),
+                                  "flagged": int(bool(flagged))}):
+                    yield chunk
+            else:
+                first = True          # BOM 必须补在**第一个字节**，否则 Excel 中文乱码
+                for chunk in export_mod.render_annotations_csv(counted, lang, meta=head):
+                    if first:
+                        first = False
+                        yield "\ufeff"
+                    yield chunk
+        finally:
+            _EXPORT_LOCK.release()
+            auth.audit(ident, "export.annotations", fname,
+                       {"scope": len(scope), "rows": counted.n, "format": format,
+                        "lang": lang, "filters": {"board": board, "qual": qual,
+                                                   "subject": subject, "level": level,
+                                                   "unit": unit, "year": year,
+                                                   "session": session, "tag": tag,
+                                                   "only_tagged": int(bool(only_tagged)),
+                                                   "flagged": int(bool(flagged))},
+                        "ms": int((time.perf_counter() - t0) * 1000)},
+                       request)
+
+    media = "application/x-ndjson" if format == "jsonl" else "text/csv; charset=utf-8"
+    return StreamingResponse(body(), media_type=media, headers={
+        "Content-Disposition": f'attachment; filename="{fname}"',
+        "X-Accel-Buffering": "no",
+        "X-QB-Export": exp_id,
+    })
+
+
+@router.get("/export/taxonomy")
+def export_taxonomy(
+    request: Request,
+    board: str | None = None, qual: str | None = None, subject: str | None = None,
+    level: str | None = None,
+    format: str = "csv", usage: int = 1, all: int = 0, lang: str = "zh",
+):
+    """知识点体系。`all=1` 打 zip（每学科一个 CSV + 一份 JSON + README）。
+
+    `level=al` 可单独用，出「A-Level 全学科」包；与 `board/qual/subject` 互斥。
+    """
+    ident = auth.current(request)
+    if not ident.can_export:
+        raise HTTPException(403, f"当前角色（{ident.role}）不能导出")
+    if format not in ("csv", "json"):
+        raise HTTPException(422, "format 只能是 csv / json")
+    if all and board:
+        raise HTTPException(422, "all=1 与 board/qual/subject 不能同时给")
+
+    scope = None
+    if not all or level:
+        try:
+            scope = export_mod.resolve_scope(
+                ident, export_mod.Filters(board=board, qual=qual, subject=subject, level=level))
+        except ValueError as e:
+            raise HTTPException(422, str(e))
+        except LookupError:
+            raise HTTPException(404, "not found")
+    if all and not board:
+        scope = None if not level else scope
+
+    rows = export_mod.collect_taxonomy(scope, with_usage=bool(usage))
+    stamp = time.strftime("%Y%m%d")
+    suffix = level or "all"
+
+    if all:
+        _take_lock("taxonomy")
+        try:
+            _EXPORT_TMP.mkdir(parents=True, exist_ok=True)
+            # 顺手清理过期包（不用另起定时任务）
+            cutoff = time.time() - _EXPORT_KEEP_HOURS * 3600
+            for old in _EXPORT_TMP.glob("taxonomy_*.zip"):
+                try:
+                    if old.stat().st_mtime < cutoff:
+                        old.unlink()
+                except OSError:
+                    pass
+            p = _EXPORT_TMP / f"taxonomy_{suffix}_{stamp}_{int(time.time())}.zip"
+            n = export_mod.write_taxonomy_zip(p, rows, label=export_mod.QUAL_ZH.get(level or "", ""))
+        finally:
+            _EXPORT_LOCK.release()
+        auth.audit(ident, "export.taxonomy", f"taxonomy_{suffix}_{stamp}.zip",
+                   {"kind": "zip", "subjects": n, "tags": len(rows)}, request)
+        return FileResponse(p, media_type="application/zip",
+                            filename=f"taxonomy_{suffix}_{stamp}.zip")
+
+    auth.audit(ident, "export.taxonomy", f"taxonomy_{suffix}_{stamp}.{format}",
+               {"kind": format, "tags": len(rows)}, request)
+    if format == "json":
+        payload = export_mod.build_taxonomy_json(rows)
+        return Response(content=json.dumps(payload, ensure_ascii=False, indent=1),
+                        media_type="application/json; charset=utf-8")
+    return Response(content=export_mod.render_taxonomy_csv(rows, lang),
+                    media_type="text/csv; charset=utf-8", headers={
+                        "Content-Disposition":
+                            f'attachment; filename="taxonomy_{suffix}_{stamp}.csv"',
+                    })

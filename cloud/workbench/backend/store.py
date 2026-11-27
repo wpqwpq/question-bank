@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import sqlite3
 import tempfile
 from collections import OrderedDict
 import threading
@@ -37,13 +38,20 @@ SUB_NO_IMAGE_BOARDS = {"aqa", "cie"}
 # （纯数学一题一页、D1 还带作答册），按小问裁出来的碎片没有阅读价值。
 SUB_NO_IMAGE_SUBJECTS = {"accounting", "mathematics"}
 
-# 单元级豁免（2026-10-27 王培琪定）：Edexcel IAL 物理的 U3（WPH13）与 U6（WPH16）。
-# 这两份是实践技能卷，一题常跨 3 页，按小问裁出来的碎片把题干和几行空白切在一起，
-# 没有阅读价值（与 AQA/CIE 的判据同构）。键用**单元键**而非卷号，A 卷（WPH13A/WPH16A）
+# 单元级豁免（2026-10-27 物理，2026-11-13 补生物/化学）：Edexcel IAL 的 U3 与 U6。
+# 三科的 U3（WPH13 / WBI13 / WCH13）与 U6（WPH16 / WBI16 / WCH16）都是实践技能卷，
+# 一题常跨 3 页，按小问裁出来的碎片把题干和几行空白切在一起，没有阅读价值
+# （与 AQA/CIE 的判据同构）。键用**单元键**而非卷号，A 卷（WPH13A / WBI13A）
 # 与以后新增的卷自动生效，不必逐卷维护。
+# 2026-11-13 补齐生物/化学：这两科 U3/U6 共 90 卷从未按小问打标（线上核查：
+# 「应切未切」的 155 卷里 90 卷属此），一旦开始打标就会切出碎片，先按同一判据豁免。
 # ⚠️ 只关「子图」，不关「按小问打标」：子题文件 qNN-<label>.md 照写、标签照落，
 #    预览回退整题图——2020 年那 45 个已打好的小问标签因此原样保得住。
-SUB_NO_IMAGE_UNITS = {("edexcel", "physics", "U3"), ("edexcel", "physics", "U6")}
+SUB_NO_IMAGE_UNITS = {
+    ("edexcel", "physics", "U3"), ("edexcel", "physics", "U6"),
+    ("edexcel", "biology", "U3"), ("edexcel", "biology", "U6"),
+    ("edexcel", "chemistry", "U3"), ("edexcel", "chemistry", "U6"),
+}
 
 # 考试局 + 学科级豁免（2026-10-29 王培琪定）：Edexcel 商务（IAL WBS11/WBS12）。
 # 商务题是「材料 + 若干讨论题」，题干情境与作答区常常互相穿插，按小问裁出来的
@@ -117,14 +125,17 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
     `paper_unit`（`9202/1`、`0620/11`、`4CH1/1C`）把 `/` 换成 `-` 就还原成规范形式。
 
     单元制（2026-10-23 培琪定，与 A-Level 同构）：
-      AQA 化学/经济      9202-1 → P1、9202-2 → P2
-      Edexcel 化学/会计  4CH1-1C → U1、4CH1-2C → U2
+      AQA 化学           9202-1、9202-2 → P1P2（**2026-11-17 培琪定**：两卷共用一套知识点，
+                         原 P1 / P2 两套内容完全镜像，词表已合并为单键 P1P2）
+      AQA 经济           9202-1 → P1、9202-2 → P2
+      Edexcel 化学/会计  一科一个池 → U1U2（Paper 1&2 共用一套知识点；
+                         2026-11-12 化学、2026-11-13 会计，培琪定）
       Edexcel 经济       4EC1-01 → P1、-02 → P2
       CIE 会计/商务/经济 一科一个池 → U1U2 / P1P2 / P1P2（飞书里这两份 paper 100% 共用一套知识点）
       CIE 化学           P1–P4 → P14、P5–P6 → P56
       AQA 物理           9203/1、9203/2 → P1P2（飞书只有一套词表，两卷通吃）
       CIE 物理           0625 Paper 1/3 → P13（core）、Paper 2/4 → P24（extended，跨单元开 P13）、
-                         Paper 5/6 → None（实践卷不给词表）
+                         Paper 5/6 → None（实践卷不给词表；2026-11-13 起 Paper 6 改判 P6）
       CIE 数学（0580）    Paper 1/3 → P13、Paper 2/4 → P24（extended，跨单元开 P13）；
                          0606 / 0607 → None（大纲主题不同，暂不建词表）
       Edexcel 物理       4PH0/4PH1 Paper 1 → P1、Paper 2 → P1P2（跨单元）；新纲 4WPH* → P1P2
@@ -132,6 +143,11 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
                          → H（跨单元开 F）。2026-10-26 建词表。
       AQA 数学 9260      Core 卷（1C/2C）→ C；Extension 卷（1E/2E）→ E（跨单元开 C）。
                          2026-10-26 建词表。
+      AQA 生物 9201      Paper 1/2 → P1P2（一套词表两卷通吃）。2026-11-15 建词表。
+      Edexcel 生物       4BI1/4WBI1/4WBI2 所有 paper → U1U2（Paper 1+2 并集单池）。
+                         2026-11-15 建词表。
+      CIE 生物           0610/0970 Paper 1/3 → P13、Paper 2/4 → P24（跨单元开 P13）、
+                         Paper 5/6 → P56（实践）。0970 旧大纲同映射（方案 A）。2026-11-15 建词表。
       其余数学（0606/0607、4MB1）→ None：一个知识点横跨多份 paper，
       拆不干净，按培琪的要求先不建词表（卷照常可开、只是右栏无标签）。
     """
@@ -142,13 +158,33 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
     if re.match(r"^4[a-z]{2}", c):        # Edexcel regional 后缀 r
         c = re.sub(r"r$", "", c)
     key = (b, s)
-    if key in (("aqa", "chemistry"), ("aqa", "economics")):
+    if key == ("aqa", "chemistry"):
+        # 2026-11-17 王培琪定：9202 Paper 1 与 Paper 2 共用同一套知识点（原 P1 / P2
+        # 两套内容完全镜像，词表已合并为单键 P1P2）→ 两卷都判到 P1P2。
+        # 与 AQA 物理 9203 / 生物 9201 的单池做法同构。卷号仍校验，避免误收其它卷。
+        m = re.match(r"^(\d{4})-(\d)$", c)
+        return "P1P2" if m else None
+    if key == ("aqa", "economics"):
         m = re.match(r"^(\d{4})-(\d)$", c)
         return f"P{m.group(2)}" if m else None
-    if key in (("edexcel", "chemistry"), ("edexcel", "accounting")):
+    if key == ("edexcel", "chemistry"):
+        # 2026-11-12 王培琪定：IG 化学 59 卷统一指向一套合池词表 U1U2，
+        # 不再按 4CH1/1C->U1、4CH1/2C->U2 分家。卷号仍校验，避免误收其它卷。
         m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
-        return f"U{int(m.group(2))}" if m else None
+        return "U1U2" if m else None
+    if key == ("edexcel", "accounting"):
+        # 2026-11-13 王培琪定：IG 会计 35 卷（4AC1/01·02、模块化 4WAC1/4WAC2、R 卷）统一指向
+        # 一套合池词表 U1U2 —— Paper 1 与 Paper 2 共用同一套知识点（原 U1 30 + U2 17 取并集，
+        # 得 46 条 / 19 组）。与 IG 化学同构。卷号仍校验，避免误收其它卷。
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        return "U1U2" if m else None
     if key == ("edexcel", "economics"):
+        # 模块化 4WEC1/01、4WEC2/01（2026-11-16 修）：单元号在 **spec 段**，paper 段恒为 01，
+        # 走下面那条通用正则会把它判成 P1（{2,3} 吃掉 wec、\d 吃掉 2，group2 只剩 01）——
+        # 4WEC201 整卷 23 个子题因此被错标成 P1 微观标签。必须先抓 4W 前缀。
+        m = re.match(r"^(4w[a-z]{2})(\d)-(\d+)([a-z]?)$", c)
+        if m:
+            return f"P{int(m.group(2))}"
         m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
         return f"P{int(m.group(2))}" if m else None
     if key in (("cie", "accounting"), ("cie", "business"), ("cie", "economics")):
@@ -178,6 +214,31 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
         # Paper 1 与 Paper 2 不分知识点 → 两卷都指向同一个池。
         m = re.match(r"^(\d{4})-(\d)$", c)
         return "P1P2" if m else None
+    if key == ("aqa", "biology"):
+        # 牛津 AQA 9201（2026-11-15，培琪定）：IG.xlsx 里 AQA 只有一套知识点
+        # （标记 Paper1,2，114 条 / 27 组）→ 单池 P1P2，Paper 1/2 两卷通吃。
+        m = re.match(r"^(\d{4})-(\d)$", c)
+        return "P1P2" if m else None
+    if key == ("edexcel", "biology"):
+        # Edexcel 4BI1 / 新纲 4WBI1·4WBI2（2026-11-15，培琪定）：IG.xlsx 里 EDX
+        # Paper 1（101 条）与 Paper 2（23 条）取并集 → 单池 U1U2（124 条 / 22 组），
+        # 所有 paper 共用一套知识点，与 IG 化学/会计合池同构。R 卷（regional）
+        # 已在函数开头去尾 r；卷号仍校验，避免误收其它卷。
+        m = re.match(r"^(4[a-z]{2,3}\d)-(\d+)([a-z]?)$", c)
+        return "U1U2" if m else None
+    if key == ("cie", "biology"):
+        # CIE 0610 / 0970（2026-11-15，培琪定，方案 A）：IG.xlsx 分三套 ——
+        #   P13 = Paper 1/3（core，110 条 / 21 组）
+        #   P24 = Paper 2/4（extended 增量，34 条 / 15 组），由
+        #         taxonomy._CROSS_UNIT_SELECTABLE[("cie","P24")] 跨单元开 P13
+        #   P56 = Paper 5/6（实践，17 条实验技能 / 1 组）
+        # 0970 旧大纲 28 卷与 0610 同映射（方案 A：右栏有标签可勾，
+        # 个别旧纲对不上的题不勾即可）——故不按 spec 收窄。
+        m = re.match(r"^(\d{4})-(\d{2})$", c)
+        if not m:
+            return None
+        return {1: "P13", 2: "P24", 3: "P13", 4: "P24",
+                5: "P56", 6: "P56"}.get(int(m.group(2)[0]))
     if key == ("aqa", "mathematics"):
         # 牛津 AQA 9260（2026-10-26，培琪定）：两层难度卷 —— Core（1C / 2C）与
         # Extension（1E / 2E）。飞书「数学」表的「单元」列已按层拆好：
@@ -195,12 +256,13 @@ def _ig_unit(code: str, board: str, subject: str, paper_unit: str = "") -> str |
         # CIE 0625（2026-10-23）：飞书分 core（P13）/ extended（P24）两个池。
         # Paper 1、3 是 core 卷 → 只开 P13；Paper 2、4 是 extended 卷 → P24，
         #   再由 taxonomy._CROSS_UNIT_SELECTABLE 把 P13 的标签一并开放（跨单元）。
-        # Paper 5、6 是实验 / 实验替代卷，飞书没给对应知识点 → 不给词表
-        #   （培琪 2026-10-23 定，右栏为空、不可打标，与「实验卷不进分母」老口径一致）。
+        # Paper 5、6 原本都 → None（培琪 2026-10-23 定，实验卷不进分母）。
+        # 2026-11-13 改：Paper 6 单独建了 13 个实验技能标签的词表 → P6；Paper 5 仍 None。
+        # ⚠️ 改这个文件时别把 `6: "P6"` 连带删掉（11-13 已被一次会计改动顶掉过一回）。
         m = re.match(r"^(\d{4})-(\d{2})$", c)
         if not m:
             return None
-        return {1: "P13", 2: "P24", 3: "P13", 4: "P24"}.get(int(m.group(2)[0]))
+        return {1: "P13", 2: "P24", 3: "P13", 4: "P24", 6: "P6"}.get(int(m.group(2)[0]))
     if key == ("cie", "mathematics"):
         # CIE 0580（2026-10-26）：飞书「数学」表里 IG 行已按两池写好单元 ——
         #   P13 = Paper 1&3 共用（44 个）、P24 = Paper 2&4 专用（41 个）。
@@ -922,14 +984,71 @@ def iter_papers() -> list[Paper]:
         return papers
 
 
-def find_paper(paper_id: str) -> Paper | None:
+# ── 旧 id 兼容层（2026-11-20 编码治理）─────────────────────────────────
+# 治理把 qid / paper_id 统一了格式（去 URN、学段统一成 a-level），旧值全部登记在
+# var/legacy_ids.sqlite。外部调用（AI agent、脚本、以前收藏的链接）仍可能拿旧 id 来查，
+# 这里做一次重定向。
+#
+# 约束：
+#   · **只在主键 miss 时命中**，新 id 的正常查询完全不碰这张表（热路径零开销）；
+#   · 表不存在 / 打不开时静默降级——不能因为一份兼容数据把服务拖挂；
+#   · 只重定向一层（_depth 防环）。映射是 old→new 的单向表，理论上不会成环。
+LEGACY_DB = REPO_ROOT / "var" / "legacy_ids.sqlite"
+_legacy_q: dict[str, str] | None = None
+_legacy_p: dict[str, str] | None = None
+_legacy_lock = threading.Lock()
+
+
+def _legacy_maps() -> tuple[dict[str, str], dict[str, str]]:
+    """懒加载旧 id 映射。首次未命中时才读一次，之后走内存。"""
+    global _legacy_q, _legacy_p
+    if _legacy_q is not None:
+        return _legacy_q, _legacy_p
+    with _legacy_lock:
+        if _legacy_q is not None:
+            return _legacy_q, _legacy_p
+        q: dict[str, str] = {}
+        p: dict[str, str] = {}
+        try:
+            if LEGACY_DB.exists():
+                con = sqlite3.connect(f"file:{LEGACY_DB}?mode=ro", uri=True)
+                try:
+                    q = dict(con.execute("SELECT old,new FROM qid_map"))
+                    p = dict(con.execute("SELECT old,new FROM paper_map"))
+                finally:
+                    con.close()
+                print(f"[legacy] 旧 id 别名已加载：qid {len(q)} / paper {len(p)}", flush=True)
+        except sqlite3.Error as e:  # 兼容层坏了不能影响主流程
+            print(f"[legacy] 别名表读取失败（新 id 不受影响）：{e}", flush=True)
+        _legacy_q, _legacy_p = q, p
+        return q, p
+
+
+def canonical_qid(qid: str) -> str:
+    """旧 qid → 当前 qid；查不到就原样返回（不抛错）。
+
+    **写路径必须过这一层**：flag / confirm / annotation 都按 qid 落 state.db，
+    用旧 id 写进去、用新 id 就查不到，会出现「标了有误但列表里没有」的幽灵记录。
+    """
+    alt = _legacy_maps()[0].get(str(qid))
+    return alt or str(qid)
+
+
+def find_paper(paper_id: str, _depth: int = 0) -> Paper | None:
     iter_papers()
     with _lock:
         hit = _papers_by_id.get(paper_id)
     if hit is not None:
         return hit
     # 索引里有、但目录扫描还没轮到（刚上传 / TTL 内新增）→ 直接按索引行构造
-    return _paper_from_index(paper_id)
+    p = _paper_from_index(paper_id)
+    if p is not None:
+        return p
+    if _depth < 1:
+        alt = _legacy_maps()[1].get(str(paper_id))
+        if alt and alt != paper_id:
+            return find_paper(alt, _depth + 1)
+    return None
 
 
 def _paper_from_index(paper_id: str) -> Paper | None:
@@ -1005,11 +1124,12 @@ def _rebuild_qid_index(force: bool = False) -> None:
         _rebuild_lock.release()
 
 
-def find_question(qid: str) -> tuple[Paper, Path] | None:
+def find_question(qid: str, _depth: int = 0) -> tuple[Paper, Path] | None:
     """按 qid 取 (卷, 文件路径)。
 
     Step 1 起走 index.db 主键查询（微秒级），不再需要全量 qid 索引；
     索引里没有时回退旧的全量扫描（刚新增、还没进索引的文件）。
+    全部落空后再查一次旧 id 别名表（2026-11-20 编码治理的兼容层）。
     """
     key = str(qid)
     if index_db.exists():
@@ -1038,6 +1158,12 @@ def find_question(qid: str) -> tuple[Paper, Path] | None:
                 return paper, qpath
         if attempt == 0:  # 索引过期（外部增删/改名）→ 重建一次
             _rebuild_qid_index()
+
+    # 旧 id 重定向（编码治理前生成的 qid，如带 URN 或 alevel 写法）
+    if _depth < 1:
+        alt = _legacy_maps()[0].get(key)
+        if alt and alt != key:
+            return find_question(alt, _depth + 1)
     return None
 
 

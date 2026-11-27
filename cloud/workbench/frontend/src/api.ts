@@ -331,7 +331,29 @@ export class AuthError extends Error {
   }
 }
 
-export const isRoleAtLeastLead = (r: Role | undefined) => r === 'admin' || r === 'lead'
+/**
+ * 能力判据（2026-11-20 收敛）。
+ *
+ * 以前入口按钮与页内开关各自裸写 `role === 'admin'`，路由化又会多出一处守卫，
+ * 三处写法迟早漂移（典型症状：按钮看得见、点进去被弹回来）。现在统一在这里定义，
+ * 入口按钮、页内控件、路由守卫**都调这几个函数**。
+ *
+ * 每个函数都与后端 auth.py 的常量一一对应，改一边必须改另一边。
+ * 前端这层只管「看不看得见、进不进得去」，真正的闸门永远在接口里。
+ */
+/** auth.WRITE_ROLES：写标注 / 确认。
+ *  白名单而不是「非 viewer」（2026-11-20 改）——黑名单在新增角色（比如将来的学生）
+ *  时会默认放行写权限，白名单不会。 */
+const WRITE_ROLES: Role[] = ['admin', 'lead', 'tagger']
+export const canWriteRole = (r: Role | undefined) => !!r && WRITE_ROLES.includes(r)
+
+/** auth.OVERVIEW_ROLES：admin / lead / viewer（viewer 于 2026-11-20 培琪定放行）。
+ *  概览只返回完成度三态、不含标注内容，只读账号看进度没有风险。 */
+export const canOverview = (r: Role | undefined) =>
+  r === 'admin' || r === 'lead' || r === 'viewer'
+
+/** 操作日志只有 admin —— 后端 main.py 的 /api/auth/audit 同样是 is_admin 判断。 */
+export const canAudit = (r: Role | undefined) => r === 'admin'
 
 /** 能不能改标签词表：tagger 也可以（2026-10-19 放开），但学科范围由后端兜住。
  *  viewer 只读；service 是 AI 账号，浏览器不会登录它。 */
@@ -502,6 +524,7 @@ export const SESSION_LABELS: Record<string, string> = {
   june: '6月',
   oct: '10月',
   'oct-nov': '10-11月',
+  nov: '11月',
 }
 
 export const DIFFICULTY_LABELS: ReadonlyArray<readonly [string, string, string]> = [

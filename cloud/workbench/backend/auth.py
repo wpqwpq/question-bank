@@ -58,10 +58,16 @@ TAX_ROLES = {"admin", "lead", "tagger"}
 # 不可回滚，所以不含 tagger——前台看不见删除按钮，后端也拦。
 DELETE_TAX_ROLES = {"admin", "lead"}
 CONFIRM_ROLES = {"admin", "lead", "tagger", "service"}
+# 批量导出（2026-11-04 培琪定）：viewer 放开。它本来就是"只读地看"，导出只是把
+# 一次看一道题变成一次看全库——所以导出是 viewer 的正当能力，不是越权。
+# tagger 不给（老师用不到），service 不给（AI 走自己的链路）。
+EXPORT_ROLES = {"admin", "lead", "viewer"}
+
 # 全局概览（整库完成度地图）：2026-10-23 培琪定，lead 也放开。
 # 概览只给「卷级」聚合（学科/卷号/年份/季次 + 三态完成度），不含任何题面内容；
 # 跨学科隔离仍然生效——lead 点开别人的卷去拉题目，照样 404。
-OVERVIEW_ROLES = {"admin", "lead"}
+# 2026-11-04：viewer 也放开——它全学科可见，而概览只到"卷级 + 三态"，不含题面。
+OVERVIEW_ROLES = {"admin", "lead", "viewer"}
 
 # 学段（2026-10-27）：第二个隔离维度。`levels` 为空 = 不限学段（存量 80 个账号全是这种，
 # 行为与改造前完全一致）；写了就只放行列出的学段。
@@ -146,6 +152,11 @@ class Ident:
     @property
     def can_confirm(self) -> bool:
         return self.role in CONFIRM_ROLES
+
+    @property
+    def can_export(self) -> bool:
+        """能否批量导出打标信息 / 词表。admin / lead / viewer。"""
+        return self.role in EXPORT_ROLES
 
     @property
     def can_overview(self) -> bool:
@@ -388,8 +399,10 @@ def verify_api_key(token: str) -> Ident | None:
         return None
     target = hash_api_key(token)
     idents = load_users()
+    # 2026-11-04：viewer 也可以领 Key —— "只给 API、不给界面"必须能脚本化调用。
+    # 安全性由角色本身兜住：viewer 不在任何写集合里，拿 Key 也只能读。
     for u in _raw_all():
-        if str(u.get("role")) != "service" or u.get("disabled"):
+        if str(u.get("role")) not in ("service", "viewer") or u.get("disabled"):
             continue
         if hmac.compare_digest(str(u.get("key_hash") or ""), target):
             ident = idents.get(str(u.get("username")))
@@ -570,7 +583,9 @@ class AuthMiddleware:
         if ident is None and not is_open:
             return await _deny(401, "未登录或登录已过期")(scope, receive, send)
 
-        if ident is not None and ident.must_change_password and path not in PASSWORD_PENDING_OK:
+        # 428 只针对"人"。API Key 没有改密这回事，否则 viewer 领了 Key 也用不了。
+        if (ident is not None and ident.must_change_password and ident.via != "key"
+                and path not in PASSWORD_PENDING_OK):
             return await _deny(428, "首次登录，请先修改初始密码")(scope, receive, send)
 
         # /files/ 的学科 + 学段隔离：题图 URL 里带学科段与资格段，直接按段比对，

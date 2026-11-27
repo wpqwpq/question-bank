@@ -284,7 +284,7 @@ export default function TagDeleteDialog({
                     return (
                       <tr key={r.qid} className="border-t border-gray-100 align-top">
                         <td className="truncate px-2 py-1.5 text-gray-600" title={r.qid}>
-                          {r.paper_code ?? '—'}
+                          {r.paper_code?.toUpperCase() ?? '—'}
                           {r.year ? ` · ${r.year}` : ''}
                           {r.session ? ` ${SESSION_LABELS[r.session] ?? r.session}` : ''}
                         </td>

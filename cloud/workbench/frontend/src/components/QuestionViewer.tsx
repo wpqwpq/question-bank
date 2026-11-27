@@ -227,7 +227,7 @@ export default function QuestionViewer({
               </span>
               {subLabel && <span className="ml-1 font-medium text-blue-600">{subLabel} 问</span>}
               <span className="ml-2 text-gray-400">
-                {meta?.paper_code}
+                {meta?.paper_code?.toUpperCase()}
                 {meta?.total_marks != null && ` · ${meta.total_marks} 分`}
                 {meta?.question_type && ` · ${meta.question_type}`}
               </span>

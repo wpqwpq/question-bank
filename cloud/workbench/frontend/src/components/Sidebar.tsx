@@ -9,6 +9,11 @@ interface Props {
   /** 本账号可选的学段（IG 专用号只有 igcse 一项）；见 App.tsx 的 allowedQualsOf */
   allowedQuals: string[]
   subject: string
+  /**
+   * 本账号可选的学科（= `me.subjects`，`["*"]` 表示全部）。
+   * 2026-11-20 起下拉按它收窄：化学老师不再看到 Physics 这个「选了必定空白」的选项。
+   */
+  subjects: string[]
   paperId: string
   questions: QuestionSummary[]
   currentIndex: number
@@ -29,12 +34,41 @@ const QUAL_LABEL: Record<string, string> = {
   gcse: 'GCSE',
 }
 
+/**
+ * 学科显示名 + 顺序。
+ *
+ * ⚠️ 这是**手写映射**：数据里出现新学科不会自动冒出来，必须在这里补一行，
+ *    否则左侧选不到（标签管理页读词表树，不受影响）。
+ *    `combined-science` 用连字符是 2026-11-20 编码治理的结果（原 combined_science）。
+ */
+const SUBJECT_LABEL: Record<string, string> = {
+  physics: 'Physics',
+  chemistry: 'Chemistry',
+  biology: 'Biology',
+  mathematics: 'Mathematics',
+  'further-mathematics': 'Further Mathematics',
+  accounting: 'Accounting',
+  economics: 'Economics',
+  business: 'Business',
+  'combined-science': 'Combined Science',
+  psychology: 'Psychology',
+}
+const SUBJECT_ORDER = Object.keys(SUBJECT_LABEL)
+
 function Label({ text }: { text: string }) {
   return <label className="mb-1 block text-xs font-medium text-gray-500">{text}</label>
 }
 
 export default function Sidebar(p: Props) {
   const currentPaper = p.papers.find((x) => x.id === p.paperId)
+
+  // 学科下拉的可选项：全学科账号看全部，其余只留本人那几科。
+  // 兜底：当前值必须在列表里，否则 <select> 会显示成空白（权限刚改过、
+  // 或 me 还没到位时会瞬间发生）。
+  const subjectOpts = p.subjects.includes('*')
+    ? [...SUBJECT_ORDER]
+    : SUBJECT_ORDER.filter((s) => p.subjects.includes(s))
+  if (p.subject && !subjectOpts.includes(p.subject)) subjectOpts.push(p.subject)
 
   return (
     <aside className="flex w-60 shrink-0 flex-col gap-4 overflow-y-auto border-r border-gray-200 bg-gray-50 p-3">
@@ -64,18 +98,11 @@ export default function Sidebar(p: Props) {
       <div>
         <Label text="学科" />
         <select className={selectCls} value={p.subject} onChange={(e) => p.onSubject(e.target.value)}>
-          <option value="physics">Physics</option>
-          <option value="chemistry">Chemistry</option>
-          <option value="biology">Biology</option>
-          <option value="mathematics">Mathematics</option>
-          <option value="further-mathematics">Further Mathematics</option>
-          <option value="accounting">Accounting</option>
-          <option value="economics">Economics</option>
-          {/* 牛津 AQA 商务 9725（2026-10-22 上线）。这个列表是手写的，数据里有了不会自己冒出来；新增学科必须在这里补一行，否则打标台左侧选不到（标签管理页读词表树，不受影响）。 */}
-          <option value="business">Business</option>
-          {/* IGCSE 独有科目（2026-10-23 上云）。目录名带下划线，值必须与 data/ 里一致。 */}
-          <option value="combined_science">Combined Science</option>
-          <option value="psychology">Psychology</option>
+          {subjectOpts.map((s) => (
+            <option key={s} value={s}>
+              {SUBJECT_LABEL[s] ?? s}
+            </option>
+          ))}
         </select>
       </div>
       <div>
@@ -91,7 +118,10 @@ export default function Sidebar(p: Props) {
             const allVerified = activeTotal > 0 && (paper.verified_count ?? 0) >= activeTotal
             return (
               <option key={paper.id} value={paper.id}>
-                {paper.year} {SESSION_LABELS[paper.session] ?? paper.session} · {paper.paper_code}
+                {/* paper_code 在库里存小写（编码规范 v1：必须与目录 code 逐字符相等），
+                    展示统一大写。 */}
+                {paper.year} {SESSION_LABELS[paper.session] ?? paper.session} ·{' '}
+                {paper.paper_code?.toUpperCase()}
                 （{paper.annotated_count}/{paper.question_count}）
                 {allVerified ? ' ✓' : ''}
               </option>

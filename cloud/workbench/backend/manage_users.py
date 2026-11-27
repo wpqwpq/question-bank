@@ -207,8 +207,9 @@ def cmd_add(args: argparse.Namespace) -> int:
     if _find(data, args.username) is not None:
         print(f"账号已存在：{args.username}", file=sys.stderr)
         return 1
-    subs = ["*"] if args.role in ("admin", "service") else list(args.subject or [])
-    if args.role not in ("admin", "service") and not subs:
+    # viewer 与 admin/service 一样天生全学科（2026-11-04 培琪定），不必逐个 --subject
+    subs = ["*"] if args.role in ("admin", "service", "viewer") else list(args.subject or [])
+    if args.role not in ("admin", "service", "viewer") and not subs:
         print("非管理员/服务账号必须指定 --subject", file=sys.stderr)
         return 1
     levels = auth._parse_levels(args.level) if args.level else []
@@ -229,8 +230,9 @@ def cmd_add(args: argparse.Namespace) -> int:
 def cmd_newkey(args: argparse.Namespace) -> int:
     data = _load_raw()
     u = _find(data, args.username)
-    if u is None or u.get("role") != "service":
-        print(f"{args.username} 不是 service 账号", file=sys.stderr)
+    # 2026-11-04：viewer 也能领 Key（导出接口"只给 API"必须能脚本化）。
+    if u is None or u.get("role") not in ("service", "viewer"):
+        print(f"{args.username} 不是 service / viewer 账号", file=sys.stderr)
         return 1
     key = auth.new_api_key()
     u["key_hash"] = auth.hash_api_key(key)
