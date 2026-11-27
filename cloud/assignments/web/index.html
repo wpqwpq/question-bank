@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>题库选题系统</title>
+<link rel="stylesheet" href="style.css?v=20261125j">
+</head>
+<body>
+<div class="frame" id="frame">
+
+  <!-- ============ 选题页 ============ -->
+  <div class="page" id="pageSelect">
+    <div class="titlebar">
+      <div class="logo">题</div><b>题库选题系统</b>
+      <span class="spacer"></span>
+      <div class="hist-wrap">
+        <button class="hist-btn" id="btnUndo" title="上一步" disabled>↶ 上一步</button>
+        <button class="hist-btn" id="btnRedo" title="下一步" disabled>↷ 下一步</button>
+      </div>
+      <div class="fav-wrap">
+        <button class="fav-btn" id="btnFav" title="查看收藏的题目">♡ 收藏夹</button>
+        <div class="fav-menu" id="favMenu" hidden>
+          <div class="fav-head">收藏夹 <span class="cnt" id="favCount">0 题</span></div>
+          <div class="fav-list" id="favList"></div>
+          <div class="fav-foot"><button id="favClear">清空收藏</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="job-fields">
+        <div class="field"><span>作业名称</span><input id="jobName" type="text" placeholder="请输入作业名称"></div>
+        <div class="field"><span>接受班级</span><select id="classSel"><option value="">请选择</option></select></div>
+        <div class="field"><span>科目</span><select id="subSel"><option value="">请选择</option></select></div>
+        <div class="field diff-field" id="diffField"><span>难度</span>
+          <select id="diffSel">
+            <option value="all">全选</option>
+            <option value="very-easy">极易</option>
+            <option value="easy">容易</option>
+            <option value="medium">中等</option>
+            <option value="hard">困难</option>
+            <option value="very-hard">极难</option>
+          </select>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="filter-groups">
+        <div class="fgroup"><span>模式</span>
+          <div class="seg" id="segMode">
+            <button class="on" data-v="paper">按套卷</button>
+            <button data-v="category">按类别</button>
+            <button data-v="keyword">关键词</button>
+          </div>
+        </div>
+        <div class="fgroup"><span>考试局</span>
+          <div class="seg" id="segBoard"><button class="on" data-v="edexcel">Edexcel</button><button data-v="cie">CIE</button><button data-v="aqa">AQA</button></div>
+        </div>
+        <div class="fgroup"><span>阶段</span>
+          <div class="seg" id="segLevel"><button class="on" data-v="a-level">A-Level</button><button data-v="igcse">IGCSE</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="work">
+      <div class="panel">
+        <div class="head"><span class="bar"></span><span id="treeHeadTitle">题库目录</span>
+          <button class="mini-btn" id="btnCollapseAll">全部折叠</button>
+          <span class="sub" id="treeMode">按套卷</span></div>
+        <div class="kw-search" id="kwSearch" hidden>
+          <input id="kwInput" type="search" placeholder="输入题干关键词，空格分隔">
+          <button id="kwSearchBtn">搜索</button>
+        </div>
+        <div class="body"><div class="tree" id="tree"><div class="loading">正在加载题库…</div></div></div>
+      </div>
+      <div class="panel">
+        <div class="head"><span class="bar"></span>已选题目
+          <button class="mini-btn" id="actOverall">预览卷面</button>
+          <span class="sub"><span id="selCount">0</span> 题</span></div>
+        <div class="body" id="selBody"><div class="list-empty">还没有选择题目<br>从左侧题库勾选吧</div></div>
+        <div class="sel-foot"><button class="mini-btn danger" id="btnClear">清空</button></div>
+      </div>
+      <div class="panel">
+        <div class="preview-tools">
+          <span class="tag">预览</span><span class="tag" id="previewLabel">—</span>
+          <span class="grow"></span>
+          <span class="zoom">缩放
+            <button id="zoomOut" title="缩小">−</button><span id="zoomVal">适应宽度</span><button id="zoomIn" title="放大">＋</button>
+          </span>
+        </div>
+        <div class="paper-view" id="paperView"><div class="empty-preview">点击左侧或中间的任意题目<br>即可在此预览截图</div></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <span class="info" id="statusInfo">加载中…</span>
+      <button class="act" id="actWord">输出为 Word</button>
+      <button class="act" id="actPdf">输出为 PDF</button>
+      <button class="act" id="actAnswer">输出答案</button>
+      <button class="act primary" id="actPublish">发布作业</button>
+    </div>
+  </div>
+
+  <!-- ============ 发布作业预览页 ============ -->
+  <div class="page" id="pagePublish" hidden>
+    <div class="pub-head">
+      <button class="back" id="pubBack">← 返回选题</button>
+      <b>作业发布预览</b>
+      <span class="spacer"></span>
+      <span class="badge2">共 <span id="pubCount">0</span> 题</span>
+    </div>
+    <div class="pub-info">
+      <div class="kv"><span>作业名称：</span><b id="pubName">—</b></div>
+      <div class="kv"><span>接受班级：</span><b id="pubClass">—</b></div>
+      <div class="kv"><span>科目：</span><b id="pubSubject">—</b></div>
+    </div>
+    <div class="pub-body" id="pubBody"></div>
+    <div class="pub-foot">
+      <span class="info">题号格式：考试局-年份-月份-试卷编码-大题号-小题号（E/C/A = Edexcel/CIE/AQA）</span>
+      <button class="btn" id="pubBack2">返回修改</button>
+      <button class="act primary" id="pubConfirm">确认发布</button>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+<div class="busy" id="busy"><div class="spin"></div><span id="busyText">正在生成文件…</span></div>
+<script src="app.js?v=20261125j"></script>
+</body>
+</html>
